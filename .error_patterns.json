@@ -1,0 +1,29 @@
+{
+  "patterns": [
+    {
+      "pattern": "记忆中凭记忆拼凑股票列表导致包含非关注股",
+      "fix": "必须先读 analysis_summary_all.md 获取确切 25 只关注股列表，绝不能凭记忆",
+      "category": "stock_analysis",
+      "count": 1,
+      "first_seen": "2026-07-19T09:09:52.995933",
+      "last_seen": "2026-07-19T09:09:52.996130"
+    },
+    {
+      "pattern": "Web search 不可用时未回退到 akshare 新闻接口",
+      "fix": "优先 Tavily → 不可用时自动用 akshare.stock_news_em / stock_info_global_em",
+      "category": "data_source",
+      "count": 1,
+      "first_seen": "2026-07-19T09:09:57.559022",
+      "last_seen": "2026-07-19T09:09:57.559033"
+    },
+    {
+      "pattern": "API Key 耗尽导致模型回退且文件读取异常",
+      "fix": "监控模型状态；Key 耗尽立即替换并重启 gateway；文件读取异常时立即检查模型状态",
+      "category": "model_health",
+      "count": 1,
+      "first_seen": "2026-07-19T09:10:01.590045",
+      "last_seen": "2026-07-19T09:10:01.590058"
+    }
+  ],
+  "injection_prompt": ""
+}

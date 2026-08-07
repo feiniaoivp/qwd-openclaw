@@ -1,0 +1,542 @@
+{
+  "date": "2026-07-29",
+  "source": "证券时报数据复盘(2026-07-29) + 龙虎榜/北向席位公开数据 + 自适应策略扫描",
+  "methodology": "五维评分: 主力资金净流向(30%) + 龙虎榜机构/北向席位(25%) + 板块资金流向一致性(20%) + 自适应策略信号(15%) + 基本面护城河/估值安全边际(10%)。满分100分，≥70强、60-69中、<60弱。",
+  "stocks": [
+    {
+      "symbol": "002156",
+      "name": "通富微电",
+      "sector": "先进封装/长鑫产业链",
+      "total_score": 88,
+      "rating": "强",
+      "breakdown": {
+        "main_fund_flow": 30,
+        "dragon_tiger_north": 25,
+        "sector_consistency": 18,
+        "adaptive_signal": 10,
+        "fundamental_valuation": 5
+      },
+      "details": {
+        "main_fund_net": "+11.74亿(全市场第1)",
+        "dragon_tiger": "深股通买一卖一、5家机构专用净买入、北向近期持续加仓",
+        "sector": "电子行业主力净流出520亿大背景下逆势巨额流入，产业链核心地位确立",
+        "adaptive_signal": "EMA12/26策略：持有(无死叉)，策略回测收益+195.5%",
+        "fundamental": "长鑫纳入MSCI(8/10生效)催化剂明确，封测龙头估值合理"
+      },
+      "risk": "系统性风险下行时高弹性股回撤放大，设-8%止损"
+    },
+    {
+      "symbol": "300014",
+      "name": "亿纬锂能",
+      "sector": "动力/储能电池",
+      "total_score": 76,
+      "rating": "强",
+      "breakdown": {
+        "main_fund_flow": 22,
+        "dragon_tiger_north": 18,
+        "sector_consistency": 12,
+        "adaptive_signal": 12,
+        "fundamental_valuation": 12
+      },
+      "details": {
+        "main_fund_net": "未现身前列，但电力设备行业流出76.9亿中属相对抗跌",
+        "dragon_tiger": "北向长期重仓，近期无显著减持",
+        "sector": "新能源板块整体承压，但储能需求确定性强",
+        "adaptive_signal": "布林带+ATR策略：持有(未触发信号)，策略回测收益+68.27%",
+        "fundamental": "业绩确定性高，动储双轮驱动，PE合理"
+      },
+      "risk": "锂价弱势拖累情绪，短期波动大"
+    },
+    {
+      "symbol": "601066",
+      "name": "中信建投",
+      "sector": "券商/金融",
+      "total_score": 65,
+      "rating": "中",
+      "breakdown": {
+        "main_fund_flow": 10,
+        "dragon_tiger_north": 10,
+        "sector_consistency": 20,
+        "adaptive_signal": 15,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "非银金融行业主力流出，未现身流入榜",
+        "dragon_tiger": "无龙虎榜记录",
+        "sector": "成交额缩量至2.03万亿直接利空券商，但估值极低(0.6-0.7PB)提供安全垫",
+        "adaptive_signal": "EMA12/26策略：持有，回测+26.85%",
+        "fundamental": "投行+财富管理双引擎，分红稳定"
+      },
+      "risk": "成交额持续萎缩核心风险"
+    },
+    {
+      "symbol": "600030",
+      "name": "中信证券",
+      "sector": "券商龙头",
+      "total_score": 68,
+      "rating": "中",
+      "breakdown": {
+        "main_fund_flow": 12,
+        "dragon_tiger_north": 12,
+        "sector_consistency": 18,
+        "adaptive_signal": 16,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "非银金融流出，但龙头抗跌",
+        "dragon_tiger": "北向配置比例稳定",
+        "sector": "同中信建投，龙头溢价体现抗跌性",
+        "adaptive_signal": "纯MACD策略：持有，回测+58.06%",
+        "fundamental": "行业龙头，综合实力最强，估值底部"
+      },
+      "risk": "同板块系统性风险"
+    },
+    {
+      "symbol": "300124",
+      "name": "汇川技术",
+      "sector": "工业自动化/机器人",
+      "total_score": 72,
+      "rating": "强",
+      "breakdown": {
+        "main_fund_flow": 15,
+        "dragon_tiger_north": 15,
+        "sector_consistency": 18,
+        "adaptive_signal": 14,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "机械设备行业流出112亿，但高端制造龙头分化明显",
+        "dragon_tiger": "机构关注度高，北向持仓稳定",
+        "sector": "机械设备流出榜首，但自动化/机器人细分景气度支撑",
+        "adaptive_signal": "EMA12/26策略：持有，回测+35.91%",
+        "fundamental": "业绩高增确定性强，机器人渗透率提升长坡厚雪"
+      },
+      "risk": "板块系统性流出压制反弹高度"
+    },
+    {
+      "symbol": "601995",
+      "name": "中金公司",
+      "sector": "投行/财富管理",
+      "total_score": 58,
+      "rating": "弱",
+      "breakdown": {
+        "main_fund_flow": 8,
+        "dragon_tiger_north": 8,
+        "sector_consistency": 15,
+        "adaptive_signal": 12,
+        "fundamental_valuation": 15
+      },
+      "details": {
+        "main_fund_net": "券商板块整体流出",
+        "dragon_tiger": "无显著机构/北向动向",
+        "sector": "投行业务受IPO节奏影响大，弱于商业银行避险属性",
+        "adaptive_signal": "KDJ+RSI策略：持有(弱势股最佳)，回测仅+6.67%",
+        "fundamental": "投行龙头但业绩弹性受监管制约"
+      },
+      "risk": "IPO常态化+成交额缩量双重压制"
+    },
+    {
+      "symbol": "600584",
+      "name": "长电科技",
+      "sector": "封测龙头/AI芯片",
+      "total_score": 75,
+      "rating": "强",
+      "breakdown": {
+        "main_fund_flow": 20,
+        "dragon_tiger_north": 20,
+        "sector_consistency": 15,
+        "adaptive_signal": 10,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "电子行业流出520亿中未现身流入榜，但AI封测龙头属性护盘",
+        "dragon_tiger": "7/21融资净买入前列，北向关注度高",
+        "sector": "半导体全产业链承压，但先进封装需求刚性",
+        "adaptive_signal": "纯MACD策略：持有，回测+159.36%",
+        "fundamental": "AI芯片封测份额全球前三，业绩兑现中"
+      },
+      "risk": "费半指数-5%外部冲击直接传导"
+    },
+    {
+      "symbol": "688981",
+      "name": "中芯国际",
+      "sector": "晶圆制造/国产替代核心",
+      "total_score": 62,
+      "rating": "中",
+      "breakdown": {
+        "main_fund_flow": 10,
+        "dragon_tiger_north": 15,
+        "sector_consistency": 10,
+        "adaptive_signal": 12,
+        "fundamental_valuation": 15
+      },
+      "details": {
+        "main_fund_net": "电子行业流出主力军，未现身流入榜",
+        "dragon_tiger": "北向近期减持半导体成长权重，融资净买入前列显分歧",
+        "sector": "全球芯片股暴跌传导，国产替代逻辑长期有效短期无力",
+        "adaptive_signal": "EMA12/26策略：🔴卖出信号(EMA12死叉EMA26)，回测+138.98%",
+        "fundamental": "国家队核心资产，中长期配置价值无可替代"
+      },
+      "risk": "外部冲击+趋势死叉双重打击，短期回调空间大，设-8%止损"
+    },
+    {
+      "symbol": "002466",
+      "name": "天齐锂业",
+      "sector": "锂盐/资源",
+      "total_score": 55,
+      "rating": "弱",
+      "breakdown": {
+        "main_fund_flow": 8,
+        "dragon_tiger_north": 8,
+        "sector_consistency": 12,
+        "adaptive_signal": 12,
+        "fundamental_valuation": 15
+      },
+      "details": {
+        "main_fund_net": "有色金属行业流出37亿",
+        "dragon_tiger": "无显著机构/北向动向",
+        "sector": "碳酸锂价格弱势，资源股避险属性不足",
+        "adaptive_signal": "EMA12/26策略：持有，回测+87.72%",
+        "fundamental": "锂矿资源稀缺性长期价值，短期受价格拖累"
+      },
+      "risk": "大宗商品下行周期+高波动"
+    },
+    {
+      "symbol": "600036",
+      "name": "招商银行",
+      "sector": "大型商业银行/高股息",
+      "total_score": 85,
+      "rating": "强",
+      "breakdown": {
+        "main_fund_flow": 25,
+        "dragon_tiger_north": 25,
+        "sector_consistency": 20,
+        "adaptive_signal": 10,
+        "fundamental_valuation": 5
+      },
+      "details": {
+        "main_fund_net": "银行板块仅有净流入(石油/银行/煤炭三大避风港)，主力明确护盘",
+        "dragon_tiger": "北向资金持续加仓高股息蓝筹，招行核心标的",
+        "sector": "全天相对抗跌，红利资产配置需求旺盛",
+        "adaptive_signal": "纯MACD策略：持有，回测+27.30%",
+        "fundamental": "零售银行龙头，ROE稳健，股息率>4%，估值底部"
+      },
+      "risk": "利差收窄长期担忧，短期无催化剂"
+    },
+    {
+      "symbol": "600570",
+      "name": "恒生电子",
+      "sector": "金融科技",
+      "total_score": 50,
+      "rating": "弱",
+      "breakdown": {
+        "main_fund_flow": 5,
+        "dragon_tiger_north": 5,
+        "sector_consistency": 15,
+        "adaptive_signal": 15,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "计算机行业流出61亿，金融IT细分难独善其身",
+        "dragon_tiger": "无龙虎榜记录",
+        "sector": "计算机板块主力流出榜前列",
+        "adaptive_signal": "EMA12/26策略：持有，回测+73.68%",
+        "fundamental": "金融IT龙头但业绩兑现节奏慢，估值偏高"
+      },
+      "risk": "板块系统性流出+业绩催化剂缺失"
+    },
+    {
+      "symbol": "605566",
+      "name": "福莱蒽特",
+      "sector": "精细化工/新材料",
+      "total_score": 78,
+      "rating": "强",
+      "breakdown": {
+        "main_fund_flow": 18,
+        "dragon_tiger_north": 15,
+        "sector_consistency": 20,
+        "adaptive_signal": 20,
+        "fundamental_valuation": 5
+      },
+      "details": {
+        "main_fund_net": "化工行业流出但细分龙头分化",
+        "dragon_tiger": "无龙虎榜记录",
+        "sector": "化工整体弱，但氟化工/新材料景气度企稳",
+        "adaptive_signal": "纯MACD策略：🟢买入信号(MACD金叉)，回测+53.72%",
+        "fundamental": "氟材料龙头，产能释放期，业绩高增确定性"
+      },
+      "risk": "化工周期下行风险，小盘股流动性风险"
+    },
+    {
+      "symbol": "000987",
+      "name": "越秀资本",
+      "sector": "金融控股/地产金融",
+      "total_score": 60,
+      "rating": "中",
+      "breakdown": {
+        "main_fund_flow": 10,
+        "dragon_tiger_north": 10,
+        "sector_consistency": 15,
+        "adaptive_signal": 15,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "金融控股流向分化",
+        "dragon_tiger": "无记录",
+        "sector": "地产政策边际改善提供支撑",
+        "adaptive_signal": "纯MACD策略：持有，回测+90.13%",
+        "fundamental": "地产金融暴露大，政策敏感度高"
+      },
+      "risk": "地产风险敞口未完全出清"
+    },
+    {
+      "symbol": "603308",
+      "name": "应流股份",
+      "sector": "特种材料/高端制造",
+      "total_score": 70,
+      "rating": "中",
+      "breakdown": {
+        "main_fund_flow": 15,
+        "dragon_tiger_north": 15,
+        "sector_consistency": 15,
+        "adaptive_signal": 15,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "前期大牛股(+338%)，获利盘极重，主力流向关键",
+        "dragon_tiger": "近期无龙虎榜记录，关注机构离场信号",
+        "sector": "高端制造分化，核心材料国产替代逻辑支撑",
+        "adaptive_signal": "EMA12/26策略：持有，回测+338.61%(全组合最高)",
+        "fundamental": "核心材料垄断性强，但估值已充分反映乐观预期"
+      },
+      "risk": "高位巨量获利盘+无主力护盘=回调风险极大，严守-10%止损"
+    },
+    {
+      "symbol": "300285",
+      "name": "国瓷材料",
+      "sector": "特种陶瓷/军工材料",
+      "total_score": 65,
+      "rating": "中",
+      "breakdown": {
+        "main_fund_flow": 12,
+        "dragon_tiger_north": 12,
+        "sector_consistency": 15,
+        "adaptive_signal": 16,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "前期最大牛股(+513%)，主力流向决定生死",
+        "dragon_tiger": "近期无记录，警惕机构隐形减持",
+        "sector": "军工/特种材料板块分化",
+        "adaptive_signal": "纯MACD策略：持有，回测+409.73%",
+        "fundamental": "军工陶瓷龙头，订单确定性强，但估值已高"
+      },
+      "risk": "同应流股份，超涨后主力离场风险极高"
+    },
+    {
+      "symbol": "002413",
+      "name": "雷科防务",
+      "sector": "军工+半导体",
+      "total_score": 72,
+      "rating": "强",
+      "breakdown": {
+        "main_fund_flow": 18,
+        "dragon_tiger_north": 15,
+        "sector_consistency": 18,
+        "adaptive_signal": 11,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "国防军工行业流出64亿，但军工属性提供底仓支撑",
+        "dragon_tiger": "军工板块近期机构关注度回升",
+        "sector": "军工避险+半导体成长双轮驱动，分化中显韧性",
+        "adaptive_signal": "EMA12/26策略：持有，回测+78.00%",
+        "fundamental": "雷达/电子对抗核心，半导体业务高增"
+      },
+      "risk": "半导体板块共振下行拖累"
+    },
+    {
+      "symbol": "601865",
+      "name": "福莱特",
+      "sector": "光伏玻璃",
+      "total_score": 48,
+      "rating": "弱",
+      "breakdown": {
+        "main_fund_flow": 5,
+        "dragon_tiger_north": 5,
+        "sector_consistency": 10,
+        "adaptive_signal": 8,
+        "fundamental_valuation": 28
+      },
+      "details": {
+        "main_fund_net": "电力设备行业流出76.9亿，光伏链集体承压",
+        "dragon_tiger": "无记录",
+        "sector": "光伏需求端担忧+产能过剩预期，板块基本面恶化",
+        "adaptive_signal": "EMA+OBV策略：🔴卖出信号(跌破EMA20)，回测仅+15.05%",
+        "fundamental": "行业龙头但周期下行期，ROE大幅下滑"
+      },
+      "risk": "基本面恶化+趋势破位+板块流出 三重杀，建议清仓观望"
+    },
+    {
+      "symbol": "000157",
+      "name": "中联重科",
+      "sector": "工程机械/周期",
+      "total_score": 45,
+      "rating": "弱",
+      "breakdown": {
+        "main_fund_flow": 5,
+        "dragon_tiger_north": 5,
+        "sector_consistency": 5,
+        "adaptive_signal": 10,
+        "fundamental_valuation": 20
+      },
+      "details": {
+        "main_fund_net": "机械设备行业主力流出112.59亿(全市场第1)，中联重科权重股首当其冲",
+        "dragon_tiger": "无记录，但北向持仓比例近期持续下降",
+        "sector": "工程机械内需弱复苏+出口放缓，周期股避险首选卖出对象",
+        "adaptive_signal": "KDJ+RSI策略：🔴卖出信号(CCI高位88%)，回测+8.20%",
+        "fundamental": "三一/徐工追赶者，估值低但周期见顶争议大"
+      },
+      "risk": "行业流出榜首+趋势策略卖出+周期见顶预期，建议减仓过半"
+    },
+    {
+      "symbol": "300719",
+      "name": "安达维尔",
+      "sector": "半导体材料/小盘成长",
+      "total_score": 42,
+      "rating": "弱",
+      "breakdown": {
+        "main_fund_flow": 5,
+        "dragon_tiger_north": 5,
+        "sector_consistency": 8,
+        "adaptive_signal": 14,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "电子行业流出520亿，小盘半导体材料流动性风险最大",
+        "dragon_tiger": "无记录",
+        "sector": "半导体材料细分景气度下行，小盘股共振下杀",
+        "adaptive_signal": "布林带+ATR策略：持有(未触发)，回测+34.00%",
+        "fundamental": "刻蚀/沉积材料国产替代，但规模小、业绩弹性未兑现"
+      },
+      "risk": "流动性风险+板块系统性风险+小盘股溢价消失，建议清仓"
+    },
+    {
+      "symbol": "601061",
+      "name": "中信金属",
+      "sector": "大宗贸易/有色金属",
+      "total_score": 52,
+      "rating": "弱",
+      "breakdown": {
+        "main_fund_flow": 8,
+        "dragon_tiger_north": 8,
+        "sector_consistency": 12,
+        "adaptive_signal": 14,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "有色金属行业流出37亿",
+        "dragon_tiger": "无记录",
+        "sector": "贸易模式抗周期性弱，随大宗商品价格波动",
+        "adaptive_signal": "EMA+OBV策略：持有，回测+36.02%",
+        "fundamental": "供应链服务商，ROE薄，估值低但缺乏成长性"
+      },
+      "risk": "大宗商品下行周期+商业模式护城河浅"
+    },
+    {
+      "symbol": "600660",
+      "name": "福耀玻璃",
+      "sector": "汽车玻璃/消费/高股息",
+      "total_score": 82,
+      "rating": "强",
+      "breakdown": {
+        "main_fund_flow": 22,
+        "dragon_tiger_north": 20,
+        "sector_consistency": 20,
+        "adaptive_signal": 10,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "消费/汽车板块逆市活跃，主力隐性流入",
+        "dragon_tiger": "北向长期重仓，白马消费属性获青睐",
+        "sector": "白酒/家电/汽车消费板块逆市走强，防御性确立",
+        "adaptive_signal": "纯MACD策略：持有，回测+43.72%",
+        "fundamental": "全球汽车玻璃龙头，海外营收占比高，高股息+成长双轮"
+      },
+      "risk": "汽车产业链周期性波动"
+    },
+    {
+      "symbol": "900925",
+      "name": "机电B股",
+      "sector": "机电贸易/B股",
+      "total_score": 30,
+      "rating": "极弱",
+      "breakdown": {
+        "main_fund_flow": 0,
+        "dragon_tiger_north": 0,
+        "sector_consistency": 5,
+        "adaptive_signal": 5,
+        "fundamental_valuation": 20
+      },
+      "details": {
+        "main_fund_net": "无数据覆盖",
+        "dragon_tiger": "无数据",
+        "sector": "B股流动性极差，主要汇率套利属性",
+        "adaptive_signal": "EMA12/26兜底策略：数据不足无信号",
+        "fundamental": "基本面平庸，长期弱势，仅汇率套利价值"
+      },
+      "risk": "流动性陷阱，建议长期弱持仓或清仓"
+    },
+    {
+      "symbol": "002335",
+      "name": "科华数据",
+      "sector": "数据中心/储能/小盘成长",
+      "total_score": 45,
+      "rating": "弱",
+      "breakdown": {
+        "main_fund_flow": 5,
+        "dragon_tiger_north": 5,
+        "sector_consistency": 10,
+        "adaptive_signal": 10,
+        "fundamental_valuation": 15
+      },
+      "details": {
+        "main_fund_net": "电力设备流出76.9亿+电子流出520亿，双重打击",
+        "dragon_tiger": "无记录",
+        "sector": "算力+储能双赛道但小盘股属性显性，主力不愿护盘",
+        "adaptive_signal": "EMA+OBV策略：🔴卖出信号(跌破EMA20 ¥32.54)，回测+44.99%",
+        "fundamental": "模块化数据中心/储能业务高增，但规模小、波动大"
+      },
+      "risk": "小盘成长股在系统性去杠杆环境下最脆弱，趋势破位建议清仓"
+    },
+    {
+      "symbol": "601100",
+      "name": "恒立液压",
+      "sector": "液压件/高端制造/出海",
+      "total_score": 70,
+      "rating": "中",
+      "breakdown": {
+        "main_fund_flow": 15,
+        "dragon_tiger_north": 15,
+        "sector_consistency": 18,
+        "adaptive_signal": 12,
+        "fundamental_valuation": 10
+      },
+      "details": {
+        "main_fund_net": "机械设备流出112亿中，高端液压龙头分化抗跌",
+        "dragon_tiger": "机构/北向关注出海标的，持仓相对稳定",
+        "sector": "工程机械周期见顶但高端液压/出海逻辑独立",
+        "adaptive_signal": "纯MACD策略：持有，回测+10.98%",
+        "fundamental": "全球液压件龙头，出海业绩兑现中，估值合理"
+      },
+      "risk": "板块系统性流出压制反弹，关注EMA12/26死叉信号"
+    }
+  ],
+  "sector_summary": {
+    "strong_sectors": ["银行/高股息红利", "消费/白酒/家电/汽车消费", "封测/长鑫产业链核心(通富微电/华天科技分歧)"],
+    "weak_sectors": ["机械设备(流出112亿)", "电子/半导体(流出520亿)", "电力设备/新能源(流出77亿)", "计算机/通信/国防军工(流出61-65亿)"],
+    "neutral_sectors": ["有色/化工/医药生物", "券商/非银金融(估值底支撑但催化剂缺失)"]
+  },
+  "market_regime": "系统性去杠杆+风格极致切换(成长→价值/红利)，创业板/科创50领跌，两融余额破2.69万亿近3月新低",
+  "action_bias": "防御为主、进攻为辅。核心仓位配置：高股息红利(银行/公用/能源/交通)+消费白马(福耀/宁王)+核心硬科技(中芯/长电/通富/汇川/恒立)设宽止损。清理：高波动小盘成长(安达/科华/福莱特)、周期见顶股(中联/中信金属/天齐)、无流动性B股(机电B)。"
+}

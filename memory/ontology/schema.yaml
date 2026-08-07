@@ -1,0 +1,90 @@
+types:
+  ErrorPattern:
+    required: [pattern_id, pattern, fix, count, last_seen, severity, tags, resolved]
+    properties:
+      pattern_id:
+        type: string
+        pattern: "^ERR-\\d{3}$"
+      pattern:
+        type: string
+        min_length: 10
+      fix:
+        type: string
+        min_length: 10
+      count:
+        type: integer
+        minimum: 1
+      last_seen:
+        type: string
+        format: date-time
+      severity:
+        type: string
+        enum: [low, medium, high, critical]
+      tags:
+        type: array
+        items:
+          type: string
+      resolved:
+        type: boolean
+    unique: [pattern_id]
+    indexes:
+      - [tags, severity]
+      - [resolved, count]
+
+  SkillVersion:
+    required: [skill_name, version, last_checked]
+    properties:
+      skill_name:
+        type: string
+      version:
+        type: string
+      last_checked:
+        type: string
+        format: date-time
+      last_notified:
+        type: string
+        format: date-time
+        nullable: true
+      changelog_summary:
+        type: string
+        nullable: true
+    unique: [skill_name]
+
+  StockWatchlist:
+    required: [code, name, sector, added_date, active]
+    properties:
+      code:
+        type: string
+        pattern: "^\\d{6}$"
+      name:
+        type: string
+      sector:
+        type: string
+      added_date:
+        type: string
+        format: date
+      active:
+        type: boolean
+      notes:
+        type: string
+        nullable: true
+    unique: [code]
+
+relations:
+  has_fix:
+    from_types: [ErrorPattern]
+    to_types: [ErrorPattern]
+    description: "Links related error patterns"
+    cardinality: many_to_many
+
+  recorded_in:
+    from_types: [ErrorPattern]
+    to_types: [Document]
+    description: "Error pattern documented in this document"
+    cardinality: many_to_one
+
+  prevents:
+    from_types: [ErrorPattern]
+    to_types: [Task]
+    description: "Following this fix prevents this task from failing"
+    cardinality: many_to_many

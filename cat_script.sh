@@ -1,0 +1,1 @@
+帮我读取 /tmp/weekly_output.txt 文件内容，打印出来

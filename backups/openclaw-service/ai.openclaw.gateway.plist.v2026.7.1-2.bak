@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>ai.openclaw.gateway</string>
+    
+    <key>Comment</key>
+    <string>OpenClaw Gateway (v2026.7.1-2)</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ExitTimeOut</key>
+    <integer>20</integer>
+    <key>ProcessType</key>
+    <string>Interactive</string>
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+    <key>Umask</key>
+    <integer>63</integer>
+    <key>ProgramArguments</key>
+    <array>
+      <string>/bin/sh</string>
+      <string>/Users/duguke/.openclaw/service-env/ai.openclaw.gateway-env-wrapper.sh</string>
+      <string>/Users/duguke/.openclaw/service-env/ai.openclaw.gateway.env</string>
+      <string>/usr/local/opt/node/bin/node</string>
+      <string>/Users/duguke/Library/pnpm/store/v11/links/@/openclaw/2026.7.1-2/70f37540f83c40ebaf27fb4fba4200035ea3cde560aaee5f3dd525267857fa1f/node_modules/openclaw/dist/index.js</string>
+      <string>gateway</string>
+      <string>--port</string>
+      <string>18789</string>
+    </array>
+    
+    <key>WorkingDirectory</key>
+    <string>/Users/duguke/.openclaw</string>
+    <key>StandardInPath</key>
+    <string>/dev/null</string>
+    <key>StandardOutPath</key>
+    <string>/Users/duguke/Library/Logs/openclaw/gateway.log</string>
+    <key>StandardErrorPath</key>
+    <string>/dev/null</string>
+  </dict>
+</plist>

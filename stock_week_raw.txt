@@ -1,0 +1,28 @@
+=== 大盘指数周涨跌 ===
+指数ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+
+=== 关注股票本周表现 ===
+300285|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+603308|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+002156|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+600584|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+688981|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+601865|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+600570|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+300719|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+600036|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+600660|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+600030|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+002466|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+
+=== 北向资金 ===
+2026-07-17|沪港通|沪股通|净买额:0万
+2026-07-17|沪港通|港股通(沪)|净买额:19万
+2026-07-17|深港通|深股通|净买额:0万
+2026-07-17|深港通|港股通(深)|净买额:-34万
+
+=== 行业板块周涨跌幅TOP15 ===
+板块ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+
+=== 概念板块涨跌幅TOP10 ===
+概念ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))

@@ -1,0 +1,90 @@
+{
+  "a-share-analyst": {
+    "hash": "fd3d54e795252bfc432bfc1152ce7ae8",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "akshare-stock": {
+    "hash": "57106cc9305a722e4250d60bbd7552a8",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "amap": {
+    "hash": "8fab062cb208ea570e1f40735dd6e163",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "auto-updater": {
+    "hash": "c0f3e3918c0586c642b581a03b2a462c",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "china-stock-analysis": {
+    "hash": "b871f6d546bea0534aa1ddba3ee7c674",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "elite-longterm-memory": {
+    "hash": "b192f6580a0c7f8ce1179772ef652409",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "financial-analyst": {
+    "hash": "c8d23ec80795c2b91fa16f9a00804037",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "gh-data": {
+    "hash": "e280b1e00cb8a77352d5aa813083dfc8",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "memory-setup": {
+    "hash": "11725959977c660c64815e72e6da56d9",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "multi_dimension_strategy": {
+    "hash": "0898f5e8f556877ac8c039468c030d95",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "ontology": {
+    "hash": "e7b686efee667166845146e1b2be3146",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "openai-whisper": {
+    "hash": "68c28125b26b4cff4ca7538fa0766644",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "openclaw-tavily-search": {
+    "hash": "7cb982b9ec283fb86aba9f7b794c86cf",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "operations-expert": {
+    "hash": "5967e82dea44def8ab9e55f2141bd638",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "prismfy-search": {
+    "hash": "f8b6feb44801f700840c513bba5ebbc4",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "self-improving": {
+    "hash": "92f284efadfef82df7999f495173f811",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "skill-version-watcher": {
+    "hash": "aaa0dcad4beb9e9d72a786bbc71c6feb",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "stock-analysis": {
+    "hash": "38b0b05d078e99a5187dbaa2592a7ae8",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "stock-daily-report": {
+    "hash": "56caa46fd1e5bc8200bbac51b42dc100",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "stock-market-pro": {
+    "hash": "a6c3e7d82d1b0577fc46241700916340",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "stock-watcher": {
+    "hash": "c8a90b7da3b74f36fb193be6441755c4",
+    "checked": "2026-07-30T23:01:00+08:00"
+  },
+  "x-search": {
+    "hash": "bbc3c0195dfdbe76d824d29f6b25b2eb",
+    "checked": "2026-07-30T23:01:00+08:00"
+  }
+}

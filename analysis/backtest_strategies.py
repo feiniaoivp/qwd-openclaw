@@ -1,0 +1,799 @@
+#!/usr/bin/env python3
+"""
+五策略全量回测引擎
+===================
+资深流派 vs 现有策略，统一框架 PK
+
+已有对比基准：
+  - 策略C: EMA12/26 金叉死叉（历史最优 +35.94%）
+  - 策略B: 纯MACD 金叉死叉（翻盘 +28.45%）
+
+新增三大流派：
+  - 布林带突破 + ATR 止损（趋势跟踪）
+  - KDJ + CCI 极值共振（均值回归）
+  - EMA + OBV 能量潮（量价共振）
+
+输出: 详细对比报告 Markdown + JSON 摘要
+"""
+
+import os, sys, json, warnings, traceback, time
+from datetime import datetime, timedelta
+import pandas as pd
+import pandas_ta as ta
+import akshare as ak
+import baostock as bs
+import numpy as np
+
+warnings.filterwarnings("ignore")
+
+WORKSPACE = "/Users/duguke/.openclaw/workspace"
+OUTPUT_DIR = os.path.join(WORKSPACE, "analysis", "backtest")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# ── 25只关注股 ──
+STOCKS = [
+    ("002318","久立特材"), ("300014","亿纬锂能"), ("601066","中信建投"),
+    ("600030","中信证券"), ("300124","汇川技术"), ("601995","中金公司"),
+    ("600584","长电科技"), ("002156","通富微电"), ("002466","天齐锂业"),
+    ("600036","招商银行"), ("600570","恒生电子"), ("605566","福莱蒽特"),
+    ("000987","越秀资本"), ("603308","应流股份"), ("300285","国瓷材料"),
+    ("002413","雷科防务"), ("688981","中芯国际"), ("601865","福莱特"),
+    ("000157","中联重科"), ("300719","安达维尔"), ("601061","中信金属"),
+    ("600660","福耀玻璃"), ("002335","科华数据"),
+    ("601100","恒立液压"),
+    ("600160","巨化股份"), ("600346","恒力石化"),
+    ("000708","中信特钢"), ("300748","金力永磁"),
+    # ── 2026-08-06 替换: 撤上能电气, 加打印机国产替代龙头 ──
+    ("002180","奔图科技"), ("300847","中船汉光"),
+]
+
+# ── 回测参数 ──
+START_DATE = os.environ.get("BT_START", "20240101")    # 默认1.5年窗口，可用环境变量 BT_START 覆盖
+END_DATE = datetime.now().strftime("%Y%m%d")
+INITIAL_CAPITAL = 100_000
+COMMISSION = 0.0003
+SLIPPAGE = 0.001
+
+
+# ════════════════════════════════════════
+# 五个策略，统一入参: df (必须含 date, open, close, high, low, volume)
+# 统一输出: (actions: list of dict, metrics: dict)
+# action = {"date": str, "type": "BUY"|"SELL", "price": float, "reason": str}
+# ════════════════════════════════════════
+
+def strategy_bollinger_atr(df):
+    """
+    策略1: 布林带突破 + ATR 止损（趋势跟踪）
+    买入: 收盘价上穿布林带上轨
+    卖出: 收盘价下穿布林带中轨
+    """
+    df = df.copy()
+    # 布林带 (20,2) — 动态列名匹配
+    bb = ta.bbands(df["close"], length=20, std=2)
+    # 找出上轨/中轨/下轨的列名
+    bbu_col = [c for c in bb.columns if "BBU" in c.upper()][0]
+    bbm_col = [c for c in bb.columns if "BBM" in c.upper()][0]
+    bbl_col = [c for c in bb.columns if "BBL" in c.upper()][0]
+    df["BBU"] = bb[bbu_col]
+    df["BBM"] = bb[bbm_col]
+    df["BBL"] = bb[bbl_col]
+    # ATR (14)
+    df["ATR"] = ta.atr(df["high"], df["low"], df["close"], length=14)
+
+    actions = []
+    position = False
+    entry_price = 0
+    atr_mult = 1.5
+
+    for i in range(1, len(df)):
+        row = df.iloc[i]
+        prev = df.iloc[i-1]
+        dt = str(row["date"].date())
+        price = float(row["close"])
+
+        # 止损检查（持仓中）
+        if position:
+            stop_loss = entry_price - atr_mult * float(row["ATR"])
+            if price < stop_loss:
+                actions.append({"date": dt, "type": "SELL", "price": price,
+                                "reason": f"ATR止损: 入场¥{entry_price:.2f} 止损¥{stop_loss:.2f}"})
+                position = False
+                entry_price = 0
+                continue
+
+        # 买入: 收盘价上穿布林带上轨
+        if not position:
+            if float(prev["close"]) <= float(prev["BBU"]) and float(row["close"]) > float(row["BBU"]):
+                actions.append({"date": dt, "type": "BUY", "price": price,
+                                "reason": f"布林带上轨突破(上轨¥{float(row['BBU']):.2f})"})
+                position = True
+                entry_price = price
+
+        # 卖出: 收盘价下穿布林带中轨
+        else:
+            if float(prev["close"]) >= float(prev["BBM"]) and float(row["close"]) < float(row["BBM"]):
+                actions.append({"date": dt, "type": "SELL", "price": price,
+                                "reason": f"跌破布林带中轨(中轨¥{float(row['BBM']):.2f})"})
+                position = False
+                entry_price = 0
+
+    return actions
+
+
+def strategy_kdj_cci(df):
+    """
+    策略2: KDJ + RSI 均值回归（专为A股优化 v2）
+    - 去掉CCI（前复权导致全失真）
+    - KDJ金叉（J上穿K）+ RSI<40（超卖过滤）买入
+    - KDJ死叉（J下穿K）卖出
+    """
+    df = df.copy()
+
+    kdj = ta.kdj(df["high"], df["low"], df["close"], length=9, signal=3)
+    df["K"] = kdj["K_9_3"]
+    df["D"] = kdj["D_9_3"]
+    df["J"] = kdj["J_9_3"]
+    df["RSI"] = ta.rsi(df["close"], length=14)
+
+    actions = []
+    position = False
+
+    for i in range(30, len(df)):
+        row = df.iloc[i]
+        prev = df.iloc[i-1]
+        dt = str(row["date"].date())
+        price = float(row["close"])
+
+        j = float(row["J"])
+        prev_j = float(prev["J"])
+        k = float(row["K"])
+        prev_k = float(prev["K"])
+        rsi = float(row["RSI"])
+
+        # J线上穿K线 (金叉)
+        j_cross_up = (prev_j <= prev_k) and (j > k)
+        # J线下穿K线 (死叉)
+        j_cross_down = (prev_j >= prev_k) and (j < k)
+
+        if not position:
+            if j_cross_up and rsi < 40:
+                actions.append({"date": dt, "type": "BUY", "price": price,
+                                "reason": f"均值回归: KDJ金叉+RSI超卖({rsi:.0f}) K={k:.1f} J={j:.0f}"})
+                position = True
+
+        else:
+            if j_cross_down:
+                actions.append({"date": dt, "type": "SELL", "price": price,
+                                "reason": f"KDJ死叉 K={k:.1f} J={j:.0f}"})
+                position = False
+
+    return actions
+
+
+def strategy_ema_obv(df):
+    """
+    策略3: EMA + OBV 能量潮（量价共振）
+    买入: 收盘价站上EMA20 + OBV上穿OBV_EMA20
+    卖出: 收盘价跌破EMA20 或 OBV下穿OBV_EMA20
+    """
+    df = df.copy()
+    df["EMA20"] = ta.ema(df["close"], length=20)
+    df["OBV"] = ta.obv(df["close"], df["volume"])
+    df["OBV_EMA20"] = ta.ema(df["OBV"], length=20)
+
+    actions = []
+    position = False
+
+    for i in range(1, len(df)):
+        row = df.iloc[i]
+        prev = df.iloc[i-1]
+        dt = str(row["date"].date())
+        price = float(row["close"])
+        ema20 = float(row["EMA20"])
+        obv = float(row["OBV"])
+        obv_ema = float(row["OBV_EMA20"])
+        prev_obv = float(prev["OBV"])
+        prev_obv_ema = float(prev["OBV_EMA20"])
+
+        obv_cross_up = prev_obv <= prev_obv_ema and obv > obv_ema
+        obv_cross_down = prev_obv >= prev_obv_ema and obv < obv_ema
+
+        if not position:
+            if price > ema20 and obv_cross_up:
+                actions.append({"date": dt, "type": "BUY", "price": price,
+                                "reason": f"EMA20上方({ema20:.2f}) + OBV上穿均线"})
+                position = True
+
+        else:
+            if price < ema20 or obv_cross_down:
+                reasons = []
+                if price < ema20:
+                    reasons.append(f"跌破EMA20({ema20:.2f})")
+                if obv_cross_down:
+                    reasons.append("OBV下穿均线(资金撤离)")
+                actions.append({"date": dt, "type": "SELL", "price": price,
+                                "reason": " | ".join(reasons)})
+                position = False
+
+    return actions
+
+
+# ── 已有策略（从之前回测迁移）──
+
+def strategy_ema_cross(df):
+    """
+    策略C (历史最优): EMA12/26 金叉死叉
+    """
+    df = df.copy()
+    df["EMA12"] = ta.ema(df["close"], length=12)
+    df["EMA26"] = ta.ema(df["close"], length=26)
+
+    actions = []
+    position = False
+
+    for i in range(1, len(df)):
+        row = df.iloc[i]
+        prev = df.iloc[i-1]
+        dt = str(row["date"].date())
+        price = float(row["close"])
+        e12 = float(row["EMA12"])
+        e26 = float(row["EMA26"])
+        pe12 = float(prev["EMA12"])
+        pe26 = float(prev["EMA26"])
+
+        cross_up = pe12 <= pe26 and e12 > e26
+        cross_down = pe12 >= pe26 and e12 < e26
+
+        if not position and cross_up:
+            actions.append({"date": dt, "type": "BUY", "price": price,
+                            "reason": f"EMA12({e12:.2f})上穿EMA26({e26:.2f})"})
+            position = True
+        elif position and cross_down:
+            actions.append({"date": dt, "type": "SELL", "price": price,
+                            "reason": f"EMA12({e12:.2f})下穿EMA26({e26:.2f})"})
+            position = False
+
+    return actions
+
+
+def strategy_macd(df):
+    """
+    策略B: 纯MACD金叉死叉
+    """
+    df = df.copy()
+    macd = ta.macd(df["close"], fast=12, slow=26, signal=9)
+    df["MACD"] = macd["MACD_12_26_9"]
+    df["MACDs"] = macd["MACDs_12_26_9"]
+
+    actions = []
+    position = False
+
+    for i in range(1, len(df)):
+        row = df.iloc[i]
+        prev = df.iloc[i-1]
+        dt = str(row["date"].date())
+        price = float(row["close"])
+        m = float(row["MACD"])
+        s = float(row["MACDs"])
+        pm = float(prev["MACD"])
+        ps = float(prev["MACDs"])
+
+        cross_up = pm <= ps and m > s
+        cross_down = pm >= ps and m < s
+
+        if not position and cross_up:
+            actions.append({"date": dt, "type": "BUY", "price": price,
+                            "reason": f"MACD金叉({m:.4f}/{s:.4f})"})
+            position = True
+        elif position and cross_down:
+            actions.append({"date": dt, "type": "SELL", "price": price,
+                            "reason": f"MACD死叉({m:.4f}/{s:.4f})"})
+            position = False
+
+    return actions
+
+
+# ════════════════════════════════════════
+# 统一回测模拟器
+# ════════════════════════════════════════
+
+def run_simulation(df, actions):
+    """根据交易信号列表模拟真实交易，返回完整绩效指标"""
+    capital = float(INITIAL_CAPITAL)
+    shares = 0
+    entry_price = 0
+    trades = []
+    equity_curve = []
+
+    # 将actions转换为按日索引
+    action_map = {}
+    for a in actions:
+        action_map[a["date"]] = a
+
+    # 每日模拟
+    for i in range(len(df)):
+        row = df.iloc[i]
+        dt = str(row["date"].date())
+        price = float(row["close"])
+
+        if dt in action_map:
+            act = action_map[dt]
+            if act["type"] == "BUY" and shares == 0:
+                fee = capital * COMMISSION
+                available = capital - fee
+                shares = int(available / (price * (1 + SLIPPAGE)) / 100) * 100
+                if shares >= 100:
+                    cost = shares * price * (1 + SLIPPAGE)
+                    fee2 = cost * COMMISSION
+                    capital -= (cost + fee2)
+                    entry_price = price
+                    trades.append({"date": dt, "type": "BUY", "price": price,
+                                   "shares": shares, "reason": act["reason"]})
+
+            elif act["type"] == "SELL" and shares > 0:
+                sell_value = shares * price * (1 - SLIPPAGE)
+                fee = sell_value * COMMISSION
+                net = sell_value - fee
+                pnl = net - shares * entry_price * (1 + SLIPPAGE)
+                pnl_pct = round((pnl / (shares * entry_price)) * 100, 2)
+                trades.append({"date": dt, "type": "SELL", "price": price,
+                               "shares": shares, "pnl": round(pnl, 2),
+                               "pnl_pct": pnl_pct, "reason": act["reason"]})
+                capital += net
+                shares = 0
+                entry_price = 0
+
+        equity_curve.append({"date": dt,
+                             "equity": capital + shares * price,
+                             "position": shares > 0})
+
+    # 最终若还持仓，按最后价格平仓
+    final_price = float(df.iloc[-1]["close"])
+    if shares > 0:
+        sell_value = shares * final_price * (1 - SLIPPAGE)
+        fee = sell_value * COMMISSION
+        net = sell_value - fee
+        pnl = net - shares * entry_price * (1 + SLIPPAGE)
+        pnl_pct = round((pnl / (shares * entry_price)) * 100, 2)
+        trades.append({"date": str(df.iloc[-1]["date"].date()), "type": "SELL(平)",
+                       "price": final_price, "shares": shares,
+                       "pnl": round(pnl, 2), "pnl_pct": pnl_pct,
+                       "reason": "期末平仓"})
+        capital += net
+        shares = 0
+
+    # ── 绩效指标 ──
+    eq_df = pd.DataFrame(equity_curve)
+    eq_series = eq_df["equity"].values
+
+    if len(eq_series) < 2:
+        return {"error": "数据不足"}
+
+    total_return = ((eq_series[-1] - INITIAL_CAPITAL) / INITIAL_CAPITAL) * 100
+
+    # 年化收益率（按实际天数）
+    days = len(eq_series)
+    years = days / 245
+    annualized_return = ((1 + total_return / 100) ** (1 / years) - 1) * 100 if years > 0 else 0
+
+    # 日收益率序列
+    daily_returns = np.diff(eq_series) / eq_series[:-1]
+
+    # 年化波动率
+    annualized_vol = np.std(daily_returns, ddof=1) * np.sqrt(245) * 100
+
+    # 夏普比率 (假设无风险利率 2%)
+    risk_free = 0.02
+    sharpe = ((annualized_return / 100) - risk_free) / (annualized_vol / 100) if annualized_vol > 0 else 0
+
+    # 最大回撤
+    peak = np.maximum.accumulate(eq_series)
+    drawdown = (eq_series - peak) / peak * 100
+    max_drawdown = drawdown.min()
+
+    # 胜率
+    closed_trades = [t for t in trades if t["type"].startswith("SELL")]
+    wins = [t for t in closed_trades if t.get("pnl", 0) > 0]
+    win_rate = len(wins) / len(closed_trades) * 100 if closed_trades else 0
+
+    # 盈亏比
+    avg_win = np.mean([t["pnl"] for t in wins]) if wins else 0
+    losses = [t for t in closed_trades if t.get("pnl", 0) <= 0]
+    avg_loss = abs(np.mean([t["pnl"] for t in losses])) if losses else 1
+    profit_ratio = avg_win / avg_loss if avg_loss > 0 else 0
+
+    # 最大连续亏损
+    streak = 0
+    max_streak = 0
+    for t in trades:
+        if t["type"].startswith("SELL"):
+            if t.get("pnl", 0) <= 0:
+                streak += 1
+                max_streak = max(max_streak, streak)
+            else:
+                streak = 0
+
+    # 交易频率
+    buy_count = len([t for t in trades if t["type"] == "BUY"])
+    sell_count = len([t for t in trades if t["type"].startswith("SELL")])
+    trade_days = (len(df) / buy_count) if buy_count > 0 else 999
+
+    return {
+        "total_return_pct": round(total_return, 2),
+        "annualized_return_pct": round(annualized_return, 2),
+        "annualized_volatility_pct": round(annualized_vol, 2),
+        "sharpe_ratio": round(sharpe, 3),
+        "max_drawdown_pct": round(max_drawdown, 2),
+        "win_rate_pct": round(win_rate, 1),
+        "profit_loss_ratio": round(profit_ratio, 2),
+        "max_consecutive_losses": max_streak,
+        "total_trades": sell_count,
+        "avg_days_between_trades": round(trade_days, 1),
+        "final_equity": round(eq_series[-1], 2),
+    }
+
+
+# ════════════════════════════════════════
+# 主流程
+# ════════════════════════════════════════
+
+ALL_STRATEGIES = [
+    ("布林带+ATR", strategy_bollinger_atr),
+    ("KDJ+CCI", strategy_kdj_cci),
+    ("EMA+OBV", strategy_ema_obv),
+    ("EMA12/26金叉(基准C)", strategy_ema_cross),
+    ("纯MACD(基准B)", strategy_macd),
+]
+
+
+
+def fetch_data_akshare_sina(symbol, name, start=START_DATE, end=END_DATE, max_retry=3):
+    """使用 akshare 新浪接口获取前复权日线数据 (备用)"""
+    for attempt in range(max_retry):
+        try:
+            # akshare 新浪接口: stock_zh_a_hist(symbol=, period="daily", adjust="qfq")
+            df = ak.stock_zh_a_hist(symbol=symbol, period="daily", adjust="qfq",
+                                    start_date=start, end_date=end)
+            if df is None or df.empty:
+                raise ValueError("空数据")
+
+            # 统一列名
+            df = df.rename(columns={
+                '日期': 'date', '开盘': 'open', '收盘': 'close',
+                '最高': 'high', '最低': 'low', '成交量': 'volume'
+            })
+            for col in ['open', 'close', 'high', 'low', 'volume']:
+                df[col] = pd.to_numeric(df[col], errors='coerce')
+            df['date'] = pd.to_datetime(df['date'])
+            df = df.sort_values('date').reset_index(drop=True)
+            df = df.dropna()
+
+            if len(df) < 100:
+                raise ValueError(f"数据不足: {len(df)}条")
+
+            print(f"  ✅ {name}({symbol}): akshare新浪 {len(df)}条日线")
+            return df
+
+        except Exception as e:
+            print(f"  ⚠️ {name} akshare新浪获取失败(尝试{attempt+1}/{max_retry}): {e}")
+            time.sleep(1)
+
+    print(f"  ❌ {name}({symbol}) akshare新浪数据获取彻底失败")
+    return None
+
+
+def fetch_data(symbol, name, start=START_DATE, end=END_DATE, max_retry=3):
+    """获取前复权日线数据：baostock(主) → akshare新浪(备用)"""
+    # 股票代码转换: 6位码 -> baostock格式
+    if symbol.startswith("6"):
+        bs_code = f"sh.{symbol}"
+    elif symbol.startswith("9"):
+        bs_code = f"sh.{symbol}"  # 9开头(原机电B股等)为 sh 前缀
+    else:
+        bs_code = f"sz.{symbol}"
+
+    start_ymd = start[0:4] + "-" + start[4:6] + "-" + start[6:8]
+    end_ymd = end[0:4] + "-" + end[4:6] + "-" + end[6:8]
+
+    # ── 尝试 1: baostock (主) ──
+    for attempt in range(max_retry):
+        try:
+            lg = bs.login()
+            if lg.error_code != "0":
+                raise ConnectionError(f"baostock登录失败: {lg.error_msg}")
+
+            rs = bs.query_history_k_data_plus(
+                bs_code,
+                "date,open,close,high,low,volume",
+                start_date=start_ymd, end_date=end_ymd,
+                frequency="d", adjustflag="2"  # 2=前复权
+            )
+            data = []
+            while rs.next():
+                data.append(rs.get_row_data())
+            bs.logout()
+
+            if not data:
+                raise ValueError("空数据")
+
+            df = pd.DataFrame(data, columns=["date", "open", "close", "high", "low", "volume"])
+            for col in ["open", "close", "high", "low", "volume"]:
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.sort_values("date").reset_index(drop=True)
+            df = df.dropna()
+
+            if len(df) < 100:
+                raise ValueError(f"数据不足: {len(df)}条")
+
+            print(f"  ✅ {name}({symbol}): baostock {len(df)}条日线")
+            return df
+
+        except Exception as e:
+            print(f"  ⚠️ {name} baostock获取失败(尝试{attempt+1}/{max_retry}): {e}")
+            time.sleep(3)
+        finally:
+            try:
+                bs.logout()
+            except:
+                pass
+
+    # ── 尝试 2: akshare 新浪接口 (备用) ──
+    print(f"  🔄 {name}({symbol}) 切换备用源: akshare新浪接口...")
+    df = fetch_data_akshare_sina(symbol, name, start, end, max_retry)
+    if df is not None:
+        return df
+
+    print(f"  ❌ {name}({symbol}) 所有数据源均失败")
+    return None
+
+
+def main():
+    today = datetime.now().strftime("%Y-%m-%d")
+    results = []
+
+    for sidx, (symbol, name) in enumerate(STOCKS):
+        print(f"\n[{sidx+1}/{len(STOCKS)}] {name}({symbol}) — 获取数据...")
+        df = fetch_data(symbol, name)
+        if df is None or len(df) < 100:
+            print(f"  ❌ 数据不足，跳过")
+            results.append({
+                "symbol": symbol, "name": name, "error": "数据不足",
+                "strategies": {}
+            })
+            continue
+
+        stock_result = {"symbol": symbol, "name": name, "strategies": {}}
+
+        for sname, sfunc in ALL_STRATEGIES:
+            print(f"  运行 {sname}...")
+            try:
+                actions = sfunc(df)
+                metrics = run_simulation(df, actions)
+                stock_result["strategies"][sname] = {
+                    **metrics,
+                    "signals": len([a for a in actions if a["type"]=="BUY"]),
+                }
+            except Exception as e:
+                print(f"    ❌ {e}")
+                stock_result["strategies"][sname] = {"error": str(e)}
+
+        results.append(stock_result)
+
+    # ── 生成报告 ──
+    generate_report(results, today)
+    print(f"\n✅ 回测完成，报告保存至 {OUTPUT_DIR}/{today}.md")
+
+
+def generate_report(results, today):
+    """生成详细对比报告"""
+    lines = []
+    lines.append(f"# 五策略全量回测对比报告 {today}\n")
+    lines.append(f"数据范围: {START_DATE} ~ {END_DATE} | 初始资金: ¥{INITIAL_CAPITAL:,}\n")
+
+    # ---------- 五个策略性能汇总 ----------
+    lines.append("## 整体概况\n")
+    header = "| 指标 | 布林带+ATR | KDJ+CCI | EMA+OBV | EMA12/26(基准C) | 纯MACD(基准B) |"
+    sep = "|" + "|".join([":-----"] * 6) + "|"
+
+    # 收集各策略平均值
+    fields = ["total_return_pct", "annualized_return_pct", "annualized_volatility_pct",
+              "sharpe_ratio", "max_drawdown_pct", "win_rate_pct",
+              "profit_loss_ratio", "total_trades"]
+    field_labels = ["平均收益%", "年化收益%", "年化波动%",
+                    "夏普比率", "最大回撤%", "胜率%",
+                    "盈亏比", "总交易次数"]
+
+    agg = {}
+    for sname, _ in ALL_STRATEGIES:
+        agg[sname] = {f: [] for f in fields}
+
+    for r in results:
+        if "error" in r:
+            continue
+        for sname, _ in ALL_STRATEGIES:
+            sd = r["strategies"].get(sname, {})
+            if "error" not in sd:
+                for f in fields:
+                    val = sd.get(f)
+                    if val is not None:
+                        agg[sname][f].append(val)
+
+    lines.append(header)
+    lines.append(sep)
+    for flabel, fname in zip(field_labels, fields):
+        row = f"| {flabel} "
+        for sname, _ in ALL_STRATEGIES:
+            vals = agg[sname][fname]
+            if vals:
+                avg = np.mean(vals)
+                if fname in ("sharpe_ratio", "profit_loss_ratio"):
+                    row += f"| {avg:.2f} "
+                elif fname == "total_trades":
+                    row += f"| {avg:.0f} "
+                else:
+                    row += f"| {avg:.2f}% "
+            else:
+                row += "| - "
+        row += "|"
+        lines.append(row)
+
+    # ---------- 收益排行Top5 ----------
+    lines.append("\n## 各策略收益Top5股票\n")
+
+    for sname, _ in ALL_STRATEGIES:
+        lines.append(f"\n### {sname}\n")
+        ranked = []
+        for r in results:
+            if "error" in r:
+                continue
+            sd = r["strategies"].get(sname, {})
+            if "total_return_pct" in sd:
+                ranked.append((sd["total_return_pct"], r["name"], r["symbol"], sd))
+        ranked.sort(key=lambda x: x[0], reverse=True)
+
+        lines.append("| 排名 | 股票 | 收益% | 夏普 | 最大回撤% | 胜率% | 交易次数 |")
+        lines.append("|:---:|:---:|:----:|:----:|:--------:|:----:|:--------:|")
+        for rank, (ret, name, sym, sd) in enumerate(ranked[:8], 1):
+            sharpe = sd.get("sharpe_ratio", "-")
+            mdd = sd.get("max_drawdown_pct", "-")
+            wr = sd.get("win_rate_pct", "-")
+            trades = sd.get("total_trades", "-")
+            lines.append(f"| {rank} | {name}({sym}) | {ret:+.2f}% | {sharpe} | {mdd}% | {wr}% | {trades} |")
+
+    # ---------- 横向对比：赢家矩阵 ----------
+    lines.append("\n## 策略PK：两两对比（胜出股数）\n")
+    strat_names = [s[0] for s in ALL_STRATEGIES]
+    for i, s1 in enumerate(strat_names):
+        for j, s2 in enumerate(strat_names):
+            if i >= j:
+                continue
+            win1 = 0
+            for r in results:
+                if "error" in r:
+                    continue
+                sd1 = r["strategies"].get(s1, {})
+                sd2 = r["strategies"].get(s2, {})
+                r1 = sd1.get("total_return_pct")
+                r2 = sd2.get("total_return_pct")
+                if r1 is not None and r2 is not None:
+                    if r1 > r2:
+                        win1 += 1
+            lines.append(f"- **{s1}** vs **{s2}**: {s1} 胜 {win1} 只, {s2} 胜 {len(results)-win1} 只")
+
+    # ---------- 综合评分 ----------
+    lines.append("\n## 策略综合评分\n")
+
+    # 归一化五个维度的均分
+    score_fields = {
+        "收益": "total_return_pct",
+        "夏普": "sharpe_ratio",
+        "回撤(反向)": "max_drawdown_pct",
+        "胜率": "win_rate_pct",
+        "盈亏比": "profit_loss_ratio",
+    }
+
+    scores = {}
+    for sname, _ in ALL_STRATEGIES:
+        score = 0
+        breakdown = {}
+        for flabel, fname in score_fields.items():
+            vals = agg[sname][fname]
+            if not vals:
+                continue
+            avg = np.mean(vals)
+            # 归一化到0-10分
+            if fname == "max_drawdown_pct":
+                # 回撤越低越好
+                normalized = max(0, min(10, 10 - abs(avg) / 5))
+            elif fname in ("sharpe_ratio", "profit_loss_ratio"):
+                normalized = max(0, min(10, avg * 5))
+            elif fname == "win_rate_pct":
+                normalized = avg / 10
+            else:  # total_return_pct
+                normalized = max(0, min(10, avg / 5))
+            score += normalized
+            breakdown[flabel] = round(normalized, 1)
+        scores[sname] = {"总分": round(score, 1), "细项": breakdown}
+
+    lines.append(f"| 策略 | 总分 | 收益 | 夏普 | 回撤控制 | 胜率 | 盈亏比 |")
+    lines.append(f"|:---|:---:|:---:|:---:|:---:|:---:|:---:|")
+    for sname, _ in ALL_STRATEGIES:
+        sc = scores.get(sname, {})
+        total = sc.get("总分", 0)
+        bd = sc.get("细项", {})
+        lines.append(f"| {sname} | {total} | {bd.get('收益', '-')} | {bd.get('夏普', '-')} | "
+                     f"{bd.get('回撤(反向)', '-')} | {bd.get('胜率', '-')} | {bd.get('盈亏比', '-')} |")
+
+    winner = max(scores, key=lambda k: scores[k]["总分"])
+    lines.append(f"\n🏆 **综合最优: {winner} (总分 {scores[winner]['总分']})**\n")
+
+    # ---------- 各股票最佳策略 ----------
+    lines.append("\n## 每只股票的最优策略\n")
+    lines.append("| 股票 | 最优策略 | 收益% | 夏普 | 最大回撤% |")
+    lines.append("|:---|:---:|:---:|:---:|:---:|")
+    for r in results:
+        if "error" in r:
+            continue
+        best_s = None
+        best_ret = -999
+        for sname, _ in ALL_STRATEGIES:
+            sd = r["strategies"].get(sname, {})
+            ret = sd.get("total_return_pct", -999)
+            if ret > best_ret:
+                best_ret = ret
+                best_s = sname
+        if best_s:
+            sd = r["strategies"].get(best_s, {})
+            lines.append(f"| {r['name']}({r['symbol']}) | {best_s} | {best_ret:+.2f}% | "
+                         f"{sd.get('sharpe_ratio', '-')} | {sd.get('max_drawdown_pct', '-')}% |")
+
+    # ---------- 详细数据备注 ----------
+    lines.append("\n---\n")
+    lines.append("### 备注\n")
+    lines.append("- 数据源: baostock(主) → akshare新浪接口(备用) 前复权\n")
+    lines.append(f"- 回测区间: {START_DATE} ~ {END_DATE}\n")
+    lines.append(f"- 初始资金: ¥{INITIAL_CAPITAL:,} / 策略\n")
+    lines.append("- 费用: 佣金0.03% + 滑点0.1%\n")
+    lines.append("- 风险提示: 历史回测不代表未来收益，不构成投资建议\n")
+
+    content = "\n".join(lines)
+
+    # 写文件
+    report_path = os.path.join(OUTPUT_DIR, f"{today}.md")
+    with open(report_path, "w") as f:
+        f.write(content)
+
+    # 输出摘要到stdout（给agent推送）
+    winner_ret = np.mean(agg[winner]["total_return_pct"]) if agg[winner]["total_return_pct"] else 0
+    print("=====BACKTEST_RESULT=====")
+    print(json.dumps({
+        "date": today,
+        "stock_count": len(results),
+        "strategy_count": len(ALL_STRATEGIES),
+        "avg_returns": {s: round(np.mean(agg[s]["total_return_pct"]), 2) if agg[s]["total_return_pct"] else None for s, _ in ALL_STRATEGIES},
+        "avg_sharpes": {s: round(np.mean(agg[s]["sharpe_ratio"]), 3) if agg[s]["sharpe_ratio"] else None for s, _ in ALL_STRATEGIES},
+        "avg_maxdd": {s: round(np.mean(agg[s]["max_drawdown_pct"]), 2) if agg[s]["max_drawdown_pct"] else None for s, _ in ALL_STRATEGIES},
+        "composite_scores": {s: scores[s]["总分"] for s in scores},
+        "winner": winner,
+        "winner_avg_return": round(winner_ret, 2),
+    }, ensure_ascii=False, indent=2))
+    print("=====BACKTEST_END=====")
+
+    # 打印简报表
+    print(f"\n📊 **五策略回测完成** ({today})")
+    print(f"覆盖 {len(results)} 只股票 x {len(ALL_STRATEGIES)} 个策略\n")
+    print(f"| 策略 | 平均收益 | 夏普 | 最大回撤 | 胜率 | 总分 |")
+    print(f"|:---|:----:|:---:|:------:|:---:|:---:|")
+    for sname, _ in ALL_STRATEGIES:
+        sr = scores.get(sname, {})
+        ret = np.mean(agg[sname]["total_return_pct"]) if agg[sname]["total_return_pct"] else 0
+        sh = np.mean(agg[sname]["sharpe_ratio"]) if agg[sname]["sharpe_ratio"] else 0
+        dd = np.mean(agg[sname]["max_drawdown_pct"]) if agg[sname]["max_drawdown_pct"] else 0
+        wr = np.mean(agg[sname]["win_rate_pct"]) if agg[sname]["win_rate_pct"] else 0
+        print(f"| {sname} | {ret:+.2f}% | {sh:.2f} | {dd:.1f}% | {wr:.1f}% | {sr.get('总分', '-')} |")
+    print(f"\n🏆 综合最优: **{winner}** (总分 {scores[winner]['总分']})")
+
+
+if __name__ == "__main__":
+    main()

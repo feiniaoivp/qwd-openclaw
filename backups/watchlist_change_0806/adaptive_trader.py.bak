@@ -1,0 +1,524 @@
+#!/usr/bin/env python3
+"""
+自适应策略分配器 — 按个股选择最优策略
+===========================================
+基于五策略回测结果，为每只股票分配历史最优策略。
+每日运行时自动执行信号判定并汇总输出。
+
+数据源: baostock (前复权 adjustflag=2)
+"""
+
+import os, sys, json, time, warnings
+from datetime import datetime
+import pandas as pd
+import pandas_ta as ta
+import baostock as bs
+import numpy as np
+
+warnings.filterwarnings("ignore")
+
+WORKSPACE = "/Users/duguke/.openclaw/workspace"
+OUTPUT_DIR = os.path.join(WORKSPACE, "analysis", "daily")
+STRATEGY_MAP_FILE = os.path.join(WORKSPACE, "data", "adaptive_strategy_map.json")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# ── 31只关注股（含新增5只）──
+STOCKS = [
+    ("002318","久立特材"),("300014","亿纬锂能"),("601066","中信建投"),
+    ("600030","中信证券"),("300124","汇川技术"),("601995","中金公司"),
+    ("600584","长电科技"),("002156","通富微电"),("002466","天齐锂业"),
+    ("600036","招商银行"),("600570","恒生电子"),("605566","福莱蒽特"),
+    ("000987","越秀资本"),("603308","应流股份"),("300285","国瓷材料"),
+    ("002413","雷科防务"),("688981","中芯国际"),("601865","福莱特"),
+    ("000157","中联重科"),("300719","安达维尔"),("601061","中信金属"),
+    ("600660","福耀玻璃"),("900925","机电B股"),("002335","科华数据"),
+    ("601100","恒立液压"),
+    # ── 2026-07-29 新增5只 ──
+    ("600160","巨化股份"),("300827","上能电气"),
+    ("600346","恒力石化"),("000708","中信特钢"),("300748","金力永磁"),
+]
+
+# ── 最优策略映射（2026-08-04 更新: 全量30只参数调优 param_tune.py）──
+# 数据来源: /tmp/param_tune_full.log + data/adaptive_params.json
+# 变更说明: 单窗口/多窗口验证 → 全量30只网格搜索(各策略独立参数空间)取最优
+# 五类策略代码:
+#   "bollinger"  → 布林带+ATR（趋势跟踪）
+#   "kdj_cci"    → KDJ+RSI（均值回归）
+#   "ema_obv"    → EMA+OBV（量价共振）
+#   "ema_cross"  → EMA12/26金叉（原策略C）
+#   "macd"       → 纯MACD（原策略B）
+DEFAULT_STRATEGY = "ema_cross"  # 综合最优兜底
+
+BEST_STRATEGY_MAP = {
+    "002318": "ema_cross",    # 久立特材 — EMA12/26(score 57.0 ret 44.7% sharpe 0.504)
+    "300014": "bollinger",    # 亿纬锂能 — 布林带+ATR(score 93.6 ret 96.5% sharpe 0.595)
+    "601066": "macd",         # 中信建投 — 纯MACD(score 25.4 ret 16.2% sharpe 0.262)
+    "600030": "macd",         # 中信证券 — 纯MACD(score 77.3 ret 59.1% sharpe 0.698)
+    "300124": "macd",         # 汇川技术 — 纯MACD(score 55.0 ret 47.8% sharpe 0.440)
+    "601995": "kdj_cci",      # 中金公司 — KDJ+RSI(score 5.5 ret 1.0% sharpe 0.082)
+    "600584": "macd",         # 长电科技 — 纯MACD(score 255.6 ret 235.2% sharpe 1.908)
+    "002156": "macd",         # 通富微电 — 纯MACD(score 134.6 ret 136.1% sharpe 0.904)
+    "002466": "ema_cross",    # 天齐锂业 — EMA12/26(score 114.0 ret 185.5% sharpe 0.704)
+    "600036": "kdj_cci",      # 招商银行 — KDJ+RSI(score 57.9 ret 35.1% sharpe 0.614)
+    "600570": "bollinger",    # 恒生电子 — 布林带+ATR(score 53.5 ret 49.5% sharpe 0.396)
+    "605566": "macd",         # 福莱蒽特 — 纯MACD(score 68.4 ret 45.2% sharpe 0.688)
+    "000987": "macd",         # 越秀资本 — 纯MACD(score 120.0 ret 95.9% sharpe 1.040)
+    "603308": "ema_cross",    # 应流股份 — EMA12/26(score 250.1 ret 269.5% sharpe 1.473)
+    "300285": "macd",         # 国瓷材料 — 纯MACD(score 343.9 ret 348.6% sharpe 2.245)
+    "002413": "ema_cross",    # 雷科防务 — EMA12/26(score 172.0 ret 168.6% sharpe 1.285)
+    "688981": "kdj_cci",      # 中芯国际 — KDJ+RSI(score 89.9 ret 68.4% sharpe 0.814)
+    "601865": "macd",         # 福莱特 — 纯MACD(score 33.6 ret 49.9% sharpe 0.100)
+    "000157": "ema_cross",    # 中联重科 — EMA12/26(score 35.8 ret 22.0% sharpe 0.377)
+    "300719": "kdj_cci",      # 安达维尔 — KDJ+RSI(score -0.1 ret 6.3% sharpe -0.080)
+    "601061": "ema_obv",      # 中信金属 — EMA+OBV(score 132.3 ret 70.3% sharpe 1.502)
+    "600660": "macd",         # 福耀玻璃 — 纯MACD(score 86.7 ret 86.1% sharpe 0.584)
+    "900925": "ema_cross",    # 机电B股 — 无数据，兜底
+    "002335": "ema_obv",      # 科华数据 — EMA+OBV(score 36.3 ret 34.5% sharpe 0.260)
+    "601100": "ema_cross",    # 恒立液压 — EMA12/26(score 38.0 ret 49.4% sharpe 0.139)
+    # ── 2026-07-29 新增5只（全量调优结果）──
+    "600160": "ema_cross",    # 巨化股份 — EMA12/26(score 108.8 ret 111.9% sharpe 0.694)
+    "300827": "kdj_cci",      # 上能电气 — KDJ+RSI(score 69.9 ret 53.8% sharpe 0.627)
+    "600346": "macd",         # 恒力石化 — 纯MACD(score 69.8 ret 54.0% sharpe 0.624)
+    "000708": "ema_cross",    # 中信特钢 — EMA12/26(score 21.7 ret 15.6% sharpe 0.206)
+    "300748": "kdj_cci",      # 金力永磁 — KDJ+RSI(score 90.5 ret 87.1% sharpe 0.638)
+}
+
+STRATEGY_LABELS = {
+    "bollinger": "📊 布林带+ATR",
+    "kdj_cci": "🎯 KDJ+RSI(均值回归)",
+    "ema_obv": "📈 EMA+OBV",
+    "ema_cross": "💹 EMA12/26",
+    "macd": "📉 纯MACD",
+}
+
+COMMISSION = 0.0003
+SLIPPAGE = 0.001
+INITIAL_CAPITAL = 100_000
+
+
+# ════════════════════════════════════════
+# 四个策略的信号发生器（精简版——只出信号，不做回测）
+# ════════════════════════════════════════
+
+import urllib.request
+
+def fetch_today_realtime(symbols):
+    """通过新浪批量获取当日实时行情，返回 {symbol: {date,close,open,high,low,volume}}"""
+    prefix_map = {s: ("sh" if s.startswith("6") else "sz") for s in symbols}
+    codes = [f"{prefix_map[s]}{s}" for s in symbols]
+    url = "https://hq.sinajs.cn/list=" + ",".join(codes)
+    req = urllib.request.Request(url, headers={"Referer": "https://finance.sina.com.cn"})
+    result = {}
+    try:
+        resp = urllib.request.urlopen(req, timeout=10)
+        text = resp.read().decode("gbk")
+        for s in symbols:
+            prefix = prefix_map[s]
+            marker = f'hq_str_{prefix}{s}="'
+            start = text.find(f"hq_str_{prefix}{s}=\"")
+            if start < 0:
+                continue
+            start += len(f"hq_str_{prefix}{s}=\"")
+            end = text.find("\"", start)
+            if end < 0:
+                continue
+            fields = text[start:end].split(",")
+            if len(fields) < 4:
+                continue
+            try:
+                cur = float(fields[3])
+                oh = float(fields[1])  # 今开
+                hi = float(fields[4]) if fields[4] else cur
+                lo = float(fields[5]) if fields[5] else cur
+                vol = int(fields[8]) if fields[8] else 0
+                today_str = datetime.now().strftime("%Y-%m-%d")
+                result[s] = {"date": today_str, "open": oh, "close": cur, "high": hi, "low": lo, "volume": vol}
+            except (ValueError, IndexError):
+                pass
+        return result
+    except Exception:
+        return {}
+
+
+def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
+    """baostock获取前复权数据 + 新浪实时补丁
+    
+    先用baostock拉最近日线，检查最新日期是否就是今天。
+    如果不是今天（盘后数据尚未更新），则用新浪实时行情把今日数据拼接上。
+    """
+    bs_code = f"sh.{symbol}" if symbol.startswith("6") else f"sz.{symbol}"
+    start_ymd = f"{start[0:4]}-{start[4:6]}-{start[6:8]}"
+    end_ymd = datetime.now().strftime("%Y-%m-%d")
+    today_str = datetime.now().strftime("%Y-%m-%d")
+
+    for attempt in range(max_retry):
+        try:
+            lg = bs.login()
+            if lg.error_code != "0":
+                raise ConnectionError(lg.error_msg)
+            rs = bs.query_history_k_data_plus(
+                bs_code, "date,open,close,high,low,volume",
+                start_date=start_ymd, end_date=end_ymd,
+                frequency="d", adjustflag="2")
+            data = []
+            while rs.next():
+                data.append(rs.get_row_data())
+            bs.logout()
+            if not data:
+                raise ValueError("空数据")
+            df = pd.DataFrame(data, columns=["date","open","close","high","low","volume"])
+            for c in ["open","close","high","low","volume"]:
+                df[c] = pd.to_numeric(df[c], errors="coerce")
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.sort_values("date").reset_index(drop=True).dropna()
+            
+            # ── 检查baostock最新日期 ──
+            if realtime_fallback:
+                latest_bs_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
+                if latest_bs_date < today_str:
+                    # baostock还没有今天数据，用新浪实时补
+                    import datetime as dt
+                    today = dt.date.today()
+                    if today.weekday() < 5:  # 交易日才补
+                        rt = fetch_today_realtime([symbol])
+                        if symbol in rt:
+                            r = rt[symbol]
+                            new_row = {
+                                "date": pd.Timestamp(r["date"]),
+                                "open": r["open"],
+                                "close": r["close"],
+                                "high": r["high"],
+                                "low": r["low"],
+                                "volume": r["volume"],
+                            }
+                            df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+                            print(f"  [补丁] {symbol} baostock最新{latest_bs_date} → 新浪实时拼接{r['date']} 收盘¥{r['close']:.2f}")
+            return df
+        except Exception:
+            time.sleep(3)
+        finally:
+            try:
+                bs.logout()
+            except:
+                pass
+    
+    # baostock彻底失败 → 纯新浪实时兜底（没有历史指标，只能出价格）
+    if realtime_fallback:
+        rt = fetch_today_realtime([symbol])
+        if symbol in rt:
+            r = rt[symbol]
+            # 构造一个只有一条数据的df（最少60条，所有指标将是NaN）
+            df = pd.DataFrame([{
+                "date": pd.Timestamp(r["date"]),
+                "open": r["open"],
+                "close": r["close"],
+                "high": r["high"],
+                "low": r["low"],
+                "volume": r["volume"],
+            }])
+            print(f"  [兜底] {symbol} baostock失败，纯新浪实时: ¥{r['close']:.2f}")
+            return df
+    return None
+
+
+def signal_bollinger_atr(df):
+    """布林带+ATR: 上穿上轨买，跌破中轨卖"""
+    bb = ta.bbands(df["close"], length=20, std=2)
+    bbu = bb[[c for c in bb.columns if "BBU" in c.upper()][0]]
+    bbm = bb[[c for c in bb.columns if "BBM" in c.upper()][0]]
+    atr = ta.atr(df["high"], df["low"], df["close"], length=14)
+
+    row, prev = df.iloc[-1], df.iloc[-2]
+    price = float(row["close"])
+    action, reason = "持有", "无信号"
+
+    if float(prev["close"]) <= float(bbu.iloc[-2]) and float(row["close"]) > float(bbu.iloc[-1]):
+        action = "🟢买入"
+        reason = f"布林上轨突破(¥{float(bbu.iloc[-1]):.2f}) ATR={float(atr.iloc[-1]):.2f}"
+    elif float(prev["close"]) >= float(bbm.iloc[-2]) and float(row["close"]) < float(bbm.iloc[-1]):
+        action = "🔴卖出"
+        reason = f"跌破中轨(¥{float(bbm.iloc[-1]):.2f})"
+
+    return {"action": action, "reason": reason, "price": price,
+            "key_indicators": f"上轨{float(bbu.iloc[-1]):.2f} 中轨{float(bbm.iloc[-1]):.2f} ATR{float(atr.iloc[-1]):.2f}"}
+
+
+def signal_kdj_cci(df):
+    """KDJ+CCI: CCI低位+KDJ金叉买，CCI高位或死叉卖"""
+    cci = ta.cci(df["high"], df["low"], df["close"], length=14)
+    # 动态百分位
+    cci_pct = cci.rolling(60).apply(lambda x: (x.iloc[-1] - x.min()) / (x.max() - x.min() + 1e-10) * 100)
+    kdj = ta.kdj(df["high"], df["low"], df["close"], length=9, signal=3)
+    k, d, j = kdj["K_9_3"], kdj["D_9_3"], kdj["J_9_3"]
+
+    row, prev = df.iloc[-1], df.iloc[-2]
+    price = float(row["close"])
+    action, reason = "持有", "无信号"
+
+    cpi = float(cci_pct.iloc[-1]) if pd.notna(cci_pct.iloc[-1]) else 50
+    jc = float(j.iloc[-1])
+    pc = float(prev["close"])
+    j_cross_up = float(j.iloc[-2]) <= float(k.iloc[-2]) and float(j.iloc[-1]) > float(k.iloc[-1])
+    j_cross_down = float(j.iloc[-2]) >= float(k.iloc[-2]) and float(j.iloc[-1]) < float(k.iloc[-1])
+
+    if cpi < 20 and j_cross_up:
+        action = "🟢买入"
+        reason = f"CCI低位({cpi:.0f}%)+KDJ金叉 K={float(k.iloc[-1]):.1f}"
+    elif cpi > 80 or j_cross_down:
+        reasons = []
+        if cpi > 80:
+            reasons.append(f"CCI高位({cpi:.0f}%)")
+        if j_cross_down:
+            reasons.append("KDJ死叉")
+        action = "🔴卖出"
+        reason = " | ".join(reasons)
+
+    return {"action": action, "reason": reason, "price": price,
+            "key_indicators": f"CCI_pct={cpi:.0f}% K={float(k.iloc[-1]):.1f} J={jc:.1f}"}
+
+
+def signal_ema_obv(df):
+    """EMA+OBV: 站上EMA20+OBV上穿买，跌破或OBV下穿卖"""
+    ema20 = ta.ema(df["close"], length=20)
+    obv = ta.obv(df["close"], df["volume"])
+    obv_ema20 = ta.ema(obv, length=20)
+
+    row, prev = df.iloc[-1], df.iloc[-2]
+    price = float(row["close"])
+    action, reason = "持有", "无信号"
+
+    e20 = float(ema20.iloc[-1])
+    obv_now = float(obv.iloc[-1])
+    obv_ema = float(obv_ema20.iloc[-1])
+    obv_cross_up = float(obv.iloc[-2]) <= float(obv_ema20.iloc[-2]) and obv_now > obv_ema
+    obv_cross_down = float(obv.iloc[-2]) >= float(obv_ema20.iloc[-2]) and obv_now < obv_ema
+
+    if price > e20 and obv_cross_up:
+        action = "🟢买入"
+        reason = f"EMA20上方(¥{e20:.2f}) + OBV上穿均线(量能放大)"
+    elif price < e20 or obv_cross_down:
+        reasons = []
+        if price < e20:
+            reasons.append(f"跌破EMA20(¥{e20:.2f})")
+        if obv_cross_down:
+            reasons.append("OBV下穿均线(资金撤离)")
+        action = "🔴卖出"
+        reason = " | ".join(reasons)
+
+    return {"action": action, "reason": reason, "price": price,
+            "key_indicators": f"EMA20={e20:.2f} OBV/EMA={obv_now/obv_ema:.2f}x" if obv_ema > 0 else f"EMA20={e20:.2f}"}
+
+
+def signal_ema_cross(df):
+    """EMA12/26金叉死叉"""
+    ema12 = ta.ema(df["close"], length=12)
+    ema26 = ta.ema(df["close"], length=26)
+
+    row, prev = df.iloc[-1], df.iloc[-2]
+    price = float(row["close"])
+    action, reason = "持有", "无信号"
+
+    e12, e26 = float(ema12.iloc[-1]), float(ema26.iloc[-1])
+    pe12, pe26 = float(ema12.iloc[-2]), float(ema26.iloc[-2])
+
+    if pe12 <= pe26 and e12 > e26:
+        action = "🟢买入"
+        reason = f"EMA12({e12:.2f})金叉EMA26({e26:.2f})"
+    elif pe12 >= pe26 and e12 < e26:
+        action = "🔴卖出"
+        reason = f"EMA12({e12:.2f})死叉EMA26({e26:.2f})"
+
+    return {"action": action, "reason": reason, "price": price,
+            "key_indicators": f"EMA12={e12:.2f} EMA26={e26:.2f}"}
+
+
+def signal_macd(df):
+    """纯MACD金叉死叉"""
+    macd_df = ta.macd(df["close"], fast=12, slow=26, signal=9)
+    macd_line = macd_df["MACD_12_26_9"]
+    signal_line = macd_df["MACDs_12_26_9"]
+
+    row, prev = df.iloc[-1], df.iloc[-2]
+    price = float(row["close"])
+    action, reason = "持有", "无信号"
+
+    m = float(macd_line.iloc[-1])
+    s = float(signal_line.iloc[-1])
+    pm = float(macd_line.iloc[-2])
+    ps = float(signal_line.iloc[-2])
+
+    if pm <= ps and m > s:
+        action = "🟢买入"
+        reason = f"MACD金叉({m:.4f}/{s:.4f})"
+    elif pm >= ps and m < s:
+        action = "🔴卖出"
+        reason = f"MACD死叉({m:.4f}/{s:.4f})"
+
+    return {"action": action, "reason": reason, "price": price,
+            "key_indicators": f"MACD={m-s:.4f} Signal={s:.4f}"}
+
+
+SIGNAL_FUNCS = {
+    "bollinger": signal_bollinger_atr,
+    "kdj_cci": signal_kdj_cci,
+    "ema_obv": signal_ema_obv,
+    "ema_cross": signal_ema_cross,
+    "macd": signal_macd,
+}
+
+# ── 价格变动计算（依赖close列）──
+def calc_change_pct(df):
+    cur = float(df.iloc[-1]["close"])
+    prev = float(df.iloc[-2]["close"])
+    return round((cur / prev - 1) * 100, 2)
+
+
+# ════════════════════════════════════════
+# 主入口
+# ════════════════════════════════════════
+
+def scan_all():
+    today = datetime.now().strftime("%Y-%m-%d")
+    results = []
+    buy_count = 0
+    sell_count = 0
+    error_count = 0
+
+    # 策略统计
+    strategy_actions = {k: {"total": 0, "buy": 0, "sell": 0} for k in STRATEGY_LABELS}
+
+    for idx, (symbol, name) in enumerate(STOCKS):
+        sname = BEST_STRATEGY_MAP.get(symbol, DEFAULT_STRATEGY)
+        slabel = STRATEGY_LABELS[sname]
+
+        df = fetch_data(symbol)
+        if df is None or len(df) < 60:
+            results.append({
+                "symbol": symbol, "name": name,
+                "error": "数据获取失败",
+                "strategy": slabel,
+                "signal": None,
+            })
+            error_count += 1
+            continue
+
+        sig_func = SIGNAL_FUNCS[sname]
+        try:
+            signal = sig_func(df)
+            signal["change_pct"] = calc_change_pct(df)
+        except Exception as e:
+            results.append({
+                "symbol": symbol, "name": name,
+                "error": str(e),
+                "strategy": slabel,
+                "signal": None,
+            })
+            error_count += 1
+            continue
+
+        result = {
+            "symbol": symbol, "name": name,
+            "strategy": slabel,
+            "price": signal["price"],
+            "change_pct": signal["change_pct"],
+            "action": signal["action"],
+            "reason": signal["reason"],
+            "key_indicators": signal.get("key_indicators", ""),
+        }
+        results.append(result)
+
+        strategy_actions[sname]["total"] += 1
+        if "买入" in signal["action"]:
+            strategy_actions[sname]["buy"] += 1
+            buy_count += 1
+        elif "卖出" in signal["action"]:
+            strategy_actions[sname]["sell"] += 1
+            sell_count += 1
+
+    # ── 构建输出 ──
+    output = {
+        "date": today,
+        "stock_count": len(STOCKS),
+        "summary": {
+            "buy": buy_count,
+            "sell": sell_count,
+            "hold": len(STOCKS) - buy_count - sell_count - error_count,
+            "error": error_count,
+        },
+        "strategy_breakdown": strategy_actions,
+        "details": results,
+    }
+
+    return output
+
+
+def format_brief(output):
+    """生成人类可读简报"""
+    lines = []
+    s = output["summary"]
+    lines.append(f"📊 **自适应策略扫描** ({output['date']})")
+    lines.append(f"覆盖 {output['stock_count']} 只股票 | "
+                 f"🟢买入 {s['buy']} | 🔴卖出 {s['sell']} | ⚪持有 {s['hold']} | ❌失败 {s['error']}")
+    lines.append("")
+
+    # 买入信号（detail里的action/reason已是平铺在顶层）
+    buys = [r for r in output["details"] if r.get("action") and "买入" in r["action"]]
+    if buys:
+        lines.append("🟢 **买入信号**")
+        lines.append("| 股票 | 策略 | 现价 | 涨跌 | 理由 |")
+        lines.append("|:---|:---|:---:|:---:|:---|")
+        for r in buys:
+            lines.append(f"| {r['name']}({r['symbol']}) | {r['strategy']} | ¥{r['price']:.2f} | {r['change_pct']:+.2f}% | {r['reason']} |")
+        lines.append("")
+
+    # 卖出信号
+    sells = [r for r in output["details"] if r.get("action") and "卖出" in r["action"]]
+    if sells:
+        lines.append("🔴 **卖出信号**")
+        lines.append("| 股票 | 策略 | 现价 | 涨跌 | 理由 |")
+        lines.append("|:---|:---|:---:|:---:|:---|")
+        for r in sells:
+            lines.append(f"| {r['name']}({r['symbol']}) | {r['strategy']} | ¥{r['price']:.2f} | {r['change_pct']:+.2f}% | {r['reason']} |")
+        lines.append("")
+
+    # 策略分布
+    lines.append("📈 **策略分配概览**")
+    for sk, sv in output["strategy_breakdown"].items():
+        if sv["total"] > 0:
+            pct = sv["buy"] / sv["total"] * 100 if sv["total"] > 0 else 0
+            lines.append(f"  {STRATEGY_LABELS[sk]}: {sv['total']}只 (买入{sv['buy']}/卖出{sv['sell']} 比例{pct:.0f}%)")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+def main():
+    # ① 保存/加载策略映射
+    os.makedirs(os.path.dirname(STRATEGY_MAP_FILE), exist_ok=True)
+    with open(STRATEGY_MAP_FILE, "w") as f:
+        json.dump(BEST_STRATEGY_MAP, f, ensure_ascii=False, indent=2)
+    print(f"📁 策略映射已保存: {STRATEGY_MAP_FILE}")
+
+    # ② 执行全扫描
+    print("📡 开始自适应策略扫描...")
+    output = scan_all()
+
+    # ③ 输出JSON（供agent解析）
+    print("\n=====ADAPTIVE_SCAN_RESULT=====")
+    print(json.dumps(output, ensure_ascii=False, indent=2, default=str))
+    print("=====ADAPTIVE_SCAN_END=====")
+
+    # ④ 输出可读简报
+    print("\n" + format_brief(output))
+
+    # ⑤ 保存日报
+    today = datetime.now().strftime("%Y-%m-%d")
+    report_path = os.path.join(OUTPUT_DIR, f"{today}_adaptive.md")
+    with open(report_path, "w") as f:
+        f.write(f"# 自适应策略日报 {today}\n\n")
+        f.write(format_brief(output))
+    print(f"📄 日报已保存: {report_path}")
+
+
+if __name__ == "__main__":
+    main()

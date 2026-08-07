@@ -1,0 +1,86 @@
+{
+  "002180": {
+    "strategy": "macd",
+    "name": "奔图科技",
+    "score": 62.65,
+    "avg_return": 33.99,
+    "avg_sharpe": 0.738,
+    "avg_dd": -33.99,
+    "avg_trades": 23.2,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 62.65,
+        "avg_return": 33.99,
+        "avg_sharpe": 0.738,
+        "avg_dd": -33.99,
+        "avg_trades": 23.2,
+        "sample_weight": 1.0,
+        "windows": 4
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": -13.33,
+        "avg_return": -9.82,
+        "avg_sharpe": -0.124,
+        "avg_dd": -29.1,
+        "avg_trades": 14.0,
+        "sample_weight": 1.0,
+        "windows": 4
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": -13.94,
+        "avg_return": -6.6,
+        "avg_sharpe": -0.083,
+        "avg_dd": -40.02,
+        "avg_trades": 12.2,
+        "sample_weight": 1.0,
+        "windows": 4
+      }
+    ]
+  },
+  "300847": {
+    "strategy": "macd",
+    "name": "中船汉光",
+    "score": -1.84,
+    "avg_return": -3.95,
+    "avg_sharpe": 0.098,
+    "avg_dd": -40.69,
+    "avg_trades": 24.5,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": -1.84,
+        "avg_return": -3.95,
+        "avg_sharpe": 0.098,
+        "avg_dd": -40.69,
+        "avg_trades": 24.5,
+        "sample_weight": 1.0,
+        "windows": 4
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": -7.74,
+        "avg_return": 10.02,
+        "avg_sharpe": -0.229,
+        "avg_dd": -14.49,
+        "avg_trades": 11.5,
+        "sample_weight": 1.0,
+        "windows": 4
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": -14.72,
+        "avg_return": -10.75,
+        "avg_sharpe": -0.098,
+        "avg_dd": -34.75,
+        "avg_trades": 15.2,
+        "sample_weight": 1.0,
+        "windows": 4
+      }
+    ]
+  }
+}

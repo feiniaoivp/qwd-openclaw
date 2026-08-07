@@ -1,0 +1,217 @@
+{
+  "scan_time": "2026-07-09T22:06:59.141342+00:00",
+  "top_trending": [
+    {
+      "symbol": "ETH",
+      "mentions": 4,
+      "sources": [
+        "Google News Crypto"
+      ],
+      "signals": []
+    },
+    {
+      "symbol": "CNBC",
+      "mentions": 3,
+      "sources": [
+        "Google News"
+      ],
+      "signals": [
+        "\ud83d\udcf0 Kevin Warsh names members of his Federal...",
+        "\ud83d\udcf0 Prediction markets spark insider trading...",
+        "\ud83d\udcf0 Goldman Sachs wins $70 billion in asset ..."
+      ]
+    },
+    {
+      "symbol": "BTC",
+      "mentions": 3,
+      "sources": [
+        "Google News Crypto"
+      ],
+      "signals": []
+    },
+    {
+      "symbol": "WSJ",
+      "mentions": 2,
+      "sources": [
+        "Google News"
+      ],
+      "signals": [
+        "\ud83d\udcf0 An Impending IPO Boom Has Sparked FOMO A...",
+        "\ud83d\udcf0 Exclusive | Netflix Is Exploring Live TV..."
+      ]
+    },
+    {
+      "symbol": "SK",
+      "mentions": 1,
+      "sources": [
+        "Google News"
+      ],
+      "signals": [
+        "\ud83d\udcf0 SK Hynix (SKHY) US Listing: What to Know..."
+      ]
+    },
+    {
+      "symbol": "SKHY",
+      "mentions": 1,
+      "sources": [
+        "Google News"
+      ],
+      "signals": [
+        "\ud83d\udcf0 SK Hynix (SKHY) US Listing: What to Know..."
+      ]
+    },
+    {
+      "symbol": "ADR",
+      "mentions": 1,
+      "sources": [
+        "Google News"
+      ],
+      "signals": [
+        "\ud83d\udcf0 SK Hynix (SKHY) US Listing: What to Know..."
+      ]
+    },
+    {
+      "symbol": "FOMO",
+      "mentions": 1,
+      "sources": [
+        "Google News"
+      ],
+      "signals": [
+        "\ud83d\udcf0 An Impending IPO Boom Has Sparked FOMO A..."
+      ]
+    },
+    {
+      "symbol": "CNN",
+      "mentions": 1,
+      "sources": [
+        "Google News"
+      ],
+      "signals": [
+        "\ud83d\udcf0 Mortgage rates are stuck near 6.5%. A ne..."
+      ]
+    },
+    {
+      "symbol": "INTC",
+      "mentions": 1,
+      "sources": [
+        "Google News"
+      ],
+      "signals": [
+        "\ud83d\udcf0 The Future of Meta Superintelligence: A ..."
+      ]
+    },
+    {
+      "symbol": "META",
+      "mentions": 1,
+      "sources": [
+        "Google News"
+      ],
+      "signals": [
+        "\ud83d\udcf0 The Future of Meta Superintelligence: A ..."
+      ]
+    },
+    {
+      "symbol": "TV",
+      "mentions": 1,
+      "sources": [
+        "Google News"
+      ],
+      "signals": [
+        "\ud83d\udcf0 Exclusive | Netflix Is Exploring Live TV..."
+      ]
+    },
+    {
+      "symbol": "NFLX",
+      "mentions": 1,
+      "sources": [
+        "Google News"
+      ],
+      "signals": [
+        "\ud83d\udcf0 Exclusive | Netflix Is Exploring Live TV..."
+      ]
+    },
+    {
+      "symbol": "LAB",
+      "mentions": 1,
+      "sources": [
+        "Google News Crypto"
+      ],
+      "signals": []
+    },
+    {
+      "symbol": "SOL",
+      "mentions": 1,
+      "sources": [
+        "Google News Crypto"
+      ],
+      "signals": []
+    },
+    {
+      "symbol": "BNB",
+      "mentions": 1,
+      "sources": [
+        "Google News Crypto"
+      ],
+      "signals": []
+    }
+  ],
+  "crypto_highlights": [],
+  "stock_highlights": [],
+  "social_buzz": [],
+  "breaking_news": [
+    {
+      "title": "Kevin Warsh names members of his Federal Reserve task forces, including Marc Andreessen, Doug McMillon - CNBC",
+      "tickers": [
+        "CNBC"
+      ]
+    },
+    {
+      "title": "SK Hynix (SKHY) US Listing: What to Know About the Largest-Ever ADR Offering - Barron's",
+      "tickers": [
+        "SK",
+        "SKHY",
+        "ADR"
+      ]
+    },
+    {
+      "title": "An Impending IPO Boom Has Sparked FOMO Among San Francisco Home Buyers - WSJ",
+      "tickers": [
+        "WSJ",
+        "FOMO"
+      ]
+    },
+    {
+      "title": "Mortgage rates are stuck near 6.5%. A new housing law may make buying easier \u2013 eventually - CNN",
+      "tickers": [
+        "CNN"
+      ]
+    },
+    {
+      "title": "Prediction markets spark insider trading concerns. Here's how Goldman and other companies are responding - CNBC",
+      "tickers": [
+        "CNBC"
+      ]
+    },
+    {
+      "title": "The Future of Meta Superintelligence: A 1 Year Progress Update - SemiAnalysis",
+      "tickers": [
+        "INTC",
+        "META"
+      ]
+    },
+    {
+      "title": "Exclusive | Netflix Is Exploring Live TV and Bundles as It Struggles to Keep Viewers Hooked - WSJ",
+      "tickers": [
+        "WSJ",
+        "TV",
+        "NFLX"
+      ]
+    },
+    {
+      "title": "Goldman Sachs wins $70 billion in asset management deals with Verizon, Lockheed Martin - CNBC",
+      "tickers": [
+        "CNBC"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+=== 本周K线数据 ===
+300285|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+603308|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+002156|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+600584|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+688981|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+601865|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+600570|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+300719|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+600036|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+600660|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+600030|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+002466|ERR:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+
+=== 大盘指数周涨跌 ===
+指数错误:('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+
+=== 北向资金近5日 ===
+2026-07-17|沪港通|沪股通|净买额:0万元
+2026-07-17|沪港通|港股通(沪)|净买额:19万元
+2026-07-17|深港通|深股通|净买额:0万元
+2026-07-17|深港通|港股通(深)|净买额:-34万元

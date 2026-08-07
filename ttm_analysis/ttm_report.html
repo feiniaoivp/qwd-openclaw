@@ -1,0 +1,638 @@
+<!DOCTYPE html><html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A股 TTM指标分析报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+.header{background:linear-gradient(135deg,#1e293b,#0f172a);padding:30px 20px;border-bottom:1px solid #334155}
+.header h1{font-size:28px;font-weight:700;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .subtitle{color:#94a3b8;margin-top:8px;font-size:14px}
+.stats-bar{display:flex;gap:20px;padding:20px;background:#1e293b;border-bottom:1px solid #334155;flex-wrap:wrap}
+.stat-box{flex:1;min-width:120px;text-align:center;padding:12px;background:#0f172a;border-radius:12px;border:1px solid #334155}
+.stat-box .num{font-size:24px;font-weight:700}
+.stat-box .label{font-size:12px;color:#94a3b8;margin-top:4px}
+.container{max-width:1400px;margin:0 auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px}
+.card{background:#1e293b;border-radius:16px;border:1px solid #334155;overflow:hidden;cursor:pointer;transition:all 0.2s}
+.card:hover{border-color:#60a5fa;transform:translateY(-2px);box-shadow:0 8px 24px rgba(96,165,250,0.15)}
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#0f172a;border-bottom:1px solid #334155}
+.stock-title{font-size:16px;font-weight:600}
+.stock-code{color:#64748b;font-size:13px;font-weight:400;margin-left:8px}
+.report-date{color:#64748b;font-size:12px}
+.card-body{padding:16px 20px}
+.metrics-row{display:flex;gap:12px}
+.metric{flex:1;text-align:center;padding:8px;background:#0f172a;border-radius:10px}
+.metric-label{font-size:11px;color:#94a3b8;margin-bottom:4px}
+.metric-value{font-size:20px;font-weight:700}
+.sub{font-size:12px;color:#64748b;font-weight:400}
+.f-score-bar{display:flex;gap:4px;margin-top:12px;justify-content:center}
+.f-dot{display:inline-flex;align-items:center;justify-content:center;width:32px;height:22px;border-radius:4px;font-size:10px;font-weight:600}
+.f-dot.on{background:#166534;color:#4ade80}
+.f-dot.off{background:#7f1d1d;color:#f87171}
+.detail-row{margin-top:12px;padding-top:12px;border-top:1px solid #334155}
+.detail-table{width:100%;font-size:13px}
+.detail-table td{padding:4px 8px}
+.detail-table td:nth-child(odd){color:#94a3b8;text-align:right;width:35%}
+.detail-table td:nth-child(even){color:#e2e8f0;text-align:left;width:15%}
+.chart-section{margin-top:30px;background:#1e293b;border-radius:16px;border:1px solid #334155;padding:20px}
+.chart-controls{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.chart-btn{padding:6px 16px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#94a3b8;cursor:pointer;font-size:13px;transition:all 0.2s}
+.chart-btn.active{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.chart-btn:hover{border-color:#60a5fa}
+.chart-container{position:relative;height:400px;width:100%}
+.search-box{margin-bottom:16px}
+.search-box input{width:100%;padding:10px 16px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:14px;outline:none}
+.search-box input:focus{border-color:#60a5fa}
+.sort-controls{display:flex;gap:8px;margin-bottom:12px}
+.sort-btn{padding:6px 14px;border-radius:6px;border:1px solid #334155;background:#0f172a;color:#94a3b8;cursor:pointer;font-size:12px;transition:all 0.2s}
+.sort-btn.active{background:#334155;color:#e2e8f0}
+.footer{text-align:center;padding:20px;color:#475569;font-size:12px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}.header h1{font-size:22px}}
+</style></head><body>
+<div class="header"><h1>📊 A股 TTM指标分析报告</h1><div class="subtitle">滚动ROE · Piotroski F-Score · 补齐季报生成TTM指标</div><div class="subtitle" style="margin-top:4px">生成时间: 2026-07-07 18:37 ｜ 数据: 同花顺/东方财富</div></div>
+<div class="stats-bar"><div class="stat-box"><div class="num" style="color:#60a5fa">39</div><div class="label">分析股票</div></div><div class="stat-box"><div class="num" style="color:#22c55e">5</div><div class="label">高ROE(≥15%)</div></div><div class="stat-box"><div class="num" style="color:#a78bfa">13</div><div class="label">高F-Score(≥7)</div></div></div>
+<div class="container">
+<div class="search-box"><input type="text" id="si" placeholder="🔍 搜索..." oninput="fc()"></div>
+<div class="sort-controls"><button class="sort-btn active" onclick="sc('d',this)">📋 默认</button><button class="sort-btn" onclick="sc('r',this)">📈 ROE排序</button><button class="sort-btn" onclick="sc('f',this)">🏆 F-Score排序</button></div>
+<div class="grid" id="sg"><div class="card" onclick="toggleDetail('600160')">
+<div class="card-header"><span class="stock-title">巨化股份 <span class="stock-code">600160</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#22c55e">19.8%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">8<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">41.5亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">272.1亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-600160" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>38.4%</td><td>流动比率</td><td>1.32</td></tr>
+<tr><td>毛利率</td><td>34.4%</td><td>资产周转率</td><td>0.6924</td></tr>
+<tr><td>经营现金流</td><td>67.2亿</td><td>净资产</td><td>216.1亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('300827')">
+<div class="card-header"><span class="stock-title">上能电气 <span class="stock-code">300827</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">11.1%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">6<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">4.7亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">58.7亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-300827" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>60.8%</td><td>流动比率</td><td>1.46</td></tr>
+<tr><td>毛利率</td><td>23.6%</td><td>资产周转率</td><td>0.5316</td></tr>
+<tr><td>经营现金流</td><td>2.2亿</td><td>净资产</td><td>43.0亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('600346')">
+<div class="card-header"><span class="stock-title">恒力石化 <span class="stock-code">600346</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">13.0%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">8<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">89.3亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">1,932.5亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-600346" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>74.4%</td><td>流动比率</td><td>0.64</td></tr>
+<tr><td>毛利率</td><td>14.0%</td><td>资产周转率</td><td>0.7173</td></tr>
+<tr><td>经营现金流</td><td>279.2亿</td><td>净资产</td><td>707.0亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('000708')">
+<div class="card-header"><span class="stock-title">中信特钢 <span class="stock-code">000708</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">13.7%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">6<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">60.6亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">1,070.3亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-000708" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>56.9%</td><td>流动比率</td><td>1.10</td></tr>
+<tr><td>毛利率</td><td>14.4%</td><td>资产周转率</td><td>0.9760</td></tr>
+<tr><td>经营现金流</td><td>157.3亿</td><td>净资产</td><td>451.0亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('300748')">
+<div class="card-header"><span class="stock-title">金力永磁 <span class="stock-code">300748</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">9.6%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">6<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">7.4亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">80.0亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-300748" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>50.5%</td><td>流动比率</td><td>1.79</td></tr>
+<tr><td>毛利率</td><td>21.8%</td><td>资产周转率</td><td>0.5114</td></tr>
+<tr><td>经营现金流</td><td>10.6亿</td><td>净资产</td><td>78.0亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('002413')">
+<div class="card-header"><span class="stock-title">雷科防务 <span class="stock-code">002413</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">-2.0%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">7<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">-0.7亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">15.1亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot off" title="F1">F1-</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot off" title="F7">F7-</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-002413" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>33.4%</td><td>流动比率</td><td>1.97</td></tr>
+<tr><td>毛利率</td><td>33.6%</td><td>资产周转率</td><td>0.2989</td></tr>
+<tr><td>经营现金流</td><td>2.4亿</td><td>净资产</td><td>32.9亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('601061')">
+<div class="card-header"><span class="stock-title">中信金属 <span class="stock-code">601061</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">14.7%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">9<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">35.0亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">1,567.7亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-601061" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>57.7%</td><td>流动比率</td><td>1.18</td></tr>
+<tr><td>毛利率</td><td>2.3%</td><td>资产周转率</td><td>2.7266</td></tr>
+<tr><td>经营现金流</td><td>61.3亿</td><td>净资产</td><td>242.3亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('000157')">
+<div class="card-header"><span class="stock-title">中联重科 <span class="stock-code">000157</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">7.5%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">5<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">43.3亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">529.4亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-000157" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>57.7%</td><td>流动比率</td><td>1.81</td></tr>
+<tr><td>毛利率</td><td>27.7%</td><td>资产周转率</td><td>0.3827</td></tr>
+<tr><td>经营现金流</td><td>50.7亿</td><td>净资产</td><td>584.3亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('603308')">
+<div class="card-header"><span class="stock-title">应流股份 <span class="stock-code">603308</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">7.4%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">6<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">3.8亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">31.4亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-603308" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>59.8%</td><td>流动比率</td><td>1.53</td></tr>
+<tr><td>毛利率</td><td>33.7%</td><td>资产周转率</td><td>0.2329</td></tr>
+<tr><td>经营现金流</td><td>2.6亿</td><td>净资产</td><td>51.8亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('601865')">
+<div class="card-header"><span class="stock-title">福莱特 <span class="stock-code">601865</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">4.1%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">4<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">9.1亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">151.6亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-601865" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>46.9%</td><td>流动比率</td><td>1.47</td></tr>
+<tr><td>毛利率</td><td>14.4%</td><td>资产周转率</td><td>0.3570</td></tr>
+<tr><td>经营现金流</td><td>30.4亿</td><td>净资产</td><td>225.2亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('600660')">
+<div class="card-header"><span class="stock-title">福耀玻璃 <span class="stock-code">600660</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#22c55e">23.4%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">6<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">89.9亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">462.9亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-600660" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>46.6%</td><td>流动比率</td><td>1.79</td></tr>
+<tr><td>毛利率</td><td>37.4%</td><td>资产周转率</td><td>0.6456</td></tr>
+<tr><td>经营现金流</td><td>104.0亿</td><td>净资产</td><td>391.4亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('002318')">
+<div class="card-header"><span class="stock-title">久立特材 <span class="stock-code">002318</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#22c55e">17.1%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">7<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">15.2亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">112.0亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-002318" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>31.7%</td><td>流动比率</td><td>2.13</td></tr>
+<tr><td>毛利率</td><td>24.9%</td><td>资产周转率</td><td>0.8103</td></tr>
+<tr><td>经营现金流</td><td>17.0亿</td><td>净资产</td><td>91.2亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('002335')">
+<div class="card-header"><span class="stock-title">科华数据 <span class="stock-code">002335</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">6.6%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">9<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">4.3亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">83.7亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-002335" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>51.7%</td><td>流动比率</td><td>1.32</td></tr>
+<tr><td>毛利率</td><td>27.9%</td><td>资产周转率</td><td>0.6016</td></tr>
+<tr><td>经营现金流</td><td>12.4亿</td><td>净资产</td><td>64.9亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('605566')">
+<div class="card-header"><span class="stock-title">福莱蒽特 <span class="stock-code">605566</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">2.8%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">7<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">0.6亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">8.6亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-605566" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>18.6%</td><td>流动比率</td><td>4.34</td></tr>
+<tr><td>毛利率</td><td>19.2%</td><td>资产周转率</td><td>0.3447</td></tr>
+<tr><td>经营现金流</td><td>0.3亿</td><td>净资产</td><td>20.3亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('601995')">
+<div class="card-header"><span class="stock-title">中金公司 <span class="stock-code">601995</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">8.9%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">6<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">113.3亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">315.9亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-601995" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>84.1%</td><td>流动比率</td><td>N/A</td></tr>
+<tr><td>毛利率</td><td>N/A</td><td>资产周转率</td><td>0.0382</td></tr>
+<tr><td>经营现金流</td><td>882.1亿</td><td>净资产</td><td>1,324.7亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('600030')">
+<div class="card-header"><span class="stock-title">中信证券 <span class="stock-code">600030</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">10.3%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">6<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">336.8亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">815.8亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-600030" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>84.8%</td><td>流动比率</td><td>N/A</td></tr>
+<tr><td>毛利率</td><td>N/A</td><td>资产周转率</td><td>0.0378</td></tr>
+<tr><td>经营现金流</td><td>2,026.2亿</td><td>净资产</td><td>3,345.7亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('601066')">
+<div class="card-header"><span class="stock-title">中信建投 <span class="stock-code">601066</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">9.2%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">6<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">112.6亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">262.8亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-601066" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>83.7%</td><td>流动比率</td><td>N/A</td></tr>
+<tr><td>毛利率</td><td>N/A</td><td>资产周转率</td><td>0.0361</td></tr>
+<tr><td>经营现金流</td><td>931.4亿</td><td>净资产</td><td>1,268.2亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('000987')">
+<div class="card-header"><span class="stock-title">越秀资本 <span class="stock-code">000987</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">12.3%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">7<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">41.6亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">75.3亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-000987" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>76.4%</td><td>流动比率</td><td>1.51</td></tr>
+<tr><td>毛利率</td><td>21.2%</td><td>资产周转率</td><td>0.0350</td></tr>
+<tr><td>经营现金流</td><td>71.5亿</td><td>净资产</td><td>344.9亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('601100')">
+<div class="card-header"><span class="stock-title">恒立液压 <span class="stock-code">601100</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#22c55e">15.7%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">4<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">27.7亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">117.3亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-601100" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>20.4%</td><td>流动比率</td><td>3.93</td></tr>
+<tr><td>毛利率</td><td>38.6%</td><td>资产周转率</td><td>0.5304</td></tr>
+<tr><td>经营现金流</td><td>22.8亿</td><td>净资产</td><td>178.9亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('600570')">
+<div class="card-header"><span class="stock-title">恒生电子 <span class="stock-code">600570</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">13.5%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">6<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">13.4亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">56.6亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-600570" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>27.7%</td><td>流动比率</td><td>1.36</td></tr>
+<tr><td>毛利率</td><td>68.0%</td><td>资产周转率</td><td>0.3658</td></tr>
+<tr><td>经营现金流</td><td>9.6亿</td><td>净资产</td><td>99.7亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('300124')">
+<div class="card-header"><span class="stock-title">汇川技术 <span class="stock-code">300124</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">13.2%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">8<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">47.4亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">462.7亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-300124" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>45.5%</td><td>流动比率</td><td>1.48</td></tr>
+<tr><td>毛利率</td><td>29.1%</td><td>资产周转率</td><td>0.6543</td></tr>
+<tr><td>经营现金流</td><td>65.1亿</td><td>净资产</td><td>363.8亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('300719')">
+<div class="card-header"><span class="stock-title">安达维尔 <span class="stock-code">300719</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">-1.1%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">5<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">-0.1亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">6.5亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot off" title="F1">F1-</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-300719" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>41.7%</td><td>流动比率</td><td>2.33</td></tr>
+<tr><td>毛利率</td><td>37.7%</td><td>资产周转率</td><td>0.3671</td></tr>
+<tr><td>经营现金流</td><td>0.4亿</td><td>净资产</td><td>10.1亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('002466')">
+<div class="card-header"><span class="stock-title">天齐锂业 <span class="stock-code">002466</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">5.0%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">6<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">22.4亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">128.9亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot off" title="F7">F7-</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-002466" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>28.4%</td><td>流动比率</td><td>2.51</td></tr>
+<tr><td>毛利率</td><td>62.7%</td><td>资产周转率</td><td>0.1701</td></tr>
+<tr><td>经营现金流</td><td>22.7亿</td><td>净资产</td><td>463.9亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('300014')">
+<div class="card-header"><span class="stock-title">亿纬锂能 <span class="stock-code">300014</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">10.4%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">6<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">44.8亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">693.5亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-300014" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>64.9%</td><td>流动比率</td><td>0.99</td></tr>
+<tr><td>毛利率</td><td>14.0%</td><td>资产周转率</td><td>0.5370</td></tr>
+<tr><td>经营现金流</td><td>62.3亿</td><td>净资产</td><td>439.7亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('600036')">
+<div class="card-header"><span class="stock-title">招商银行 <span class="stock-code">600036</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">11.8%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">4<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">1,507.5亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">3,407.2亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-600036" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>90.4%</td><td>流动比率</td><td>N/A</td></tr>
+<tr><td>毛利率</td><td>N/A</td><td>资产周转率</td><td>0.0257</td></tr>
+<tr><td>经营现金流</td><td>4,822.8亿</td><td>净资产</td><td>12,800.0亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('300285')">
+<div class="card-header"><span class="stock-title">国瓷材料 <span class="stock-code">300285</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">8.6%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">4<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">6.2亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">46.7亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-300285" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>22.4%</td><td>流动比率</td><td>2.52</td></tr>
+<tr><td>毛利率</td><td>36.7%</td><td>资产周转率</td><td>0.4787</td></tr>
+<tr><td>经营现金流</td><td>8.8亿</td><td>净资产</td><td>72.1亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('688981')">
+<div class="card-header"><span class="stock-title">中芯国际 <span class="stock-code">688981</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">3.4%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">5<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">50.5亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">686.4亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-688981" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>34.9%</td><td>流动比率</td><td>2.13</td></tr>
+<tr><td>毛利率</td><td>21.5%</td><td>资产周转率</td><td>0.1835</td></tr>
+<tr><td>经营现金流</td><td>263.9亿</td><td>净资产</td><td>1,498.1亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('600584')">
+<div class="card-header"><span class="stock-title">长电科技 <span class="stock-code">600584</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">5.8%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">7<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">16.5亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">387.1亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-600584" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>43.0%</td><td>流动比率</td><td>1.19</td></tr>
+<tr><td>毛利率</td><td>14.6%</td><td>资产周转率</td><td>0.7002</td></tr>
+<tr><td>经营现金流</td><td>52.9亿</td><td>净资产</td><td>287.7亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('002156')">
+<div class="card-header"><span class="stock-title">通富微电 <span class="stock-code">002156</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">9.3%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">6<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">14.5亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">293.1亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-002156" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>64.9%</td><td>流动比率</td><td>0.74</td></tr>
+<tr><td>毛利率</td><td>13.3%</td><td>资产周转率</td><td>0.6075</td></tr>
+<tr><td>经营现金流</td><td>64.5亿</td><td>净资产</td><td>156.6亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('603601')">
+<div class="card-header"><span class="stock-title">再升科技 <span class="stock-code">603601</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">1.4%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">5<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">0.4亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">12.5亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot off" title="F7">F7-</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-603601" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>12.8%</td><td>流动比率</td><td>6.15</td></tr>
+<tr><td>毛利率</td><td>18.7%</td><td>资产周转率</td><td>0.3960</td></tr>
+<tr><td>经营现金流</td><td>2.7亿</td><td>净资产</td><td>27.1亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('605123')">
+<div class="card-header"><span class="stock-title">派克新材 <span class="stock-code">605123</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">5.7%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">7<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">2.6亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">38.2亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-605123" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>46.5%</td><td>流动比率</td><td>1.83</td></tr>
+<tr><td>毛利率</td><td>19.6%</td><td>资产周转率</td><td>0.4512</td></tr>
+<tr><td>经营现金流</td><td>8.0亿</td><td>净资产</td><td>46.6亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('002149')">
+<div class="card-header"><span class="stock-title">西部材料 <span class="stock-code">002149</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">2.3%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">4<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">0.8亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">30.8亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot off" title="F7">F7-</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-002149" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>48.6%</td><td>流动比率</td><td>1.32</td></tr>
+<tr><td>毛利率</td><td>14.9%</td><td>资产周转率</td><td>0.3852</td></tr>
+<tr><td>经营现金流</td><td>1.9亿</td><td>净资产</td><td>37.2亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('003009')">
+<div class="card-header"><span class="stock-title">中天火箭 <span class="stock-code">003009</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">-4.5%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">7<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">-0.8亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">8.5亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot off" title="F1">F1-</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot off" title="F7">F7-</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-003009" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>33.4%</td><td>流动比率</td><td>1.95</td></tr>
+<tr><td>毛利率</td><td>19.8%</td><td>资产周转率</td><td>0.2777</td></tr>
+<tr><td>经营现金流</td><td>0.6亿</td><td>净资产</td><td>20.1亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('603678')">
+<div class="card-header"><span class="stock-title">火炬电子 <span class="stock-code">603678</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">4.1%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#ef4444">3<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">2.5亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">47.1亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot off" title="F2">F2-</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-603678" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>35.4%</td><td>流动比率</td><td>2.23</td></tr>
+<tr><td>毛利率</td><td>17.6%</td><td>资产周转率</td><td>0.4867</td></tr>
+<tr><td>经营现金流</td><td>-4.8亿</td><td>净资产</td><td>61.5亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('300337')">
+<div class="card-header"><span class="stock-title">银邦股份 <span class="stock-code">300337</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">4.9%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">5<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">0.9亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">69.2亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot off" title="F2">F2-</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot on" title="F9">F9+</span></div>
+<div id="detail-300337" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>76.5%</td><td>流动比率</td><td>1.91</td></tr>
+<tr><td>毛利率</td><td>8.8%</td><td>资产周转率</td><td>0.9784</td></tr>
+<tr><td>经营现金流</td><td>-7.3亿</td><td>净资产</td><td>17.9亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('603596')">
+<div class="card-header"><span class="stock-title">伯特利 <span class="stock-code">603596</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#22c55e">16.1%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">5<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">13.1亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">120.5亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-603596" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>50.0%</td><td>流动比率</td><td>2.32</td></tr>
+<tr><td>毛利率</td><td>19.4%</td><td>资产周转率</td><td>0.6962</td></tr>
+<tr><td>经营现金流</td><td>9.4亿</td><td>净资产</td><td>82.5亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('688433')">
+<div class="card-header"><span class="stock-title">华曙高科 <span class="stock-code">688433</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">3.0%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">7<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">0.6亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">7.2亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-688433" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>24.5%</td><td>流动比率</td><td>3.11</td></tr>
+<tr><td>毛利率</td><td>44.8%</td><td>资产周转率</td><td>0.2551</td></tr>
+<tr><td>经营现金流</td><td>0.7亿</td><td>净资产</td><td>21.2亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('300762')">
+<div class="card-header"><span class="stock-title">上海瀚讯 <span class="stock-code">300762</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">-7.8%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#ef4444">1<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">-1.8亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">4.2亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot off" title="F1">F1-</span><span class="f-dot off" title="F2">F2-</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot off" title="F7">F7-</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-300762" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>41.4%</td><td>流动比率</td><td>1.89</td></tr>
+<tr><td>毛利率</td><td>27.4%</td><td>资产周转率</td><td>0.1069</td></tr>
+<tr><td>经营现金流</td><td>-0.5亿</td><td>净资产</td><td>22.7亿</td></tr>
+</table></div></div></div><div class="card" onclick="toggleDetail('600343')">
+<div class="card-header"><span class="stock-title">航天动力 <span class="stock-code">600343</span></span><span class="report-date">📅 2026-03-31</span></div>
+<div class="card-body">
+<div class="metrics-row">
+<div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">-14.7%</div></div>
+<div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">4<span class="sub">/9</span></div></div>
+<div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">-1.9亿</div></div>
+<div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">7.9亿</div></div>
+</div>
+<div class="f-score-bar"><span class="f-dot off" title="F1">F1-</span><span class="f-dot off" title="F2">F2-</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot off" title="F7">F7-</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot off" title="F9">F9-</span></div>
+<div id="detail-600343" class="detail-row" style="display:none"><table class="detail-table">
+<tr><td>资产负债率</td><td>48.9%</td><td>流动比率</td><td>1.45</td></tr>
+<tr><td>毛利率</td><td>15.9%</td><td>资产周转率</td><td>0.2552</td></tr>
+<tr><td>经营现金流</td><td>-0.4亿</td><td>净资产</td><td>12.7亿</td></tr>
+</table></div></div></div></div>
+<div class="chart-section"><h3 style="margin-bottom:12px">📈 TTM ROE / F-Score 趋势</h3><div class="chart-controls" id="cc"><button class="chart-btn active" onclick="switchStock('600160',this)">巨化股份</button><button class="chart-btn " onclick="switchStock('300827',this)">上能电气</button><button class="chart-btn " onclick="switchStock('600346',this)">恒力石化</button><button class="chart-btn " onclick="switchStock('000708',this)">中信特钢</button><button class="chart-btn " onclick="switchStock('300748',this)">金力永磁</button><button class="chart-btn " onclick="switchStock('002413',this)">雷科防务</button><button class="chart-btn " onclick="switchStock('601061',this)">中信金属</button><button class="chart-btn " onclick="switchStock('000157',this)">中联重科</button><button class="chart-btn " onclick="switchStock('603308',this)">应流股份</button><button class="chart-btn " onclick="switchStock('601865',this)">福莱特</button><button class="chart-btn " onclick="switchStock('600660',this)">福耀玻璃</button><button class="chart-btn " onclick="switchStock('002318',this)">久立特材</button></div><div class="chart-container"><canvas id="tc"></canvas></div></div>
+</div>
+<div class="footer">⚠️ 仅供研究参考，不构成投资建议 | 数据来源: 同花顺/东方财富(AkShare)</div>
+<script>const TD={"600160": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [1.49, 2.54, 8.59, 9.89, 14.22, 17.78, 15.77, 14.79, 12.42, 9.29, 5.98, 6.78, 7.77, 8.57, 11.15, 13.39, 16.74, 19.9, 18.51, 19.75], "fscore": [7, 7, 6, 6, 6, 6, 6, 5, 5, 5, 7, 6, 8, 7, 9, 7, 6, 7, 4, 8], "revenue": [170.7, 177.7, 179.9, 190.0, 203.1, 217.4, 214.9, 214.6, 210.8, 211.2, 206.6, 215.5, 226.4, 225.5, 244.6, 247.9, 257.1, 269.5, 269.9, 272.1]}, "300827": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [8.29, 7.69, 6.69, 6.64, 6.25, 6.21, 8.15, 9.68, 14.81, 15.48, 16.96, 16.84, 16.85, 19.34, 19.95, 20.65, 20.31, 18.29, 14.0, 11.12], "fscore": [3, 5, 5, 6, 3, 4, 8, 7, 6, 6, 3, 5, 3, 5, 4, 6, 4, 5, 4, 6], "revenue": [11.5, 10.2, 10.9, 11.5, 11.2, 15.1, 23.4, 27.4, 41.0, 45.8, 49.3, 50.2, 46.8, 46.9, 47.7, 48.9, 50.3, 52.7, 56.3, 58.7]}, "600346": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [32.78, 31.19, 27.87, 26.79, 25.16, 15.36, 4.22, -1.66, -4.84, 3.37, 11.63, 13.15, 12.88, 10.38, 11.29, 10.81, 9.46, 10.89, 10.77, 13.0], "fscore": [7, 8, 5, 6, 5, 5, 5, 5, 4, 7, 7, 6, 5, 6, 7, 7, 5, 8, 5, 8], "revenue": [1895.9, 2005.3, 1980.0, 1981.7, 2126.0, 2169.0, 2223.7, 2251.2, 2126.6, 2251.4, 2348.7, 2371.2, 2380.1, 2395.6, 2364.0, 2350.3, 2277.5, 2160.1, 2010.9, 1932.5]}, "000708": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [26.76, 25.37, 24.47, 22.79, 21.37, 21.69, 19.94, 17.88, 17.26, 16.26, 15.1, 14.25, 13.77, 13.26, 12.72, 12.36, 12.4, 13.47, 13.85, 13.66], "fscore": [8, 7, 7, 5, 4, 7, 6, 5, 6, 8, 7, 7, 6, 7, 7, 7, 6, 7, 9, 6], "revenue": [889.7, 954.7, 985.9, 1001.8, 1013.3, 991.4, 983.5, 1017.4, 1048.5, 1092.5, 1140.2, 1144.8, 1127.0, 1111.1, 1092.0, 1076.1, 1069.1, 1069.0, 1073.7, 1070.3]}, "300748": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [16.68, 17.63, 15.84, 11.01, 10.79, 11.91, 10.4, 10.43, 8.24, 7.28, 8.0, 6.9, 5.05, 3.95, 4.23, 4.93, 6.63, 8.45, 9.55, 9.61], "fscore": [5, 6, 3, 3, 3, 4, 4, 5, 8, 5, 5, 5, 5, 8, 6, 6, 5, 6, 7, 6], "revenue": [32.6, 37.2, 40.8, 48.0, 55.8, 63.8, 71.7, 73.1, 72.9, 70.0, 66.9, 65.7, 66.2, 66.5, 67.6, 69.8, 69.1, 71.2, 77.2, 80.0]}, "002413": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [3.75, 3.53, -4.76, -4.68, -5.8, -7.38, -20.27, -22.52, -19.05, -19.01, -10.88, -12.92, -17.16, -17.96, -11.13, -11.73, -10.91, -10.45, -2.61, -2.0], "fscore": [3, 3, 2, 5, 4, 2, 1, 5, 4, 5, 5, 6, 6, 3, 4, 5, 5, 4, 3, 7], "revenue": [13.8, 14.9, 16.2, 17.5, 16.6, 16.2, 13.6, 13.3, 13.0, 11.7, 12.7, 12.1, 11.7, 11.4, 12.4, 12.2, 12.9, 14.8, 14.6, 15.1]}, "601061": {"dates": ["2020-12-31", "2021-06-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [11.79, null, 16.49, null, 15.47, null, 16.43, 14.22, 9.61, 10.47, 10.97, 8.67, 10.46, 10.56, 10.42, 11.94, 11.46, 12.34, 11.47, 14.73], "fscore": [6, 2, 2, 1, 1, 0, 3, 6, 5, 7, 7, 2, 4, 5, 7, 8, 5, 7, 3, 9], "revenue": [769.4, null, 1128.2, null, 1190.6, null, 1191.8, 1213.0, 1180.2, 1228.2, 1250.0, 1241.0, 1280.3, 1252.8, 1294.4, 1308.5, 1288.5, 1378.5, 1418.2, 1567.7]}, "000157": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [14.65, 13.15, 11.08, 8.3, 5.56, 4.94, 4.25, 4.04, 4.88, 5.57, 6.34, 6.36, 6.64, 6.71, 6.16, 6.95, 6.92, 7.45, 8.38, 7.47], "fscore": [4, 6, 5, 3, 4, 5, 7, 5, 6, 5, 7, 7, 4, 7, 6, 6, 4, 7, 6, 5], "revenue": [787.3, 742.9, 671.3, 580.9, 459.8, 433.5, 416.3, 420.4, 444.1, 465.0, 470.8, 484.2, 475.4, 459.5, 454.8, 458.2, 458.0, 482.5, 521.1, 529.4]}, "603308": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [5.8, 5.76, 5.92, 5.98, 6.93, 7.61, 9.61, 9.67, 9.47, 9.45, 6.84, 6.94, 6.44, 6.26, 6.22, 6.14, 6.75, 7.14, 6.89, 7.37], "fscore": [3, 4, 6, 6, 7, 6, 5, 6, 3, 6, 5, 6, 5, 3, 5, 5, 4, 6, 5, 6], "revenue": [19.3, 20.0, 20.4, 21.1, 21.8, 21.8, 22.0, 22.8, 22.8, 23.5, 24.1, 24.7, 25.0, 25.1, 25.1, 25.1, 26.3, 27.2, 29.2, 31.4]}, "601865": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [22.38, 22.72, 18.27, 14.29, 14.63, 14.15, 15.28, 15.38, 14.84, 13.92, 12.49, 13.35, 14.0, 9.33, 4.58, 1.63, -1.06, 1.58, 4.39, 4.06], "fscore": [3, 4, 3, 4, 6, 6, 5, 5, 4, 5, 4, 7, 7, 6, 5, 4, 4, 9, 7, 4], "revenue": [77.9, 85.8, 87.1, 101.7, 119.9, 135.9, 154.6, 173.2, 178.3, 201.3, 215.2, 218.8, 225.4, 202.4, 186.8, 170.4, 157.2, 165.4, 155.7, 151.6]}, "600660": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [14.35, 13.68, 12.07, 11.83, 14.0, 16.18, 16.55, 16.32, 17.78, 16.92, 18.3, 18.98, 19.51, 21.48, 21.71, 22.17, 24.0, 25.54, 25.5, 23.45], "fscore": [8, 5, 7, 5, 5, 9, 8, 5, 7, 8, 9, 8, 7, 9, 7, 6, 7, 7, 7, 6], "revenue": [233.3, 232.8, 236.0, 244.4, 249.6, 268.9, 281.0, 286.0, 302.3, 314.9, 331.6, 349.4, 364.7, 376.5, 392.5, 403.3, 423.6, 442.4, 457.9, 462.9]}, "002318": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [18.82, 17.4, 15.87, 16.29, 17.57, 19.24, 21.43, 20.92, 23.01, 22.59, 21.02, 21.71, 19.54, 19.3, 19.27, 19.37, 21.07, 21.47, 18.0, 17.09], "fscore": [7, 5, 3, 5, 5, 7, 6, 6, 5, 5, 5, 9, 5, 5, 6, 6, 5, 7, 6, 7], "revenue": [57.5, 58.7, 59.7, 60.0, 60.0, 62.4, 65.4, 69.0, 73.2, 79.3, 85.7, 92.8, 96.3, 95.6, 109.2, 114.1, 121.9, 135.2, 120.6, 112.0]}, "002335": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [13.9, 12.26, 12.7, 12.35, 11.52, 11.93, 6.63, 7.77, 10.28, 9.7, 11.62, 9.86, 9.11, 6.57, 6.8, 5.85, 5.48, 6.71, 6.57, 6.62], "fscore": [6, 4, 7, 8, 4, 7, 5, 8, 8, 6, 7, 8, 5, 5, 5, 6, 4, 7, 5, 9], "revenue": [46.9, 47.2, 48.7, 48.9, 48.6, 50.7, 56.5, 61.5, 68.3, 75.1, 81.4, 78.3, 84.8, 80.3, 77.6, 77.9, 77.6, 80.7, 81.6, 83.7]}, "605566": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [21.37, 19.56, 11.4, 6.87, 6.29, 5.37, 2.19, 1.93, 1.1, 0.91, 1.43, 1.44, 1.04, 0.7, 1.1, 1.04, 1.44, 1.53, 2.24, 2.78], "fscore": [2, 3, 5, 4, 5, 3, 4, 5, 5, 5, 5, 8, 5, 5, 9, 7, 8, 6, 7, 7], "revenue": [11.0, 11.1, 11.8, 11.1, 11.6, 11.4, 10.3, 10.2, 9.4, 9.0, 9.2, 9.1, 9.6, 9.7, 9.7, 9.3, 8.4, 8.0, 7.8, 8.6]}, "601995": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [11.91, 12.2, 13.01, 12.13, 10.65, 10.1, 7.86, 8.18, 7.19, 6.03, 5.92, 4.88, 4.56, 4.11, 5.08, 5.59, 6.61, 8.03, 8.24, 8.9], "fscore": [4, 4, 7, 5, 4, 6, 5, 6, 5, 3, 3, 4, 4, 4, 6, 7, 6, 6, 6, 6], "revenue": [276.3, 285.4, 301.3, 292.7, 278.0, 278.4, 260.9, 272.2, 263.8, 241.6, 229.9, 206.6, 194.8, 189.7, 213.3, 231.8, 252.5, 286.4, 284.8, 315.9]}, "600030": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [9.74, 10.16, 11.19, 10.22, 9.07, 8.96, 17.13, 16.63, 8.3, 8.13, 7.42, 7.01, 6.78, 7.11, 7.49, 7.84, 8.18, 9.05, 9.47, 10.29], "fscore": [6, 7, 6, 4, 4, 5, 7, 1, 3, 3, 2, 4, 3, 5, 6, 6, 6, 6, 5, 6], "revenue": [653.6, 702.0, 765.2, 753.4, 736.9, 685.3, 651.1, 652.4, 617.2, 611.0, 600.7, 584.8, 560.0, 563.2, 581.2, 608.0, 637.2, 718.7, 748.5, 815.8]}, "601066": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [13.2, 12.29, 13.07, 12.17, 11.57, 10.36, 8.08, 8.89, 7.78, 7.06, 7.25, 5.82, 5.43, 5.54, 6.96, 7.4, 8.25, 8.88, 8.04, 9.16], "fscore": [5, 5, 7, 5, 6, 5, 4, 5, 4, 5, 5, 3, 3, 4, 7, 5, 7, 6, 5, 6], "revenue": [257.8, 281.0, 298.7, 314.0, 319.7, 319.6, 275.6, 279.3, 266.1, 232.5, 232.4, 208.4, 187.3, 180.3, 190.5, 195.0, 208.4, 231.7, 233.2, 262.8]}, "000987": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [7.64, 8.71, 9.96, 9.81, 9.94, 9.28, 9.4, 9.65, 9.57, 9.37, 8.45, 7.48, 6.77, 7.11, 7.58, 7.88, 8.9, 11.07, 10.65, 12.28], "fscore": [4, 5, 6, 3, 4, 6, 5, 6, 6, 5, 7, 5, 6, 7, 6, 8, 7, 8, 7, 7], "revenue": [116.5, 125.5, 133.1, 145.7, 141.0, 141.0, 141.7, 144.4, 140.7, 140.4, 147.9, 139.4, 150.1, 112.9, 75.3, 63.6, 63.2, 87.3, 78.4, 75.3]}, "601100": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [33.44, 33.71, 30.45, 25.78, 24.62, 25.39, 20.66, 18.84, 19.39, 17.52, 17.84, 16.83, 16.91, 17.07, 16.27, 15.69, 16.16, 16.78, 15.92, 15.74], "fscore": [3, 8, 6, 6, 5, 7, 5, 6, 5, 5, 9, 4, 6, 7, 6, 5, 6, 8, 4, 4], "revenue": [96.3, 97.2, 93.1, 86.5, 79.7, 80.5, 82.0, 84.2, 87.6, 86.2, 89.8, 89.2, 93.7, 95.8, 93.9, 94.5, 97.3, 102.4, 109.4, 117.3]}, "600570": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [39.39, 35.03, 28.81, 22.02, 11.46, 13.86, 17.42, 19.54, 23.06, 23.53, 18.67, 14.58, 12.79, 15.77, 12.35, 12.79, 14.61, 11.83, 13.03, 13.51], "fscore": [6, 4, 7, 5, 6, 8, 8, 6, 6, 5, 6, 6, 5, 6, 5, 5, 5, 5, 6, 6], "revenue": [46.1, 49.6, 55.0, 57.2, 58.3, 61.1, 65.0, 66.6, 69.4, 71.3, 72.8, 73.4, 72.9, 71.0, 65.8, 64.2, 61.7, 58.8, 57.8, 56.6]}, "300124": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [22.89, 21.96, 23.7, 22.52, 23.81, 23.57, 22.64, 21.4, 21.11, 20.92, 20.2, 19.3, 18.84, 18.4, 15.73, 16.67, 17.17, 16.05, 14.48, 13.22], "fscore": [6, 4, 4, 3, 5, 4, 4, 6, 5, 6, 4, 5, 5, 5, 4, 9, 6, 6, 4, 8], "revenue": [150.0, 167.6, 179.4, 193.1, 200.7, 208.4, 230.1, 230.1, 250.6, 268.9, 304.2, 321.3, 341.5, 357.0, 370.4, 395.3, 413.7, 433.1, 451.1, 462.7]}, "300719": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [5.09, 5.25, 1.04, -0.07, 2.45, 1.34, -4.61, -3.36, -5.26, -1.67, 10.85, 10.82, 12.21, 9.47, 1.32, 0.03, -1.2, 0.88, -0.55, -1.11], "fscore": [3, 8, 3, 6, 7, 6, 1, 5, 2, 3, 8, 4, 5, 2, 2, 4, 1, 5, 3, 5], "revenue": [5.6, 5.3, 4.8, 4.6, 5.0, 4.9, 4.1, 4.5, 4.6, 5.6, 8.5, 8.5, 8.6, 8.0, 6.3, 6.6, 6.5, 7.1, 6.8, 6.5]}, "002466": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [-21.16, -2.21, 16.02, 38.57, 62.09, 54.64, 53.89, 50.6, 38.88, 31.3, 14.02, -2.97, -9.44, -14.76, -18.51, -9.33, -6.25, -4.8, 1.09, 5.04], "fscore": [6, 7, 8, 8, 7, 7, 6, 5, 5, 4, 6, 5, 4, 2, 3, 3, 4, 5, 8, 6], "revenue": [37.1, 46.9, 76.6, 120.2, 196.1, 284.4, 404.5, 466.4, 509.8, 492.0, 405.0, 316.4, 221.0, 171.7, 130.6, 130.6, 114.8, 104.0, 103.5, 128.9]}, "300014": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [17.65, 17.51, 16.6, 15.34, 14.93, 17.27, 13.91, 13.26, 13.35, 12.89, 11.85, 11.27, 11.29, 10.55, 10.99, 10.78, 9.14, 9.41, 10.06, 10.38], "fscore": [5, 4, 4, 5, 6, 7, 6, 5, 6, 7, 7, 7, 5, 6, 8, 6, 6, 7, 6, 6], "revenue": [115.5, 142.7, 169.0, 206.8, 252.7, 297.4, 363.0, 407.6, 443.5, 475.5, 487.8, 469.1, 474.7, 473.0, 486.1, 520.9, 551.3, 595.7, 614.7, 693.5]}, "600036": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [14.4, 14.81, 14.56, 14.15, 14.39, 14.74, 14.8, 14.62, 14.74, 14.59, 14.03, 13.26, 13.06, 12.91, 12.47, 11.9, 11.7, 11.64, 11.83, 11.82], "fscore": [6, 7, 6, 5, 5, 6, 5, 5, 5, 5, 5, 4, 4, 5, 5, 4, 5, 4, 5, 4], "revenue": [3108.8, 3204.6, 3312.5, 3384.9, 3415.9, 3446.8, 3447.8, 3434.3, 3441.5, 3402.3, 3391.2, 3349.0, 3336.1, 3315.5, 3374.9, 3348.2, 3345.1, 3362.0, 3375.3, 3407.2]}, "300285": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [13.56, 14.08, 14.15, 14.22, 13.95, 11.21, 8.48, 6.93, 6.82, 7.8, 9.08, 9.08, 8.94, 9.3, 9.1, 8.96, 8.83, 8.8, 8.62, 8.58], "fscore": [7, 4, 4, 6, 4, 5, 5, 4, 4, 5, 7, 7, 8, 6, 7, 7, 5, 5, 7, 4], "revenue": [29.4, 29.9, 31.6, 33.8, 34.2, 33.3, 31.7, 31.2, 32.9, 35.1, 38.6, 39.0, 39.6, 40.4, 40.5, 42.0, 42.5, 43.6, 45.8, 46.7]}, "688981": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [8.01, 8.15, 9.94, 11.33, 10.03, 10.05, 9.12, 8.15, 6.43, 4.5, 3.38, 2.62, 2.42, 2.67, 2.53, 3.05, 2.9, 3.19, 3.34, 3.36], "fscore": [6, 7, 8, 7, 5, 6, 4, 4, 4, 5, 5, 5, 6, 9, 7, 9, 6, 8, 8, 5], "revenue": [304.0, 320.4, 356.3, 401.9, 441.3, 480.2, 495.2, 478.7, 462.4, 448.5, 452.5, 476.4, 502.0, 540.3, 578.0, 615.0, 638.8, 654.3, 673.2, 686.4]}, "600584": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [13.58, 13.37, 14.34, 16.04, 14.32, 14.19, 13.32, 10.06, 8.74, 6.86, 5.67, 5.72, 6.04, 5.89, 5.91, 6.05, 5.25, 5.31, 5.51, 5.75], "fscore": [7, 6, 9, 9, 6, 4, 6, 6, 6, 6, 6, 7, 7, 4, 7, 8, 7, 7, 6, 7], "revenue": [283.1, 296.2, 305.0, 319.3, 322.8, 333.6, 337.6, 314.8, 303.4, 294.1, 296.6, 306.4, 329.8, 342.1, 359.6, 384.6, 390.8, 396.5, 388.7, 387.1]}, "002156": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [6.4, 7.75, 9.27, 9.19, 8.57, 6.64, 4.03, 2.47, -0.37, -0.28, 1.22, 1.88, 4.8, 5.46, 4.65, 4.62, 5.19, 6.58, 7.95, 9.29], "fscore": [7, 7, 6, 4, 6, 5, 5, 5, 7, 5, 6, 9, 7, 7, 5, 5, 8, 6, 5, 6], "revenue": [131.9, 145.5, 158.1, 170.5, 182.9, 199.3, 214.3, 215.7, 217.7, 220.2, 222.7, 229.1, 234.4, 234.4, 238.8, 246.9, 258.4, 269.2, 279.2, 293.1]}, "603601": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [14.41, 11.9, 12.88, 11.4, 10.83, 10.06, 7.07, 5.64, 5.47, 5.49, 1.71, 1.68, 1.48, 0.54, 4.12, 4.18, 3.37, 3.6, 2.36, 1.42], "fscore": [3, 3, 6, 6, 4, 7, 5, 6, 8, 7, 6, 4, 6, 5, 6, 6, 6, 6, 4, 5], "revenue": [18.2, 17.3, 16.2, 15.4, 16.3, 16.6, 16.2, 16.3, 16.5, 16.9, 16.6, 16.2, 15.8, 14.9, 14.8, 14.6, 13.8, 13.7, 12.8, 12.5]}, "605123": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [14.56, 15.38, 17.19, 18.4, 19.83, 15.38, 12.81, 13.27, 13.7, 13.41, 11.56, 9.74, 8.29, 7.28, 6.0, 6.02, 6.06, 5.53, 5.48, 5.65], "fscore": [5, 4, 5, 6, 4, 3, 3, 6, 6, 5, 6, 3, 5, 4, 4, 5, 6, 4, 4, 7], "revenue": [13.7, 14.9, 17.3, 20.2, 22.3, 26.5, 27.8, 31.1, 35.1, 34.6, 36.2, 34.2, 32.8, 33.0, 32.1, 32.4, 33.5, 34.1, 35.4, 38.2]}, "002149": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [5.3, 5.66, 5.09, 4.67, 5.72, 6.01, 6.68, 7.07, 6.86, 7.02, 6.74, 6.71, 6.38, 6.2, 5.34, 5.13, 4.14, 3.04, 3.32, 2.28], "fscore": [5, 3, 5, 3, 7, 4, 7, 5, 5, 9, 7, 5, 6, 4, 4, 5, 4, 5, 7, 4], "revenue": [22.8, 23.4, 23.9, 24.2, 27.1, 28.0, 29.4, 31.8, 30.5, 31.3, 32.3, 32.1, 32.0, 30.9, 29.5, 29.9, 29.4, 30.1, 32.3, 30.8]}, "003009": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [10.34, 11.29, 9.07, 8.16, 8.28, 7.56, 9.53, 8.6, 5.81, 4.86, 6.04, 4.71, 5.13, 4.52, 1.21, -0.35, 0.19, -1.68, -6.56, -4.52], "fscore": [4, 4, 3, 6, 5, 4, 4, 6, 3, 3, 6, 5, 6, 6, 5, 5, 5, 5, 3, 7], "revenue": [9.9, 10.3, 10.2, 10.1, 10.8, 11.3, 12.4, 12.1, 11.2, 10.8, 11.8, 12.1, 11.7, 11.5, 9.2, 8.0, 7.8, 7.3, 7.8, 8.5]}, "603678": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [21.08, 22.03, 20.83, 18.69, 18.34, 17.58, 15.3, 13.72, 10.38, 6.97, 5.88, 4.89, 4.16, 4.58, 3.55, 4.08, 4.95, 4.71, 5.22, 4.12], "fscore": [6, 7, 3, 5, 6, 7, 6, 6, 4, 5, 7, 8, 7, 5, 4, 8, 6, 3, 4, 3], "revenue": [45.7, 47.8, 47.3, 44.2, 42.8, 39.7, 35.6, 33.6, 31.8, 34.4, 35.0, 35.1, 33.5, 29.4, 28.0, 29.1, 31.5, 33.5, 41.2, 47.1]}, "300337": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [3.24, 2.69, 2.69, 4.58, 7.1, 5.39, 4.27, 2.39, 0.58, 4.1, 3.93, 4.91, 6.82, 6.08, 3.39, 2.56, 1.15, 0.72, 2.65, 4.89], "fscore": [8, 5, 7, 9, 7, 5, 6, 4, 6, 7, 8, 6, 4, 3, 2, 3, 3, 6, 5, 5], "revenue": [27.1, 29.1, 31.9, 33.4, 36.9, 38.9, 39.4, 40.9, 41.8, 43.2, 44.6, 45.8, 48.2, 49.8, 53.5, 56.0, 57.1, 60.7, 64.0, 69.2]}, "603596": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [18.27, 16.68, 14.81, 14.5, 14.91, 16.09, 17.15, 17.05, 17.55, 17.82, 17.16, 16.03, 16.75, 17.7, 18.95, 18.97, 18.5, 18.24, 16.84, 16.1], "fscore": [5, 4, 3, 5, 4, 5, 8, 6, 7, 7, 5, 5, 8, 6, 5, 7, 6, 5, 4, 5], "revenue": [34.2, 33.5, 34.9, 37.2, 40.6, 48.5, 55.4, 60.2, 65.2, 69.6, 74.7, 78.3, 83.5, 89.5, 99.4, 107.2, 111.3, 117.2, 120.1, 120.5]}, "688433": {"dates": ["2020-12-31", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [12.55, null, 23.28, null, null, 19.86, 13.36, 13.01, 8.39, 6.32, 6.9, 7.04, 6.28, 5.32, 3.48, 2.17, 1.98, 1.93, 3.41, 3.05], "fscore": [6, 0, 3, 1, 0, 5, 5, 7, 4, 2, 4, 7, 3, 3, 3, 6, 6, 5, 6, 7], "revenue": [2.2, null, 3.3, null, null, 4.2, 4.6, 4.8, 5.2, 5.5, 6.1, 6.3, 5.9, 5.8, 4.9, 4.9, 5.0, 5.5, 7.2, 7.2]}, "300762": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [10.72, 8.16, 9.28, 7.93, 9.05, 9.14, 3.18, 3.63, 1.77, -2.51, -7.42, -7.7, -9.22, -9.01, -5.19, -4.25, -4.26, -3.45, -5.25, -7.83], "fscore": [6, 4, 5, 6, 5, 5, 3, 5, 4, 0, 1, 1, 1, 2, 3, 3, 2, 4, 3, 1], "revenue": [7.0, 7.0, 7.3, 6.8, 7.4, 7.4, 4.0, 4.6, 3.6, 2.3, 3.1, 3.0, 2.7, 2.7, 3.5, 4.1, 4.2, 4.8, 5.0, 4.2]}, "600343": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [1.27, -2.5, -9.94, -10.61, -11.92, -7.78, -2.15, -2.22, -2.5, -4.43, -11.3, -12.58, -13.95, -13.97, -12.35, -13.12, -14.36, -15.48, -14.56, -14.72], "fscore": [8, 3, 3, 6, 2, 5, 5, 5, 0, 2, 1, 5, 2, 2, 2, 4, 1, 2, 5, 4], "revenue": [11.9, 11.8, 12.3, 12.6, 12.2, 13.2, 12.8, 11.9, 11.2, 9.4, 9.0, 9.1, 9.2, 9.5, 9.2, 9.2, 8.8, 8.4, 8.2, 7.9]}};let cc=null,cs='600160';
+function fc(){const q=document.getElementById('si').value.toLowerCase();document.querySelectorAll('.card').forEach(c=>c.style.display=c.textContent.toLowerCase().includes(q)?'':'none')}
+function td(id){const e=document.getElementById('detail-'+id);if(e)e.style.display=e.style.display==='none'?'block':'none'}
+function sc(m,b){
+document.querySelectorAll('.sort-btn').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');
+const g=document.getElementById('sg'),cards=Array.from(g.children);
+cards.sort((a,b)=>{
+if(m==='r'){const ra=parseFloat(a.querySelectorAll('.metric-value')[0].textContent)||0,rb=parseFloat(b.querySelectorAll('.metric-value')[0].textContent)||0;return rb-ra}
+if(m==='f'){const fa=parseInt(a.querySelectorAll('.metric-value')[1].textContent.split('/')[0])||0,fb=parseInt(b.querySelectorAll('.metric-value')[1].textContent.split('/')[0])||0;return fb-fa}
+return 0
+});cards.forEach(c=>g.appendChild(c))
+}
+function sw(id,b){cs=id;document.querySelectorAll('.chart-btn').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');rc(id)}
+function rc(id){
+const d=TD[id];if(!d||!d.dates)return;if(cc)cc.destroy();
+cc=new Chart(document.getElementById('tc').getContext('2d'),{
+type:'line',data:{labels:d.dates.map(x=>x.slice(5)),datasets:[
+{label:'TTM ROE(%)',data:d.roe,borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.1)',fill:true,tension:0.3,pointRadius:3,pointHoverRadius:6,yAxisID:'y'},
+{label:'F-Score',data:d.fscore,borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.1)',fill:true,tension:0.3,pointRadius:3,pointHoverRadius:6,yAxisID:'y1'},
+{label:'TTM营收(亿)',data:d.revenue,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.05)',fill:false,tension:0.3,pointRadius:2,borderDash:[5,5],yAxisID:'y2'}
+]},options:{
+responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+plugins:{legend:{labels:{color:'#94a3b8',usePointStyle:true}}},
+scales:{
+x:{ticks:{color:'#64748b',maxRotation:45},grid:{color:'#1e293b'}},
+y:{type:'linear',display:true,position:'left',ticks:{color:'#60a5fa'},grid:{color:'#1e293b'},title:{display:true,text:'ROE(%)',color:'#94a3b8'}},
+y1:{type:'linear',display:true,position:'right',ticks:{color:'#a78bfa',stepSize:1},grid:{display:false},min:0,max:9,title:{display:true,text:'F-Score',color:'#94a3b8'}},
+y2:{type:'linear',display:false,position:'right'}
+}
+}}}});if(cs)rc(cs)
+</script></body></html>

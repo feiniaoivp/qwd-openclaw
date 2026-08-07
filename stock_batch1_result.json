@@ -1,0 +1,2758 @@
+{
+  "query_date": "2026-07-26",
+  "total_stocks": 5,
+  "stocks": [
+    {
+      "code": "002318",
+      "name": "久立特材",
+      "market": "sz",
+      "financial": {
+        "code": "002318",
+        "name": "久立特材",
+        "yjyg": null,
+        "abstract": {
+          "2026-03-31": {
+            "index_per_operating_cash_flow_net": {
+              "value": -0.161,
+              "yoy": -5.4598
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": -54.8377,
+              "yoy": -4.489
+            },
+            "parent_holder_net_profit": {
+              "value": 394681282.11,
+              "yoy": 0.0143
+            },
+            "calc_per_net_assets": {
+              "value": 9.3309,
+              "yoy": 0.1203
+            },
+            "inventory_turnover_ratio": {
+              "value": 0.5265,
+              "yoy": -0.0851
+            },
+            "conservative_quick_ratio": {
+              "value": 1.1809,
+              "yoy": 0.5469
+            },
+            "equity_ratio": {
+              "value": 0.4772,
+              "yoy": -0.3917
+            },
+            "current_ratio": {
+              "value": 2.1293,
+              "yoy": 0.4706
+            },
+            "basic_eps": {
+              "value": 0.41,
+              "yoy": 0.0
+            },
+            "business_cycle": {
+              "value": 239.3137,
+              "yoy": 0.2054
+            },
+            "receive_accounts_turnover_days": {
+              "value": 68.3735,
+              "yoy": 0.6224
+            },
+            "quick_ratio": {
+              "value": 1.2008,
+              "yoy": 0.5379
+            },
+            "sale_gross_margin": {
+              "value": 24.9151,
+              "yoy": -0.1128
+            },
+            "inventory_turnover_days": {
+              "value": 170.9402,
+              "yoy": 0.0931
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": -29.7884,
+              "yoy": -2.4409
+            },
+            "sale_net_interest_ratio": {
+              "value": 19.5935,
+              "yoy": 0.418
+            },
+            "per_undistributed_profits": {
+              "value": 5.915,
+              "yoy": 0.1147
+            },
+            "operating_income_total": {
+              "value": 2023912307.62,
+              "yoy": -0.2979
+            },
+            "per_capital_reserve": {
+              "value": 1.7529,
+              "yoy": -0.0811
+            },
+            "index_full_diluted_roe": {
+              "value": 4.3287,
+              "yoy": -0.0946
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 1.4251,
+              "yoy": -0.9233
+            },
+            "assets_debt_ratio": {
+              "value": 31.6966,
+              "yoy": -0.2668
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 177815629.73,
+              "yoy": -0.5484
+            },
+            "index_weighted_avg_roe": {
+              "value": 4.49,
+              "yoy": -0.078
+            }
+          },
+          "2025-12-31": {
+            "index_per_operating_cash_flow_net": {
+              "value": 1.9373,
+              "yoy": 1.2776
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": -14.1752,
+              "yoy": -1.5755
+            },
+            "parent_holder_net_profit": {
+              "value": 1509372936.5,
+              "yoy": 0.0127
+            },
+            "calc_per_net_assets": {
+              "value": 8.8124,
+              "yoy": 0.0929
+            },
+            "inventory_turnover_ratio": {
+              "value": 2.8931,
+              "yoy": 0.0719
+            },
+            "conservative_quick_ratio": {
+              "value": 0.8925,
+              "yoy": 0.1265
+            },
+            "equity_ratio": {
+              "value": 0.5864,
+              "yoy": -0.2362
+            },
+            "current_ratio": {
+              "value": 1.8178,
+              "yoy": 0.2541
+            },
+            "basic_eps": {
+              "value": 1.59,
+              "yoy": 0.0258
+            },
+            "business_cycle": {
+              "value": 164.5374,
+              "yoy": -0.0429
+            },
+            "receive_accounts_turnover_days": {
+              "value": 40.1034,
+              "yoy": 0.041
+            },
+            "quick_ratio": {
+              "value": 0.9263,
+              "yoy": 0.1463
+            },
+            "sale_gross_margin": {
+              "value": 24.6579,
+              "yoy": -0.1076
+            },
+            "inventory_turnover_days": {
+              "value": 124.434,
+              "yoy": -0.0671
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 10.4432,
+              "yoy": -0.6192
+            },
+            "sale_net_interest_ratio": {
+              "value": 12.6756,
+              "yoy": -0.0896
+            },
+            "per_undistributed_profits": {
+              "value": 5.5111,
+              "yoy": 0.1229
+            },
+            "operating_income_total": {
+              "value": 12058509120.53,
+              "yoy": 0.1044
+            },
+            "per_capital_reserve": {
+              "value": 1.8095,
+              "yoy": -0.0492
+            },
+            "index_full_diluted_roe": {
+              "value": 17.528,
+              "yoy": -0.0733
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 1.2746,
+              "yoy": 9.3187
+            },
+            "assets_debt_ratio": {
+              "value": 36.2827,
+              "yoy": -0.1503
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 1305735854.22,
+              "yoy": -0.1418
+            },
+            "index_weighted_avg_roe": {
+              "value": 19.04,
+              "yoy": -0.0408
+            }
+          },
+          "2025-09-30": {
+            "index_per_operating_cash_flow_net": {
+              "value": 0.6122,
+              "yoy": 0.6162
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": 17.6457,
+              "yoy": 0.1313
+            },
+            "parent_holder_net_profit": {
+              "value": 1261622157.8,
+              "yoy": 0.2073
+            },
+            "calc_per_net_assets": {
+              "value": 8.3458,
+              "yoy": 0.0755
+            },
+            "inventory_turnover_ratio": {
+              "value": 2.2388,
+              "yoy": 0.3425
+            },
+            "conservative_quick_ratio": {
+              "value": 0.8188,
+              "yoy": -0.1018
+            },
+            "equity_ratio": {
+              "value": 0.6159,
+              "yoy": -0.2386
+            },
+            "current_ratio": {
+              "value": 1.6711,
+              "yoy": 0.0148
+            },
+            "basic_eps": {
+              "value": 1.33,
+              "yoy": 0.2202
+            },
+            "business_cycle": {
+              "value": 164.7288,
+              "yoy": -0.2225
+            },
+            "receive_accounts_turnover_days": {
+              "value": 44.1285,
+              "yoy": -0.1165
+            },
+            "quick_ratio": {
+              "value": 0.8332,
+              "yoy": -0.0996
+            },
+            "sale_gross_margin": {
+              "value": 25.2811,
+              "yoy": -0.0611
+            },
+            "inventory_turnover_days": {
+              "value": 120.6003,
+              "yoy": -0.2551
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 36.4475,
+              "yoy": 1.2676
+            },
+            "sale_net_interest_ratio": {
+              "value": 13.1101,
+              "yoy": -0.1276
+            },
+            "per_undistributed_profits": {
+              "value": 5.2576,
+              "yoy": 0.149
+            },
+            "operating_income_total": {
+              "value": 9746721458.13,
+              "yoy": 0.3645
+            },
+            "per_capital_reserve": {
+              "value": 1.9021,
+              "yoy": 0.0038
+            },
+            "index_full_diluted_roe": {
+              "value": 15.47,
+              "yoy": 0.1225
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 20.7342,
+              "yoy": 4.651
+            },
+            "assets_debt_ratio": {
+              "value": 37.3974,
+              "yoy": -0.1493
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 1196671724.64,
+              "yoy": 0.1765
+            },
+            "index_weighted_avg_roe": {
+              "value": 15.95,
+              "yoy": 0.124
+            }
+          }
+        },
+        "financial_indicators": null
+      },
+      "research": {
+        "code": "002318",
+        "name": "久立特材",
+        "research": [
+          {
+            "序号": 1,
+            "股票代码": "002318",
+            "股票简称": "久立特材",
+            "报告名称": "2025H1业绩实现较快增长，开拓海外市场成效显著",
+            "东财评级": "买入",
+            "机构": "中邮证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.02,
+            "2026-盈利预测-市盈率": 11.51,
+            "2027-盈利预测-收益": 2.26,
+            "2027-盈利预测-市盈率": 10.28,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "特钢Ⅱ",
+            "日期": "2025-09-30",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202509301753316345_1.pdf"
+          },
+          {
+            "序号": 2,
+            "股票代码": "002318",
+            "股票简称": "久立特材",
+            "报告名称": "2025年半年报点评：Q2业绩同比高增，产品结构持续优化",
+            "东财评级": "买入",
+            "机构": "民生证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 1.94,
+            "2026-盈利预测-市盈率": 12.0,
+            "2027-盈利预测-收益": 2.23,
+            "2027-盈利预测-市盈率": 10.0,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "特钢Ⅱ",
+            "日期": "2025-08-27",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202508271735416400_1.pdf"
+          },
+          {
+            "序号": 3,
+            "股票代码": "002318",
+            "股票简称": "久立特材",
+            "报告名称": "业绩快速增长，分红显著提升",
+            "东财评级": "买入",
+            "机构": "中邮证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.02,
+            "2026-盈利预测-市盈率": 11.59,
+            "2027-盈利预测-收益": 2.26,
+            "2027-盈利预测-市盈率": 10.36,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "特钢Ⅱ",
+            "日期": "2025-04-11",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202504111654586558_1.pdf"
+          },
+          {
+            "序号": 4,
+            "股票代码": "002318",
+            "股票简称": "久立特材",
+            "报告名称": "2024年报点评：转型战略积极推进，业务拓展成效显著",
+            "东财评级": "买入",
+            "机构": "中航证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": null,
+            "2026-盈利预测-市盈率": null,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "特钢Ⅱ",
+            "日期": "2025-03-31",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202503311649462373_1.pdf"
+          },
+          {
+            "序号": 5,
+            "股票代码": "002318",
+            "股票简称": "久立特材",
+            "报告名称": "2024年年报点评：主业利润大幅增长，高端产能持续释放",
+            "东财评级": "买入",
+            "机构": "民生证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 1.93,
+            "2026-盈利预测-市盈率": 13.0,
+            "2027-盈利预测-收益": 2.09,
+            "2027-盈利预测-市盈率": 12.0,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "特钢Ⅱ",
+            "日期": "2025-03-25",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202503251647367078_1.pdf"
+          },
+          {
+            "序号": 6,
+            "股票代码": "002318",
+            "股票简称": "久立特材",
+            "报告名称": "2024Q3点评：复合管持续增量，Q3盈利性大幅提振",
+            "东财评级": "买入",
+            "机构": "中航证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.07,
+            "2026-盈利预测-市盈率": 11.2,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "特钢Ⅱ",
+            "日期": "2024-11-03",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202411031640687521_1.pdf"
+          },
+          {
+            "序号": 7,
+            "股票代码": "002318",
+            "股票简称": "久立特材",
+            "报告名称": "主营业务净利润快速增长，业务延伸和市场开拓显成效",
+            "东财评级": "买入",
+            "机构": "中邮证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.05,
+            "2026-盈利预测-市盈率": 11.02,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "特钢Ⅱ",
+            "日期": "2024-11-01",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202411011640661383_1.pdf"
+          },
+          {
+            "序号": 8,
+            "股票代码": "002318",
+            "股票简称": "久立特材",
+            "报告名称": "2024年三季报点评：Q3业绩超预期，高端产能加速释放",
+            "东财评级": "买入",
+            "机构": "民生证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.03,
+            "2026-盈利预测-市盈率": 11.0,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "特钢Ⅱ",
+            "日期": "2024-10-31",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202410311640651860_1.pdf"
+          },
+          {
+            "序号": 9,
+            "股票代码": "002318",
+            "股票简称": "久立特材",
+            "报告名称": "2024H1点评：海外布局成效显现，复合管业务大放异彩",
+            "东财评级": "买入",
+            "机构": "中航证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.04,
+            "2026-盈利预测-市盈率": 9.19,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "特钢Ⅱ",
+            "日期": "2024-09-06",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202409061639767968_1.pdf"
+          },
+          {
+            "序号": 10,
+            "股票代码": "002318",
+            "股票简称": "久立特材",
+            "报告名称": "产品高端化和市场全球化同发力，主营业务保持较快增长",
+            "东财评级": "买入",
+            "机构": "中邮证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.05,
+            "2026-盈利预测-市盈率": 9.4,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "特钢Ⅱ",
+            "日期": "2024-09-02",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202409021639686132_1.pdf"
+          }
+        ]
+      },
+      "fund_flow": {
+        "code": "002318",
+        "name": "久立特材",
+        "fund_flow": null
+      },
+      "technical": {
+        "code": "002318",
+        "name": "久立特材",
+        "technical": {
+          "最新数据": {
+            "日期": "2026-07-24",
+            "开盘": 19.4,
+            "收盘": 18.9,
+            "最高": 19.72,
+            "最低": 18.48,
+            "涨跌幅(%)": -3.5222,
+            "换手率(%)": 1.6249,
+            "成交量(手)": 15502185,
+            "成交额(元)": 293055334.15
+          },
+          "均线": {
+            "MA5": 18.85,
+            "MA10": 18.47,
+            "MA20": 20.38,
+            "MA60": 23.55
+          },
+          "MACD": {
+            "DIF": -1.3291,
+            "DEA": -1.4021,
+            "MACD柱": 0.1461
+          },
+          "RSI": {
+            "RSI6": 71.01,
+            "RSI12": 32.17
+          },
+          "成交量比(量比)": 0.96,
+          "涨跌幅": {
+            "近5日涨跌幅(%)": 4.02,
+            "近10日涨跌幅(%)": 0.48,
+            "近20日涨跌幅(%)": -17.75
+          },
+          "支撑压力位": {
+            "近期支撑位(60日)": 17.55,
+            "近期压力位(60日)": 29.62
+          },
+          "数据覆盖": {
+            "交易日数": 241,
+            "起始日期": "2025-07-28",
+            "截止日期": "2026-07-24"
+          }
+        }
+      }
+    },
+    {
+      "code": "300014",
+      "name": "亿纬锂能",
+      "market": "sz",
+      "financial": {
+        "code": "300014",
+        "name": "亿纬锂能",
+        "yjyg": null,
+        "abstract": {
+          "2026-03-31": {
+            "index_per_operating_cash_flow_net": {
+              "value": -0.1761,
+              "yoy": -1.4038
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": 36.3157,
+              "yoy": 1.1873
+            },
+            "parent_holder_net_profit": {
+              "value": 1446303779.36,
+              "yoy": 0.3135
+            },
+            "calc_per_net_assets": {
+              "value": 21.0365,
+              "yoy": 0.122
+            },
+            "inventory_turnover_ratio": {
+              "value": 1.8022,
+              "yoy": -0.1029
+            },
+            "conservative_quick_ratio": {
+              "value": 0.6593,
+              "yoy": -0.243
+            },
+            "equity_ratio": {
+              "value": 1.9594,
+              "yoy": 0.1279
+            },
+            "current_ratio": {
+              "value": 0.9948,
+              "yoy": -0.097
+            },
+            "basic_eps": {
+              "value": 0.7,
+              "yoy": 0.2963
+            },
+            "business_cycle": {
+              "value": 117.9354,
+              "yoy": -0.1322
+            },
+            "receive_accounts_turnover_days": {
+              "value": 67.9964,
+              "yoy": -0.2536
+            },
+            "quick_ratio": {
+              "value": 0.754,
+              "yoy": -0.186
+            },
+            "sale_gross_margin": {
+              "value": 14.0383,
+              "yoy": -0.1819
+            },
+            "inventory_turnover_days": {
+              "value": 49.939,
+              "yoy": 0.1147
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 61.6102,
+              "yoy": 0.6501
+            },
+            "sale_net_interest_ratio": {
+              "value": 6.9778,
+              "yoy": -0.2334
+            },
+            "per_undistributed_profits": {
+              "value": 10.0483,
+              "yoy": 0.1345
+            },
+            "operating_income_total": {
+              "value": 20679868145.38,
+              "yoy": 0.6161
+            },
+            "per_capital_reserve": {
+              "value": 9.489,
+              "yoy": 0.0793
+            },
+            "index_full_diluted_roe": {
+              "value": 3.2895,
+              "yoy": 0.1565
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 31.3489,
+              "yoy": 8.437
+            },
+            "assets_debt_ratio": {
+              "value": 64.8881,
+              "yoy": 0.0469
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 1114674451.3,
+              "yoy": 0.3632
+            },
+            "index_weighted_avg_roe": {
+              "value": 3.35,
+              "yoy": 0.1632
+            }
+          },
+          "2025-12-31": {
+            "index_per_operating_cash_flow_net": {
+              "value": 3.6122,
+              "yoy": 0.6667
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": -2.0875,
+              "yoy": -1.1414
+            },
+            "parent_holder_net_profit": {
+              "value": 4134303670.89,
+              "yoy": 0.0144
+            },
+            "calc_per_net_assets": {
+              "value": 20.2589,
+              "yoy": 0.1028
+            },
+            "inventory_turnover_ratio": {
+              "value": 7.6388,
+              "yoy": 0.1004
+            },
+            "conservative_quick_ratio": {
+              "value": 0.7006,
+              "yoy": -0.0639
+            },
+            "equity_ratio": {
+              "value": 1.9039,
+              "yoy": 0.1946
+            },
+            "current_ratio": {
+              "value": 1.0272,
+              "yoy": 0.0773
+            },
+            "basic_eps": {
+              "value": 2.02,
+              "yoy": 0.0151
+            },
+            "business_cycle": {
+              "value": 128.9981,
+              "yoy": -0.1187
+            },
+            "receive_accounts_turnover_days": {
+              "value": 81.8703,
+              "yoy": -0.1338
+            },
+            "quick_ratio": {
+              "value": 0.8113,
+              "yoy": 0.0387
+            },
+            "sale_gross_margin": {
+              "value": 16.1724,
+              "yoy": -0.0713
+            },
+            "inventory_turnover_days": {
+              "value": 47.1278,
+              "yoy": -0.0912
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 26.4428,
+              "yoy": 77.3161
+            },
+            "sale_net_interest_ratio": {
+              "value": 6.9988,
+              "yoy": -0.194
+            },
+            "per_undistributed_profits": {
+              "value": 9.3604,
+              "yoy": 0.1253
+            },
+            "operating_income_total": {
+              "value": 61469630776.09,
+              "yoy": 0.2644
+            },
+            "per_capital_reserve": {
+              "value": 9.3635,
+              "yoy": 0.0451
+            },
+            "index_full_diluted_roe": {
+              "value": 9.7692,
+              "yoy": -0.0992
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 1.4407,
+              "yoy": 1.2964
+            },
+            "assets_debt_ratio": {
+              "value": 64.1783,
+              "yoy": 0.0811
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 3095709718.8,
+              "yoy": -0.0209
+            },
+            "index_weighted_avg_roe": {
+              "value": 10.5,
+              "yoy": -0.0708
+            }
+          },
+          "2025-09-30": {
+            "index_per_operating_cash_flow_net": {
+              "value": 2.3971,
+              "yoy": 1.3172
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": -22.5089,
+              "yoy": -2.4064
+            },
+            "parent_holder_net_profit": {
+              "value": 2815688702.22,
+              "yoy": -0.117
+            },
+            "calc_per_net_assets": {
+              "value": 19.3436,
+              "yoy": 0.0806
+            },
+            "inventory_turnover_ratio": {
+              "value": 6.7193,
+              "yoy": 0.4619
+            },
+            "conservative_quick_ratio": {
+              "value": 0.7829,
+              "yoy": 0.0154
+            },
+            "equity_ratio": {
+              "value": 1.8523,
+              "yoy": 0.1145
+            },
+            "current_ratio": {
+              "value": 1.0514,
+              "yoy": 0.0558
+            },
+            "basic_eps": {
+              "value": 1.38,
+              "yoy": -0.1154
+            },
+            "business_cycle": {
+              "value": 124.8674,
+              "yoy": -0.2074
+            },
+            "receive_accounts_turnover_days": {
+              "value": 84.6846,
+              "yoy": -0.1429
+            },
+            "quick_ratio": {
+              "value": 0.8717,
+              "yoy": 0.0774
+            },
+            "sale_gross_margin": {
+              "value": 15.9549,
+              "yoy": -0.0821
+            },
+            "inventory_turnover_days": {
+              "value": 40.1828,
+              "yoy": -0.316
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 32.1659,
+              "yoy": 8.724
+            },
+            "sale_net_interest_ratio": {
+              "value": 6.6143,
+              "yoy": -0.3121
+            },
+            "per_undistributed_profits": {
+              "value": 8.8466,
+              "yoy": 0.1086
+            },
+            "operating_income_total": {
+              "value": 45001518158.94,
+              "yoy": 0.3217
+            },
+            "per_capital_reserve": {
+              "value": 9.2412,
+              "yoy": 0.0345
+            },
+            "index_full_diluted_roe": {
+              "value": 7.0618,
+              "yoy": -0.189
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": -11.6966,
+              "yoy": -0.6991
+            },
+            "assets_debt_ratio": {
+              "value": 63.4657,
+              "yoy": 0.0515
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 1937375696.51,
+              "yoy": -0.2251
+            },
+            "index_weighted_avg_roe": {
+              "value": 7.27,
+              "yoy": -0.1831
+            }
+          }
+        },
+        "financial_indicators": null
+      },
+      "research": {
+        "code": "300014",
+        "name": "亿纬锂能",
+        "research": [
+          {
+            "序号": 1,
+            "股票代码": "300014",
+            "股票简称": "亿纬锂能",
+            "报告名称": "公司26H1净利润翻倍增长，储能业务加快扩张，建议“买进”",
+            "东财评级": "增持",
+            "机构": "群益证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 3.112,
+            "2026-盈利预测-市盈率": 20.0,
+            "2027-盈利预测-收益": 4.158,
+            "2027-盈利预测-市盈率": 14.96,
+            "2028-盈利预测-收益": 5.312,
+            "2028-盈利预测-市盈率": 11.71,
+            "行业": "电池",
+            "日期": "2026-06-26",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202606261824496040_1.pdf"
+          },
+          {
+            "序号": 2,
+            "股票代码": "300014",
+            "股票简称": "亿纬锂能",
+            "报告名称": "2026年Q2盈利韧性强劲，业绩超市场预期",
+            "东财评级": "买入",
+            "机构": "东吴证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 3.33,
+            "2026-盈利预测-市盈率": 17.67,
+            "2027-盈利预测-收益": 4.38,
+            "2027-盈利预测-市盈率": 13.41,
+            "2028-盈利预测-收益": 5.71,
+            "2028-盈利预测-市盈率": 10.28,
+            "行业": "电池",
+            "日期": "2026-06-16",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202606161823592555_1.pdf"
+          },
+          {
+            "序号": 3,
+            "股票代码": "300014",
+            "股票简称": "亿纬锂能",
+            "报告名称": "电池出货快速提升，产能布局加速推进",
+            "东财评级": "增持",
+            "机构": "国信证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 3.27,
+            "2026-盈利预测-市盈率": 22.0,
+            "2027-盈利预测-收益": 4.35,
+            "2027-盈利预测-市盈率": 16.5,
+            "2028-盈利预测-收益": 5.4,
+            "2028-盈利预测-市盈率": 13.3,
+            "行业": "电池",
+            "日期": "2026-05-08",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202605081822061114_1.pdf"
+          },
+          {
+            "序号": 4,
+            "股票代码": "300014",
+            "股票简称": "亿纬锂能",
+            "报告名称": "看好盈利能力逐季修复，产能逐步释放支撑收入增长；维持买入",
+            "东财评级": "买入",
+            "机构": "交银国际证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 3.588,
+            "2026-盈利预测-市盈率": 19.3,
+            "2027-盈利预测-收益": 4.906,
+            "2027-盈利预测-市盈率": 14.1,
+            "2028-盈利预测-收益": 6.122,
+            "2028-盈利预测-市盈率": 11.3,
+            "行业": "电池",
+            "日期": "2026-04-28",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604281821659770_1.pdf"
+          },
+          {
+            "序号": 5,
+            "股票代码": "300014",
+            "股票简称": "亿纬锂能",
+            "报告名称": "出货高增，新技术持续推进",
+            "东财评级": "买入",
+            "机构": "国金证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 3.065,
+            "2026-盈利预测-市盈率": 23.75,
+            "2027-盈利预测-收益": 4.579,
+            "2027-盈利预测-市盈率": 15.9,
+            "2028-盈利预测-收益": 6.153,
+            "2028-盈利预测-市盈率": 11.83,
+            "行业": "电池",
+            "日期": "2026-04-27",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604271821596309_1.pdf"
+          },
+          {
+            "序号": 6,
+            "股票代码": "300014",
+            "股票简称": "亿纬锂能",
+            "报告名称": "2026年一季报点评：动储经营持续高增，盈利逐季提升可期",
+            "东财评级": "买入",
+            "机构": "东吴证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 3.36,
+            "2026-盈利预测-市盈率": 21.67,
+            "2027-盈利预测-收益": 4.42,
+            "2027-盈利预测-市盈率": 16.46,
+            "2028-盈利预测-收益": 5.77,
+            "2028-盈利预测-市盈率": 12.62,
+            "行业": "电池",
+            "日期": "2026-04-26",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604261821585526_1.pdf"
+          },
+          {
+            "序号": 7,
+            "股票代码": "300014",
+            "股票简称": "亿纬锂能",
+            "报告名称": "26Q1业绩高增，扩产夯实行业地位",
+            "东财评级": "买入",
+            "机构": "国金证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 3.146,
+            "2026-盈利预测-市盈率": 19.29,
+            "2027-盈利预测-收益": 4.699,
+            "2027-盈利预测-市盈率": 12.91,
+            "2028-盈利预测-收益": 6.315,
+            "2028-盈利预测-市盈率": 9.61,
+            "行业": "电池",
+            "日期": "2026-04-08",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604081821053870_1.pdf"
+          },
+          {
+            "序号": 8,
+            "股票代码": "300014",
+            "股票简称": "亿纬锂能",
+            "报告名称": "2026年一季报预告点评：业绩略超市场预期产能扩张进一步加速",
+            "东财评级": "买入",
+            "机构": "东吴证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 3.45,
+            "2026-盈利预测-市盈率": 17.59,
+            "2027-盈利预测-收益": 4.54,
+            "2027-盈利预测-市盈率": 13.37,
+            "2028-盈利预测-收益": 5.92,
+            "2028-盈利预测-市盈率": 10.25,
+            "行业": "电池",
+            "日期": "2026-04-08",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604081821053421_1.pdf"
+          },
+          {
+            "序号": 9,
+            "股票代码": "300014",
+            "股票简称": "亿纬锂能",
+            "报告名称": "电池出货同比高增，长期竞争力有望增强",
+            "东财评级": "买入",
+            "机构": "中银证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 3.1,
+            "2026-盈利预测-市盈率": 19.9,
+            "2027-盈利预测-收益": 4.1,
+            "2027-盈利预测-市盈率": 15.1,
+            "2028-盈利预测-收益": 5.3,
+            "2028-盈利预测-市盈率": 11.8,
+            "行业": "电池",
+            "日期": "2026-04-02",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604021820980186_1.pdf"
+          },
+          {
+            "序号": 10,
+            "股票代码": "300014",
+            "股票简称": "亿纬锂能",
+            "报告名称": "2025年年报点评：储能竞争力持续强化，盈利水平表现亮眼",
+            "东财评级": "买入",
+            "机构": "东吴证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 3.49,
+            "2026-盈利预测-市盈率": 20.76,
+            "2027-盈利预测-收益": 4.59,
+            "2027-盈利预测-市盈率": 15.77,
+            "2028-盈利预测-收益": 5.99,
+            "2028-盈利预测-市盈率": 12.09,
+            "行业": "电池",
+            "日期": "2026-03-30",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202603301820844372_1.pdf"
+          }
+        ]
+      },
+      "fund_flow": {
+        "code": "300014",
+        "name": "亿纬锂能",
+        "fund_flow": null
+      },
+      "technical": {
+        "code": "300014",
+        "name": "亿纬锂能",
+        "technical": {
+          "最新数据": {
+            "日期": "2026-07-24",
+            "开盘": 54.0,
+            "收盘": 53.96,
+            "最高": 55.59,
+            "最低": 53.9,
+            "涨跌幅(%)": -2.4408,
+            "换手率(%)": 2.104,
+            "成交量(手)": 44447217,
+            "成交额(元)": 2428946650.54
+          },
+          "均线": {
+            "MA5": 53.49,
+            "MA10": 52.7,
+            "MA20": 56.4,
+            "MA60": 62.15
+          },
+          "MACD": {
+            "DIF": -2.5391,
+            "DEA": -2.6661,
+            "MACD柱": 0.254
+          },
+          "RSI": {
+            "RSI6": 63.19,
+            "RSI12": 43.41
+          },
+          "成交量比(量比)": 0.78,
+          "涨跌幅": {
+            "近5日涨跌幅(%)": 4.43,
+            "近10日涨跌幅(%)": -1.78,
+            "近20日涨跌幅(%)": -13.26
+          },
+          "支撑压力位": {
+            "近期支撑位(60日)": 50.18,
+            "近期压力位(60日)": 75.26
+          },
+          "数据覆盖": {
+            "交易日数": 241,
+            "起始日期": "2025-07-28",
+            "截止日期": "2026-07-24"
+          }
+        }
+      }
+    },
+    {
+      "code": "601066",
+      "name": "中信建投",
+      "market": "sh",
+      "financial": {
+        "code": "601066",
+        "name": "中信建投",
+        "yjyg": [
+          {
+            "序号": 773,
+            "股票代码": "601066",
+            "股票简称": "中信建投",
+            "预测指标": "归属于上市公司股东的净利润",
+            "业绩变动": "预计2025年1-6月归属于上市公司股东的净利润盈利:443,000万元至457,300万元,同比上年增长:55%至60%,同比上年增长157,200万元至171,500万元。",
+            "预测数值": 4501500000.0,
+            "业绩变动幅度": 57.5,
+            "业绩变动原因": "2025年上半年,公司坚持金融服务实体经济的总要求,加快推进一流投资银行建设,扎实做好金融“五篇大文章”,推动国际化战略提速提质,积极把握市场机遇,持续推进降本增效,经营业绩稳中向好。报告期内,公司业绩增长的主要原因是自营业务、经纪业务、投资银行业务收入同比增加较多。",
+            "预告类型": "预增",
+            "上年同期值": 2858000000.0,
+            "公告日期": "2025-07-15"
+          },
+          {
+            "序号": 774,
+            "股票代码": "601066",
+            "股票简称": "中信建投",
+            "预测指标": "扣除非经常性损益后的净利润",
+            "业绩变动": "预计2025年1-6月扣除非经常性损益后的净利润盈利:439,000万元至453,100万元,同比上年增长:55%至60%,同比上年增长155,800万元至169,900万元。",
+            "预测数值": 4460500000.0,
+            "业绩变动幅度": 57.5,
+            "业绩变动原因": "2025年上半年,公司坚持金融服务实体经济的总要求,加快推进一流投资银行建设,扎实做好金融“五篇大文章”,推动国际化战略提速提质,积极把握市场机遇,持续推进降本增效,经营业绩稳中向好。报告期内,公司业绩增长的主要原因是自营业务、经纪业务、投资银行业务收入同比增加较多。",
+            "预告类型": "预增",
+            "上年同期值": 2832000000.0,
+            "公告日期": "2025-07-15"
+          }
+        ],
+        "abstract": {
+          "2026-03-31": {
+            "index_per_operating_cash_flow_net": {
+              "value": 3.999,
+              "yoy": 0.4821
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": 97.4383,
+              "yoy": 0.9712
+            },
+            "parent_holder_net_profit": {
+              "value": 3667406478.67,
+              "yoy": 0.9903
+            },
+            "calc_per_net_assets": {
+              "value": 11.123,
+              "yoy": 0.1019
+            },
+            "inventory_turnover_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "conservative_quick_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "equity_ratio": {
+              "value": 5.1469,
+              "yoy": 0.0938
+            },
+            "current_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "basic_eps": {
+              "value": 0.44,
+              "yoy": 1.2
+            },
+            "business_cycle": {
+              "value": null,
+              "yoy": null
+            },
+            "receive_accounts_turnover_days": {
+              "value": null,
+              "yoy": null
+            },
+            "quick_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "sale_gross_margin": {
+              "value": null,
+              "yoy": null
+            },
+            "inventory_turnover_days": {
+              "value": null,
+              "yoy": null
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 62.265,
+              "yoy": 4.9651
+            },
+            "sale_net_interest_ratio": {
+              "value": 47.689,
+              "yoy": 0.2705
+            },
+            "per_undistributed_profits": {
+              "value": 4.7632,
+              "yoy": 0.1617
+            },
+            "operating_income_total": {
+              "value": 7695568554.1,
+              "yoy": 0.6226
+            },
+            "per_capital_reserve": {
+              "value": 1.5894,
+              "yoy": -0.0019
+            },
+            "index_full_diluted_roe": {
+              "value": 2.8918,
+              "yoy": 0.6517
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 99.0294,
+              "yoy": 0.9778
+            },
+            "assets_debt_ratio": {
+              "value": 83.726,
+              "yoy": 0.0153
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 3623252987.92,
+              "yoy": 0.9744
+            },
+            "index_weighted_avg_roe": {
+              "value": 4.02,
+              "yoy": 0.9706
+            }
+          },
+          "2025-12-31": {
+            "index_per_operating_cash_flow_net": {
+              "value": 10.7071,
+              "yoy": 1.8153
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": 30.7686,
+              "yoy": 5.3775
+            },
+            "parent_holder_net_profit": {
+              "value": 9439423821.46,
+              "yoy": 0.3068
+            },
+            "calc_per_net_assets": {
+              "value": 10.6948,
+              "yoy": 0.0824
+            },
+            "inventory_turnover_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "conservative_quick_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "equity_ratio": {
+              "value": 4.6823,
+              "yoy": 0.084
+            },
+            "current_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "basic_eps": {
+              "value": 1.09,
+              "yoy": 0.3797
+            },
+            "business_cycle": {
+              "value": null,
+              "yoy": null
+            },
+            "receive_accounts_turnover_days": {
+              "value": null,
+              "yoy": null
+            },
+            "quick_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "sale_gross_margin": {
+              "value": null,
+              "yoy": null
+            },
+            "inventory_turnover_days": {
+              "value": null,
+              "yoy": null
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 22.4063,
+              "yoy": 2.2428
+            },
+            "sale_net_interest_ratio": {
+              "value": 40.5374,
+              "yoy": 0.1837
+            },
+            "per_undistributed_profits": {
+              "value": 4.328,
+              "yoy": 0.1102
+            },
+            "operating_income_total": {
+              "value": 23321714460.73,
+              "yoy": 0.2241
+            },
+            "per_capital_reserve": {
+              "value": 1.5894,
+              "yoy": -0.0034
+            },
+            "index_full_diluted_roe": {
+              "value": 7.9255,
+              "yoy": 0.1682
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 30.6816,
+              "yoy": 10.4356
+            },
+            "assets_debt_ratio": {
+              "value": 82.3955,
+              "yoy": 0.0148
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 9467769725.48,
+              "yoy": 0.3077
+            },
+            "index_weighted_avg_roe": {
+              "value": 10.51,
+              "yoy": 0.2786
+            }
+          },
+          "2025-09-30": {
+            "index_per_operating_cash_flow_net": {
+              "value": 7.4712,
+              "yoy": 2.1894
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": 65.2757,
+              "yoy": 2.9599
+            },
+            "parent_holder_net_profit": {
+              "value": 7088639471.04,
+              "yoy": 0.6495
+            },
+            "calc_per_net_assets": {
+              "value": 10.5501,
+              "yoy": 0.1021
+            },
+            "inventory_turnover_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "conservative_quick_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "equity_ratio": {
+              "value": 4.7239,
+              "yoy": 0.0539
+            },
+            "current_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "basic_eps": {
+              "value": 0.82,
+              "yoy": 0.8222
+            },
+            "business_cycle": {
+              "value": null,
+              "yoy": null
+            },
+            "receive_accounts_turnover_days": {
+              "value": null,
+              "yoy": null
+            },
+            "quick_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "sale_gross_margin": {
+              "value": null,
+              "yoy": null
+            },
+            "inventory_turnover_days": {
+              "value": null,
+              "yoy": null
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 31.2514,
+              "yoy": 2.1025
+            },
+            "sale_net_interest_ratio": {
+              "value": 41.0613,
+              "yoy": 0.3651
+            },
+            "per_undistributed_profits": {
+              "value": 4.5496,
+              "yoy": 0.1519
+            },
+            "operating_income_total": {
+              "value": 17289286297.97,
+              "yoy": 0.3125
+            },
+            "per_capital_reserve": {
+              "value": 1.5912,
+              "yoy": -0.0031
+            },
+            "index_full_diluted_roe": {
+              "value": 6.1225,
+              "yoy": 0.4415
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 64.9537,
+              "yoy": 3.6522
+            },
+            "assets_debt_ratio": {
+              "value": 82.5235,
+              "yoy": 0.0094
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 7046700193.83,
+              "yoy": 0.6528
+            },
+            "index_weighted_avg_roe": {
+              "value": 7.99,
+              "yoy": 0.6964
+            }
+          }
+        },
+        "financial_indicators": null
+      },
+      "research": {
+        "code": "601066",
+        "name": "中信建投",
+        "research": [
+          {
+            "序号": 1,
+            "股票代码": "601066",
+            "股票简称": "中信建投",
+            "报告名称": "定位精品投行，ROE领先同业",
+            "东财评级": "买入",
+            "机构": "东吴证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 1.51,
+            "2026-盈利预测-市盈率": 14.45,
+            "2027-盈利预测-收益": 1.6,
+            "2027-盈利预测-市盈率": 13.6,
+            "2028-盈利预测-收益": 1.71,
+            "2028-盈利预测-市盈率": 12.77,
+            "行业": "证券Ⅱ",
+            "日期": "2026-04-29",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604291821744147_1.pdf"
+          },
+          {
+            "序号": 2,
+            "股票代码": "601066",
+            "股票简称": "中信建投",
+            "报告名称": "中信建投年报点评：公司债承销八年第一，经纪财管业绩稳健",
+            "东财评级": "增持",
+            "机构": "太平洋",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": null,
+            "2026-盈利预测-市盈率": null,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "证券Ⅱ",
+            "日期": "2023-04-07",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202304071585212084_1.pdf"
+          },
+          {
+            "序号": 3,
+            "股票代码": "601066",
+            "股票简称": "中信建投",
+            "报告名称": "2022年中报点评：投行业务行业领先，财富管理及主动管理转型稳步推进",
+            "东财评级": "持有",
+            "机构": "中航证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": null,
+            "2026-盈利预测-市盈率": null,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "证券Ⅱ",
+            "日期": "2022-09-09",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202209091578183940_1.pdf"
+          },
+          {
+            "序号": 4,
+            "股票代码": "601066",
+            "股票简称": "中信建投",
+            "报告名称": "Q1归母净利润同比-10.5%，投行业务高增",
+            "东财评级": "买入",
+            "机构": "华金证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": null,
+            "2026-盈利预测-市盈率": null,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "证券Ⅱ",
+            "日期": "2022-04-30",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202204301562516173_1.pdf"
+          },
+          {
+            "序号": 5,
+            "股票代码": "601066",
+            "股票简称": "中信建投",
+            "报告名称": "投行实力强，上调评级至“买入”",
+            "东财评级": "买入",
+            "机构": "华金证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": null,
+            "2026-盈利预测-市盈率": null,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "证券Ⅱ",
+            "日期": "2021-09-06",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202109061514548400_1.pdf"
+          },
+          {
+            "序号": 6,
+            "股票代码": "601066",
+            "股票简称": "中信建投",
+            "报告名称": "2021年中报点评：财富管理稳步推进，资管投行规模下滑",
+            "东财评级": "持有",
+            "机构": "中航证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": null,
+            "2026-盈利预测-市盈率": null,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "证券Ⅱ",
+            "日期": "2021-09-03",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202109031513929555_1.pdf"
+          },
+          {
+            "序号": 7,
+            "股票代码": "601066",
+            "股票简称": "中信建投",
+            "报告名称": "经纪、投行业务稳健增长，自营业务承压",
+            "东财评级": "增持",
+            "机构": "万和证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": null,
+            "2026-盈利预测-市盈率": null,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "证券Ⅱ",
+            "日期": "2021-04-28",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202104281488434227_1.pdf"
+          },
+          {
+            "序号": 8,
+            "股票代码": "601066",
+            "股票简称": "中信建投",
+            "报告名称": "2020年年报点评：各项业绩全面向好，投行业务成绩斐然",
+            "东财评级": "持有",
+            "机构": "中航证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": null,
+            "2026-盈利预测-市盈率": null,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "证券Ⅱ",
+            "日期": "2021-04-09",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202104091482953911_1.pdf"
+          },
+          {
+            "序号": 9,
+            "股票代码": "601066",
+            "股票简称": "中信建投",
+            "报告名称": "业绩增速与ROE领跑行业，投资投行优势尽显",
+            "东财评级": "",
+            "机构": "信达证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": null,
+            "2026-盈利预测-市盈率": null,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "证券Ⅱ",
+            "日期": "2021-04-01",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202104011480107614_1.pdf"
+          },
+          {
+            "序号": 10,
+            "股票代码": "601066",
+            "股票简称": "中信建投",
+            "报告名称": "投资投行优势扩大，盈利增长超预期",
+            "东财评级": "",
+            "机构": "信达证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": null,
+            "2026-盈利预测-市盈率": null,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "证券Ⅱ",
+            "日期": "2020-08-26",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202008261401628796_1.pdf"
+          }
+        ]
+      },
+      "fund_flow": {
+        "code": "601066",
+        "name": "中信建投",
+        "fund_flow": null
+      },
+      "technical": {
+        "code": "601066",
+        "name": "中信建投",
+        "technical": {
+          "最新数据": {
+            "日期": "2026-07-24",
+            "开盘": 26.85,
+            "收盘": 26.07,
+            "最高": 26.86,
+            "最低": 26.0,
+            "涨跌幅(%)": -3.1215,
+            "换手率(%)": 0.4387,
+            "成交量(手)": 28495487,
+            "成交额(元)": 749843184.15
+          },
+          "均线": {
+            "MA5": 26.63,
+            "MA10": 26.8,
+            "MA20": 27.71,
+            "MA60": 25.48
+          },
+          "MACD": {
+            "DIF": -0.0066,
+            "DEA": 0.296,
+            "MACD柱": -0.6052
+          },
+          "RSI": {
+            "RSI6": 25.0,
+            "RSI12": 39.34
+          },
+          "成交量比(量比)": 0.83,
+          "涨跌幅": {
+            "近5日涨跌幅(%)": -1.62,
+            "近10日涨跌幅(%)": -4.33,
+            "近20日涨跌幅(%)": -13.82
+          },
+          "支撑压力位": {
+            "近期支撑位(60日)": 21.68,
+            "近期压力位(60日)": 31.02
+          },
+          "数据覆盖": {
+            "交易日数": 241,
+            "起始日期": "2025-07-28",
+            "截止日期": "2026-07-24"
+          }
+        }
+      }
+    },
+    {
+      "code": "600030",
+      "name": "中信证券",
+      "market": "sh",
+      "financial": {
+        "code": "600030",
+        "name": "中信证券",
+        "yjyg": null,
+        "abstract": {
+          "2026-03-31": {
+            "index_per_operating_cash_flow_net": {
+              "value": 5.0714,
+              "yoy": 2.4086
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": 56.9661,
+              "yoy": 0.8243
+            },
+            "parent_holder_net_profit": {
+              "value": 10216128310.91,
+              "yoy": 0.546
+            },
+            "calc_per_net_assets": {
+              "value": 19.6693,
+              "yoy": 0.085
+            },
+            "inventory_turnover_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "conservative_quick_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "equity_ratio": {
+              "value": 5.6921,
+              "yoy": 0.162
+            },
+            "current_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "basic_eps": {
+              "value": 0.67,
+              "yoy": 0.5581
+            },
+            "business_cycle": {
+              "value": null,
+              "yoy": null
+            },
+            "receive_accounts_turnover_days": {
+              "value": null,
+              "yoy": null
+            },
+            "quick_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "sale_gross_margin": {
+              "value": null,
+              "yoy": null
+            },
+            "inventory_turnover_days": {
+              "value": null,
+              "yoy": null
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 40.9138,
+              "yoy": 1.1018
+            },
+            "sale_net_interest_ratio": {
+              "value": 45.1688,
+              "yoy": 0.1865
+            },
+            "per_undistributed_profits": {
+              "value": 8.2879,
+              "yoy": 0.1625
+            },
+            "operating_income_total": {
+              "value": 23155089056.75,
+              "yoy": 0.4091
+            },
+            "per_capital_reserve": {
+              "value": 6.1257,
+              "yoy": -0.0
+            },
+            "index_full_diluted_roe": {
+              "value": 3.0535,
+              "yoy": 0.411
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 54.6018,
+              "yoy": 0.6414
+            },
+            "assets_debt_ratio": {
+              "value": 84.8417,
+              "yoy": 0.0246
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 10202684596.22,
+              "yoy": 0.585
+            },
+            "index_weighted_avg_roe": {
+              "value": 3.46,
+              "yoy": 0.4599
+            }
+          },
+          "2025-12-31": {
+            "index_per_operating_cash_flow_net": {
+              "value": 5.0001,
+              "yoy": -0.5706
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": 40.5081,
+              "yoy": 2.6032
+            },
+            "parent_holder_net_profit": {
+              "value": 30076100951.5,
+              "yoy": 0.3858
+            },
+            "calc_per_net_assets": {
+              "value": 19.0053,
+              "yoy": 0.0736
+            },
+            "inventory_turnover_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "conservative_quick_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "equity_ratio": {
+              "value": 5.4889,
+              "yoy": 0.1395
+            },
+            "current_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "basic_eps": {
+              "value": 1.96,
+              "yoy": 0.3901
+            },
+            "business_cycle": {
+              "value": null,
+              "yoy": null
+            },
+            "receive_accounts_turnover_days": {
+              "value": null,
+              "yoy": null
+            },
+            "quick_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "sale_gross_margin": {
+              "value": null,
+              "yoy": null
+            },
+            "inventory_turnover_days": {
+              "value": null,
+              "yoy": null
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 28.795,
+              "yoy": 9.8746
+            },
+            "sale_net_interest_ratio": {
+              "value": 41.4227,
+              "yoy": 0.1697
+            },
+            "per_undistributed_profits": {
+              "value": 7.6247,
+              "yoy": 0.1354
+            },
+            "operating_income_total": {
+              "value": 74854368352.85,
+              "yoy": 0.2879
+            },
+            "per_capital_reserve": {
+              "value": 6.1251,
+              "yoy": -0.0002
+            },
+            "index_full_diluted_roe": {
+              "value": 9.4008,
+              "yoy": 0.2696
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 38.5759,
+              "yoy": 2.836
+            },
+            "assets_debt_ratio": {
+              "value": 84.3498,
+              "yoy": 0.022
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 30302585353.5,
+              "yoy": 0.4051
+            },
+            "index_weighted_avg_roe": {
+              "value": 10.59,
+              "yoy": 0.309
+            }
+          },
+          "2025-09-30": {
+            "index_per_operating_cash_flow_net": {
+              "value": 3.7922,
+              "yoy": -0.5053
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": 37.4077,
+              "yoy": 9.9341
+            },
+            "parent_holder_net_profit": {
+              "value": 23158914572.54,
+              "yoy": 0.3786
+            },
+            "calc_per_net_assets": {
+              "value": 18.9104,
+              "yoy": 0.0748
+            },
+            "inventory_turnover_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "conservative_quick_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "equity_ratio": {
+              "value": 5.4139,
+              "yoy": 0.0774
+            },
+            "current_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "basic_eps": {
+              "value": 1.51,
+              "yoy": 0.3853
+            },
+            "business_cycle": {
+              "value": null,
+              "yoy": null
+            },
+            "receive_accounts_turnover_days": {
+              "value": null,
+              "yoy": null
+            },
+            "quick_ratio": {
+              "value": null,
+              "yoy": null
+            },
+            "sale_gross_margin": {
+              "value": null,
+              "yoy": null
+            },
+            "inventory_turnover_days": {
+              "value": null,
+              "yoy": null
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 32.7031,
+              "yoy": 4.998
+            },
+            "sale_net_interest_ratio": {
+              "value": 42.8482,
+              "yoy": 0.1329
+            },
+            "per_undistributed_profits": {
+              "value": 7.8869,
+              "yoy": 0.1442
+            },
+            "operating_income_total": {
+              "value": 55814696246.7,
+              "yoy": 0.327
+            },
+            "per_capital_reserve": {
+              "value": 6.1256,
+              "yoy": -0.0002
+            },
+            "index_full_diluted_roe": {
+              "value": 7.3515,
+              "yoy": 0.2538
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 37.86,
+              "yoy": 15.1446
+            },
+            "assets_debt_ratio": {
+              "value": 84.1686,
+              "yoy": 0.0124
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 23000488312.03,
+              "yoy": 0.3741
+            },
+            "index_weighted_avg_roe": {
+              "value": 8.15,
+              "yoy": 0.2937
+            }
+          }
+        },
+        "financial_indicators": null
+      },
+      "research": {
+        "code": "600030",
+        "name": "中信证券",
+        "research": [
+          {
+            "序号": 1,
+            "股票代码": "600030",
+            "股票简称": "中信证券",
+            "报告名称": "2026年中报业绩预增点评：境内境外业务线全面大增，归母净利润预计增长70%",
+            "东财评级": "买入",
+            "机构": "东吴证券",
+            "近一月个股研报数": 1,
+            "2026-盈利预测-收益": 3.04,
+            "2026-盈利预测-市盈率": 9.34,
+            "2027-盈利预测-收益": 2.77,
+            "2027-盈利预测-市盈率": 10.26,
+            "2028-盈利预测-收益": 2.95,
+            "2028-盈利预测-市盈率": 9.62,
+            "行业": "证券Ⅱ",
+            "日期": "2026-07-10",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202607101826884484_1.pdf"
+          },
+          {
+            "序号": 2,
+            "股票代码": "600030",
+            "股票简称": "中信证券",
+            "报告名称": "定增加码高ROE境外业务，继续看好龙头优势",
+            "东财评级": "买入",
+            "机构": "华源证券",
+            "近一月个股研报数": 1,
+            "2026-盈利预测-收益": 2.38,
+            "2026-盈利预测-市盈率": 10.8,
+            "2027-盈利预测-收益": 2.66,
+            "2027-盈利预测-市盈率": 9.6,
+            "2028-盈利预测-收益": 3.06,
+            "2028-盈利预测-市盈率": 8.4,
+            "行业": "证券Ⅱ",
+            "日期": "2026-06-02",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202606021823154881_1.pdf"
+          },
+          {
+            "序号": 3,
+            "股票代码": "600030",
+            "股票简称": "中信证券",
+            "报告名称": "拟向中信金控发行H股股票，中长期有利于公司进一步提升国际竞争力",
+            "东财评级": "买入",
+            "机构": "东吴证券",
+            "近一月个股研报数": 1,
+            "2026-盈利预测-收益": 2.23,
+            "2026-盈利预测-市盈率": 11.38,
+            "2027-盈利预测-收益": 2.41,
+            "2027-盈利预测-市盈率": 10.51,
+            "2028-盈利预测-收益": 2.58,
+            "2028-盈利预测-市盈率": 9.84,
+            "行业": "证券Ⅱ",
+            "日期": "2026-05-29",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202605291823006399_1.pdf"
+          },
+          {
+            "序号": 4,
+            "股票代码": "600030",
+            "股票简称": "中信证券",
+            "报告名称": "公司信息更新报告：再融资靴子落地，业务全面高增带来配置机遇",
+            "东财评级": "买入",
+            "机构": "开源证券",
+            "近一月个股研报数": 1,
+            "2026-盈利预测-收益": 2.34,
+            "2026-盈利预测-市盈率": 10.8,
+            "2027-盈利预测-收益": 2.56,
+            "2027-盈利预测-市盈率": 9.9,
+            "2028-盈利预测-收益": 2.77,
+            "2028-盈利预测-市盈率": 9.1,
+            "行业": "证券Ⅱ",
+            "日期": "2026-05-29",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202605291823006251_1.pdf"
+          },
+          {
+            "序号": 5,
+            "股票代码": "600030",
+            "股票简称": "中信证券",
+            "报告名称": "H股定增快评：资本助力，全球化布局领先",
+            "东财评级": "增持",
+            "机构": "国信证券",
+            "近一月个股研报数": 1,
+            "2026-盈利预测-收益": null,
+            "2026-盈利预测-市盈率": null,
+            "2027-盈利预测-收益": null,
+            "2027-盈利预测-市盈率": null,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "证券Ⅱ",
+            "日期": "2026-05-29",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202605291822993530_1.pdf"
+          },
+          {
+            "序号": 6,
+            "股票代码": "600030",
+            "股票简称": "中信证券",
+            "报告名称": "26Q1归母净利同比增长55%，各条业务全面增长",
+            "东财评级": "买入",
+            "机构": "华源证券",
+            "近一月个股研报数": 1,
+            "2026-盈利预测-收益": 2.39,
+            "2026-盈利预测-市盈率": 11.4,
+            "2027-盈利预测-收益": 2.69,
+            "2027-盈利预测-市盈率": 10.1,
+            "2028-盈利预测-收益": 3.16,
+            "2028-盈利预测-市盈率": 8.6,
+            "行业": "证券Ⅱ",
+            "日期": "2026-04-29",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604291821769922_1.pdf"
+          },
+          {
+            "序号": 7,
+            "股票代码": "600030",
+            "股票简称": "中信证券",
+            "报告名称": "中信证券2026年一季报点评：海外投行和投资收益表现亮眼，ROE和估值错配",
+            "东财评级": "买入",
+            "机构": "开源证券",
+            "近一月个股研报数": 1,
+            "2026-盈利预测-收益": 2.34,
+            "2026-盈利预测-市盈率": 11.2,
+            "2027-盈利预测-收益": 2.56,
+            "2027-盈利预测-市盈率": 10.2,
+            "2028-盈利预测-收益": 2.77,
+            "2028-盈利预测-市盈率": 9.5,
+            "行业": "证券Ⅱ",
+            "日期": "2026-04-27",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604271821617609_1.pdf"
+          },
+          {
+            "序号": 8,
+            "股票代码": "600030",
+            "股票简称": "中信证券",
+            "报告名称": "龙头优势巩固，全业务线高增",
+            "东财评级": "增持",
+            "机构": "国信证券",
+            "近一月个股研报数": 1,
+            "2026-盈利预测-收益": 2.46,
+            "2026-盈利预测-市盈率": 9.83,
+            "2027-盈利预测-收益": 2.7,
+            "2027-盈利预测-市盈率": 8.96,
+            "2028-盈利预测-收益": 2.96,
+            "2028-盈利预测-市盈率": 8.17,
+            "行业": "证券Ⅱ",
+            "日期": "2026-04-26",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604261821587095_1.pdf"
+          },
+          {
+            "序号": 9,
+            "股票代码": "600030",
+            "股票简称": "中信证券",
+            "报告名称": "2026年一季报点评：境内境外业务线全面大增，归母净利润增长超50%",
+            "东财评级": "买入",
+            "机构": "东吴证券",
+            "近一月个股研报数": 1,
+            "2026-盈利预测-收益": 2.23,
+            "2026-盈利预测-市盈率": 11.77,
+            "2027-盈利预测-收益": 2.41,
+            "2027-盈利预测-市盈率": 10.88,
+            "2028-盈利预测-收益": 2.58,
+            "2028-盈利预测-市盈率": 10.18,
+            "行业": "证券Ⅱ",
+            "日期": "2026-04-25",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604251821584377_1.pdf"
+          },
+          {
+            "序号": 10,
+            "股票代码": "600030",
+            "股票简称": "中信证券",
+            "报告名称": "股基交易市占率同比提升1.3pct，境外业务营收贡献度提升",
+            "东财评级": "买入",
+            "机构": "华源证券",
+            "近一月个股研报数": 1,
+            "2026-盈利预测-收益": 2.43,
+            "2026-盈利预测-市盈率": 10.8,
+            "2027-盈利预测-收益": 2.7,
+            "2027-盈利预测-市盈率": 9.7,
+            "2028-盈利预测-收益": 2.98,
+            "2028-盈利预测-市盈率": 8.8,
+            "行业": "证券Ⅱ",
+            "日期": "2026-04-15",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604151821233087_1.pdf"
+          }
+        ]
+      },
+      "fund_flow": {
+        "code": "600030",
+        "name": "中信证券",
+        "fund_flow": null
+      },
+      "technical": {
+        "code": "600030",
+        "name": "中信证券",
+        "technical": {
+          "最新数据": {
+            "日期": "2026-07-24",
+            "开盘": 28.6,
+            "收盘": 27.95,
+            "最高": 28.6,
+            "最低": 27.89,
+            "涨跌幅(%)": -2.341,
+            "换手率(%)": 1.0645,
+            "成交量(手)": 129621942,
+            "成交额(元)": 3651964574.4
+          },
+          "均线": {
+            "MA5": 28.3,
+            "MA10": 28.19,
+            "MA20": 28.45,
+            "MA60": 27.03
+          },
+          "MACD": {
+            "DIF": 0.2468,
+            "DEA": 0.3614,
+            "MACD柱": -0.2292
+          },
+          "RSI": {
+            "RSI6": 46.7,
+            "RSI12": 49.47
+          },
+          "成交量比(量比)": 0.89,
+          "涨跌幅": {
+            "近5日涨跌幅(%)": 1.27,
+            "近10日涨跌幅(%)": -1.58,
+            "近20日涨跌幅(%)": 0.76
+          },
+          "支撑压力位": {
+            "近期支撑位(60日)": 24.82,
+            "近期压力位(60日)": 29.65
+          },
+          "数据覆盖": {
+            "交易日数": 241,
+            "起始日期": "2025-07-28",
+            "截止日期": "2026-07-24"
+          }
+        }
+      }
+    },
+    {
+      "code": "300124",
+      "name": "汇川技术",
+      "market": "sz",
+      "financial": {
+        "code": "300124",
+        "name": "汇川技术",
+        "yjyg": null,
+        "abstract": {
+          "2026-03-31": {
+            "index_per_operating_cash_flow_net": {
+              "value": 0.0347,
+              "yoy": -0.6437
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": -15.2459,
+              "yoy": -1.2729
+            },
+            "parent_holder_net_profit": {
+              "value": 1013451151.58,
+              "yoy": -0.2339
+            },
+            "calc_per_net_assets": {
+              "value": 13.438,
+              "yoy": 0.2248
+            },
+            "inventory_turnover_ratio": {
+              "value": 0.8294,
+              "yoy": -0.0123
+            },
+            "conservative_quick_ratio": {
+              "value": 0.8958,
+              "yoy": 0.1289
+            },
+            "equity_ratio": {
+              "value": 0.8778,
+              "yoy": -0.0672
+            },
+            "current_ratio": {
+              "value": 1.4753,
+              "yoy": 0.0728
+            },
+            "basic_eps": {
+              "value": 0.37,
+              "yoy": -0.2449
+            },
+            "business_cycle": {
+              "value": 208.0257,
+              "yoy": 0.0023
+            },
+            "receive_accounts_turnover_days": {
+              "value": 99.5135,
+              "yoy": -0.0085
+            },
+            "quick_ratio": {
+              "value": 1.0278,
+              "yoy": 0.0797
+            },
+            "sale_gross_margin": {
+              "value": 29.0771,
+              "yoy": -0.0615
+            },
+            "inventory_turnover_days": {
+              "value": 108.5122,
+              "yoy": 0.0124
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 12.9798,
+              "yoy": -0.661
+            },
+            "sale_net_interest_ratio": {
+              "value": 10.0839,
+              "yoy": -0.3261
+            },
+            "per_undistributed_profits": {
+              "value": 8.5117,
+              "yoy": 0.1816
+            },
+            "operating_income_total": {
+              "value": 10143223378.12,
+              "yoy": 0.1298
+            },
+            "per_capital_reserve": {
+              "value": 3.4967,
+              "yoy": 0.4857
+            },
+            "index_full_diluted_roe": {
+              "value": 2.7856,
+              "yoy": -0.3773
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": -23.3874,
+              "yoy": -1.3707
+            },
+            "assets_debt_ratio": {
+              "value": 45.5516,
+              "yoy": -0.0529
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 1045687470.08,
+              "yoy": -0.1525
+            },
+            "index_weighted_avg_roe": {
+              "value": 2.83,
+              "yoy": -0.3848
+            }
+          },
+          "2025-12-31": {
+            "index_per_operating_cash_flow_net": {
+              "value": 2.4681,
+              "yoy": -0.0771
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": 22.6638,
+              "yoy": 27.1044
+            },
+            "parent_holder_net_profit": {
+              "value": 5050002089.89,
+              "yoy": 0.1784
+            },
+            "calc_per_net_assets": {
+              "value": 13.0599,
+              "yoy": 0.256
+            },
+            "inventory_turnover_ratio": {
+              "value": 4.2629,
+              "yoy": 0.0656
+            },
+            "conservative_quick_ratio": {
+              "value": 0.9359,
+              "yoy": 0.1123
+            },
+            "equity_ratio": {
+              "value": 0.9668,
+              "yoy": -0.0586
+            },
+            "current_ratio": {
+              "value": 1.4387,
+              "yoy": 0.1043
+            },
+            "basic_eps": {
+              "value": 1.87,
+              "yoy": 0.1688
+            },
+            "business_cycle": {
+              "value": 173.1742,
+              "yoy": -0.0629
+            },
+            "receive_accounts_turnover_days": {
+              "value": 88.7246,
+              "yoy": -0.0641
+            },
+            "quick_ratio": {
+              "value": 1.0561,
+              "yoy": 0.1147
+            },
+            "sale_gross_margin": {
+              "value": 28.9546,
+              "yoy": 0.0088
+            },
+            "inventory_turnover_days": {
+              "value": 84.4496,
+              "yoy": -0.0616
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 21.7702,
+              "yoy": 0.0002
+            },
+            "sale_net_interest_ratio": {
+              "value": 11.4682,
+              "yoy": -0.0227
+            },
+            "per_undistributed_profits": {
+              "value": 8.1385,
+              "yoy": 0.2111
+            },
+            "operating_income_total": {
+              "value": 45104844200.13,
+              "yoy": 0.2177
+            },
+            "per_capital_reserve": {
+              "value": 3.4758,
+              "yoy": 0.5223
+            },
+            "index_full_diluted_roe": {
+              "value": 14.2845,
+              "yoy": -0.0669
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 17.8395,
+              "yoy": 2.8536
+            },
+            "assets_debt_ratio": {
+              "value": 47.928,
+              "yoy": -0.0468
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 4950505396.54,
+              "yoy": 0.2266
+            },
+            "index_weighted_avg_roe": {
+              "value": 16.34,
+              "yoy": -0.0109
+            }
+          },
+          "2025-09-30": {
+            "index_per_operating_cash_flow_net": {
+              "value": 1.4526,
+              "yoy": 0.0087
+            },
+            "deduct_net_profit_yoy_growth_ratio": {
+              "value": 24.0328,
+              "yoy": 7.2666
+            },
+            "parent_holder_net_profit": {
+              "value": 4254130654.72,
+              "yoy": 0.2684
+            },
+            "calc_per_net_assets": {
+              "value": 12.7044,
+              "yoy": 0.2852
+            },
+            "inventory_turnover_ratio": {
+              "value": 2.8958,
+              "yoy": 0.1266
+            },
+            "conservative_quick_ratio": {
+              "value": 0.939,
+              "yoy": 0.1217
+            },
+            "equity_ratio": {
+              "value": 0.9222,
+              "yoy": -0.0666
+            },
+            "current_ratio": {
+              "value": 1.5318,
+              "yoy": 0.1113
+            },
+            "basic_eps": {
+              "value": 1.58,
+              "yoy": 0.264
+            },
+            "business_cycle": {
+              "value": 182.3445,
+              "yoy": -0.0997
+            },
+            "receive_accounts_turnover_days": {
+              "value": 89.106,
+              "yoy": -0.0861
+            },
+            "quick_ratio": {
+              "value": 1.0647,
+              "yoy": 0.1118
+            },
+            "sale_gross_margin": {
+              "value": 29.2688,
+              "yoy": -0.0564
+            },
+            "inventory_turnover_days": {
+              "value": 93.2385,
+              "yoy": -0.1124
+            },
+            "calculate_operating_income_total_yoy_growth_ratio": {
+              "value": 24.6686,
+              "yoy": -0.0592
+            },
+            "sale_net_interest_ratio": {
+              "value": 13.6356,
+              "yoy": 0.0141
+            },
+            "per_undistributed_profits": {
+              "value": 7.8419,
+              "yoy": 0.2164
+            },
+            "operating_income_total": {
+              "value": 31662606469.69,
+              "yoy": 0.2467
+            },
+            "per_capital_reserve": {
+              "value": 3.4347,
+              "yoy": 0.6534
+            },
+            "index_full_diluted_roe": {
+              "value": 12.3748,
+              "yoy": -0.0232
+            },
+            "calculate_parent_holder_net_profit_yoy_growth_ratio": {
+              "value": 26.844,
+              "yoy": 24.8576
+            },
+            "assets_debt_ratio": {
+              "value": 46.76,
+              "yoy": -0.0514
+            },
+            "index_deduct_holder_net_profit": {
+              "value": 3888104374.94,
+              "yoy": 0.2403
+            },
+            "index_weighted_avg_roe": {
+              "value": 14.23,
+              "yoy": 0.0871
+            }
+          }
+        },
+        "financial_indicators": null
+      },
+      "research": {
+        "code": "300124",
+        "name": "汇川技术",
+        "research": [
+          {
+            "序号": 1,
+            "股票代码": "300124",
+            "股票简称": "汇川技术",
+            "报告名称": "2025年营收净利双增，全面拥抱AI战略",
+            "东财评级": "增持",
+            "机构": "国信证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.26,
+            "2026-盈利预测-市盈率": 30.0,
+            "2027-盈利预测-收益": 2.73,
+            "2027-盈利预测-市盈率": 24.7,
+            "2028-盈利预测-收益": 3.24,
+            "2028-盈利预测-市盈率": 20.8,
+            "行业": "自动化设备",
+            "日期": "2026-05-26",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202605261822870039_1.pdf"
+          },
+          {
+            "序号": 2,
+            "股票代码": "300124",
+            "股票简称": "汇川技术",
+            "报告名称": "2025年报及2026年一季报点评：工控复苏延续，新兴业务有望构建新增长引擎",
+            "东财评级": "买入",
+            "机构": "东莞证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.23,
+            "2026-盈利预测-市盈率": 31.0,
+            "2027-盈利预测-收益": 2.67,
+            "2027-盈利预测-市盈率": 26.0,
+            "2028-盈利预测-收益": 3.18,
+            "2028-盈利预测-市盈率": 22.0,
+            "行业": "自动化设备",
+            "日期": "2026-05-06",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202605061821986540_1.pdf"
+          },
+          {
+            "序号": 3,
+            "股票代码": "300124",
+            "股票简称": "汇川技术",
+            "报告名称": "工控需求复苏，新能源汽车动力业务短期承压",
+            "东财评级": "增持",
+            "机构": "群益证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.19,
+            "2026-盈利预测-市盈率": 28.04,
+            "2027-盈利预测-收益": 2.59,
+            "2027-盈利预测-市盈率": 23.73,
+            "2028-盈利预测-收益": 3.15,
+            "2028-盈利预测-市盈率": 19.49,
+            "行业": "自动化设备",
+            "日期": "2026-04-29",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604291821732278_1.pdf"
+          },
+          {
+            "序号": 4,
+            "股票代码": "300124",
+            "股票简称": "汇川技术",
+            "报告名称": "工控主业稳健，新能源车业务短期承压",
+            "东财评级": "买入",
+            "机构": "国金证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.249,
+            "2026-盈利预测-市盈率": 27.28,
+            "2027-盈利预测-收益": 2.664,
+            "2027-盈利预测-市盈率": 23.03,
+            "2028-盈利预测-收益": 3.177,
+            "2028-盈利预测-市盈率": 19.31,
+            "行业": "自动化设备",
+            "日期": "2026-04-29",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604291821723930_1.pdf"
+          },
+          {
+            "序号": 5,
+            "股票代码": "300124",
+            "股票简称": "汇川技术",
+            "报告名称": "2025年报及26年一季报点评：工控需求进一步复苏，新能源车受成本&价格压力短期承压",
+            "东财评级": "买入",
+            "机构": "东吴证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.22,
+            "2026-盈利预测-市盈率": 29.6,
+            "2027-盈利预测-收益": 2.67,
+            "2027-盈利预测-市盈率": 24.58,
+            "2028-盈利预测-收益": 3.22,
+            "2028-盈利预测-市盈率": 20.43,
+            "行业": "自动化设备",
+            "日期": "2026-04-28",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202604281821656918_1.pdf"
+          },
+          {
+            "序号": 6,
+            "股票代码": "300124",
+            "股票简称": "汇川技术",
+            "报告名称": "2025年收入、利润实现较快增长，维持“买进”评级",
+            "东财评级": "增持",
+            "机构": "群益证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.35,
+            "2026-盈利预测-市盈率": 32.13,
+            "2027-盈利预测-收益": 2.73,
+            "2027-盈利预测-市盈率": 27.65,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "自动化设备",
+            "日期": "2026-02-11",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202602111819879002_1.pdf"
+          },
+          {
+            "序号": 7,
+            "股票代码": "300124",
+            "股票简称": "汇川技术",
+            "报告名称": "2025年业绩预告点评：业绩符合市场预期，工控需求持续向好",
+            "东财评级": "买入",
+            "机构": "东吴证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.35,
+            "2026-盈利预测-市盈率": 33.41,
+            "2027-盈利预测-收益": 2.94,
+            "2027-盈利预测-市盈率": 26.68,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "自动化设备",
+            "日期": "2026-02-11",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202602111819869798_1.pdf"
+          },
+          {
+            "序号": 8,
+            "股票代码": "300124",
+            "股票简称": "汇川技术",
+            "报告名称": "首次覆盖报告：中国工业自动化龙头，机器人业务驱动新成长",
+            "东财评级": "买入",
+            "机构": "爱建证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.5,
+            "2026-盈利预测-市盈率": 29.0,
+            "2027-盈利预测-收益": 2.98,
+            "2027-盈利预测-市盈率": 24.29,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "自动化设备",
+            "日期": "2025-12-30",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202512301811337739_1.pdf"
+          },
+          {
+            "序号": 9,
+            "股票代码": "300124",
+            "股票简称": "汇川技术",
+            "报告名称": "工控龙头地位稳固，看好公司AI、人形机器人零部件业务发展",
+            "东财评级": "增持",
+            "机构": "群益证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.37,
+            "2026-盈利预测-市盈率": 30.88,
+            "2027-盈利预测-收益": 2.71,
+            "2027-盈利预测-市盈率": 27.0,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "自动化设备",
+            "日期": "2025-12-26",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202512261808585254_1.pdf"
+          },
+          {
+            "序号": 10,
+            "股票代码": "300124",
+            "股票简称": "汇川技术",
+            "报告名称": "业绩保持快速增长，积极布局机器人业务",
+            "东财评级": "买入",
+            "机构": "中银证券",
+            "近一月个股研报数": 0,
+            "2026-盈利预测-收益": 2.5,
+            "2026-盈利预测-市盈率": 29.6,
+            "2027-盈利预测-收益": 2.9,
+            "2027-盈利预测-市盈率": 25.6,
+            "2028-盈利预测-收益": null,
+            "2028-盈利预测-市盈率": null,
+            "行业": "自动化设备",
+            "日期": "2025-11-05",
+            "报告PDF链接": "https://pdf.dfcfw.com/pdf/H3_AP202511051775563649_1.pdf"
+          }
+        ]
+      },
+      "fund_flow": {
+        "code": "300124",
+        "name": "汇川技术",
+        "fund_flow": null
+      },
+      "technical": {
+        "code": "300124",
+        "name": "汇川技术",
+        "technical": {
+          "最新数据": {
+            "日期": "2026-07-24",
+            "开盘": 61.5,
+            "收盘": 59.35,
+            "最高": 61.5,
+            "最低": 59.35,
+            "涨跌幅(%)": -4.8268,
+            "换手率(%)": 1.1328,
+            "成交量(手)": 27304656,
+            "成交额(元)": 1645039582.34
+          },
+          "均线": {
+            "MA5": 60.91,
+            "MA10": 60.62,
+            "MA20": 63.59,
+            "MA60": 69.7
+          },
+          "MACD": {
+            "DIF": -2.4003,
+            "DEA": -2.4272,
+            "MACD柱": 0.0537
+          },
+          "RSI": {
+            "RSI6": 43.55,
+            "RSI12": 36.4
+          },
+          "成交量比(量比)": 0.84,
+          "涨跌幅": {
+            "近5日涨跌幅(%)": 0.39,
+            "近10日涨跌幅(%)": -6.43,
+            "近20日涨跌幅(%)": -6.21
+          },
+          "支撑压力位": {
+            "近期支撑位(60日)": 58.25,
+            "近期压力位(60日)": 81.2
+          },
+          "数据覆盖": {
+            "交易日数": 241,
+            "起始日期": "2025-07-28",
+            "截止日期": "2026-07-24"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A股 TTM指标分析报告</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+.header{background:linear-gradient(135deg,#1e293b,#0f172a);padding:30px 20px;border-bottom:1px solid #334155}
+.header h1{font-size:28px;font-weight:700;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .subtitle{color:#94a3b8;margin-top:8px;font-size:14px}
+.stats-bar{display:flex;gap:20px;padding:20px;background:#1e293b;border-bottom:1px solid #334155;flex-wrap:wrap}
+.stat-box{flex:1;min-width:120px;text-align:center;padding:12px;background:#0f172a;border-radius:12px;border:1px solid #334155}
+.stat-box .num{font-size:24px;font-weight:700}
+.stat-box .label{font-size:12px;color:#94a3b8;margin-top:4px}
+.container{max-width:1400px;margin:0 auto;padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px}
+.card{background:#1e293b;border-radius:16px;border:1px solid #334155;overflow:hidden;cursor:pointer;transition:all 0.2s}
+.card:hover{border-color:#60a5fa;transform:translateY(-2px);box-shadow:0 8px 24px rgba(96,165,250,0.15)}
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#0f172a;border-bottom:1px solid #334155}
+.stock-title{font-size:16px;font-weight:600}
+.stock-code{color:#64748b;font-size:13px;font-weight:400;margin-left:8px}
+.report-date{color:#64748b;font-size:12px}
+.card-body{padding:16px 20px}
+.metrics-row{display:flex;gap:12px}
+.metric{flex:1;text-align:center;padding:8px;background:#0f172a;border-radius:10px}
+.metric-label{font-size:11px;color:#94a3b8;margin-bottom:4px}
+.metric-value{font-size:20px;font-weight:700}
+.sub{font-size:12px;color:#64748b;font-weight:400}
+.f-score-bar{display:flex;gap:4px;margin-top:12px;justify-content:center}
+.f-dot{display:inline-flex;align-items:center;justify-content:center;width:32px;height:22px;border-radius:4px;font-size:10px;font-weight:600}
+.f-dot.on{background:#166534;color:#4ade80}
+.f-dot.off{background:#7f1d1d;color:#f87171}
+.detail-row{margin-top:12px;padding-top:12px;border-top:1px solid #334155}
+.detail-table{width:100%;font-size:13px}
+.detail-table td{padding:4px 8px}
+.detail-table td:nth-child(odd){color:#94a3b8;text-align:right;width:35%}
+.detail-table td:nth-child(even){color:#e2e8f0;text-align:left;width:15%}
+.chart-section{margin-top:30px;background:#1e293b;border-radius:16px;border:1px solid #334155;padding:20px}
+.chart-controls{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.chart-btn{padding:6px 16px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#94a3b8;cursor:pointer;font-size:13px;transition:all 0.2s}
+.chart-btn.active{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.chart-btn:hover{border-color:#60a5fa}
+.chart-container{position:relative;height:400px;width:100%}
+.search-box{margin-bottom:16px}
+.search-box input{width:100%;padding:10px 16px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;font-size:14px;outline:none}
+.search-box input:focus{border-color:#60a5fa}
+.sort-controls{display:flex;gap:8px;margin-bottom:12px}
+.sort-btn{padding:6px 14px;border-radius:6px;border:1px solid #334155;background:#0f172a;color:#94a3b8;cursor:pointer;font-size:12px;transition:all 0.2s}
+.sort-btn.active{background:#334155;color:#e2e8f0}
+.footer{text-align:center;padding:20px;color:#475569;font-size:12px}
+@media(max-width:640px){.grid{grid-template-columns:1fr}.header h1{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="header">
+    <h1>📊 A股 TTM指标分析报告</h1>
+    <div class="subtitle">滚动ROE · Piotroski F-Score · 补齐季报生成TTM指标</div>
+    <div class="subtitle" style="margin-top:4px">生成时间: 2026-07-07 17:57 ｜ 数据: 同花顺/东方财富</div>
+</div>
+<div class="stats-bar">
+    <div class="stat-box"><div class="num" style="color:#60a5fa">6</div><div class="label">分析股票</div></div>
+    <div class="stat-box"><div class="num" style="color:#22c55e">4</div><div class="label">高ROE(≥15%)</div></div>
+    <div class="stat-box"><div class="num" style="color:#a78bfa">1</div><div class="label">高F-Score(≥7)</div></div>
+</div>
+<div class="container">
+<div class="search-box"><input type="text" id="searchInput" placeholder="🔍 搜索股票名称或代码..." oninput="filterCards()"></div>
+<div class="sort-controls">
+    <button class="sort-btn active" onclick="sortCards('default', this)">📋 默认</button>
+    <button class="sort-btn" onclick="sortCards('roe', this)">📈 ROE从高到低</button>
+    <button class="sort-btn" onclick="sortCards('fscore', this)">🏆 F-Score从高到低</button>
+</div>
+<div class="grid" id="stockGrid">
+        <div class="card" onclick="toggleDetail('600519')">
+            <div class="card-header">
+                <span class="stock-title">贵州茅台 <span class="stock-code">600519</span></span>
+                <span class="report-date">📅 2026-03-31</span>
+            </div>
+            <div class="card-body">
+                <div class="metrics-row">
+                    <div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#22c55e">32.1%</div></div>
+                    <div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">5<span class="sub">/9</span></div></div>
+                    <div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">827.2亿</div></div>
+                    <div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">1,753.1亿</div></div>
+                </div>
+                <div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+                <div id="detail-600519" class="detail-row" style="display:none">
+                    <table class="detail-table">
+                        <tr><td>资产负债率</td><td>12.1%</td><td>流动比率</td><td>7.06</td></tr>
+                        <tr><td>毛利率</td><td>89.8%</td><td>资产周转率</td><td>0.5621</td></tr>
+                        <tr><td>经营现金流</td><td>796.2亿</td><td>净资产</td><td>2,708.9亿</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card" onclick="toggleDetail('000858')">
+            <div class="card-header">
+                <span class="stock-title">五粮液 <span class="stock-code">000858</span></span>
+                <span class="report-date">📅 2026-03-31</span>
+            </div>
+            <div class="card-body">
+                <div class="metrics-row">
+                    <div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#eab308">10.2%</div></div>
+                    <div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#22c55e">8<span class="sub">/9</span></div></div>
+                    <div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">126.0亿</div></div>
+                    <div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">462.8亿</div></div>
+                </div>
+                <div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot on" title="F3">F3+</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot on" title="F9">F9+</span></div>
+                <div id="detail-000858" class="detail-row" style="display:none">
+                    <table class="detail-table">
+                        <tr><td>资产负债率</td><td>34.3%</td><td>流动比率</td><td>2.56</td></tr>
+                        <tr><td>毛利率</td><td>81.4%</td><td>资产周转率</td><td>0.2382</td></tr>
+                        <tr><td>经营现金流</td><td>113.2亿</td><td>净资产</td><td>1,280.0亿</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card" onclick="toggleDetail('000568')">
+            <div class="card-header">
+                <span class="stock-title">泸州老窖 <span class="stock-code">000568</span></span>
+                <span class="report-date">📅 2026-03-31</span>
+            </div>
+            <div class="card-body">
+                <div class="metrics-row">
+                    <div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#22c55e">19.6%</div></div>
+                    <div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">4<span class="sub">/9</span></div></div>
+                    <div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">99.5亿</div></div>
+                    <div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">244.0亿</div></div>
+                </div>
+                <div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+                <div id="detail-000568" class="detail-row" style="display:none">
+                    <table class="detail-table">
+                        <tr><td>资产负债率</td><td>21.8%</td><td>流动比率</td><td>3.82</td></tr>
+                        <tr><td>毛利率</td><td>85.8%</td><td>资产周转率</td><td>0.3727</td></tr>
+                        <tr><td>经营现金流</td><td>83.6亿</td><td>净资产</td><td>516.0亿</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card" onclick="toggleDetail('002304')">
+            <div class="card-header">
+                <span class="stock-title">洋河股份 <span class="stock-code">002304</span></span>
+                <span class="report-date">📅 2026-03-31</span>
+            </div>
+            <div class="card-body">
+                <div class="metrics-row">
+                    <div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#ef4444">2.1%</div></div>
+                    <div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">4<span class="sub">/9</span></div></div>
+                    <div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">10.2亿</div></div>
+                    <div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">163.3亿</div></div>
+                </div>
+                <div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot off" title="F2">F2-</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot off" title="F7">F7-</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot off" title="F9">F9-</span></div>
+                <div id="detail-002304" class="detail-row" style="display:none">
+                    <table class="detail-table">
+                        <tr><td>资产负债率</td><td>18.2%</td><td>流动比率</td><td>4.22</td></tr>
+                        <tr><td>毛利率</td><td>75.4%</td><td>资产周转率</td><td>0.2747</td></tr>
+                        <tr><td>经营现金流</td><td>-13.6亿</td><td>净资产</td><td>492.4亿</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card" onclick="toggleDetail('600809')">
+            <div class="card-header">
+                <span class="stock-title">山西汾酒 <span class="stock-code">600809</span></span>
+                <span class="report-date">📅 2026-03-31</span>
+            </div>
+            <div class="card-body">
+                <div class="metrics-row">
+                    <div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#22c55e">25.9%</div></div>
+                    <div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">5<span class="sub">/9</span></div></div>
+                    <div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">109.8亿</div></div>
+                    <div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">371.2亿</div></div>
+                </div>
+                <div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot off" title="F4">F4-</span><span class="f-dot off" title="F5">F5-</span><span class="f-dot on" title="F6">F6+</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot on" title="F8">F8+</span><span class="f-dot off" title="F9">F9-</span></div>
+                <div id="detail-600809" class="detail-row" style="display:none">
+                    <table class="detail-table">
+                        <tr><td>资产负债率</td><td>29.3%</td><td>流动比率</td><td>2.87</td></tr>
+                        <tr><td>毛利率</td><td>75.0%</td><td>资产周转率</td><td>0.6150</td></tr>
+                        <tr><td>经营现金流</td><td>102.4亿</td><td>净资产</td><td>450.2亿</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card" onclick="toggleDetail('000333')">
+            <div class="card-header">
+                <span class="stock-title">美的集团 <span class="stock-code">000333</span></span>
+                <span class="report-date">📅 2026-03-31</span>
+            </div>
+            <div class="card-body">
+                <div class="metrics-row">
+                    <div class="metric"><div class="metric-label">TTM ROE</div><div class="metric-value" style="color:#22c55e">19.4%</div></div>
+                    <div class="metric"><div class="metric-label">F-Score</div><div class="metric-value" style="color:#eab308">5<span class="sub">/9</span></div></div>
+                    <div class="metric"><div class="metric-label">TTM净利润</div><div class="metric-value">442.0亿</div></div>
+                    <div class="metric"><div class="metric-label">TTM营收</div><div class="metric-value">4,616.6亿</div></div>
+                </div>
+                <div class="f-score-bar"><span class="f-dot on" title="F1">F1+</span><span class="f-dot on" title="F2">F2+</span><span class="f-dot off" title="F3">F3-</span><span class="f-dot on" title="F4">F4+</span><span class="f-dot on" title="F5">F5+</span><span class="f-dot off" title="F6">F6-</span><span class="f-dot on" title="F7">F7+</span><span class="f-dot off" title="F8">F8-</span><span class="f-dot off" title="F9">F9-</span></div>
+                <div id="detail-000333" class="detail-row" style="display:none">
+                    <table class="detail-table">
+                        <tr><td>资产负债率</td><td>60.0%</td><td>流动比率</td><td>1.21</td></tr>
+                        <tr><td>毛利率</td><td>25.6%</td><td>资产周转率</td><td>0.7552</td></tr>
+                        <tr><td>经营现金流</td><td>535.5亿</td><td>净资产</td><td>2,323.1亿</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div></div>
+<div class="chart-section">
+    <h3 style="margin-bottom:12px">📈 TTM ROE / F-Score 趋势</h3>
+    <div class="chart-controls" id="chartControls"><button class="chart-btn active" onclick="switchStock('600519', this)">贵州茅台</button><button class="chart-btn " onclick="switchStock('000858', this)">五粮液</button><button class="chart-btn " onclick="switchStock('000568', this)">泸州老窖</button><button class="chart-btn " onclick="switchStock('002304', this)">洋河股份</button><button class="chart-btn " onclick="switchStock('600809', this)">山西汾酒</button><button class="chart-btn " onclick="switchStock('000333', this)">美的集团</button></div>
+    <div class="chart-container"><canvas id="trendChart"></canvas></div>
+</div>
+</div>
+<div class="footer">⚠️ 仅供研究参考，不构成投资建议。数据来源: 同花顺/东方财富(AkShare)</div>
+<script>
+const TD={"600519": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [28.93, 29.84, 28.83, 28.13, 28.88, 29.89, 31.03, 31.88, 32.87, 34.0, 34.48, 34.26, 35.11, 36.24, 36.63, 36.22, 36.19, 36.32, 32.82, 32.09], "fscore": [6, 8, 5, 7, 5, 7, 5, 8, 5, 6, 5, 7, 5, 7, 6, 7, 4, 7, 3, 5], "revenue": [1030.8, 1054.7, 1094.6, 1145.9, 1181.9, 1222.0, 1275.5, 1337.5, 1391.0, 1430.8, 1505.6, 1576.7, 1630.2, 1683.7, 1741.4, 1791.0, 1817.9, 1819.2, 1720.5, 1753.1]}, "000858": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [24.25, 25.0, 24.34, 23.81, 23.81, 24.83, 24.12, 23.62, 23.57, 24.76, 24.0, 23.22, 23.52, 24.22, 23.63, 16.4, 13.23, 10.59, 7.24, 10.17], "fscore": [4, 9, 5, 6, 4, 7, 3, 7, 5, 8, 4, 7, 5, 8, 4, 5, 4, 6, 5, 8], "revenue": [633.0, 645.5, 662.1, 694.3, 706.8, 722.7, 739.7, 775.6, 782.5, 807.2, 832.7, 869.7, 884.1, 886.5, 891.8, 714.3, 620.4, 519.0, 405.3, 462.8]}, "000568": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [28.31, 29.48, 29.26, 29.37, 30.9, 32.55, 31.39, 31.06, 32.67, 34.48, 33.09, 32.2, 32.23, 32.73, 29.03, 27.66, 27.11, 26.28, 21.78, 19.62], "fscore": [4, 8, 4, 7, 5, 9, 3, 5, 5, 8, 5, 6, 5, 7, 5, 7, 5, 7, 5, 4], "revenue": [183.4, 191.6, 206.4, 219.5, 229.9, 240.6, 251.2, 264.2, 280.5, 295.4, 302.3, 318.1, 325.4, 325.9, 312.0, 313.6, 307.4, 300.2, 257.3, 244.0]}, "002304": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [18.88, 18.36, 17.74, 19.18, 18.91, 20.35, 19.83, 20.17, 20.08, 20.63, 19.25, 18.75, 18.22, 15.78, 12.7, 8.24, 6.1, 4.24, 4.63, 2.12], "fscore": [6, 8, 5, 9, 7, 6, 4, 8, 6, 5, 3, 6, 6, 3, 3, 6, 4, 6, 5, 4], "revenue": [232.2, 241.3, 253.5, 278.6, 287.1, 298.9, 301.1, 321.2, 330.7, 339.1, 331.3, 343.4, 341.3, 303.6, 288.8, 236.9, 208.0, 194.5, 192.1, 163.3]}, "600809": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [39.7, 39.31, 35.67, 40.05, 36.62, 39.39, 38.99, 38.79, 39.22, 40.99, 38.24, 38.37, 37.16, 38.15, 35.69, 34.53, 33.23, 32.95, 31.23, 25.94], "fscore": [8, 5, 4, 8, 5, 9, 4, 7, 7, 7, 3, 7, 3, 7, 4, 6, 3, 6, 4, 5], "revenue": [192.0, 208.7, 199.7, 231.7, 231.9, 248.6, 262.1, 283.7, 298.9, 308.1, 319.3, 345.8, 356.6, 365.4, 360.1, 372.0, 372.3, 375.8, 387.2, 371.2]}, "000333": {"dates": ["2021-06-30", "2021-09-30", "2021-12-31", "2022-03-31", "2022-06-30", "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31", "2024-03-31", "2024-06-30", "2024-09-30", "2024-12-31", "2025-03-31", "2025-06-30", "2025-09-30", "2025-12-31", "2026-03-31"], "roe": [24.53, 24.73, 23.48, 22.77, 22.57, 22.01, 20.95, 20.6, 21.28, 21.68, 21.13, 20.68, 21.52, 20.18, 18.11, 18.79, 19.62, 20.48, 19.8, 19.41], "fscore": [6, 9, 6, 6, 6, 7, 6, 5, 6, 8, 5, 7, 6, 5, 4, 7, 7, 9, 7, 5], "revenue": [3208.4, 3309.0, 3433.6, 3512.8, 3521.8, 3521.9, 3457.1, 3514.1, 3598.4, 3663.1, 3737.1, 3835.6, 3940.4, 4016.8, 4090.8, 4310.3, 4432.9, 4534.5, 4585.0, 4616.6]}};let cc=null,cs='600519';
+function fc(){const q=document.getElementById('searchInput').value.toLowerCase();document.querySelectorAll('.card').forEach(c=>c.style.display=c.textContent.toLowerCase().includes(q)?'':'none')}
+function td(c){const e=document.getElementById('detail-'+c);if(e)e.style.display=e.style.display==='none'?'block':'none'}
+function sc(m,b){
+document.querySelectorAll('.sort-btn').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');
+const g=document.getElementById('stockGrid'),cards=Array.from(g.children);
+cards.sort((a,b)=>{
+if(m==='roe'){const r=parseFloat(a.querySelectorAll('.metric-value')[0].textContent)||0,s=parseFloat(b.querySelectorAll('.metric-value')[0].textContent)||0;return s-r}
+if(m==='fscore'){const r=parseInt(a.querySelectorAll('.metric-value')[1].textContent.split('/')[0])||0,s=parseInt(b.querySelectorAll('.metric-value')[1].textContent.split('/')[0])||0;return s-r}
+return 0
+});cards.forEach(c=>g.appendChild(c))
+}
+function sw(c,b){cs=c;document.querySelectorAll('.chart-btn').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');rc(c)}
+function rc(c){
+const d=TD[c];if(!d||!d.dates)return;if(cc)cc.destroy();
+cc=new Chart(document.getElementById('trendChart').getContext('2d'),{
+type:'line',
+data:{labels:d.dates.map(x=>x.slice(5)),datasets:[
+{label:'TTM ROE(%)',data:d.roe,borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,0.1)',fill:true,tension:0.3,pointRadius:3,pointHoverRadius:6,yAxisID:'y'},
+{label:'F-Score',data:d.fscore,borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.1)',fill:true,tension:0.3,pointRadius:3,pointHoverRadius:6,yAxisID:'y1'},
+{label:'TTM营收(亿)',data:d.revenue,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.05)',fill:false,tension:0.3,pointRadius:2,borderDash:[5,5],yAxisID:'y2'}
+]},
+options:{
+responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+plugins:{legend:{labels:{color:'#94a3b8',usePointStyle:true}}},
+scales:{
+x:{ticks:{color:'#64748b',maxRotation:45},grid:{color:'#1e293b'}},
+y:{type:'linear',display:true,position:'left',ticks:{color:'#60a5fa'},grid:{color:'#1e293b'},title:{display:true,text:'ROE(%)',color:'#94a3b8'}},
+y1:{type:'linear',display:true,position:'right',ticks:{color:'#a78bfa',stepSize:1},grid:{display:false},min:0,max:9,title:{display:true,text:'F-Score',color:'#94a3b8'}},
+y2:{type:'linear',display:false,position:'right'}
+}
+}}}); if(cs) rc(cs)
+</script>
+</body>
+</html>

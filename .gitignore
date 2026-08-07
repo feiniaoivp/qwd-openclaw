@@ -1,0 +1,32 @@
+# ── 密钥 / 凭据 ──────────────────────────────
+credentials/
+*.token
+scripts/secrets_to_1p.sh
+send_telegram.py
+*.env
+.env.*
+*.pem
+*.key
+*.p12
+*.ovpn
+
+# ── 大型目录 / 虚拟环境 ─────────────────────
+node_modules/
+.venv/
+.venv-ml/
+__pycache__/
+*.pyc
+.clawhub/
+.vega-lite/
+
+# ── 系统 / OpenClaw 运行时 ──────────────────
+.DS_Store
+*.log
+memory/dreaming/
+openclaw*.db
+*.sqlite
+
+# ── 编译 / 打包产物 ─────────────────────────
+dist/
+build/
+*.egg-info/

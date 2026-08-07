@@ -1,0 +1,64 @@
+{
+  "date": "2026-08-06",
+  "is_trading_day": true,
+  "data_date": "2026-08-07",
+  "spot_data": [
+    {
+      "error": "Remote end closed connection without response"
+    }
+  ],
+  "market_overview": {
+    "up": 13,
+    "down": 16,
+    "total": 30,
+    "total_amount_billion": 454.24
+  },
+  "signals": [
+    {
+      "error": "Remote end closed connection without response"
+    }
+  ],
+  "zhonglian": {
+    "date": "2026-08-06",
+    "price": 7.27,
+    "change_pct": -0.27,
+    "volume": 46593974,
+    "indicators": {
+      "MACD_DIF": 0.0201,
+      "MACD_DEA": 0.0336,
+      "MACD_state": "���📕死�叉",
+      "EMA12": 7.41,
+      "EMA26": 7.39,
+      "EMA_state": "���📗EMA12>26",
+      "RSI14": 52.7
+    },
+    "signals": {
+      "strategy1": {
+        "name": "MACD+RSI<50",
+        "buy": false,
+        "sell": false,
+        "rsi_filter": false,
+        "desc": "MACD状态 + RSI52.7"
+      },
+      "strategy2": {
+        "name": "�综合最�优(EMA+MACD+RSI)",
+        "buy": false,
+        "sell": true,
+        "desc": "MACD金�叉:False EMA12>26:True RSI<60:True"
+      }
+    },
+    "portfolio": {
+      "total_value": 200000,
+      "total_return_pct": 0.0
+    }
+  },
+  "news_summary": "- 白酒概念下跌0.18%，5股主力资金净流出超5000万元: \n- 食品饮料行业今日跌1.07%，主力资金净流出11.52亿元: \n- 白酒概念涨1.83%，主力资金净流入这些股: \n- 新鲜零食赛道升温 头部品牌加速扩张: \n- 18.14亿元主力资金今日抢筹食品饮料板块: ",
+  "health_score": null,
+  "health_comment": "{'error': '401 Client Error: Unauthorized for url: https://api.openai.com/v1/chat/completions', 'status_code': 401}",
+  "risk_flag": "解�析失败",
+  "final_advice": "[]",
+  "run_id": "20260806222638_a81eb7",
+  "timestamp": "2026-08-06T22:26:38",
+  "error_count": 3,
+  "done": false
+}

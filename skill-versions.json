@@ -1,0 +1,148 @@
+{
+  "snapshot_ts": "2026-07-29T15:01:00Z",
+  "openclaw_skills": {
+    "1password": {
+      "bin": "op"
+    },
+    "apple-notes": {
+      "bin": "memo"
+    },
+    "apple-reminders": {
+      "bin": "remindctl"
+    },
+    "blogwatcher": {
+      "bin": "blogwatcher"
+    },
+    "blucli": {
+      "bin": "blu"
+    },
+    "camsnap": {
+      "bin": "camsnap"
+    },
+    "canvas": {},
+    "clawhub": {
+      "bin": "clawhub"
+    },
+    "coding-agent": {
+      "anyBins": [
+        "claude",
+        "codex",
+        "opencode"
+      ]
+    },
+    "diagram-maker": {},
+    "discord": {},
+    "eightctl": {
+      "bin": "eightctl"
+    },
+    "gemini": {
+      "bin": "gemini"
+    },
+    "gh-issues": {},
+    "gifgrep": {
+      "bin": "gifgrep"
+    },
+    "github": {
+      "bin": "gh"
+    },
+    "gog": {
+      "bin": "gog"
+    },
+    "goplaces": {
+      "bin": "goplaces"
+    },
+    "healthcheck": {},
+    "himalaya": {
+      "bin": "himalaya"
+    },
+    "imsg": {
+      "bin": "imsg"
+    },
+    "mcporter": {
+      "bin": "mcporter"
+    },
+    "meme-maker": {},
+    "model-usage": {
+      "bin": "codexbar"
+    },
+    "nano-pdf": {
+      "bin": "nano-pdf"
+    },
+    "node-connect": {},
+    "node-inspect-debugger": {},
+    "notion": {
+      "anyBins": [
+        "ntn",
+        "curl"
+      ]
+    },
+    "obsidian": {
+      "bin": "obsidian"
+    },
+    "openai-whisper": {
+      "bin": "whisper"
+    },
+    "openai-whisper-api": {},
+    "openhue": {
+      "bin": "openhue"
+    },
+    "oracle": {
+      "bin": "oracle"
+    },
+    "ordercli": {
+      "bin": "ordercli"
+    },
+    "peekaboo": {
+      "bin": "peekaboo"
+    },
+    "python-debugpy": {},
+    "sag": {
+      "bin": "sag"
+    },
+    "session-logs": {},
+    "sherpa-onnx-tts": {},
+    "skill-creator": {},
+    "slack": {},
+    "songsee": {
+      "bin": "songsee"
+    },
+    "sonoscli": {
+      "bin": "sonos"
+    },
+    "spike": {},
+    "spotify-player": {},
+    "summarize": {
+      "bin": "summarize"
+    },
+    "taskflow": {},
+    "taskflow-inbox-triage": {},
+    "things-mac": {
+      "bin": "things"
+    },
+    "tmux": {
+      "bin": "tmux"
+    },
+    "trello": {},
+    "video-frames": {
+      "bin": "ffmpeg"
+    },
+    "voice-call": {},
+    "wacli": {
+      "bin": "wacli"
+    },
+    "weather": {},
+    "xurl": {
+      "bin": "xurl"
+    },
+    "bear-notes": {
+      "bin": "grizzly"
+    }
+  },
+  "extensions": {
+    "browser-automation": "browser",
+    "obsidian-vault-maintainer": "memory-wiki",
+    "wiki-maintainer": "memory-wiki",
+    "prose": "open-prose",
+    "tavily": "tavily"
+  }
+}

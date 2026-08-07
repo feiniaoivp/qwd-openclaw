@@ -1,0 +1,19 @@
+{
+  "last_signal_date": "2026-08-07",
+  "strategy1": {
+    "name": "MACD+RSI<50",
+    "position": false,
+    "entry_price": 0,
+    "entry_date": null,
+    "capital": 100000,
+    "shares": 0
+  },
+  "strategy2": {
+    "name": "综合最优(EMA+MACD+RSI)",
+    "position": false,
+    "entry_price": 0,
+    "entry_date": null,
+    "capital": 100000,
+    "shares": 0
+  }
+}
