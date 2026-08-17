@@ -36,3 +36,32 @@ for code, name in WATCHLIST:
     })
 
 print(json.dumps(rows, ensure_ascii=False, indent=2))
+
+
+def build_brief(rows, ts: str) -> str:
+    """规则化组装盘前简报文本（不经 LLM，供 cron 直推）。"""
+    lines = [f"📊 盘前竞价扫描 · {ts}", ""]
+    strong, weak, lim_up = [], [], []
+    for r in rows:
+        if r.get("error"):
+            continue
+        chg, op = r.get("chg_pct"), r.get("open_chg_pct")
+        if chg is not None and chg > 2:
+            strong.append(f"{r['name']}({r['code']}) {chg:+.2f}% 额{r.get('amount_yi',0):.2f}亿")
+        if chg is not None and chg < -2:
+            weak.append(f"{r['name']}({r['code']}) {chg:+.2f}% 额{r.get('amount_yi',0):.2f}亿")
+        if op is not None and ((op >= 9.5 and r['code'][0] in '036') or (op >= 19.5 and r['code'][0] in '30')):
+            lim_up.append(f"{r['name']}({r['code']}) 开{op:+.2f}%")
+    def _s(t, items):
+        return ([f"**{t}**"] + [f"- {i}" for i in items] + [""]) if items else []
+    lines += _s("🚀 高开(>2%)", strong)
+    lines += _s("📉 低开(<-2%)", weak)
+    lines += _s("🔒 涨停预判", lim_up)
+    lines.append("**📋 明细**")
+    for r in rows:
+        if r.get("error"):
+            lines.append(f"- {r['name']}({r['code']}) {r['error']}")
+            continue
+        lines.append(f"- {r['name']}({r['code']}) {r['chg_pct']:+.2f}% 开{r['open_chg_pct']:+.2f}% 额{r.get('amount_yi',0):.2f}亿")
+    return "\n".join(lines)
+

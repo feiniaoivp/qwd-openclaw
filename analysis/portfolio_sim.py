@@ -15,6 +15,12 @@
 """
 import os, sys, json, time, warnings
 from datetime import datetime
+
+# 确保可以从工作区根导入 analysis 包（python3 analysis/portfolio_sim.py 直接运行时
+# sys.path[0] 是 analysis/ 目录而非工作区根，需手动加入工作区根）
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+if WORKSPACE not in sys.path:
+    sys.path.insert(0, WORKSPACE)
 import pandas as pd
 import pandas_ta as ta
 import baostock as bs
@@ -22,6 +28,21 @@ import numpy as np
 import urllib.request
 
 warnings.filterwarnings("ignore")
+
+# 导入护城河因子用于哑铃策略仓位管理
+from analysis.moat_factor import calc_moat_score, is_core_moat_stock
+
+# ═══════════════════════════════════════════
+# 030 核心模块导入
+# ═══════════════════════════════════════════
+try:
+    from analysis.fatal_risk_detector import FatalRiskDetector
+    from analysis.position_sizer import PositionSizer, load_market_context as load_position_context
+    from analysis.signal_arbitrator import SignalArbitrator, RawSignal, SignalAction
+    HAS_030_MODULES = True
+except ImportError as e:
+    HAS_030_MODULES = False
+    print(f"⚠️ 030模块导入失败: {e}")
 
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
 OUTPUT_DIR = os.path.join(WORKSPACE, "analysis", "daily")
@@ -325,15 +346,49 @@ def append_trade(trade: dict):
 
 
 def execute_trade(pos, signal, dt, strategy=None):
-    """基于信号执行一次买卖，返回 (action, msg)。每次成交追加一条流水到 TRADES_FILE。"""
+    """基于信号执行一次买卖，返回 (action, msg)。每次成交追加一条流水到 TRADES_FILE。
+    集成哑铃策略仓位管理：
+    - 核心仓(护城河≥2.0)：单票上限 15%，总仓位上限 80%
+    - 卫星仓(护城河<2.0)：单票上限 5%，总仓位上限 20%
+    """
     price = signal["price"]
     action = signal["action"]
     strat_name = strategy or pos.get("strategy")
 
+    # 哑铃策略仓位管理
+    symbol = pos.get("_symbol", "")
+    moat_score = 0.0
+    is_core = False
+    try:
+        from analysis.moat_factor import calc_moat_score, is_core_moat_stock
+        moat_score, _ = calc_moat_score(symbol)
+        is_core = is_core_moat_stock(symbol)
+    except Exception:
+        pass
+    
+    if is_core:
+        max_single_pct = 0.15  # 核心仓单票 15%
+        max_total_pct = 0.80   # 核心仓总仓位 80%
+        bucket = "core"
+    else:
+        max_single_pct = 0.05  # 卫星仓单票 5%
+        max_total_pct = 0.20   # 卫星仓总仓位 20%
+        bucket = "satellite"
+    
+    INITIAL_TOTAL_CAPITAL = INITIAL_CAPITAL * 30  # 30只股票总资金
+    
+    # 计算当前bucket已用资金
+    # 注意：这里需要遍历state["positions"]，但execute_trade只有pos，需要传入state或全局引用
+    # 简化：单票限额基于单只初始资金，总仓位由外层控制
+    single_cap = INITIAL_CAPITAL * max_single_pct
+
     if action == "买入" and not pos["position"]:
+        # 单票资金上限
         fee = pos["cash"] * COMMISSION
         available = pos["cash"] - fee
-        shares = int(available / (price * (1 + SLIPPAGE)) / 100) * 100
+        max_shares_by_cap = int(single_cap / (price * (1 + SLIPPAGE)) / 100) * 100
+        shares = int(min(available, single_cap) / (price * (1 + SLIPPAGE)) / 100) * 100
+        
         if shares >= 100:
             cost = shares * price * (1 + SLIPPAGE)
             fee2 = cost * COMMISSION
@@ -343,10 +398,12 @@ def execute_trade(pos, signal, dt, strategy=None):
             pos["entry_price"] = price
             pos["entry_date"] = dt
             pos["trade_count"] += 1
+            pos["bucket"] = bucket  # 记录仓位分类
             append_trade({"date": dt, "symbol": pos.get("_symbol", ""), "name": pos["name"],
                           "action": "BUY", "price": price, "shares": shares,
-                          "pnl": 0, "pnl_pct": 0.0, "strategy": strat_name})
-            return "BUY", f"🟢 **{pos['name']}({dt}) 买入**\n价格 ¥{price:.2f} | {shares}股 | 理由: {signal['reason']}"
+                          "pnl": 0, "pnl_pct": 0.0, "strategy": strat_name, "bucket": bucket})
+            bucket_emoji = "🏰" if bucket == "core" else "🛰️"
+            return "BUY", f"{bucket_emoji} **{pos['name']}({dt}) 买入**\n价格 ¥{price:.2f} | {shares}股({bucket}) | 理由: {signal['reason']}"
     elif action == "卖出" and pos["position"]:
         sell_value = pos["shares"] * price * (1 - SLIPPAGE)
         fee = sell_value * COMMISSION
@@ -391,6 +448,44 @@ def main():
     strategy_map = load_strategy_map()
     state = load_state()
 
+    # ═══════════════════════════════════════════
+    # 030 预检：致命风险 + 仓位计划 + 市场上下文
+    # ═══════════════════════════════════════════
+    fatal_risk = {"fatal_triggered": False, "high_risk_triggered": False}
+    position_plan = {"buy_signal_multiplier": 1.0, "single_stock_max_pct": 0.05,
+                     "total_limit_pct": 0.5, "total_limit_amount": 1_500_000,
+                     "direction_allocation": {}}
+    market_context = {"health_score": 5, "market_stage": "震荡筑底", "emotion_cycle": "修复"}
+    
+    if HAS_030_MODULES:
+        try:
+            fatal_detector = FatalRiskDetector()
+            fatal_risk = fatal_detector.check()
+            
+            pos_context = load_position_context()
+            sizer = PositionSizer(total_capital=3_000_000)
+            pos_plan_obj = sizer.calculate(
+                market_stage=pos_context["market_stage"],
+                emotion_cycle=pos_context["emotion_cycle"],
+                health_score=pos_context["health_score"],
+                fatal_risk=fatal_risk,
+                held_positions=pos_context.get("held_positions"),
+                watchlist=[s for s, _ in STOCKS]
+            )
+            position_plan = {
+                "buy_signal_multiplier": pos_plan_obj.buy_signal_multiplier,
+                "single_stock_max_pct": pos_plan_obj.single_stock_max_pct,
+                "single_stock_max_amount": pos_plan_obj.single_stock_max_amount,
+                "total_limit_pct": pos_plan_obj.total_limit_pct,
+                "total_limit_amount": pos_plan_obj.total_limit_amount,
+                "direction_allocation": pos_plan_obj.direction_allocation,
+                "risk_warnings": pos_plan_obj.risk_warnings,
+            }
+            market_context = pos_context
+            print(f"✅ 030预检完成: 仓位上限{position_plan['total_limit_pct']:.1%}, 买入乘数{position_plan['buy_signal_multiplier']:.1f}x")
+        except Exception as e:
+            print(f"⚠️ 030预检模块运行失败: {e}")
+    
     # 填充策略映射到持仓
     for sym, pos in state["positions"].items():
         pos["strategy"] = strategy_map.get(sym, DEFAULT_STRATEGY)
@@ -427,12 +522,44 @@ def main():
                             "position": pos["position"], "strategy": slabel})
             continue
 
+        # 030 致命风险/高风险防御：强制覆盖信号
+        if fatal_risk.get("fatal_triggered", False):
+            # 致命风险：强制清仓所有持仓，禁止买入
+            if pos["position"]:
+                signal["action"] = "卖出"
+                signal["reason"] = "☠️ 030致命风险触发：强制清仓"
+            else:
+                signal["action"] = "持有"
+                signal["reason"] = "☠️ 030致命风险触发：禁止买入"
+        elif fatal_risk.get("high_risk_triggered", False):
+            # 高风险防御：持仓减仓，不开新仓
+            if pos["position"]:
+                signal["action"] = "卖出"
+                signal["reason"] = "🟡 030高风险防御：核心中军≤-3%，减仓止损"
+            else:
+                signal["action"] = "持有"
+                signal["reason"] = "🟡 030高风险防御：不开新仓"
+
         # 只在新交易日执行交易：
         # 首日(last_signal_date为空)仅初始化记账不建仓（避免历史信号批量建仓导致起点混乱）
         # 之后的交易日仅当数据日期变化时才执行该日信号
         data_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
         if state.get("last_signal_date") is not None and data_date != state.get("last_signal_date"):
-            action, msg = execute_trade(pos, signal, data_date, strategy=strat)
+            # 030 仓位管理：根据仓位计划动态调整买入资金
+            if signal["action"] == "买入" and not pos["position"]:
+                # 应用买入信号乘数和单股上限
+                max_amount = position_plan.get("single_stock_max_amount", 100_000) * position_plan.get("buy_signal_multiplier", 1.0)
+                # 暂存原始现金，执行后恢复（execute_trade 内部会用 pos["cash"]）
+                # 这里通过临时调整 pos["cash"] 来限制买入金额
+                original_cash = pos["cash"]
+                pos["cash"] = min(pos["cash"], max_amount)
+                action, msg = execute_trade(pos, signal, data_date, strategy=strat)
+                pos["cash"] = original_cash
+            elif signal["action"] == "卖出" and pos["position"]:
+                action, msg = execute_trade(pos, signal, data_date, strategy=strat)
+            else:
+                action, msg = None, None
+            
             if action:
                 trade_count += 1
                 all_msgs.append(msg)
@@ -459,6 +586,10 @@ def main():
             "trade_count": pos["trade_count"],
             "signal": signal["action"],
             "reason": signal["reason"],
+            # 030 新增字段
+            "fatal_risk_override": fatal_risk.get("fatal_triggered", False) or fatal_risk.get("high_risk_triggered", False),
+            "position_mult": position_plan.get("buy_signal_multiplier", 1.0),
+            "max_buy_amount": round(position_plan.get("single_stock_max_amount", 100_000) * position_plan.get("buy_signal_multiplier", 1.0), 2),
         })
 
     state["last_signal_date"] = datetime.now().strftime("%Y-%m-%d")
@@ -472,6 +603,25 @@ def main():
     buy_qty = sum(1 for r in results if r.get("signal") == "买入")
     sell_qty = sum(1 for r in results if r.get("signal") == "卖出")
 
+    # 030 仓位使用情况
+    core_positions = []
+    sat_positions = []
+    for r in results:
+        if r.get("position"):
+            try:
+                from analysis.moat_factor import is_core_moat_stock
+                if is_core_moat_stock(r["symbol"]):
+                    core_positions.append(r)
+                else:
+                    sat_positions.append(r)
+            except:
+                sat_positions.append(r)
+    
+    core_value = sum(r["value"] for r in core_positions)
+    sat_value = sum(r["value"] for r in sat_positions)
+    core_limit = total_initial * 0.8  # 核心仓总上限 80%
+    sat_limit = total_initial * 0.2   # 卫星仓总上限 20%
+    
     output = {
         "date": today_str,
         "stock_count": len(STOCKS),
@@ -483,6 +633,16 @@ def main():
             "buy_signals_today": buy_qty,
             "sell_signals_today": sell_qty,
             "trades_executed": trade_count,
+            # 030 新增
+            "core_positions": len(core_positions),
+            "satellite_positions": len(sat_positions),
+            "core_value": round(core_value, 2),
+            "satellite_value": round(sat_value, 2),
+            "core_limit_pct": round(core_value / total_initial * 100, 2) if total_initial > 0 else 0,
+            "sat_limit_pct": round(sat_value / total_initial * 100, 2) if total_initial > 0 else 0,
+            "fatal_risk_triggered": fatal_risk.get("fatal_triggered", False),
+            "high_risk_triggered": fatal_risk.get("high_risk_triggered", False),
+            "position_plan": position_plan,
         },
         "errors": errors,
         "details": results,
@@ -497,6 +657,15 @@ def main():
     lines.append(f"💼 **全组合模拟盘日报** ({today_str})")
     lines.append(f"组合总资产: ¥{total_value:,.2f} ({total_return:+.2f}%) | 持仓 {pos_count}/{len(STOCKS)} 只")
     lines.append(f"今日信号: 🟢买入 {buy_qty} | 🔴卖出 {sell_qty} | 实际成交 {trade_count} 笔")
+    
+    # 030 状态
+    if fatal_risk.get("fatal_triggered", False):
+        lines.append("☠️ **030致命风险触发**: 强制清仓，禁止买入")
+    elif fatal_risk.get("high_risk_triggered", False):
+        lines.append("🟡 **030高风险防御**: 核心中军≤-3%，减仓止损，不开新仓")
+    else:
+        lines.append(f"📐 **030仓位计划**: 总上限{position_plan.get('total_limit_pct', 0):.1%}(¥{position_plan.get('total_limit_amount', 0):,.0f}) | 单股上限{position_plan.get('single_stock_max_pct', 0):.1%}(¥{position_plan.get('single_stock_max_amount', 0):,.0f}) | 买入乘数{position_plan.get('buy_signal_multiplier', 1.0):.1f}x")
+        lines.append(f"🏰 **哑铃仓位**: 核心仓{len(core_positions)}只(¥{core_value:,.0f}/{core_limit:,.0f}) | 卫星仓{len(sat_positions)}只(¥{sat_value:,.0f}/{sat_limit:,.0f})")
     lines.append("")
 
     if all_msgs:
@@ -507,23 +676,27 @@ def main():
     lines.append("📈 **持仓明细**(按收益率排序)")
     held = sorted([r for r in results if r.get("position")], key=lambda x: -x.get("return_pct", 0))
     if held:
-        lines.append("| 股票 | 策略 | 现价 | 成本 | 持仓股 | 收益率 |")
-        lines.append("|:---|:---|:---:|:---:|:---:|:---:|")
+        lines.append("| 股票 | 策略 | 现价 | 成本 | 持仓股 | 收益率 | 仓位类型 |")
+        lines.append("|:---|:---|:---:|:---:|:---:|:---:|:---:|")
         for r in held:
-            lines.append(f"| {r['name']}({r['symbol']}) | {r['strategy']} | ¥{r['price']:.2f} | ¥{r['entry_price']:.2f} | {r['shares']} | {r['return_pct']:+.2f}% |")
+            bucket = r.get("bucket", "未知")
+            bucket_emoji = "🏰" if bucket == "core" else "🛰️" if bucket == "satellite" else "❓"
+            lines.append(f"| {r['name']}({r['symbol']}) | {r['strategy']} | ¥{r['price']:.2f} | ¥{r['entry_price']:.2f} | {r['shares']} | {r['return_pct']:+.2f}% | {bucket_emoji} |")
         lines.append("")
 
-    lines.append("🎯 **今日信号信号**")
+    lines.append("🎯 **今日信号**")
     buys = [r for r in results if r.get("signal") == "买入"]
     sells = [r for r in results if r.get("signal") == "卖出"]
     if buys:
         lines.append("🟢 买入信号:")
         for r in buys:
-            lines.append(f"  • {r['name']}({r['symbol']}) [{r['strategy']}] {r['reason']}")
+            max_amt = r.get("max_buy_amount", 0)
+            lines.append(f"  • {r['name']}({r['symbol']}) [{r['strategy']}] {r['reason']} | 限额¥{max_amt:,.0f}")
     if sells:
         lines.append("🔴 卖出信号:")
         for r in sells:
-            lines.append(f"  • {r['name']}({r['symbol']}) [{r['strategy']}] {r['reason']}")
+            fatal_override = " ☠️" if r.get("fatal_risk_override", False) else ""
+            lines.append(f"  • {r['name']}({r['symbol']}) [{r['strategy']}] {r['reason']}{fatal_override}")
     if not buys and not sells:
         lines.append("  今日无买卖信号，全部持有/观望")
 

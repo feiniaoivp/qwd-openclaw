@@ -14,11 +14,12 @@
   "openclaw-tavily-search": "490da2ad7c928df0418dd113b1d35544865c413db62e1f820a80afa0c6857dba",
   "operations-expert": "77193faf471399775f5cbf19eb73bff03854709aec940d8a86e772de33447d9f",
   "prismfy-search": "43f0df0cafe65cab92767708b1473d985a0ff09c765b3feffee23dca2c10676f",
-  "self-improving": "11109b39d0f7fe7b98a9277609cb79c7ca67c86be1f98d13455d4da35c7047b0",
   "skill-version-watcher": "5e19b5fbf98be48463ec975c50fae3df689b0f51ec9966ce4f4a21bf8ad095b6",
   "stock-analysis": "6ae566bdf7f099f0926c58966a5d9d11531c366264217237de281387bf47964d",
   "stock-daily-report": "1967b8ba99e57c28a199fc7863384615cb91b500cb91dc137c791ad7f8c205c6",
   "stock-market-pro": "b48066924239fb1e92e00451ed2d400df5ff443fd6e5296c827113ea45b671e9",
   "stock-watcher": "4d7b3616d674e7f11a79b6f491a06108f2ffcc0d7f107c4d6107f056eac494a6",
-  "x-search": "71d70639d3b5610459c524c95d7cbaad7ff631e75cb3d2a60d2f40f08129a3dc"
+  "x-search": "71d70639d3b5610459c524c95d7cbaad7ff631e75cb3d2a60d2f40f08129a3dc",
+  "self-improving-agent": "4.0.2",
+  "hf-mem": "ee99f9d97e084aa6"
 }

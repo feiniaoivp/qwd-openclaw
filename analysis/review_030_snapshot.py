@@ -11,7 +11,7 @@ from datetime import datetime
 import logging
 logging.basicConfig(level=logging.CRITICAL)
 
-from close_scan_v2 import calc_full_signal, get_spot_scan, WATCHLIST
+from close_scan_v2 import calc_full_signal, WATCHLIST
 
 OUT = {}
 
@@ -186,7 +186,7 @@ def main():
         if s.get("source") == "hq":
             print(f"  {s.get('name', code)}({code}): {s['change_pct']:+.2f}% [hq兜底] 日期{s.get('data_date','')} 额{s.get('amount',0)/1e8:.1f}亿")
             continue
-        print(f"  {s['name']}({code}): {s['change_pct']:+.2f}% 量比{s.get('vol_ratio',0):.2f} "
+        print(f"  {s['name']}({code}): {s['change_pct']:+.2f}% 量比{ind.get('vol_ratio',0):.2f} "
               f"RSI{ind.get('RSI14',0):.1f} {'MACD金叉' if ind.get('MACD_cross_up') else ('多头' if ind.get('MACD_bull') else '空头')} "
               f"{'EMA多' if ind.get('EMA_bull') else 'EMA空'} {s['signal']['level']}")
 

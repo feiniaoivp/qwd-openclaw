@@ -1,0 +1,24 @@
+[
+  {
+    "date": "2026-08-14",
+    "symbol": "600570",
+    "name": "恒生电子",
+    "action": "SELL",
+    "price": 22.12,
+    "shares": 0,
+    "pnl": -4781.296265199984,
+    "pnl_pct": -4.79,
+    "strategy": "bollinger"
+  },
+  {
+    "date": "2026-08-14",
+    "symbol": "601061",
+    "name": "中信金属",
+    "action": "BUY",
+    "price": 11.71,
+    "shares": 8500,
+    "pnl": 0,
+    "pnl_pct": 0.0,
+    "strategy": "ema_obv"
+  }
+]

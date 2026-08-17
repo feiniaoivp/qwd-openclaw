@@ -31,6 +31,37 @@ WORKSPACE = "/Users/duguke/.openclaw/workspace"
 DAILY_DIR = os.path.join(WORKSPACE, "analysis", "daily")
 DATA_DIR = os.path.join(WORKSPACE, "data")
 
+# 复用 service 的 is_trading_day
+sys.path.insert(0, WORKSPACE)
+from analysis.service import is_trading_day
+
+# ═══════════════════════════════════════════
+# 030 专用常量
+# ═══════════════════════════════════════════
+
+# 030 仓位矩阵（用于合规性检查）
+POSITION_MATRIX_LIMITS = {
+    "上升趋势": {"冰点": 0.50, "修复": 0.75, "高潮": 0.50},
+    "震荡筑底": {"冰点": 0.30, "修复": 0.50, "高潮": 0.30},
+    "下跌趋势": {"冰点": 0.15, "修复": 0.25, "高潮": 0.05},
+    "致命风险": {"冰点": 0.00, "修复": 0.00, "高潮": 0.00},
+}
+
+SINGLE_STOCK_LIMITS = {
+    "上升趋势": {"冰点": 0.08, "修复": 0.12, "高潮": 0.08},
+    "震荡筑底": {"冰点": 0.05, "修复": 0.08, "高潮": 0.05},
+    "下跌趋势": {"冰点": 0.03, "修复": 0.05, "高潮": 0.02},
+    "致命风险": {"冰点": 0.00, "修复": 0.00, "高潮": 0.00},
+}
+
+DIRECTION_MAX_RATIO = 0.60  # 单日单方向不超过总仓位上限的60%
+
+# 哑铃策略限制
+CORE_BUCKET_LIMIT = 0.80   # 核心仓总上限 80%
+SAT_BUCKET_LIMIT = 0.20    # 卫星仓总上限 20%
+CORE_SINGLE_LIMIT = 0.15   # 核心仓单票 15%
+SAT_SINGLE_LIMIT = 0.05    # 卫星仓单票 5%
+
 # ── 权威股票清单(31只; 2026-08-06后版本) ──
 CANONICAL_STOCKS = {
     "002318": "久立特材", "300014": "亿纬锂能", "601066": "中信建投",
@@ -143,13 +174,42 @@ def load_market_health(date: str) -> dict:
 
 
 def load_portfolio_state() -> dict:
-    """读取模拟盘持仓状态(权威, 含真实持仓)。"""
+    """读取模拟盘持仓状态(权威, 含真实持仓), 归一化为 {股票名: {...}}。
+
+    状态文件格式: {股票代码: {name, strategy, position(bool), entry_price,
+    entry_date, shares, total_pl, trade_count, _symbol}}。
+    这里归一化为与 parse_portfolio_sim_md 一致的 shape(含 symbol/price/cost/pct),
+    供四类审计函数复用。
+    """
     path = os.path.join(DATA_DIR, "portfolio_sim_state.json")
     if os.path.exists(path):
         try:
             with open(path) as f:
                 data = json.load(f)
-                return data.get("positions", {})
+            normalized = {}
+            for code, p in (data.get("positions") or {}).items():
+                if not isinstance(p, dict):
+                    continue
+                name = p.get("name") or code
+                symbol = p.get("_symbol") or code
+                shares = int(p.get("shares") or 0)
+                price = 0.0
+                cost = float(p.get("entry_price") or 0.0)
+                pct = 0.0
+                if cost and shares:
+                    cost_per = cost
+                    pct = (price - cost_per) / cost_per * 100 if price else 0.0
+                normalized[name] = {
+                    "symbol": symbol,
+                    "strategy": p.get("strategy", ""),
+                    "position": bool(p.get("position")),
+                    "price": price,
+                    "cost": cost,
+                    "entries": shares,
+                    "shares": shares,
+                    "pct": pct,
+                }
+            return normalized
         except Exception:
             pass
     return {}
@@ -272,8 +332,379 @@ def audit_market_guardrail(market_health, findings) -> list:
                 "symbol": "-", "name": "-",
                 "msg": f"市场健康度 {score}/10 → {verdict}。买入信号建议降仓至50%",
             })
-    # 把健康度低的护栏挂在所有买入信号上(列在审计说明里)
     return guardrail
+
+
+def audit_distribution_patterns(dual_stocks) -> list:
+    """[5] 出货形态质疑: 双策略给买入/持有, 但近期K线出现出货形态(强度>=4)。"""
+    findings = []
+    for name, info in dual_stocks.items():
+        patterns = info.get("distribution_patterns", [])
+        if not patterns:
+            continue
+        # 统计买入/持有信号
+        buy_signals = [s for s in info["signals"] if "买入" in s["action"]]
+        hold_signals = [s for s in info["signals"] if s["action"] == "持有"]
+        if not buy_signals and not hold_signals:
+            continue  # 只有卖出信号, 不需质疑
+        
+        # 强出货形态(强度>=4)
+        strong_patterns = [p for p in patterns if p["strength"] >= 4]
+        if not strong_patterns:
+            continue
+        
+        pattern_names = ", ".join([p["pattern"] for p in strong_patterns])
+        max_strength = max(p["strength"] for p in strong_patterns)
+        
+        if buy_signals:
+            # 有买入信号却出现出货形态 → HIGH
+            findings.append({
+                "type": "distribution_pattern_conflict",
+                "severity": "HIGH",
+                "symbol": info["symbol"], "name": name,
+                "msg": f"{name}({info['symbol']}) 双策略【买入】但检测到出货形态: {pattern_names} (强度{max_strength})。建议降级为观望/减仓",
+            })
+        elif hold_signals:
+            # 只有持有信号 → MEDIUM 提示
+            findings.append({
+                "type": "distribution_pattern_warn",
+                "severity": "MEDIUM",
+                "symbol": info["symbol"], "name": name,
+                "msg": f"{name}({info['symbol']}) 双策略【持有】但检测到出货形态: {pattern_names} (强度{max_strength})。建议警惕, 设置止损",
+            })
+    return findings
+
+
+# ═══════════════════════════════════════════
+# 030 专用审计项（新增）
+# ═══════════════════════════════════════════
+
+def load_fatal_risk(date: str) -> dict:
+    """加载致命风险检测结果"""
+    path = os.path.join(DATA_DIR, f"fatal_risk_{date}.json")
+    if os.path.exists(path):
+        try:
+            with open(path) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {"fatal_triggered": False, "high_risk_triggered": False}
+
+
+def load_position_plan(date: str) -> dict:
+    """加载仓位计划"""
+    path = os.path.join(DATA_DIR, f"position_plan_{date}.json")
+    if os.path.exists(path):
+        try:
+            with open(path) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+
+def load_arbitration_results(date: str) -> list:
+    """加载裁决结果"""
+    path = os.path.join(DATA_DIR, f"arbitration_{date}.json")
+    if os.path.exists(path):
+        try:
+            with open(path) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return []
+
+
+def load_next_day_sim(date: str) -> dict:
+    """加载隔日推演"""
+    path = os.path.join(DATA_DIR, f"next_day_sim_{date}.json")
+    if os.path.exists(path):
+        try:
+            with open(path) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+
+def audit_fatal_risk_execution(fatal_risk: dict, positions: dict, dual_stocks: dict) -> list:
+    """[6] 致命风险执行审计: 致命风险触发时，检查是否实际执行了清仓/禁买"""
+    findings = []
+    if not fatal_risk.get("fatal_triggered", False) and not fatal_risk.get("high_risk_triggered", False):
+        return findings
+    
+    # 检查持仓是否已清空（致命风险）
+    if fatal_risk.get("fatal_triggered", False):
+        held_positions = [p for p in positions.values() if p.get("shares", 0) > 0]
+        if held_positions:
+            names = ", ".join([f"{p.get('symbol','')}" for p in held_positions])
+            findings.append({
+                "type": "fatal_risk_not_executed",
+                "severity": "HIGH",
+                "symbol": "-", "name": "-",
+                "msg": f"☠️ 致命风险触发但仍有 {len(held_positions)} 只持仓未清空: {names}。必须无条件清仓！",
+            })
+        
+        # 检查是否有买入信号未被压制
+        buy_signals = []
+        for name, info in dual_stocks.items():
+            for s in info.get("signals", []):
+                if "买入" in s.get("action", ""):
+                    buy_signals.append(f"{name}({info['symbol']}) {s.get('strat','')}")
+        if buy_signals:
+            findings.append({
+                "type": "fatal_risk_buy_not_suppressed",
+                "severity": "HIGH",
+                "symbol": "-", "name": "-",
+                "msg": f"☠️ 致命风险触发但仍有买入信号未压制: {', '.join(buy_signals[:5])}",
+            })
+    
+    # 高风险防御：检查持仓是否减仓/止损
+    if fatal_risk.get("high_risk_triggered", False):
+        for name, pos in positions.items():
+            if pos.get("shares", 0) > 0:
+                info = dual_stocks.get(name)
+                has_sell = False
+                if info:
+                    for s in info.get("signals", []):
+                        if "卖出" in s.get("action", ""):
+                            has_sell = True
+                            break
+                if not has_sell:
+                    findings.append({
+                        "type": "high_risk_no_reduce",
+                        "severity": "MEDIUM",
+                        "symbol": pos.get("symbol", ""), "name": name,
+                        "msg": f"🟡 高风险防御触发但 {name}({pos.get('symbol','')}) 持仓未出现减仓/止损信号",
+                    })
+    return findings
+
+
+def audit_position_compliance(position_plan: dict, positions: dict, market_context: dict) -> list:
+    """[7] 仓位合规审计: 检查实际仓位是否超出 030 矩阵限制"""
+    findings = []
+    if not position_plan:
+        return findings
+    
+    total_capital = position_plan.get("total_capital", 3_000_000)
+    total_limit_pct = position_plan.get("total_limit_pct", 0)
+    total_limit_amt = position_plan.get("total_limit_amount", 0)
+    single_max_pct = position_plan.get("single_stock_max_pct", 0)
+    single_max_amt = position_plan.get("single_stock_max_amount", 0)
+    direction_alloc = position_plan.get("direction_allocation", {})
+    
+    held_positions = [p for p in positions.values() if p.get("shares", 0) > 0]
+    total_held_value = 0
+    direction_values = {}
+    
+    for pos in held_positions:
+        shares = pos.get("shares", 0)
+        cost = pos.get("cost", 0)
+        if shares > 0 and cost > 0:
+            mv = shares * cost
+            total_held_value += mv
+            symbol = pos.get("symbol", "")
+            direction = _get_direction(symbol)
+            direction_values[direction] = direction_values.get(direction, 0) + mv
+    
+    if total_limit_amt > 0 and total_held_value > total_limit_amt * 1.05:
+        findings.append({
+            "type": "position_limit_exceeded",
+            "severity": "HIGH",
+            "symbol": "-", "name": "-",
+            "msg": f"📐 总仓位超限: 实际¥{total_held_value:,.0f} > 上限¥{total_limit_amt:,.0f} ({total_held_value/total_capital:.1%} > {total_limit_pct:.1%})",
+        })
+    
+    for pos in held_positions:
+        shares = pos.get("shares", 0)
+        cost = pos.get("cost", 0)
+        if shares > 0 and cost > 0:
+            mv = shares * cost
+            if mv > single_max_amt * 1.05:
+                findings.append({
+                    "type": "single_position_limit_exceeded",
+                    "severity": "MEDIUM",
+                    "symbol": pos.get("symbol", ""), "name": pos.get("name", ""),
+                    "msg": f"📈 单股超限: {pos.get('name')}({pos.get('symbol')}) ¥{mv:,.0f} > 上限¥{single_max_amt:,.0f} ({mv/total_capital:.1%} > {single_max_pct:.1%})",
+                })
+    
+    for direction, value in direction_values.items():
+        limit = direction_alloc.get(direction, 0)
+        if limit > 0 and value > limit * 1.1:
+            findings.append({
+                "type": "direction_limit_exceeded",
+                "severity": "MEDIUM",
+                "symbol": "-", "name": direction,
+                "msg": f"🎯 方向仓位超限: {direction} ¥{value:,.0f} > 额度¥{limit:,.0f}",
+            })
+    
+    core_value = 0
+    sat_value = 0
+    for pos in held_positions:
+        shares = pos.get("shares", 0)
+        cost = pos.get("cost", 0)
+        if shares > 0 and cost > 0:
+            mv = shares * cost
+            symbol = pos.get("symbol", "")
+            try:
+                from analysis.moat_factor import is_core_moat_stock
+                if is_core_moat_stock(symbol):
+                    core_value += mv
+                else:
+                    sat_value += mv
+            except:
+                sat_value += mv
+    
+    if total_capital > 0:
+        core_pct = core_value / total_capital
+        sat_pct = sat_value / total_capital
+        if core_pct > CORE_BUCKET_LIMIT + 0.05:
+            findings.append({
+                "type": "core_bucket_exceeded",
+                "severity": "HIGH",
+                "symbol": "-", "name": "核心仓",
+                "msg": f"🏰 核心仓超限: {core_pct:.1%} > {CORE_BUCKET_LIMIT:.0%} (¥{core_value:,.0f})",
+            })
+        if sat_pct > SAT_BUCKET_LIMIT + 0.05:
+            findings.append({
+                "type": "sat_bucket_exceeded",
+                "severity": "MEDIUM",
+                "symbol": "-", "name": "卫星仓",
+                "msg": f"🛰️ 卫星仓超限: {sat_pct:.1%} > {SAT_BUCKET_LIMIT:.0%} (¥{sat_value:,.0f})",
+            })
+    
+    return findings
+
+
+def _get_direction(symbol: str) -> str:
+    """获取股票方向（简化版）"""
+    DIRECTION_MAP = {
+        "600584": "半导体封测", "002156": "半导体封测", "688981": "半导体晶圆",
+        "002413": "军工电子", "300124": "工业自动化", "601100": "高端液压",
+        "300014": "锂电池", "002466": "锂资源", "601865": "光伏玻璃",
+        "300285": "特种陶瓷", "603308": "特材管材", "002318": "特钢管",
+        "600160": "氟化工", "600346": "炼化一体化", "000708": "特钢",
+        "300748": "稀土永磁", "002335": "数据中心", "300719": "连接器",
+        "600030": "券商", "601066": "券商", "600036": "银行", "601995": "券商",
+        "000987": "基建金融", "600570": "金融IT", "605566": "消费电子",
+        "600660": "汽车玻璃", "000157": "工程机械", "601061": "有色贸易",
+        "002180": "打印机国产替代", "300847": "军工光电",
+    }
+    return DIRECTION_MAP.get(symbol, "其他")
+
+
+def audit_arbitration_consistency(arbitration_results: list, dual_stocks: dict) -> list:
+    """[8] 裁决一致性审计: 检查裁决引擎输出是否与原始信号矛盾"""
+    findings = []
+    if not arbitration_results:
+        return findings
+    
+    arb_by_symbol = {r["symbol"]: r for r in arbitration_results}
+    
+    for name, info in dual_stocks.items():
+        symbol = info["symbol"]
+        arb = arb_by_symbol.get(symbol)
+        if not arb:
+            continue
+        
+        final_action = arb.get("final_action", "")
+        arb_path = arb.get("arbitration_path", [])
+        
+        raw_signals = info.get("signals", [])
+        raw_buys = [s for s in raw_signals if "买入" in s.get("action", "")]
+        raw_sells = [s for s in raw_signals if "卖出" in s.get("action", "")]
+        
+        if len(raw_buys) >= 2 and final_action in ["卖出", "减仓", "观望", "强制清仓"]:
+            valid_reasons = ["FATAL_RISK", "HIGH_RISK", "NEGATIVE_FEEDBACK", "DISTRIBUTION_PATTERN"]
+            has_valid = any(r in arb_path for r in valid_reasons)
+            if not has_valid:
+                findings.append({
+                    "type": "arbitration_unexplained_downgrade",
+                    "severity": "MEDIUM",
+                    "symbol": symbol, "name": name,
+                    "msg": f"⚖️ 裁决无故降级: 原始双买入但裁决为{final_action}，路径={arb_path}",
+                })
+        
+        if len(raw_sells) >= 2 and final_action in ["买入", "积极买入", "小仓买入"]:
+            findings.append({
+                "type": "arbitration_unexplained_upgrade",
+                "severity": "HIGH",
+                "symbol": symbol, "name": name,
+                "msg": f"⚖️ 裁决无故升级: 原始双卖出但裁决为{final_action}，路径={arb_path}",
+            })
+    
+    return findings
+
+
+def audit_next_day_sim_consistency(next_day_sim: dict, arbitration_results: list) -> list:
+    """[9] 隔日推演一致性: 检查推演操作建议与裁决结果是否一致"""
+    findings = []
+    if not next_day_sim or not arbitration_results:
+        return findings
+    
+    arb_by_symbol = {r["symbol"]: r for r in arbitration_results}
+    directions = next_day_sim.get("directions", [])
+    
+    for df in directions:
+        for symbol in df.get("core_stocks", []):
+            arb = arb_by_symbol.get(symbol)
+            if not arb:
+                continue
+            
+            final_action = arb.get("final_action", "")
+            scenarios = df.get("scenarios", {})
+            normal_action = scenarios.get("A", {}).get("action", "")
+            
+            if final_action in ["积极买入", "买入"] and ("观望" in normal_action or "卖出" in normal_action or "减仓" in normal_action):
+                findings.append({
+                    "type": "sim_arbitration_mismatch",
+                    "severity": "MEDIUM",
+                    "symbol": symbol, "name": SYMBOL_TO_NAME.get(symbol, symbol),
+                    "msg": f"🔮 推演与裁决不一致: 裁决{final_action}但推演正常情景建议{normal_action}",
+                })
+    
+    return findings
+
+
+def audit_stop_loss_coverage(arbitration_results: list, positions: dict) -> list:
+    """[10] 止损覆盖率: 检查所有持仓是否有止损位设置"""
+    findings = []
+    if not arbitration_results:
+        return findings
+    
+    arb_by_symbol = {r["symbol"]: r for r in arbitration_results}
+    held_positions = [p for p in positions.values() if p.get("shares", 0) > 0]
+    
+    no_stop_loss = []
+    for pos in held_positions:
+        symbol = pos.get("symbol", "")
+        arb = arb_by_symbol.get(symbol)
+        if not arb or not arb.get("stop_loss"):
+            no_stop_loss.append(f"{pos.get('name','')}({symbol}) - 成本¥{pos.get('cost',0):.2f}")
+    
+    if no_stop_loss:
+        findings.append({
+            "type": "stop_loss_missing",
+            "severity": "HIGH",
+            "symbol": "-", "name": "-",
+            "msg": f"🛑 {len(no_stop_loss)} 只持仓缺止损位: {', '.join(no_stop_loss[:5])}",
+        })
+    
+    return findings
+
+# 导入 SYMBOL_TO_NAME（从 next_day_simulator 复用）
+SYMBOL_TO_NAME = {
+    "600584": "长电科技", "002156": "通富微电", "688981": "中芯国际",
+    "002413": "雷科防务", "300124": "汇川技术", "601100": "恒立液压",
+    "300014": "亿纬锂能", "002466": "天齐锂业", "601865": "福莱特",
+    "300285": "国瓷材料", "603308": "应流股份", "002318": "久立特材",
+    "600160": "巨化股份", "600346": "恒力石化", "000708": "中信特钢",
+    "300748": "金力永磁", "002335": "科华数据", "300719": "安达维尔",
+    "600030": "中信证券", "601066": "中信建投", "601995": "中金公司",
+    "600036": "招商银行", "000987": "越秀资本", "600570": "恒生电子",
+    "605566": "福莱蒽特", "600660": "福耀玻璃", "000157": "中联重科",
+    "601061": "中信金属", "002180": "奔图科技", "300847": "中船汉光",
+}
 
 
 # ──────────────────────────────────────────
@@ -285,6 +716,34 @@ def main():
     parser.add_argument("--date", default=datetime.now().strftime("%Y-%m-%d"))
     args = parser.parse_args()
     date = args.date
+
+    # ── 非交易日直接跳过 ──
+    if not is_trading_day(date):
+        brief = [
+            f"🔍 **信号交叉审计** ({date})",
+            "指定日期非交易日，跳过校验。",
+            "",
+            "⚠️ 校验说明: 非交易日无盘后数据源，自动跳过避免误报。"
+        ]
+        report = "\n".join(brief)
+        print(report)
+        output = {
+            "date": date,
+            "skipped": True,
+            "reason": "non_trading_day",
+            "total_findings": 0,
+            "high": 0, "medium": 0, "low": 0,
+            "findings": [],
+        }
+        print("\n=====SIGNAL_AUDIT_RESULT=====")
+        print(json.dumps(output, ensure_ascii=False, indent=2))
+        print("=====SIGNAL_AUDIT_END=====")
+        os.makedirs(DAILY_DIR, exist_ok=True)
+        with open(os.path.join(DAILY_DIR, f"{date}_signal_audit.md"), "w") as f:
+            f.write(f"# 信号交叉审计 {date}\n\n")
+            f.write(report)
+        print(f"\n📄 审计报告已保存: {os.path.join(DAILY_DIR, f'{date}_signal_audit.md')}")
+        return
 
     # ── 读取各源 ──
     dual_path = os.path.join(DAILY_DIR, f"{date}_dual.md")
@@ -304,15 +763,31 @@ def main():
         with open(sim_path) as f:
             positions_md = parse_portfolio_sim_md(f.read())
     positions_state = load_portfolio_state()
+    # 状态文件含全量31只观察池, 仅把实际持仓(非空仓)交给审计, 避免空仓误报
+    held_state = {n: p for n, p in positions_state.items() if p.get("position") or p.get("shares", 0) > 0}
 
     market_health = load_market_health(date)
+    
+    # 加载 030 新增数据源
+    fatal_risk = load_fatal_risk(date)
+    position_plan = load_position_plan(date)
+    arbitration_results = load_arbitration_results(date)
+    next_day_sim = load_next_day_sim(date)
 
-    # ── 跑四类审计 ──
+    # ── 跑十类审计（原5类 + 030新增5类） ──
     findings = []
     findings += audit_signal_conflict(dual_stocks)
-    findings += audit_position_contradiction(positions_md or positions_state, dual_stocks)
+    findings += audit_position_contradiction(positions_md or held_state, dual_stocks)
     findings += audit_data_anomaly(dual_stocks, positions_md)
     findings += audit_market_guardrail(market_health, findings)
+    findings += audit_distribution_patterns(dual_stocks)
+    
+    # 030 新增审计项
+    findings += audit_fatal_risk_execution(fatal_risk, positions_md or held_state, dual_stocks)
+    findings += audit_position_compliance(position_plan, positions_md or held_state, market_health)
+    findings += audit_arbitration_consistency(arbitration_results, dual_stocks)
+    findings += audit_next_day_sim_consistency(next_day_sim, arbitration_results)
+    findings += audit_stop_loss_coverage(arbitration_results, positions_md or held_state)
 
     # 排序: HIGH > MEDIUM > LOW
     sev = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}

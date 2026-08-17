@@ -120,6 +120,7 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **2026-07-28:** Baostock K线数据有1个交易日的延迟(当日可取到前一日), 新浪实时行情是当日数据。两种数据源使用时需注意日期对齐。若无历史K线需求, 应优先使用新浪实时行情API。
 *   **2026-08-02:** 用户提供「A股量化助手」工作流模板并已落实：角色规则固化到 `role/ashare_quant_assistant.md`，盘后复盘提示词固化到 `role/postmarket_review_prompt.md`（供 daily-a-share-telegram-push cron 读取），新建 `memory/watchlist.md`（31只自选池权威清单）与 `memory/portfolio.md`（持仓占位）。**MCP Server 决策：不配 AKShare/Tushare MCP，维持新浪实时+baostock 自有脚本链路（akshare 国内常被拦截，脚本更稳）。** 量化回测指导已有 backtest_strategies.py 无需新建。
 *   **2026-08-02:** **全组合多股模拟盘（A方案）** — 新建 `analysis/portfolio_sim.py`，将模拟盘从仅中联重科扩展为 29只关注股全组合（排除机电B股900925无数据）。每只用 `adaptive_strategy_map.json` 最优策略（5种），每只独立10万初始资金，状态持久化 `data/portfolio_sim_state.json`，数据源 baostock+新浪实时。**首日逻辑：last_signal_date 为空时仅初始化不建仓**（避免历史信号批量建仓），之后仅当数据日期变化才执行当日信号。已接入 `daily-a-share-telegram-push` cron，8/3(周一)15:30 首次正式运行。试跑验证：29只全获取成功，信号正常。当前状态：基准 2026-08-02，29只全空仓，初始资金 290万。
+*   **2026-08-15:** **模拟盘补每日调度（修复 08-06 后停更）⭐** — 排查发现模拟盘从 08-06 起一直「无人驾驶」：`portfolio_sim` 全库无独立 cron 调度（当时唯一提到它的是周六 weekly-backtest），每日收盘任务 `daily-a-share-telegram-push`(15:30) 只跑 `run_agent.py` 不含模拟盘 → 无成交 → `portfolio_sim_trades.json` 从未创建 → `param_evaluate` 赛后验证永远「观察中」。**根因：模拟盘缺每日驱动，而非脚本问题。** 修复：新建独立 command cron `portfolio-sim-daily`(id 9beee7ce, 周一~五 15:40 Asia/Shanghai) 直推 telegram 626141741（按 08-10 教训用 command 不走 LLM）。手动验证通过：跑通后 `state.last_signal_date` 08-06→08-15、`portfolio_sim_trades.json` 首次生成（卖出恒生电子/买入中信金属）。**意义：下周起每个交易日积累真实成交，两周后 `param_evaluate` 才能给出有效『有效/恶化/回滚』验证。** 教训：模拟盘这类依赖每日信号的系统必须有独立每日 cron，不能只挂在周任务里。
 *   **2026-08-02:** **新闻/舆情知识库** — 新建 `analysis/news_monitor.py`，基于东财三接口（stock_news_em个股新闻 / stock_info_global_em宏观政策 / stock_notice_report全市场公告）增量抓取，标题哈希去重，归档到 `data/news/knowledge_base.md`（人读）+ `data/news/raw/*.json`（机检）。两个 cron：news-monitor-morning (08:30盘前) + news-monitor-afternoon (15:35盘后)，推送 telegram。首跑验证抓到有效信息（久立特材回购、亿纬锂能遭337调查、天齐锂业业绩大增等）。注意：东财新闻/公告类接口当前可用（与记忆中“东财接口不稳定”的旧教训需区分——是部分接口被限流，新闻类实测可通）。
 
 ## Determined Preferences & Rules
@@ -314,38 +315,24 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **补分结果:** 手动跑 `validate_strategies.py --stocks 002180,300847`：奔图→纯MACD 得分62.65；中船汉光→纯MACD 得分-1.84。重跑 dual 后两者用正式评分（不再0.0），且中船汉光因选中 KDJ+RSI 策略产生真实买入/卖出信号（CCI高位98%🔴卖）。
 *   **遗留/约定:** 机电B股(900925) 始终无数据不可评分=已知。**新股加入清单后需手动/自动化补跑一次** `validate_strategies.py --stocks <新代码>` 生成评分（已规划接 weekly cron 可选步骤，但当前靠 load_latest_validation 自动合并机制兜底）。
 
-## Promoted From Short-Term Memory (2026-08-07)
+### 2026-08-10 竞价/盘前 cron 反复超时根治（LLM 无关）⭐教训
+*   **事件:** auction-real-scan-0920 + preopen-bidding-scan-0900 单日失败8次, 全部 `model-call-started` 超时(300s)。
+*   **根因:** 两 cron 设成 `agentTurn`(isolated agent 调 DeepSeek), 但竞价/盘前扫描是**结构化数据快照, 本不需要 LLM**。LLM 在 cron 沙箱不稳定 → 反复超时。脚本本身 0-8s 秒级跑通。
+*   **修复:** 1) auction_scan.py + preopen_scan_*.py 各加 `build_brief()` 规则化简报; 2) 两 cron 从 agentTurn 改 `command` 脚本直推, 完全绕过 LLM。手动触发验证: auction 5.5s / preopen 7.8s 成功, consecutiveErrors 4→0。
+*   **教训(通用):** 结构化数据快照类 cron(竞价/盘前/收盘扫描) 一律用 `command` 脚本直推 + 脚本内 build_brief() 规则化组装简报, **不要**设成 agentTurn 走 LLM —— 又慢又不稳定, 还会反复超时。
 
-<!-- openclaw-memory-promotion:memory:memory/2026-08-02-0725.md:27:30 -->
-- 📈 盘面总览: | **平均涨跌幅** | +3.39% | | **涨幅≥5%** | 6只 | | **跌幅≥5%** | 0只 | | **涨停/跌停(≥±10%)** | 4只涨停 / 0只跌停 | [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-02-0725.md:27-30]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-02-0725.md:32:32 -->
-- 📈 盘面总览: > **盘面特征**：全天呈现**普涨行情**，半导体封测、锂电、军工、高端制造板块领涨。3只核心半导体股（长电科技、通富微电、中芯国际）集体涨停，国瓷材料大涨近20%，市场做多情绪高涨。仅招商银行、中信建投、中金公司、福耀玻璃、安达维尔5只个股下跌，均为金融/消费/稳健板块，回调幅度有限。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-02-0725.md:32-32]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-02-0725.md:17:17 -->
-- 📊 2026年7月21日（周二）A股收盘复盘: **—— 针对你的25只关注股票（基于 akShare 实时行情 15:00 快照）** [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-02-0725.md:17-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-02-0725.md:23:26 -->
-- 📈 盘面总览: | 指标 | 数据 | |------|------| | **上涨** | ✅ 18只 (78.3%) | | **下跌** | 🔴 5只 (21.7%) | [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-02-0725.md:23-26]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-02.md:21:24 -->
-- 工作流模板落实（用户提供）✅: `memory/watchlist.md` — 31只自选池权威清单（从 MEMORY.md 固化）。; `memory/portfolio.md` — 真实持仓占位文件（当前无实盘记录，模拟盘看 zhonglian_state.json）。; **已内置无需新建:** 量化回测指导（已有 backtest_strategies.py + validate_strategies.py 5策略多窗口回测，含印花税/佣金/回撤/夏普）。; **MCP Server 配置: 用户决策「不配 MCP」**（2026-08-02 11:26）。理由：akshare 接口国内常被拦截，自有脚本链路（新浪实时 hq.sinajs.cn + baostock）更稳定，无需引入可能冗余/被墙的 MCP 层。已确认 Python 环境有 akshare 1.18.64 / baostock / pandas_ta。当前 MCP 仅有 filesystem + tradingwizard。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-02.md:21-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-02.md:25:25 -->
-- 工作流模板落实（用户提供）✅: **待确认:** portfolio.md 是否填真实持仓（如有实盘数量/成本/止损，告知后录入）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-02.md:25-25]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-02.md:17:20 -->
-- 工作流模板落实（用户提供）✅: **用户提供了一份「A股量化投资助手」工作流模板**，要求落实。已按现有稳定体系对齐落地，不照搬原样。; **已创建文件:**; `role/ashare_quant_assistant.md` — System Prompt 角色规则（数据驱动/风险优先/合规/Memory Alignment/数据源优先级，已按新浪+baostock微调）。; `role/postmarket_review_prompt.md` — 盘后复盘提示词（大盘资金面→自选股监控→归因与次日应对），供 `daily-a-share-telegram-push` cron 读取。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-02.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-02.md:4:7 -->
-- 记忆系统重启后完整性检查 ✅: **背景:** 用户重启电脑，要求检查记忆系统完整性和可用性。; **检查结果（全部正常）:**; ✅ 本地 embedding 服务 `com.duguke.bge-m3` 开机自启成功（launchd RunAtLoad 生效），8080 端口监听，实际调用 embeddings API 返回有效向量。; ✅ memory_search 完全可用：provider=openai-compatible / BAAI/bge-m3，测试查询返回 6 条结果，耗时 751ms。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-02.md:4-7]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-02.md:14:14 -->
-- 待办/后续: 今日（8/2）为周日，无 15:30 收盘推送（周一~五才有）；下个交易日为 8/3（周一）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-02.md:14-14]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-02.md:8:11 -->
-- 记忆系统重启后完整性检查 ✅: ✅ MEMORY.md（24KB）和 memory/ 日常笔记齐全，最新到 2026-08-01。; ✅ Gateway 服务运行中（PID 4043），版本锁定 2026.7.1-2，仅本地监听。; ✅ 11 个定时任务全部启用；daily-a-share-telegram-push / weekly-backtest-strategy-refresh / skill-version-watcher 最近均 ok 且已投递。; **说明:** memory-maintenance-monday/check、quant-backtest-daily、verify-* 等 lastRunStatus=null 属正常（尚未到首次执行时间），非故障。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-02.md:8-11]
+### 2026-08-11 盘后监督报告 4 问题修复 ✅
+*   背景: 08-11 17:07 用户转发的 15:39 日常监督审查指出 4 问题, 全部根因定位修复, 端到端验证 0 误报。
+*   **①持仓股3只信号缺失(恒生/国瓷/巨化) [链路问题]:** signal_audit 读 daily/*_dual.md, 但收盘链路 run_agent 不产 dual 文件 → 审计误报"缺失"; 市场健康分 null = market_health_*.json 未生成。**修复**: daily-supervision-review cron(2ca9e493) 执行串改为 "adaptive_dual → market_health_score → signal_audit → challenge_review", 超时 180→300s。修复后审计 0 findings、全绿、健康分 6.0。
+*   **②10只BUY无止损(违反030) [nodes.py]:** rule_risk_advice 的 BUY 只写"信号级X分Y"无止损位。**修复**: 所有 BUY 自动附参考止损(现价×0.95)+支撑(×0.92)+"跌破止损无条件离场"。单测✅。
+*   **③判断模板化(连3日同理由) [nodes.py]:** 死模板"MACD多头且EMA多头排列可逢低买入"。**修复**: reason 携带现价+止损位+支撑位差异化文案。单测✅。
+*   **④中联重科 SELL vs HOLD 矛盾 [nodes.py]:** 综合最优策略 sell=True 但 level"中性"被映射 HOLD, 卖出被吞。**修复**: 新增中联综合最优触发卖出→final_advice 强制 SELL(030风险第一)。单测✅。
+*   改动: analysis/agent/nodes.py(核心规则化建议), daily-supervision-review cron。备份 backups/nodes_20260811_before_fix.py。4 项单测全过, 端到端审计 0 误报。
 
-## Promoted From Short-Term Memory (2026-08-08)
+### 2026-08-09 技能库真实变更（skill-version-watcher 捕获）
+*   **self-improving v1.2.16 → self-improving-agent v4.0.2**（升级+改名, 08-08 21:27 更新）; **hf-mem v1.0.10** 新增(08-08 21:20 安装)。baseline memory/skill-versions.json 已更新。
 
-<!-- openclaw-memory-promotion:memory:memory/2026-08-07.md:3-10 -->
-- 新闻知识库语义检索系统搭建 ✅ (2026-08-07): 建独立 venv `.venv-ml`（Python 3.11.15），版本锁定 torch 2.2.2 / faiss-cpu 1.15.0 / sentence-transformers 3.4.1 / transformers 4.49.0 / numpy 1.26.4（numpy 必须<2 否则 torch 崩溃）；⚠️ torch 2.2.2 在 Intel Mac 多线程 encode 段错误(SIGSEGV exit 139)，所有脚本必须 `torch.set_num_threads(1)` + OMP/MKL_NUM_THREADS=1。; 建索引 `data/news/news_indexer.py`：knowledge_base.md(248条) 分类(宏观90/个股100/公告58) → BGE-small-zh-v1.5 嵌入(512维) → faiss IndexFlatIP → index/{news_meta.json,news_vecs.npy,news_index.faiss}；检索质量实测精准。 [score=0.72 recalls=0 avg=0.720 source=memory/2026-08-07.md:3-10]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-07.md:13-20 -->
-- 关注股当日新闻阅读自动化 ✅ (2026-08-07): `data/news/daily_news_reader.py` 针对30只关注股自动阅读"当天"新闻，改用 `data/news/raw/YYYY-MM-DD_{盘前,盘后}.json`（权威逐次快照）避免 knowledge_base 跨日期重复，按真实时间戳过滤；内置 WATCHLIST（memory/watchlist.md 权威，含奔图科技002180/中船汉光300847，已过滤撤出的上能电气300827）。; Cron 新建 `daily-news-reading-push` (id 537eb1ff) 周一~五 15:42 执行并推 telegram。 [score=0.72 recalls=0 avg=0.720 source=memory/2026-08-07.md:13-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-07.md:23-33 -->
-- daily-a-share-telegram-push 超时排查修复 ⭐ (2026-08-07): 8 层根因修复——①新浪日K提到第一(0.1s/只)、akshare 只试1次不sleep；②trader_stock_picks `_akshare_call` 改单次失败即None、修 key 误写 `"roe, 0"`、score_* 加 `or 0` 兜底；③LangGraph `should_continue` 改单遍线性执行不再整图回环；④node_check_done 逻辑反了修复；⑤加 rule_health_comment/rule_risk_advice 规则化兜底不依赖 LLM；⑥node_make_report 的 build_report_text 从 final_state 直接拼报告；⑦risk 误判(score -3~+4 小整数)改纯按 level 子串判断，致命风险需≥10个强烈卖出或数据大面积失败；⑧node_fetch_spot 加3次重试。; 结果: 稳定运行 48-82s(<120s),exit=0,无ALERT,报告完整；cron timeoutSeconds 120→240 余量。⚠️ 教训: analysis/agent/ 与 service.py 含大量 `\uFFFD` 损坏字符(早期编码事故)，字符串匹配/编辑需归一化。 [score=0.78 recalls=0 avg=0.780 source=memory/2026-08-07.md:23-33]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-07.md:35-41 -->
-- 对其它脚本同步 akshare/baostock 数据源修复 (2026-08-07): close_scan_v2.py 改新浪日K首选→pytdx→akshare单次，实测30只 9.1s(原~270s) 30/30成功；adaptive_dual/adaptive_trader/portfolio_sim 用 baostock(主)+新浪兜底，sleep 3→1s；backtest_strategies(周回测非关键) 备用sleep改1s；service.py 新浪日K→pytdx→akshare单次 30只 5.9s。; 结论: 所有 cron 关键脚本(收盘推送/扫盘/组合模拟)已无 akshare被拦+sleep重试瓶颈。 [score=0.74 recalls=0 avg=0.740 source=memory/2026-08-07.md:35-41]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-07.md:43-49 -->
-- 启用真 DeepSeek LLM 解读（agent 健康度/风险建议）⭐ (2026-08-07): key 写入 `~/.openclaw/.env` 新增 `DEEPSEEK_API_KEY`(权限600不进git,备份 .env.bak.20260807)；llm_tool.py 默认指向 api.deepseek.com/v1 + deepseek-chat（openai-compatible），读 key 优先级 DEEPSEEK_API_KEY > OPENAI_API_KEY，加 `_load_dotenv_if_needed()` 供 cron isolated 进程读到，`get_market_health()` 改读 data/market_health_<日期>.json 的 summary.total_score(close_scan 每日生成,实测返回7)，加 `extract_llm_content(resp)` 正确取 choices[0].message.content；nodes.py 加 `_parse_json_loose(text)` 健壮JSON提取，LLM 非JSON落规则兜底。; 实测: run_agent 101s, ALERT=0, error_count=0, 健康度=7/10 + DeepSeek 自然语言解读 + 30条逐股 LLM 建议(8 BUY/22 HOLD) + 风险"无"。LLM 完整生效，不可用时自动降级规则兜底。 [score=0.78 recalls=0 avg=0.780 source=memory/2026-08-07.md:43-49]
+## Promoted From Short-Term Memory (2026-08-18)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-08-13.md:3:6 -->
+- 07:09 skill-version-watcher 检测: **变更:** 新增技能 `auction-analysis` v1.0.0 (ClawHub, publisher userb000, MIT-0); 用途: 竞价分析 (9:26-9:29 竞价窗口风险/机会/开盘应对); 安装时间: 2026-08-13 05:51:57; 已推送 Telegram 摘要 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-13.md:3-6]

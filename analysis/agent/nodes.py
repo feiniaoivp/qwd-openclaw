@@ -291,34 +291,25 @@ def node_apply_risk(state: Dict[str, Any]) -> Dict[str, Any]:
 1. "risk_flag": � 若�触发致命风险则�填 "致命风险"，否则�填 "无"。
 2. "advice_list": � 每只股票的建议列表，每项包含 symbol、action（BUY/SELL/HOLD）、reason（简要原因）。
 """
-        # �� 调用 LLM（这里复用之前封装的通用调用）；LLM 不可用时用规则兜底
-        llm_result = call_llm_with_tools([
-            {"role":"system","content":"你是一个严格�遵守风险规则的量化助手。"},
-            {"role":"user","content":final_prompt}
-        ])
-        content_txt = extract_llm_content(llm_result)
-        if isinstance(llm_result, dict) and "error" in llm_result:
-            # LLM 不可用（未配置 key / 网络限制）-> 规则化兜底
-            rule_flag, rule_advice = rule_risk_advice(state)
-            state["risk_flag"] = rule_flag
-            state["final_advice"] = json.dumps(rule_advice, ensure_ascii=False, indent=2)
-        elif content_txt:
-            # LLM 可用：健壮解析返回里的 JSON（支持 ```json 代码块 / 前后多余文字）
-            parsed = _parse_json_loose(content_txt)
-            if parsed:
-                state["risk_flag"] = parsed.get("risk_flag") or "无"
-                advice = parsed.get("advice_list")
-                state["final_advice"] = json.dumps(advice if isinstance(advice, list) else [],
-                                                    ensure_ascii=False, indent=2)
-            else:
-                # LLM 返回了文本但没解析出 JSON -> 规则兜底（不落 "解析失败" 脏值）
-                rule_flag, rule_advice = rule_risk_advice(state)
-                state["risk_flag"] = rule_flag
-                state["final_advice"] = json.dumps(rule_advice, ensure_ascii=False, indent=2)
-        else:
-            rule_flag, rule_advice = rule_risk_advice(state)
-            state["risk_flag"] = rule_flag
-            state["final_advice"] = json.dumps(rule_advice, ensure_ascii=False, indent=2)
+        # 始终先跑规则化风控（保证止损位、风险第一等硬性规则）——这是权威输出
+        rule_flag, rule_advice = rule_risk_advice(state)
+        state["risk_flag"] = rule_flag
+        state["final_advice"] = json.dumps(rule_advice, ensure_ascii=False, indent=2)
+
+        # LLM 增强：仅作日志记录/事后复盘参考，不覆盖规则输出
+        try:
+            llm_result = call_llm_with_tools([
+                {"role":"system","content":"你是一个严格遵守风险规则的量化助手。"},
+                {"role":"user","content":final_prompt}
+            ])
+            content_txt = extract_llm_content(llm_result)
+            if content_txt:
+                parsed = _parse_json_loose(content_txt)
+                if parsed:
+                    # 记录 LLM 视角供复盘参考，不改变最终输出
+                    state["llm_risk_perspective"] = json.dumps(parsed, ensure_ascii=False, indent=2)
+        except Exception:
+            pass  # 静默忽略，规则输出已就绪
     except Exception as e:
         # 异常时也走规则兜底，而不是直接置 error (避免 error_count 累积导致重试/报警)
         rule_flag, rule_advice = rule_risk_advice(state)
@@ -361,10 +352,24 @@ def _parse_json_loose(text):
 
 
 def rule_risk_advice(state):
-    """LLM 不可用时的规则化风险决策：根据已有信号与市场概览给出风险标记+操作建议。"""
+    """LLM 不可用时的规则化风险决策：根据已有信号与市场概览给出风险标记+操作建议。
+    030 风控要点：
+      - 无止损即无交易：BUY 必须给出参考止损/支撑位。
+      - 风险第一：中联重科综合最优触发卖出时强制 SELL。
+      - 避免模板化：reason 携带现价/止损位，减少连续数日完全相同理由。
+    """
     signals = state.get("signals", [])
     serious_buy = serious_sell = fail = 0
     advice_list = []
+    # 中联重科双策略综合最优是否触发卖出
+    zl_sell, zl_strat = False, None
+    try:
+        zl = state.get("zhonglian") or {}
+        for k, v in (zl.get("signals") or {}).items():
+            if isinstance(v, dict) and v.get("sell"):
+                zl_sell, zl_strat = True, v.get("name") or k
+    except Exception:
+        pass
     for s in signals:
         if "error" in s:
             fail += 1
@@ -373,25 +378,39 @@ def rule_risk_advice(state):
         name = s.get("name")
         sig = s.get("signal", {})
         raw_level = sig.get("level", "中性")
-        # 归一化：去掉损坏的 ﻿/� 占位符与空白，保留 emoji/中文，便于稳定匹配
         level = re.sub(r"[\ufffd\ufeff\s]", "", str(raw_level))
         score = sig.get("score", 0)
-        # level 已是服务端映射好的语义(score 是小整数-3~+4,不能用百分制阈值)：
-        # 强烈卖出→SELL；关注/强烈买入→BUY；谨慎/中性→HOLD防守。
+        close = s.get("price") or sig.get("price") or sig.get("close")
+        # 风险优先：中联重科综合最优卖出 -> 强制 SELL
+        if sym == "000157" and zl_sell:
+            serious_sell += 1
+            advice_list.append({
+                "symbol": sym, "name": name, "action": "SELL",
+                "reason": "中联重科综合最优策略(%s)触发卖出；现价%s，按030风险第一执行离场/减仓" % (zl_strat, close),
+            })
+            continue
         if "强烈卖出" in level:
             serious_sell += 1
             action = "SELL"
+            reason = "信号级:%s 分:%s" % (level, score)
         elif "强烈买入" in level or "关注" in level:
             serious_buy += 1
             action = "BUY"
-        else:  # 谨慎/中性
+            if close:
+                stop_ref = round(float(close) * 0.95, 2)
+                sup_ref = round(float(close) * 0.92, 2)
+                reason = ("信号级:%s 分:%s｜现价¥%s｜参考止损¥%s(-5%%)，参考支撑¥%s；跌破止损位无条件离场"
+                          % (level, score, close, stop_ref, sup_ref))
+            else:
+                reason = "信号级:%s 分:%s（现价缺失，无法给出精确止损，谨慎执行）" % (level, score)
+        else:
             action = "HOLD"
+            reason = "信号级:%s 分:%s" % (level, score)
         advice_list.append({
             "symbol": sym, "name": name, "action": action,
-            "reason": f"信号级:{level} 分:{score}" if level else "数据不足",
+            "reason": reason,
         })
     n = len(signals) or 1
-    # 030 风控阈值：以市场健康度与下跌结构综合，避免把“偏弱但正常”日子误判为致命风险
     if fail >= n * 0.6:
         return "致命风险", [{"action":"SELL","reason":"数据大面积获取失败，无法确认安全，按 030 风控降仓"}]
     if serious_sell >= 10:
@@ -402,6 +421,7 @@ def rule_risk_advice(state):
         return "中风险", advice_list
     if serious_buy >= 5:
         return "无", advice_list
+    return "无", advice_list
     return "无", advice_list
 
 # ---------- Node 9: 生成最终报告（可选） ----------

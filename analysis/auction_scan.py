@@ -116,5 +116,62 @@ def main():
     out = {"server_time": now.strftime("%Y-%m-%d %H:%M:%S"), "rows": rows}
     print(json.dumps(out, ensure_ascii=False, indent=2))
 
+
+def build_brief(rows, server_time: str) -> str:
+    """规则化组装竞价简报文本（不经 LLM，供 cron 直推）。返回中文 markdown 简报。"""
+    lines = [f"⚡ 集合竞价扫描 · {server_time}", ""]
+
+    strong = []   # 高开>2%
+    weak = []     # 低开<-2%
+    yizi_limit_up = []   # 竞价涨停濒临/一字(open_pct 接近上限)
+    top_ratio = []
+    no_data = []
+
+    for r in rows:
+        if r.get("error"):
+            no_data.append(f"{r['name']}({r['code']}){r['error']}")
+            continue
+        chg = r.get("chg_pct")
+        open_chg = r.get("open_pct")
+        vr = r.get("vol_ratio_pct")
+        amt = r.get("amount_yi")
+        if chg is not None and chg > 2:
+            strong.append(f"{r['name']}({r['code']}) {chg:+.2f}% 额{amt:.2f}亿")
+        if chg is not None and chg < -2:
+            weak.append(f"{r['name']}({r['code']}) {chg:+.2f}% 额{amt:.2f}亿")
+        # 竞价涨停预判：涨幅接近 ~9.9%(主板)/19.9%(创业科创) 视为一字压单
+        if open_chg is not None and open_chg >= 9.5 and r['code'][0] in '036':
+            yizi_limit_up.append(f"{r['name']}({r['code']}) 开{open_chg:+.2f}%")
+        elif open_chg is not None and open_chg >= 19.5 and r['code'][0] in '30':
+            yizi_limit_up.append(f"{r['name']}({r['code']}) 开{open_chg:+.2f}%")
+        if vr is not None and vr >= 500:
+            top_ratio.append(f"{r['name']}({r['code']}) 量比{vr:.0f}%")
+
+    def _s(sec_title, items):
+        return ([f"**{sec_title}**"] + [f"- {i}" for i in items] + [""]) if items else []
+
+    lines += _s("🚀 竞价高开(>2%)", strong)
+    lines += _s("📉 竞价低开(<-2%)", weak)
+    lines += _s("🔒 竞价涨停预判", yizi_limit_up)
+    lines += _s("🔥 竞价放量(量比≥5倍)", top_ratio)
+
+    lines.append("**📋 全量竞价明细**")
+    for r in rows:
+        if r.get("error"):
+            lines.append(f"- {r['name']}({r['code']}) {r['error']}")
+            continue
+        chg = r.get("chg_pct"); open_chg = r.get("open_pct")
+        amt = r.get("amount_yi"); vr = r.get("vol_ratio_pct")
+        o_p = f"开{open_chg:+.2f}%" if open_chg is not None else "开-"
+        v_p = f"量比{vr:.0f}%" if vr is not None else "量比-"
+        lines.append(f"- {r['name']}({r['code']}) {chg:+.2f}% {o_p} 额{amt:.2f}亿 {v_p}")
+
+    if no_data:
+        lines.append("")
+        lines.append(f"⚠️ 无数据: {'; '.join(no_data)}")
+
+    return "\n".join(lines)
+
+
 if __name__ == "__main__":
     main()

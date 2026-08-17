@@ -1,0 +1,22 @@
+[cron:cc0ae9f1-027c-444b-9d7a-19d6d8b7c519 weekly-backtest-strategy-refresh] 执行每周A股策略回测更新（含跨周期验证 + 参数网格调优 + 调参对照 + 赛后验证闭环 + 新股补评分 + 030自动微调）:
+1. cd /Users/duguke/.openclaw/workspace
+2. 备份旧参数: 若 data/adaptive_params.json 存在, 复制为 data/adaptive_params_prev.json (作为'调前'对比基准): cp data/adaptive_params.json data/adaptive_params_prev.json; 然后运行 python3 analysis/param_evaluate.py --backup 记录本次调参决策日志到 data/param_change_log.json（作为两周后赛后验证的依据）
+3. 运行 python3 analysis/backtest_strategies.py — 单窗口全量回测(30只x5策略), 保存 analysis/backtest/YYYY-MM-DD.md
+4. 运行 python3 analysis/validate_strategies.py --write-map — 跨窗口稳健验证(6.5年长历史x4窗口), 护栏(得分>=25且夏普>=0.25)更新 data/adaptive_strategy_map.json，生成 analysis/validation_YYYY-MM-DD.json
+5. 新股补评分（消除新股盲区）: 用 python3 -c 读最新 validation_*.json（用 analysis/adaptive_dual.py 的 load_latest_validation 合并后），比对权威30只清单（backtest_strategies.STOCKS），找出'在清单但任何 validation 文件都无评分'的股票（通常为新加入/替换的新股），对缺失者逐个运行 python3 analysis/validate_strategies.py --stocks <代码>（会追加写入当天 validation_YYYY-MM-DD.json）。机电B股900925 已知无数据跳过。这样新股下周就能被 adaptive 双策略用正式评分而非默认收益
+6. 运行 python3 analysis/param_tune.py --write — 参数级网格调优(全量30只x4时窗x多参数组合), 选每股最优(策略,参数), 写回 data/adaptive_params.json + 护栏更新 adaptive_strategy_map.json。解析 PARAM_TUNE_RESULT 的 JSON 提取每股最优策略与参数
+7. 运行 python3 analysis/param_signal_diff.py — 用最新行情对比'调前参数'(adaptive_params_prev.json 或 validation默认)与'调后参数'(adaptive_params.json)的每股双策略信号, 生成调参对照信号差异榜。解析 PARAM_SIGNAL_DIFF 的 JSON(fields: reversal/new_sell/new_buy/switch_hold)。并将完整差异榜(人类可读正文)与 JSON 一起归档保存为 analysis/daily/$(date +%F)_param_signal_diff.md, 供回查
+8. 运行 python3 analysis/param_evaluate.py — 赛后验证闭环(默认14天前): 读取 data/param_change_log.json 的调参日志 + data/portfolio_sim_trades.json 的成交流水, 评估被调参股票在实际模拟盘交易中的表现(有效/持平/恶化). 解析 PARAM_EVAL_RESULT 的 JSON, 其中 rollback_recommendation 数组是被调参后实际恶化的股票, 需结合当前行情判断是否把参数回滚到 prev。并将完整评估报告归档为 analysis/daily/$(date +%F)_param_eval.md
+9. 运行 python3 analysis/auto_adjust_position.py — 030自动仓位微调: 读取近10交易日 portfolio_sim_trades.json 成交流水，计算胜率/止损率/最大回撤/夏普，按 position_sizer.py 的 ADJUSTMENT_GUIDE 6条规则判断是否微调 position_sizer.py 当前值，记录变更到 data/param_change_log.json
+10. 汇总推送到 Telegram(chat_id 626141741), 简报包含:
+   - 📊 单窗口综合最优策略 + 多窗口策略变更数 + 新股补评分数(步骤5补了几只新股评分)
+   - 🛠️ 参数调优变更数(compare 步骤2备份 vs 新文件: 哪些股票策略/参数变了, 从 PARAM_TUNE_RESULT 提取每股最优策略与参数)
+   - ⚖️ 调参对照信号差异榜(最优先列): 🔁方向反转、🔴新卖出信号、🟢新买入信号(是否因调参改变了操作建议), 再列🔄策略切换但均持有
+   - ⏸️ 低置信度保留项
+   - 🔄 调参赛后验证闭环: 列出 PARAM_EVAL_RESULT 中已到期的被调参股票的 verdict(有效/持平/恶化/观察中); 重点标注 rollback_recommendation 中'恶化'的股票并给出回滚建议, 提示 agent 结合当前行情与模拟盘持仓决定是否回滚到 prev 参数
+   - 🔧 030自动仓位微调: 是否触发微调、调整了哪些参数、原因
+只输出更新摘要。
+Current time: Saturday, August 8th, 2026 - 06:00 (Asia/Shanghai)
+Reference UTC: 2026-08-07 22:00 UTC
+
+Return your response as plain text; it will be delivered automatically. If the task explicitly calls for messaging a specific external recipient, note who/where it should go instead of sending it yourself.

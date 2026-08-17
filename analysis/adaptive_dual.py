@@ -18,6 +18,167 @@ import urllib.request
 
 warnings.filterwarnings("ignore")
 
+# 导入护城河因子
+from analysis.moat_factor import calc_moat_score, is_core_moat_stock, get_moat_tags
+
+# ═══════════════════════════════════════════
+# 030 核心模块导入
+# ═══════════════════════════════════════════
+try:
+    from analysis.fatal_risk_detector import FatalRiskDetector
+    from analysis.position_sizer import PositionSizer, load_market_context as load_position_context
+    from analysis.signal_arbitrator import SignalArbitrator, RawSignal, SignalAction
+    from analysis.next_day_simulator import NextDaySimulator
+    HAS_030_MODULES = True
+except ImportError as e:
+    HAS_030_MODULES = False
+    print(f"⚠️ 030模块导入失败: {e}")
+
+
+# ════════════════════════════════════════
+# 出货形态检测（方案B：接入 adaptive_dual）
+# ════════════════════════════════════════
+
+def detect_distribution_patterns(df: pd.DataFrame, lookback: int = 5) -> list:
+    """
+    检测最近 lookback 根日K线中的出货形态。
+    返回: [{pattern, strength, desc, idx}, ...]
+    strength: 1-5，越高越可靠
+    """
+    if df is None or len(df) < lookback + 10:
+        return []
+    
+    recent = df.tail(lookback).copy().reset_index(drop=True)
+    o, h, l, c, v = recent["open"], recent["high"], recent["low"], recent["close"], recent["volume"]
+    prev_c = c.shift(1)
+    
+    patterns = []
+    
+    for i in range(len(recent)):
+        # 当前根
+        o_i, h_i, l_i, c_i, v_i = o.iloc[i], h.iloc[i], l.iloc[i], c.iloc[i], v.iloc[i]
+        pc_i = prev_c.iloc[i] if i > 0 else c.iloc[i-1] if i > 0 else c_i
+        body = abs(c_i - o_i)
+        upper_shadow = h_i - max(o_i, c_i)
+        lower_shadow = min(o_i, c_i) - l_i
+        is_bull = c_i > o_i
+        is_bear = c_i < o_i
+        
+        # 成交量均值（前20根）
+        vol_ma20 = df["volume"].tail(20 + lookback - i).head(20).mean() if len(df) >= 20 else v_i
+        
+        # 1. 长上影线/射击之星：高位 + 上影线 >= 实体2倍 + 实体小
+        if upper_shadow >= body * 2 and body > 0 and not is_bear:
+            # 判断高位：收盘价接近近20日高点
+            high_20 = df["high"].tail(20 + lookback - i).head(20).max()
+            if c_i >= high_20 * 0.95:
+                patterns.append({
+                    "pattern": "长上影线/射击之星",
+                    "strength": 5,
+                    "desc": f"第{i+1}根K线上影线{upper_shadow/body:.1f}倍实体，高位{high_20:.2f}附近",
+                    "idx": len(df) - lookback + i
+                })
+        
+        # 2. 巨量长阴：高位 + 阴线 + 量 >= 5日均量2倍 + 实体 >= 3%
+        if is_bear and body / o_i >= 0.03 and v_i >= vol_ma20 * 2:
+            high_20 = df["high"].tail(20 + lookback - i).head(20).max()
+            if c_i >= high_20 * 0.9:
+                patterns.append({
+                    "pattern": "巨量长阴",
+                    "strength": 5,
+                    "desc": f"量比{v_i/vol_ma20:.1f}x，跌幅{body/o_i*100:.1f}%，高位出货",
+                    "idx": len(df) - lookback + i
+                })
+        
+        # 3. 黄昏之星：3根K - 大阳 -> 星线 -> 大阴(回吞阳线50%+)
+        if i >= 2:
+            c1, o1 = c.iloc[i-2], o.iloc[i-2]  # 第一根
+            c2, o2 = c.iloc[i-1], o.iloc[i-1]  # 第二根(星线)
+            body1 = abs(c1 - o1)
+            body2 = abs(c2 - o2)
+            body3 = body
+            if c1 > o1 and body1 / o1 >= 0.02:  # 第一根大阳
+                if body2 / o2 < 0.01:  # 星线(十字/小实体)
+                    if is_bear and c_i < (o1 + c1) / 2:  # 第三根大阴回吞50%+
+                        patterns.append({
+                            "pattern": "黄昏之星",
+                            "strength": 4,
+                            "desc": f"大阳->星线->大阴回吞{(o1+c1)/2 - c_i:.2f}，趋势反转确认",
+                            "idx": len(df) - lookback + i
+                        })
+        
+        # 4. 双顶/M头：简化版 - 两次冲高相近 ±1.5% + 颈线跌破
+        # 这里只检测最近是否有双顶雏形（需要更长周期，略过实时检测）
+        
+        # 5. 高位吊颈线：高位 + 下影线 >= 实体2倍 + 上影线极短 + 实体小
+        if lower_shadow >= body * 2 and upper_shadow < body * 0.5 and body > 0:
+            high_20 = df["high"].tail(20 + lookback - i).head(20).max()
+            if c_i >= high_20 * 0.95:
+                patterns.append({
+                    "pattern": "高位吊颈线",
+                    "strength": 3,
+                    "desc": f"下影线{lower_shadow/body:.1f}倍实体，高位见顶信号",
+                    "idx": len(df) - lookback + i
+                })
+        
+        # 6. 乌云盖顶：上升趋势 + 大阳线次日大阴低开 + 阴实体深入阳实体50%+
+        if i >= 1:
+            c1, o1 = c.iloc[i-1], o.iloc[i-1]
+            if c1 > o1 and (c1 - o1) / o1 >= 0.015:  # 前一日大阳
+                if is_bear and o_i > c1 and c_i < (o1 + c1) / 2:  # 今日大阴低开并回吞50%+
+                    patterns.append({
+                        "pattern": "乌云盖顶",
+                        "strength": 4,
+                        "desc": f"前阳后阴，回吞前阳实体{(o1+c1)/2 - c_i:.2f}",
+                        "idx": len(df) - lookback + i
+                    })
+        
+        # 7. 高位横盘震荡出货：需要更长周期，简化检测箱体上沿多次试探
+        # 略过实时检测
+        
+        # 8. 多重顶/圆弧顶：略过
+        
+        # 9. 断头铡刀：一根大阴线跌破 MA5/MA10/MA20 多条均线 + 量增
+        if is_bear and body / o_i >= 0.025 and v_i >= vol_ma20 * 1.5:
+            ma5 = ta.sma(df["close"], length=5).iloc[-lookback + i] if len(df) >= 5 else None
+            ma10 = ta.sma(df["close"], length=10).iloc[-lookback + i] if len(df) >= 10 else None
+            ma20 = ta.sma(df["close"], length=20).iloc[-lookback + i] if len(df) >= 20 else None
+            broken = 0
+            if ma5 and c_i < ma5: broken += 1
+            if ma10 and c_i < ma10: broken += 1
+            if ma20 and c_i < ma20: broken += 1
+            if broken >= 2:
+                patterns.append({
+                    "pattern": "断头铡刀",
+                    "strength": 5,
+                    "desc": f"大阴线跌破{broken}条均线(MA5/10/20)，量比{v_i/vol_ma20:.1f}x",
+                    "idx": len(df) - lookback + i
+                })
+        
+        # 10. 向上跳空缺口回补：高位向上跳空 + 3日内被阴线完全回补
+        if i >= 1 and i < lookback - 1:
+            gap_up = o_i - c.iloc[i-1]
+            if gap_up > c.iloc[i-1] * 0.015:  # 向上跳空 > 1.5%
+                # 检查后续是否被回补
+                for j in range(i+1, min(i+4, len(recent))):
+                    if c.iloc[j] <= c.iloc[i-1] and c.iloc[j] < o.iloc[j]:  # 阴线回补
+                        patterns.append({
+                            "pattern": "向上跳空缺口回补",
+                            "strength": 4,
+                            "desc": f"跳空{gap_up/prev_c.iloc[i]*100:.1f}%在第{j-i}日被阴线回补",
+                            "idx": len(df) - lookback + j
+                        })
+                        break
+    
+    # 去重：同形态只保留强度最高的
+    seen = {}
+    for p in patterns:
+        key = p["pattern"]
+        if key not in seen or p["strength"] > seen[key]["strength"]:
+            seen[key] = p
+    
+    return list(seen.values())
+
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
 OUTPUT_DIR = os.path.join(WORKSPACE, "analysis", "daily")
 VALIDATION_FILE = os.path.join(WORKSPACE, "analysis", "validation_2026-08-01.json")
@@ -445,6 +606,44 @@ def load_dual_strategy_map():
 
 def scan_all():
     today = datetime.now().strftime("%Y-%m-%d")
+    
+    # ═══════════════════════════════════════════
+    # 030 预检：致命风险 + 仓位计划 + 市场上下文
+    # ═══════════════════════════════════════════
+    fatal_risk = {"fatal_triggered": False, "high_risk_triggered": False}
+    position_plan = {"buy_signal_multiplier": 1.0, "single_stock_max_pct": 0.05,
+                     "total_limit_pct": 0.5, "total_limit_amount": 1_500_000,
+                     "direction_allocation": {}}
+    market_context = {"health_score": 5, "market_stage": "震荡筑底", "emotion_cycle": "修复"}
+    
+    if HAS_030_MODULES:
+        try:
+            fatal_detector = FatalRiskDetector()
+            fatal_risk = fatal_detector.check()
+            
+            pos_context = load_position_context()
+            sizer = PositionSizer(total_capital=3_000_000)
+            pos_plan_obj = sizer.calculate(
+                market_stage=pos_context["market_stage"],
+                emotion_cycle=pos_context["emotion_cycle"],
+                health_score=pos_context["health_score"],
+                fatal_risk=fatal_risk,
+                held_positions=pos_context.get("held_positions"),
+                watchlist=[s for s, _ in STOCKS]
+            )
+            position_plan = {
+                "buy_signal_multiplier": pos_plan_obj.buy_signal_multiplier,
+                "single_stock_max_pct": pos_plan_obj.single_stock_max_pct,
+                "single_stock_max_amount": pos_plan_obj.single_stock_max_amount,
+                "total_limit_pct": pos_plan_obj.total_limit_pct,
+                "total_limit_amount": pos_plan_obj.total_limit_amount,
+                "direction_allocation": pos_plan_obj.direction_allocation,
+                "risk_warnings": pos_plan_obj.risk_warnings,
+            }
+            market_context = pos_context
+        except Exception as e:
+            print(f"⚠️ 030预检模块运行失败: {e}")
+    
     dual_map = load_dual_strategy_map()
     results = []
     stats = {"buy": 0, "sell": 0, "hold": 0, "agree": 0, "disagree": 0, "error": 0}
@@ -469,6 +668,15 @@ def scan_all():
 
         change_pct = calc_change_pct(df)
         cur_price = float(df.iloc[-1]["close"])
+        
+        # 🔍 检测出货形态
+        dist_patterns = detect_distribution_patterns(df, lookback=5)
+        max_dist_strength = max([p["strength"] for p in dist_patterns], default=0)
+        
+        # 🏰 护城河因子
+        moat_score, moat_tags = calc_moat_score(symbol)
+        is_core = is_core_moat_stock(symbol)
+        
         sigs = []
         for entry in top2:
             sname = entry["strategy"]
@@ -513,12 +721,110 @@ def scan_all():
         else:
             stats["hold"] += 1
 
+        # 🔴 出货形态过滤：若强度>=4且策略给买入，标记警告
+        dist_warning = ""
+        buy_signals = sum(1 for s in sigs if "买入" in s.get("action", ""))
+        if max_dist_strength >= 4 and buy_signals > 0:
+            pattern_names = ", ".join([p["pattern"] for p in dist_patterns if p["strength"] >= 4])
+            dist_warning = f" ⚠️出货形态:{pattern_names}"
+        
+        # 构建原始信号供裁决引擎使用
+        raw_signals = []
+        for sg in sigs:
+            raw_signals.append(RawSignal(
+                source="adaptive_dual",
+                symbol=symbol,
+                name=name,
+                action=sg.get("action", ""),
+                strength=0,  # 由仲裁器归一化
+                confidence=min(sg.get("validation_score", 0) / 100.0, 1.0) if sg.get("validation_score", 0) > 0 else 0.5,
+                reason=f"[{sg.get('strategy_label', '')}] {sg.get('reason', '')}",
+                indicators=sg.get("indicators", ""),
+                strategy=sg.get("strategy", ""),
+                validation_score=sg.get("validation_score", 0),
+                moat_score=moat_score,
+                distribution_warning=dist_warning,
+            ))
+        
+        # 030 裁决（如果模块可用）
+        arbitration_result = None
+        if HAS_030_MODULES:
+            try:
+                arbitrator = SignalArbitrator()
+                # 获取持仓信息
+                held_pos = {}
+                portfolio_path = os.path.join(WORKSPACE, "data", "portfolio_sim_state.json")
+                if os.path.exists(portfolio_path):
+                    with open(portfolio_path) as f:
+                        portfolio = json.load(f)
+                    held_pos = portfolio.get("positions", {}).get(symbol, {})
+                
+                arbitration_result = arbitrator.arbitrate(
+                    raw_signals=raw_signals,
+                    fatal_risk=fatal_risk,
+                    position_plan=position_plan,
+                    market_context=market_context,
+                    held_position=held_pos
+                )
+            except Exception as e:
+                print(f"⚠️ 裁决引擎失败 {symbol}: {e}")
+        
         results.append({
             "symbol": symbol, "name": name,
             "price": cur_price,
             "change_pct": change_pct,
             "strategies": sigs,
             "consensus": "一致" if (t1 == t2) else "分歧",
+            "distribution_patterns": dist_patterns,
+            "dist_max_strength": max_dist_strength,
+            "dist_warning": dist_warning,
+            "moat_score": moat_score,
+            "moat_tags": moat_tags,
+            "is_core_moat": is_core,
+            # 030 新增字段
+            "arbitration": {
+                "final_action": arbitration_result.final_action.value if arbitration_result else "未裁决",
+                "confidence": arbitration_result.confidence if arbitration_result else 0.0,
+                "position_mult": arbitration_result.position_mult if arbitration_result else 0.0,
+                "stop_loss": arbitration_result.stop_loss if arbitration_result else None,
+                "support_price": arbitration_result.support_price if arbitration_result else None,
+                "reason": arbitration_result.reason if arbitration_result else "",
+                "arbitration_path": arbitration_result.arbitration_path if arbitration_result else [],
+            } if arbitration_result else None,
+            "position_advice": {
+                "max_amount": round(position_plan.get("single_stock_max_amount", 0) * 
+                                  (arbitration_result.position_mult if arbitration_result else 1.0), 2),
+                "direction_alloc": position_plan.get("direction_allocation", {}).get(
+                    "半导体封测" if symbol in ["600584", "002156"] else 
+                    "半导体晶圆" if symbol == "688981" else
+                    "军工电子" if symbol == "002413" else
+                    "工业自动化" if symbol == "300124" else
+                    "高端液压" if symbol == "601100" else
+                    "锂电池" if symbol == "300014" else
+                    "锂资源" if symbol == "002466" else
+                    "光伏玻璃" if symbol == "601865" else
+                    "特种陶瓷" if symbol == "300285" else
+                    "特材管材" if symbol == "603308" else
+                    "特钢管" if symbol == "002318" else
+                    "氟化工" if symbol == "600160" else
+                    "炼化一体化" if symbol == "600346" else
+                    "特钢" if symbol == "000708" else
+                    "稀土永磁" if symbol == "300748" else
+                    "数据中心" if symbol == "002335" else
+                    "连接器" if symbol == "300719" else
+                    "券商" if symbol in ["600030", "601066", "601995"] else
+                    "银行" if symbol == "600036" else
+                    "基建金融" if symbol == "000987" else
+                    "金融IT" if symbol == "600570" else
+                    "消费电子" if symbol == "605566" else
+                    "汽车玻璃" if symbol == "600660" else
+                    "工程机械" if symbol == "000157" else
+                    "有色贸易" if symbol == "601061" else
+                    "打印机国产替代" if symbol == "002180" else
+                    "军工光电" if symbol == "300847" else
+                    "其他", 0),
+                "buy_signal_multiplier": position_plan.get("buy_signal_multiplier", 1.0),
+            },
         })
 
     return {"date": today, "stock_count": len(STOCKS), "stats": stats,
@@ -620,20 +926,112 @@ def format_brief(output):
             lines.append(f"  {STRATEGY_LABELS[sk]}: {sv}次")
     lines.append("")
 
+    # 🏰 护城河因子分布
+    core_stocks = [r for r in output["details"] if r.get("is_core_moat")]
+    sat_stocks = [r for r in output["details"] if not r.get("is_core_moat") and r.get("moat_score", 0) > 0]
+    no_moat = [r for r in output["details"] if r.get("moat_score", 0) == 0]
+    lines.append("🏰 **护城河因子分布**")
+    lines.append(f"  核心仓(≥2.0): {len(core_stocks)} 只")
+    lines.append(f"  卫星仓(>0<2.0): {len(sat_stocks)} 只")
+    lines.append(f"  无护城河: {len(no_moat)} 只")
+    if core_stocks:
+        lines.append("  核心标的: " + ", ".join([f"{r['name']}({r['symbol']})[{r['moat_score']:.1f}]" for r in core_stocks[:10]]))
+        if len(core_stocks) > 10:
+            lines.append(f"    ... 及其他 {len(core_stocks)-10} 只")
+    lines.append("")
+
+    # ⚠️ 出货形态预警（强度>=4且有买入信号）
+    dist_rows = []
+    for r in output["details"]:
+        if r.get("dist_warning"):
+            dist_rows.append(r)
+    if dist_rows:
+        lines.append("⚠️ **出货形态预警**（买入信号被否决/降级）")
+        lines.append("| 股票 | 形态 | 强度 | 现价 | 涨跌 |")
+        lines.append("|:---|:---|:---:|:---:|:---:|")
+        for r in dist_rows:
+            patterns = ", ".join([p["pattern"] for p in r.get("distribution_patterns", []) if p["strength"] >= 4])
+            price = r.get("price", 0) or 0
+            lines.append(f"| {r['name']}({r['symbol']}) | {patterns} | {r['dist_max_strength']} | ¥{price:.2f} | {r['change_pct']:+.2f}% |")
+        lines.append("")
     return "\n".join(lines)
+
+
 
 
 def main():
     print("📡 开始双策略最优扫描（每股跑score前2策略）...")
     output = scan_all()
 
+    # 保存裁决结果供后续模块使用
+    today = datetime.now().strftime("%Y-%m-%d")
+    arbitration_results = []
+    for r in output["details"]:
+        if r.get("arbitration"):
+            arb = r["arbitration"]
+            arbitration_results.append({
+                "symbol": r["symbol"],
+                "name": r["name"],
+                "final_action": arb["final_action"],
+                "confidence": arb["confidence"],
+                "position_mult": arb["position_mult"],
+                "stop_loss": arb["stop_loss"],
+                "support_price": arb["support_price"],
+                "reason": arb["reason"],
+                "arbitration_path": arb["arbitration_path"],
+            })
+    
+    # 保存裁决结果
+    arb_path = os.path.join(WORKSPACE, "data", f"arbitration_{today}.json")
+    with open(arb_path, "w") as f:
+        json.dump(arbitration_results, f, ensure_ascii=False, indent=2, default=str)
+    
+    # 生成隔日推演
+    if HAS_030_MODULES and arbitration_results:
+        try:
+            # 加载持仓
+            held_positions = {}
+            portfolio_path = os.path.join(WORKSPACE, "data", "portfolio_sim_state.json")
+            if os.path.exists(portfolio_path):
+                with open(portfolio_path) as f:
+                    portfolio = json.load(f)
+                held_positions = portfolio.get("positions", {})
+            
+            # 加载扫描结果
+            scan_results = output
+            
+            # 加载市场上下文和仓位计划
+            from analysis.position_sizer import load_market_context
+            market_context = load_market_context()
+            
+            plan_path = os.path.join(WORKSPACE, "data", f"position_plan_{today}.json")
+            position_plan = {}
+            if os.path.exists(plan_path):
+                with open(plan_path) as f:
+                    position_plan = json.load(f)
+            
+            simulator = NextDaySimulator()
+            simulation = simulator.generate(
+                market_context=market_context,
+                position_plan=position_plan,
+                arbitration_results=arbitration_results,
+                held_positions=held_positions,
+                scan_results=scan_results,
+            )
+            
+            # 保存推演结果
+            from analysis.next_day_simulator import save_simulation
+            json_path, md_path = save_simulation(simulation)
+            print(f"📄 隔日推演已保存: {md_path}")
+        except Exception as e:
+            print(f"⚠️ 隔日推演生成失败: {e}")
+    
     print("\n=====DUAL_SCAN_RESULT=====")
     print(json.dumps(output, ensure_ascii=False, indent=2, default=str))
     print("=====DUAL_SCAN_END=====")
 
     print("\n" + format_brief(output))
 
-    today = datetime.now().strftime("%Y-%m-%d")
     report_path = os.path.join(OUTPUT_DIR, f"{today}_dual.md")
     with open(report_path, "w") as f:
         f.write(f"# 双策略最优扫描日报 {today}\n\n")
@@ -648,6 +1046,17 @@ def main():
             for sg in r["strategies"]:
                 score = sg.get("validation_score", "?")
                 f.write(f"- **{sg.get('strategy_label')}** (score={score}): {sg.get('action')} — {sg.get('reason')}\n")
+            # 030 裁决结果
+            if r.get("arbitration"):
+                arb = r["arbitration"]
+                f.write(f"\n**📋 030裁决**: {arb['final_action']} (置信度{arb['confidence']:.0%}, 仓位乘数{arb['position_mult']:.1f}x)\n")
+                f.write(f"理由: {arb['reason']}\n")
+                if arb["stop_loss"]:
+                    f.write(f"止损: ¥{arb['stop_loss']} | 支撑: ¥{arb['support_price']}\n")
+            # 仓位建议
+            if r.get("position_advice"):
+                pa = r["position_advice"]
+                f.write(f"\n**💰 仓位建议**: 最大¥{pa['max_amount']:,.0f} | 方向额度¥{pa['direction_alloc']:,.0f} | 买入乘数{pa['buy_signal_multiplier']:.1f}x\n")
     print(f"📄 日报已保存: {report_path}")
 
 

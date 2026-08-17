@@ -36,18 +36,23 @@ WATCHLIST = [
 ]
 
 # -------------------- 交易日判定 --------------------
-def is_trading_day() -> bool:
-    today = datetime.now()
-    if today.weekday() >= 5:
+def is_trading_day(check_date=None) -> bool:
+    """判断指定日期是否为交易日。check_date 为 None 时判断当天。"""
+    if check_date is None:
+        check_date = datetime.now()
+    elif isinstance(check_date, str):
+        check_date = datetime.strptime(check_date, "%Y-%m-%d")
+    
+    if check_date.weekday() >= 5:
         return False
     try:
         cal = ak.tool_trade_date_hist_sina()
-        today_str = today.strftime("%Y-%m-%d")
-        if today_str in cal["trade_date"].values:
-            return cal[cal["trade_date"] == today_str].iloc[0]["is_open"] == 1
+        date_str = check_date.strftime("%Y-%m-%d")
+        if date_str in cal["trade_date"].values:
+            return cal[cal["trade_date"] == date_str].iloc[0]["is_open"] == 1
     except Exception:
         pass
-    return True   # 出错时默认放行，让后续自行判断数据日期
+    return True
 
 # -------------------- 新�浪 hq 实时行情 --------------------
 def fetch_hq_dict(codes: list[str]) -> dict:

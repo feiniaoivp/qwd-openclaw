@@ -1,5 +1,5 @@
 {
-  "last_signal_date": "2026-08-06",
+  "last_signal_date": "2026-08-15",
   "positions": {
     "002318": {
       "name": "久立特材",
@@ -87,7 +87,7 @@
     },
     "002156": {
       "name": "通富微电",
-      "strategy": "macd",
+      "strategy": "ema_obv",
       "position": false,
       "entry_price": 0,
       "entry_date": null,
@@ -99,7 +99,7 @@
     },
     "002466": {
       "name": "天齐锂业",
-      "strategy": "ema_cross",
+      "strategy": "ema_obv",
       "position": false,
       "entry_price": 0,
       "entry_date": null,
@@ -124,13 +124,13 @@
     "600570": {
       "name": "恒生电子",
       "strategy": "bollinger",
-      "position": true,
+      "position": false,
       "entry_price": 23.18,
       "entry_date": "2026-08-03",
-      "shares": 4300,
-      "cash": 196.3938978000224,
-      "total_pl": 0.0,
-      "trade_count": 1,
+      "shares": 0,
+      "cash": 95188.77163260002,
+      "total_pl": -4781.296265199984,
+      "trade_count": 2,
       "_symbol": "600570"
     },
     "605566": {
@@ -195,7 +195,7 @@
     },
     "688981": {
       "name": "中芯国际",
-      "strategy": "kdj_cci",
+      "strategy": "ema_cross",
       "position": false,
       "entry_price": 0,
       "entry_date": null,
@@ -244,13 +244,13 @@
     "601061": {
       "name": "中信金属",
       "strategy": "ema_obv",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
+      "position": true,
+      "entry_price": 11.71,
+      "entry_date": "2026-08-14",
+      "shares": 8500,
+      "cash": 335.57463950001693,
       "total_pl": 0.0,
-      "trade_count": 0,
+      "trade_count": 1,
       "_symbol": "601061"
     },
     "600660": {
@@ -291,7 +291,7 @@
     },
     "600160": {
       "name": "巨化股份",
-      "strategy": "ema_cross",
+      "strategy": "macd",
       "position": true,
       "entry_price": 41.35,
       "entry_date": "2026-08-04",
@@ -339,7 +339,7 @@
     },
     "002180": {
       "name": "奔图科技",
-      "strategy": "ema_cross",
+      "strategy": "macd",
       "position": false,
       "entry_price": 0,
       "entry_date": null,

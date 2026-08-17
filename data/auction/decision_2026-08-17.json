@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "date": "2026-08-17",
+    "generated_at": "09:26:14",
+    "snapshot_file": "2026-08-17_9_25.json"
+  },
+  "risk_judgment": {
+    "level": "🟢 正常",
+    "text": "正常 → 按机会方向操作",
+    "fatal_triggered": false,
+    "high_risks": []
+  },
+  "opportunities": [],
+  "volume_analysis": {
+    "auction_amount_yi": 0,
+    "auction_volume_shares": 0,
+    "vol_ratio_pct": null,
+    "volume_bias": "无法判断",
+    "total_bid_seal_yi": 0.0,
+    "total_ask_seal_yi": 0.0,
+    "seal_vs_trade": "封单成交一致"
+  },
+  "risk_warnings": {
+    "teeter_board": [],
+    "abandon_risk": [],
+    "general": []
+  },
+  "execution_plan": {
+    "watch_9_30_9_35": [
+      "机会方向开盘是否延续竞价走势？",
+      "跷跷板对手方是否如预期走弱？还是\"该弱不弱\"？",
+      "前30分钟量能是否支持方向持续？"
+    ],
+    "position_sizing": "致命风险=0仓；高风险=不加仓+止损；正常=按方向优先级分仓，单向≤30%",
+    "stop_loss": "日内-5%，隔夜-8%"
+  }
+}

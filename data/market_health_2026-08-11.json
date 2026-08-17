@@ -1,0 +1,66 @@
+{
+  "date": "2026-08-11",
+  "generated_at": "2026-08-11 17:24",
+  "dimensions": {
+    "market_width": {
+      "score": 1,
+      "note": "上涨占比30%(涨1559/跌3506)"
+    },
+    "negative_feedback": {
+      "score": 7,
+      "note": "跌停2家"
+    },
+    "tier_completeness": {
+      "score": 10,
+      "note": "最高6板"
+    },
+    "bomb_rate": {
+      "score": 5,
+      "note": "炸板率需另取炸板池, 中性分"
+    },
+    "promotion_rate": {
+      "score": 5,
+      "note": "晋级率需昨日涨停池对比今日, 中性分(agent可结合新闻)"
+    },
+    "volume": {
+      "score": 8,
+      "note": "成交23193亿, 显著放量(无5日均值)"
+    },
+    "mainline_persist": {
+      "score": 5,
+      "note": "指数均衡, 主线待确认(结合新闻)"
+    }
+  },
+  "summary": {
+    "total_score": 6.0,
+    "verdict": "6-7 市场正常, 按仓位矩阵操作"
+  },
+  "macro": {
+    "up": 1559,
+    "down": 3506,
+    "total": 5207,
+    "up_ratio": 0.2994,
+    "limit_up": 59,
+    "limit_down": 2,
+    "total_amount_yi": 23193.0,
+    "avg_chg": -0.17,
+    "med_chg": -0.64
+  },
+  "index": {
+    "上证指数": {
+      "price": 3934.0929,
+      "chg_pts": -32.5006,
+      "change_pct": -0.82
+    },
+    "创业板指": {
+      "price": 3549.16,
+      "chg_pts": 11.95,
+      "change_pct": 0.34
+    },
+    "科创50": {
+      "price": 1709.5026,
+      "chg_pts": -28.2711,
+      "change_pct": -1.63
+    }
+  }
+}
