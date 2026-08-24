@@ -83,6 +83,10 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **[2026-07-26]:** akshare 东方财富接口(stock_zh_a_spot_em)在国内网络环境时好时坏，新浪接口(stock_zh_a_spot)更稳定。数据源切换时优先试新浪接口。
 *   **[2026-07-26]:** skill-version-watcher 的 version 字段如果是占位符字符串，定时任务会检测不到真实变更。应确保每个技能的 SKILL.md 中 version 字段是真实的 SHA256 哈希值。
 *   **[2026-08-01]:** 修复 scripts/ontology.py 的 `extract_version_from_skill()`：旧代码 `line.split(':')[1]` 遇到 `version = X.Y.Z`（INI 等号语法）会 IndexError 崩溃，且会把嵌套 dict（如 `metadata: {"version":...}`）的任意值当版本号。改为单个正则 `^version\s*[:=]\s*(.+)$` 兼容 YAML冒号/INI等号，用版本号正则 `\d+(\.\d+)*(?:[-+][0-9A-Za-z.-]+)?` 匹配合法语义版本，剥离前导 `v` 和尾随注释，拒绝无前导数字的值；无有效版本时回退内容 SHA256 哈希。同步修正了 skill-version-watcher/SKILL.md 文档（旧文档误导性写“version 是 SHA256 哈希”，实际是语义版本号+哈希兜底）。
+*   **[2026-08-22]:** send_telegram.py 凭据不要硬编码，一律从 `credentials/` 文件读取；令牌失效先查 credentials 目录。TG Markdown：消息含 `.token` 等点号后缀会触发实体解析 400；含技术符号（`()`、`/`、`300285(`）的简报须用 `parse_mode=''` 纯文本发送。
+*   **[2026-08-22]:** 定时任务反复超时/崩、数据步骤全成功死在 LLM 简报环节且落到 nvidia fallback —— 优先判断能否用 **command cron 直跑自含脚本**绕开 LLM（模板：portfolio-sim-daily）。
+*   **[2026-08-22]:** param_eval 判模拟盘「恶化」是已实现亏损统计，可能是保护性止损的胜利，回滚前先核对：①模拟盘用策略名+默认参数（portfolio_sim 不读 adaptive_params 自定义参数）；②卖出后走势是否证明止损逃顶正确。
+*   **[2026-08-23]:** 顶层包/相对导入靠 sys.path 时，脚本须同时插工作室根 + 子目录；PYTHONPATH 只在交互 shell 生效，定时/子进程不继承。
 
 ## User's Stock Watchlist (Definitive - 30 stocks)
 *   **证券/金融:** 中信证券(600030), 中信建投(601066), 招商银行(600036), 中金公司(601995), 越秀资本(000987)
@@ -321,6 +325,33 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **修复:** 1) auction_scan.py + preopen_scan_*.py 各加 `build_brief()` 规则化简报; 2) 两 cron 从 agentTurn 改 `command` 脚本直推, 完全绕过 LLM。手动触发验证: auction 5.5s / preopen 7.8s 成功, consecutiveErrors 4→0。
 *   **教训(通用):** 结构化数据快照类 cron(竞价/盘前/收盘扫描) 一律用 `command` 脚本直推 + 脚本内 build_brief() 规则化组装简报, **不要**设成 agentTurn 走 LLM —— 又慢又不稳定, 还会反复超时。
 
+### 2026-08-19 中联信号HOLD vs SELL矛盾 + 破位回落拦截（2处修复）
+*   **中联矛盾根因:** nodes.py `rule_risk_advice` 的中联强制SELL `if sym=="000157" and zl_sell` 只看信号层 sell=True，**不看是否实际持仓**。sig2_sell = macd_bear or close<EMA26 是纯技术条件 → 空仓时 close<EMA26 就误判 SELL，与 030 仲裁"持有"矛盾。08-11 修过"综合最优触发卖出强制SELL"但没加持仓判断，空仓也触发 = 变体回归。**修复:** zl_sell 判定结合 zhonglian_state.json 实际持仓，仅对应策略 position=True 才视为真卖出；空仓→HOLD。备份 backups/nodes_20260819_before_zhonglian_fix.py。
+*   **新增修复#4 破位回落拦截:** 08-19 国瓷材料盘中破止损(-13.7%近跌停)仍被给"强烈买入"——BUY评级失当。nodes.py "强烈买入/关注"分支最前加：**收盘价 < EMA26 时 BUY 强制降级 HOLD(禁追)**。依据 08-02"天量高开低走=出货"教训。
+*   **单测全过(真实K线端到端):** 空仓中联=HOLD / 持仓中联=SELL(风控保留) / 国瓷破位=HOLD / 招行健康=BUY。
+*   **11只连买回落回看(报告 analysis/backtest/2026-08-19_连买回落回看.md):** 🔴紧急3(国瓷300285 5日-13.4%盘中破止损清仓、福莱特601865 5日-11%破EMA20/26禁买、奔图002180盘中破止损17.91)；🟠观望2(恒生电子600570守20.61、中船汉光300847 08-18已减仓)；🟡警惕2(安达维尔300719守11.15、中信金属601061守11.45)；🟢正常4(恒力石化+6.3%、福耀玻璃+4.5%、招商银行+1.2%、中信特钢+1.9%)。
+*   **教训:** 卖出建议/强制SELL等风控规则必须绑定"实际持仓"状态再执行，只看技术信号标志会在空仓时产生"无仓可卖却喊卖出"的矛盾；BUY建议必须有"破位回落(价<EMA26)拦截"防接飞刀。
+
+### 2026-08-19 三因素共振买入门控体系（ResonanceGate）搭建+接入+演进 ⭐
+*   **需求:** 个股基本面+市场情绪+技术方向三维独立维度共同指向同一方向才发买入信号，避免单一技术信号接飞刀（08-19 恐慌市国瓷近跌停还喊"强烈买入"教训）。
+*   **共享门控模块:** `analysis/three_factor_helper.py` 的 `ResonanceGate` 类（情绪缓存6h+基本面按个股缓存+check_buy判定）。数据源：技术=新浪/baostock日K(复用calc_full_signal)；基本面=baostock(query_profit_data年化ROE + query_growth_data净利增速 + 净利率)；情绪=ak.stock_market_activity_legu(涨跌家数/活跃度)。
+*   **接入三个链路:** ① nodes.py rule_risk_advice（买入/关注信号在破位拦截后加门控）；② adaptive_dual.py 仲裁（final 买入类经 check_buy，未过→HOLD+position_mult=0，结果加 resonance_gate 字段记录拦截原因）；③ portfolio_sim.py execute_trade（买入分支加门控→HOLD）。
+*   **门控演进（用户拍板逐步简化）:** 一票否决(情绪+基本面+技术任一不达标则否决)→通道B豁免(技术≥85 且 基本面≥70 不受情绪限制，防恐慌市完全冻结)→纯加权评分制 buy_score=技术×0.45+基本面×0.30+情绪×0.25, 买入线60，**去掉所有一票否决**（极端恐慌情绪分只贡献~2分，技术90+基本面好仍可破60；基本面差的被拒）。
+*   **30只真实基本面分分布:** 7只≥70(中信建投94.9 ROE24.96%+增速69%、天齐89.2、越秀86.7、巨化78.1、中金77.5、中信证券75.8、恒力石化70.9)，其余偏低；豁免线70合理卡位（福耀67.2/招行66.1不过）。
+*   **端到端验证(真实恐慌市情绪分8.1/上涨仅8%):** nodes招行→HOLD(拦截)✓/portfolio_sim招行买入→HOLD✓/中信建投(基本面94.9技术88)→三链路全BUY成交✓/福莱特(基本面8.1)→拦截✓。恐慌市完全不开仓，符合用户严格防守要求。
+*   **增强策略试跑→回滚:** 新增 signal_enhanced(ATR\(2×/3×\)+布林带宽挤压突破+20日高低+斐波那契0.382/0.5/0.618) 回测(30只×2.5年) 平均17.6%<纯MACD 49.7%<EMA金叉43.9%、夏普0.068偏低、回撤-35.8%全池最大 → **判定不佳回滚**，恢复原5策略，保留纯加权门控。**启示:** 单一技术增强难在收益/夏普上超越纯MACD；趋势跟踪(纯MACD/EMA)夏普仍最忧；增强策略只能当"稳健辅助"非"收益引擎"。
+*   **baostock 会话加固:** 长循环丢包(接收数据异常/Broken pipe)导致基本面全空 → 加 _bs_ensure_login/_bs_mark_broken + 失败强制 logout/login 重登，修复后30只基本面100%取到。
+*   **备份:** backups/resonance_gate/*_20260819_213213.py
+
+### 2026-08-20 斐波那契扩展位前瞻跟踪系统（预先声明→事后检验）⭐
+*   **用户原则（关键方法论）:** 「必须尽量多做预见性想法并在实践中验证，避免射完箭再画靶」→ 拒绝拿当前数据回看当下建结论(事后诸葛亮)，改为**预先声明+前瞻跟踪+事后检验**。
+*   **新建:** `analysis/fib_extension_scan.py`(扫描止盈位) + `analysis/fib_track.py`(前瞻跟踪)；状态机 `data/fib_tracking_state.json`：无基线→锁定当日各股斐波那契扩展位(1.0/1.272/1.618/2.618)为[预先声明的预测目标]，锁定后不回改；有基线→每日对照验证(是否触及锁定止盈位，触及后5日兑现[回落3%]/突破[续涨2%]/观察)。命中率低→归为无效弃用而非自我印证。
+*   **今日基线已锁 2026-08-20:** 27只有效止盈位(3只券商 no_uptrend 跳过)。例：招商银行1.618=44.86、长电科技1.618=120.09、中芯国际1.618=162.04、亿纬锂能1.618=62.93。
+*   **数据源坑（新增）:** 新浪日K jsonp 接口清晨段(~05:00) HTTP456 限流, 需冷却数分钟恢复；实时 hq.sinajs.cn 不受限。正则兼容 `var _x=([...]);` 带括号/分号。并行并发 10×30 触发限流 → 改串行退避重试。
+*   **cron:** `fib-tracking-daily`(id 7d1b9562) 交易日15:45跑 fib_track.py，锁 deepseek-chat，推 telegram 626141741。注意 cron add 接口 payload.kind 只收 systemEvent/agentTurn（command 是旧格式 legacy）。
+*   **vs 恒力石化案例:** 旧扫描(画靶做法)把恒力石化标成 1.272-1.618 止盈区；改用预声明体系后不预下结论，等未来价格触达锁定位才验证。
+*   **用户决定（08-20 04:14）:** 放弃「设置过滤器」想法，不再推进不讨论（未追问细节，按用户意愿作行动结论；若重启需用户主动提起）。
+
 ### 2026-08-11 盘后监督报告 4 问题修复 ✅
 *   背景: 08-11 17:07 用户转发的 15:39 日常监督审查指出 4 问题, 全部根因定位修复, 端到端验证 0 误报。
 *   **①持仓股3只信号缺失(恒生/国瓷/巨化) [链路问题]:** signal_audit 读 daily/*_dual.md, 但收盘链路 run_agent 不产 dual 文件 → 审计误报"缺失"; 市场健康分 null = market_health_*.json 未生成。**修复**: daily-supervision-review cron(2ca9e493) 执行串改为 "adaptive_dual → market_health_score → signal_audit → challenge_review", 超时 180→300s。修复后审计 0 findings、全绿、健康分 6.0。
@@ -332,7 +363,77 @@ This file serves as your curated long-term memory, storing significant events, d
 ### 2026-08-09 技能库真实变更（skill-version-watcher 捕获）
 *   **self-improving v1.2.16 → self-improving-agent v4.0.2**（升级+改名, 08-08 21:27 更新）; **hf-mem v1.0.10** 新增(08-08 21:20 安装)。baseline memory/skill-versions.json 已更新。
 
-## Promoted From Short-Term Memory (2026-08-18)
+## 投资理念归纳（每日同步，最新 2026-08-20）
+> 完整可检索历史见 `wiki/sources/investment-philosophy-YYYY-MM-DD.md`；本区块为蒸馏要点。
 
-<!-- openclaw-memory-promotion:memory:memory/2026-08-13.md:3:6 -->
-- 07:09 skill-version-watcher 检测: **变更:** 新增技能 `auction-analysis` v1.0.0 (ClawHub, publisher userb000, MIT-0); 用途: 竞价分析 (9:26-9:29 竞价窗口风险/机会/开盘应对); 安装时间: 2026-08-13 05:51:57; 已推送 Telegram 摘要 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-13.md:3-6]
+### 2026-08-18 要点
+- **MACD 系确立为自选池综合最优**（五策略2024-2026回测：纯MACD总分29.3夺冠，两两PK胜出压倒性；KDJ+CCI最弱20.6负夏普）→ 策略权重向纯MACD倾斜，KDJ系降为辅助/需二次确认。
+- **CCI高位板块聚簇卖出（连续2日印证）**：中联重科/中信特钢/中船汉光连续 CCI高位(84-89%)卖出 → 钢/工程机械/军工主题持续退潮观察，遵守不追高/兑现。
+- **030裁决「减仓」触发条件**：仅当某策略卖出 + 030裁决加权转负(如中船汉光)才执行减仓；单策略CCI卖出而裁决持有→观望不动作。
+- **健康度5/10防守**：总仓0%、买入降级、仓位上限减半；🔴3持仓(国瓷/中信金属/巨化)缺止损位需补。
+- **待人工复核**：①KDJ系弱策略却高频使用（矛盾）；②signal-grade模板化（14只多日同理由，challenge_review 68项）；③中船汉光 08-18 从强烈买入降级关注但裁决减仓的分层矛盾。
+
+
+### 2026-08-19 要点
+> 来源：过去24h Obsidian 笔记（5篇教育类技术分析视频拆解：MACD 4策略 / ATR 止损与仓位 / 12分钟全交易策略 / 职业交易体系 / 人民币宏观）。多为系统化方法论，非当日实盘信号。
+
+- **ATR波动率止损（新规则，待参数落地）**：止损距离按 n×ATR(14) 设定（建议 1.5/2/3 倍），而非固定百分比；当前系统用固定 日内-5%/隔夜-8%（auction_analyze）+ 现价×0.95 参考。**冲突/修正候选**：对高波动标的固定-5%易被正常波动扫损，建议高波动(ATR大)时扩大止损、同步缩仓。→ 标记需人工复核是否引入 ATR 止损。
+- **波动率仓位管理（Position Sizing by Volatility）**：单笔风险金额固定为总资金~1%，股数 = 单笔风险金额 / 止损距离(2×ATR)。波动大的少买、波动小的多买，实现风险对等。→ 可与现有 position_sizer 仓位上限制互补复核。
+- **盈亏比/选择性入场纪律**：不追求100%胜率；1:2 以上盈亏比 + 40%胜率即可盈利；"更有选择性入场"比新策略更能提胜率（30%→65%）；无信号不交易、拒绝报复性/过度交易。
+- **止损设结构破坏点 +"角色互换"**：止损放在技术逻辑失效处（前低下方/均线破位），非随机金额；阻力突破后变支撑(S/R Flip)。需配合现有 030 裁决。
+- **多周期/趋势确认**：大周期(日线)定趋势、小周期找买点；斐波那契 0.618/0.5 回撤位作回调买入参考；ATR 是滞后指标须配合趋势线。
+- **斐波那契扩展位止盈（⭐08-19 16:17 新笔记增量，早间归纳未含）**：视频《9+ 斐波那契最完整教學》(mio来了)提炼——「回撤找买点、扩展找出口」：上涨趋势从波段低→高画回撤线，0.5-0.618 为最强支撑"黄金口袋"(出现锤子线等反转K确认买点)、0.382 代表强势强回调即续涨；回调低点→前高→回调低点三点画扩展线，止盈目标 1.0(首目标等长)、1.272-1.618(波段最终止盈强阻力区)、2.618(极度狂热终点)。**共振原则**：0.618 位重合水平支撑/EMA均线成功率大幅提升(不可孤立用指标)；**止损**放 0.786 下方或前波段低点。→ 补齐原归纳只记回撤(0.618/0.5)买点、没记扩展止盈/共振/0.786止损的缺口。**待人工复核③升级**：除回撤买入参考外，可评估是否把扩展位 1.272-1.618 纳入波段止盈参考。
+- **人民币宏观框架（补充体系外认知）**：主权货币=信用代币、央行=做市商；不可能三角、外汇管制"水坝"、逆周期因子；分散配置不 All-in、动态调仓。"不确定性是唯一确定性"。
+
+**待人工复核**：① 是否引入 ATR 波动率止损取代/补充固定-5%/-8%（当前高波动标的存在被扫损风险）；② 是否引入波动率仓位(风险1%/止损距)替换现固定仓位上限制；③ 斐波那契0.618/0.5 是否纳入回调买入参考参数。
+
+### 2026-08-20 归档对账（cron）
+> 过去24h Obsidian 新增 1 篇：`选项斐波那契最完整教學.md`（08-19 16:17，斐波那契回撤+扩展教学, mio来了）。该篇内容已于 08-19 16:17 落入上方 08-19 要点「斐波那契扩展位止盈⭐」增量；本次补录进 wiki 归档 `investment-philosophy-2026-08-20.md`（08-19 归档生成于 08:51 未含此篇）。**无新增规则、无冲突**；待复核③升级为：除回撤 0.5-0.618 买入外，评估是否将扩展位 1.272-1.618 纳入波段止盈。
+
+### 2026-08-24 要点（指标取舍简化框架）
+> 来源：过去24h Obsidian 1 篇《12个技术指标只有3个不可取代》。此篇为指标取舍方法论认知，非实盘信号。完整见 wiki/sources/investment-philosophy-2026-08-24.md。
+
+- **三大不可替代核心（本体论）**：支撑压力位 + 成交量 + 均线；其余9类（MACD/RSI/KDJ/布林/斐波/ATR/CCI等）本质重复表达同源信息。
+- **表面冲突、底层自洽（待复核②）**：08-18回测纯MACD夺冠 vs 此篇"MACD是均线衍生非核心"——不冲突，MACD有效性源于其均线内核，"均线不可取代"反为MACD可用性的底层解释。
+- **印证降权决策**：KDJ/CCI信息重叠、回测最弱(20.6负夏普)→现有降辅助二次确认正确；ATR仅风控非趋势核心→呼应08-19 ATR止损定位；斐波那契≈支撑压力重复→呼应"需与水平支撑/EMA共振"原则。
+- **策略启示**：短线看成交量+支撑压力、波段看均线、ATR辅助风控。**无新增参数、无冲突**，体系稳定。
+
+## Promoted From Short-Term Memory (2026-08-24)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-08-19-0528.md:29:32 -->
+- 📋 维护日志摘要: | 步骤 | 结果 | 详情 | |------|------|------| | `wiki compile` | ✅ 成功 | 162 页编译，0 索引需更新 | | `wiki lint` | ✅ 成功 | 0 issues | [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19-0528.md:29-32]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-19.md:15:15 -->
+- 待办（从昨日延续，需用户 /approve 后再动）: ⚠️ nvidia provider 模型名配置错误（kimi-k2.5/glm-5.1/minimax-m2.5 404）持续多日 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19.md:15-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-19.md:11:14 -->
+- 待办（从昨日延续，需用户 /approve 后再动）: 🔴 auction-feed-0915 超时治本（工具层改不了 command，需走配置层 remove+add 重建或查 model-call-started 慢点）; 🔴 send_telegram.py token 更新（MEMORY 的 AAEt... 落盘）; ⚠️ run_agent.py 慢点定位（>230s）+ 3 只持仓（300285/601061/600160）缺止损位; ⚠️ weekly-backtest 验证点 08-22(周六) 06:00 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19.md:11-14]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-19.md:18:21 -->
+- 07:02 技能版本检测 (cron skill-version-watcher): 检测到真实变更：**amap-traffic** 技能新增安装 (v1.0.0, slug: amap-traffic); 用途：高德地图实时路况查询与最优自驾路线规划（基于高德交通态势API + 路径规划API）; 安装时间：Aug 19 05:30；ownerId: kn7dkx3sey4sf5s5336q2axad580mwhy; 已推送摘要到 Telegram (@qwd1_bot, chat_id 626141741) [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19.md:18-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-19.md:5:8 -->
+- 04:00 Dreaming Daily Report (a8c18aed) ✅: 03:00 dreaming pipeline 正常完成（连续 12 期无回归）：light 8 条 staged / **deep promote 6 条到 MEMORY.md**（08-18 工程链）/ REM 归纳 3 主题（`修复`、`投资`、`理念`）。; 本期核心素材（08-18 集中修复日）：①DeepSeek 峰谷计价→4 个收盘 LLM 任务错峰到 19:00 后；②盘前报告超时根治（根因 premarket_report.py 内部 subprocess timeout=180 硬截断，改 320/420/300s，adaptive_dual 新浪日K优先 224→195s）；③投资理念归纳 3 项矛盾闭环（030 仲裁共享、signal-grade 数值化、KDJ EMA 趋势护栏）；④发现 send_telegram.py 内置 token 失效（AAH8），需人工换 MEMORY 的 AAEt。; 本报告产出 `memory/dreaming/daily-report-2026-08-19.md`（文件归档，无投递），并在 `DREAMS.md` 追加 08-19 04:00 日记条目 + Deep Sleep 摘要。; memory_search 本报告生成时正常（bge-m3 未超时）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19.md:5-8]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-19.md:26:29 -->
+- 中联重科 HOLD vs SELL 矛盾（root cause + 修复）: 现象：08-19 challenge_review 高危#1：中联信号"谨慎(应HOLD)"但 final 建议 SELL；premarket 报告也建议卖出。; 根因（代码级）：nodes.py `rule_risk_advice` 的中联强制SELL逻辑 `if sym=="000157" and zl_sell: action=SELL` **只看信号层的 sell=True 标志，不看是否实际持仓**。sig2_sell = macd_bear or close<EMA26 是纯技术条件 → 空仓时只要 6.87<EMA26(7.2) 就误判 SELL，与 030 仲裁"持有"矛盾（08-11 曾修过"综合最优触发卖出强制SELL"，但没加持仓判断，空仓也会触发 → 变体回归）。; 修复：zl_sell 判定改为结合 zhonglian_state.json 实际持仓，仅当对应策略 position=True 时才视为真卖出信号；空仓 → HOLD。备份 backups/nodes_20260819_before_zhonglian_fix.py。; 单测：空仓中联=HOLD ✓ / 持仓中联=SELL(风控保留) ✓ [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19.md:26-29]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-19.md:32:35 -->
+- 新增修复#4：破位回落拦截（防止接飞刀）: 现象：国瓷材料 08-19 盘中破止损(最低63.41<70.55)接近跌停(-13.7%)，但收盘信号仍给"强烈买入分3"——BUY评级明显失当。; 修复：nodes.py "强烈买入/关注"分支最前加破位拦截——**收盘价 < EMA26 时 BUY 强制降级 HOLD(禁追)**。; 依据：08-02"天量高开低走=出货"教训 + 今日国瓷/中联。; 单测：国瓷(破位)=HOLD ✓ / 招行(健康)=BUY ✓；真实K线端到端：中联=HOLD、国瓷=HOLD、招行=BUY 全部正确。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19.md:32-35]
+
+## 2026-08-22~24 每周回测超时根治 · 凭据/导入工程修复 ⭐
+
+### 2026-08-22 send_telegram.py 令牌重构（凭据从文件读取）
+*   **问题**：`analysis/send_telegram.py` 硬编码的 BOT_TOKEN（`8782173086:AAH8AtjSok...`）已失效（401）。
+*   **修复**：脚本 `_load_bot_token()` 改为从 `credentials/telegram_bot_qwd.token`（明文一行）读取；缺失/空时回退旧硬编码并打印警告（仅兜底）。验证：以 qwd1_bot 名义送达 TG msg 1352。
+*   **教训**：脚本凭据一律从文件读取，勿硬编码；令牌失效先查 `credentials/` 目录。TG Markdown 坑：消息含 `.token` 等点号后缀会被当实体标记触发 400，需纯文本或转义。
+
+### 2026-08-22 每周回测超时根治：agentTurn cron → command cron（可信模板）⭐
+*   **根因**：旧 `weekly-backtest-strategy-refresh`（agentTurn isolated cron，cc0ae9f1）LLM 环节反复超时/崩（consecutiveErrors=3）——8 步数据分析全成功，死在最后 LLM 简报生成+推送环节；共同点都是落到 nvidia fallback（nemotron-3-super-120b）不稳定。主模型 deepseek 跑通的 08-08 正常。
+*   **解法**：`weekly_full_pipeline.py` 本身自含全 7 步脚本编排，加步骤8 `build_brief()+push_brief()`（读各步骤产物生成纯文本简报，`requests parse_mode=''` 直推 TG，**不经 LLM**，绕开 Markdown 实体 bug 与 fallback 崩）。
+*   **新建 command cron**：`weekly-backtest-pipeline`（c4cb94a5-1b61-43cc-a870-0a96d24f6a6d），cron `0 6 * * 6` Asia/Shanghai，command `python3 analysis/weekly_full_pipeline.py`（cwd=workspace，timeout 7200s），announce telegram 626141741。**portfolishim-daily 是 command cron 可信模板**——定时任务超时优先判断能否用 command 直跑脚本绕 LLM。
+*   **验证**：08-23 force-run 8 步仅 param_signal_diff 失败，其余 7 步全成功；修复后重跑 `data/weekly_pipeline_2026-08-23.json all_success=True`（665s）。
+*   **⚠️ 待办（需 /approve）**：旧 agentTurn cron `weekly-backtest-strategy-refresh`(cc0ae9f1) **仍 enabled**，与新 command cron c4cb94a5 均 Sat 06:00 → 双跑风险仍存；停用属调度配置变更，等用户确认。下验证点 08-29(周六)06:00。
+
+### 2026-08-23 param_signal_diff.py 导入 bug 修复
+*   **现象**：pipeline 内 `param_signal_diff` 失败 `ModuleNotFoundError: No module named 'analysis'`（来自 `import adaptive_dual → from analysis.moat_factor import ...`）。
+*   **根因**：`param_signal_diff.py` 顶部只把 `analysis/` 插进 sys.path，**没插 WORKSPACE 根** → `analysis` 顶层包不可导入。手动跑（`PYTHONPATH=workspace`）父进程提供了根路径所以正常；pipeline 子进程（cwd=WORKSPACE 不继承 PYTHONPATH）时崩。
+*   **修复**：顶部 `sys.path.insert(0, WORKSPACE)`（置于 analysis 插入之前）。验证：`env -u PYTHONPATH python3 analysis/param_signal_diff.py` 退出码 0。**教训：相对/顶层包导入靠 sys.path 时，须同时插工作室根 + 子目录；PYTHONPATH 只在交互 shell 生效，定时/子进程不继承。**
+
+### 2026-08-22 回滚判断：保护的止损胜利 ≠ 策略失效
+*   **结论：不回滚、不改策略**。param_eval 判 300285/600570「恶化」是已实现亏损统计，但属**保护性止损的胜利**：国瓷 300285(macd) 08-19 卖出-4.90%后继续跌到 62.92（卖后至今 -8.62%，止损逃顶正确）；恒生 600570(bollinger) 08-14 卖出-4.79%后一路阴跌至今 -4.91%（避开下跌正确）。
+*   **关键洞察**：portfolio_sim.py **只读 adaptive_strategy_map.json 的策略名 + 默认参数**，不读 adaptive_params.json 的 stocks 自定义参数 → 「回滚参数」对模拟盘本身无意义（只影响盘前分析）。
