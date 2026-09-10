@@ -42,6 +42,11 @@ HIGH_RISK = {
     "sector_batch_chg_pct": -3.0,         # 核心标的板块批量低开<-3%
 }
 
+# ATR 止损倍数（替代固定 -5%/-8%）
+ATR_STOP_MULT = 2.0
+DAY_STOP_MULT = 2.0       # 日内止损：2×ATR
+OVERNIGHT_STOP_MULT = 3.0 # 隔夜止损：3×ATR
+
 # 核心标的分类（与 030 体系一致）
 CORE_CAPACITY = {"600030", "600584", "688981", "002156", "300014", "600570", "600036", "601066"}  # 容量中军
 CORE_IDENTIFICATION = {"300285", "603308", "002466", "300124", "601100", "002318"}  # 辨识度个股
@@ -198,7 +203,7 @@ def scan_high_risk(rows: List[Dict]) -> List[Dict]:
             alerts.append({
                 "type": "核心中军竞价大幅低开",
                 "target": f"{r['name']}({r['code']}) {r['chg_pct']:+.2f}%",
-                "action": "不开新仓，持仓设-5%止损",
+                "action": f"不开新仓，持仓设{DAY_STOP_MULT}×ATR日内止损",
             })
 
     # 自选池内一字跌停≥5家（代理全市场）
@@ -473,7 +478,7 @@ def build_decision(
                 "前30分钟量能是否支持方向持续？",
             ],
             "position_sizing": "致命风险=0仓；高风险=不加仓+止损；正常=按方向优先级分仓，单向≤30%",
-            "stop_loss": "日内-5%，隔夜-8%",
+            "stop_loss": f"日内{DAY_STOP_MULT}×ATR，隔夜{OVERNIGHT_STOP_MULT}×ATR",
         },
     }
 

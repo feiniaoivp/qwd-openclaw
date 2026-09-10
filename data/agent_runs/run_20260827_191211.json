@@ -1,0 +1,1228 @@
+{
+  "date": "2026-08-27",
+  "is_trading_day": true,
+  "data_date": "2026-08-27",
+  "spot_data": [
+    {
+      "symbol": "600030",
+      "name": "中信证�券",
+      "price": 27.93,
+      "change_pct": 0.58,
+      "open": 27.67,
+      "high": 27.95,
+      "low": 27.52,
+      "pre_close": 27.77,
+      "volume": 135372960,
+      "amount": 3761059910.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "601066",
+      "name": "中信建投",
+      "price": 25.78,
+      "change_pct": 2.02,
+      "open": 25.27,
+      "high": 25.79,
+      "low": 25.0,
+      "pre_close": 25.27,
+      "volume": 28701724,
+      "amount": 732765037.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "600036",
+      "name": "�招商银行",
+      "price": 39.58,
+      "change_pct": -0.55,
+      "open": 39.63,
+      "high": 39.94,
+      "low": 39.32,
+      "pre_close": 39.8,
+      "volume": 61459228,
+      "amount": 2429800384.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "601995",
+      "name": "中金公司",
+      "price": 34.86,
+      "change_pct": 0.9,
+      "open": 34.45,
+      "high": 34.91,
+      "low": 34.35,
+      "pre_close": 34.55,
+      "volume": 20464676,
+      "amount": 709657003.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "000987",
+      "name": "越秀资本",
+      "price": 7.78,
+      "change_pct": 0.91,
+      "open": 7.68,
+      "high": 7.79,
+      "low": 7.65,
+      "pre_close": 7.71,
+      "volume": 31859395,
+      "amount": 246439286.16,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "600584",
+      "name": "长电科技",
+      "price": 76.54,
+      "change_pct": 3.97,
+      "open": 74.28,
+      "high": 76.82,
+      "low": 73.95,
+      "pre_close": 73.62,
+      "volume": 97465042,
+      "amount": 7378098690.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "688981",
+      "name": "中�芯国际",
+      "price": 126.33,
+      "change_pct": 1.76,
+      "open": 124.05,
+      "high": 126.78,
+      "low": 123.51,
+      "pre_close": 124.15,
+      "volume": 34377690,
+      "amount": 4313773127.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "002156",
+      "name": "通富微电",
+      "price": 63.73,
+      "change_pct": 4.05,
+      "open": 61.88,
+      "high": 63.87,
+      "low": 61.14,
+      "pre_close": 61.25,
+      "volume": 86562956,
+      "amount": 5444875085.17,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "002413",
+      "name": "雷科防务",
+      "price": 7.95,
+      "change_pct": 1.92,
+      "open": 7.8,
+      "high": 7.96,
+      "low": 7.76,
+      "pre_close": 7.8,
+      "volume": 31767386,
+      "amount": 250906744.9,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "300014",
+      "name": "亿�纬�锂能",
+      "price": 55.47,
+      "change_pct": -0.77,
+      "open": 55.7,
+      "high": 55.8,
+      "low": 54.36,
+      "pre_close": 55.9,
+      "volume": 31980579,
+      "amount": 1757996224.25,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "002466",
+      "name": "天�齐�锂业",
+      "price": 48.23,
+      "change_pct": 1.41,
+      "open": 47.55,
+      "high": 48.25,
+      "low": 46.89,
+      "pre_close": 47.56,
+      "volume": 33930699,
+      "amount": 1616129896.63,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "601865",
+      "name": "福莱特",
+      "price": 9.94,
+      "change_pct": -1.68,
+      "open": 10.06,
+      "high": 10.08,
+      "low": 9.77,
+      "pre_close": 10.11,
+      "volume": 21196023,
+      "amount": 209267731.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "300285",
+      "name": "国�瓷材料",
+      "price": 70.01,
+      "change_pct": 9.19,
+      "open": 64.83,
+      "high": 70.71,
+      "low": 63.68,
+      "pre_close": 64.12,
+      "volume": 111997956,
+      "amount": 7585483781.92,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "603308",
+      "name": "应流股份",
+      "price": 45.05,
+      "change_pct": 2.5,
+      "open": 44.35,
+      "high": 45.14,
+      "low": 43.34,
+      "pre_close": 43.95,
+      "volume": 13254144,
+      "amount": 590036455.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "300124",
+      "name": "�汇川技术",
+      "price": 62.12,
+      "change_pct": 0.36,
+      "open": 61.6,
+      "high": 62.19,
+      "low": 61.5,
+      "pre_close": 61.9,
+      "volume": 13471259,
+      "amount": 833069277.68,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "601100",
+      "name": "�恒立�液压",
+      "price": 103.0,
+      "change_pct": 6.02,
+      "open": 97.15,
+      "high": 103.36,
+      "low": 96.17,
+      "pre_close": 97.15,
+      "volume": 10904356,
+      "amount": 1104607410.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "002318",
+      "name": "久立特材",
+      "price": 19.59,
+      "change_pct": 0.0,
+      "open": 19.6,
+      "high": 19.64,
+      "low": 18.93,
+      "pre_close": 19.59,
+      "volume": 9886941,
+      "amount": 190491900.93,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "300719",
+      "name": "安达维尔",
+      "price": 12.16,
+      "change_pct": 2.01,
+      "open": 11.94,
+      "high": 12.3,
+      "low": 11.81,
+      "pre_close": 11.92,
+      "volume": 4533100,
+      "amount": 54976455.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "002335",
+      "name": "科华数据",
+      "price": 30.83,
+      "change_pct": 1.92,
+      "open": 30.28,
+      "high": 30.89,
+      "low": 30.12,
+      "pre_close": 30.25,
+      "volume": 14915026,
+      "amount": 456924324.93,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "600660",
+      "name": "福�耀�玻�璃",
+      "price": 56.8,
+      "change_pct": -0.7,
+      "open": 56.92,
+      "high": 57.3,
+      "low": 56.32,
+      "pre_close": 57.2,
+      "volume": 7549156,
+      "amount": 427080192.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "600570",
+      "name": "�恒生电子",
+      "price": 22.11,
+      "change_pct": 2.31,
+      "open": 21.5,
+      "high": 22.16,
+      "low": 21.43,
+      "pre_close": 21.61,
+      "volume": 34056316,
+      "amount": 744663091.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "605566",
+      "name": "福莱�蒽特",
+      "price": 25.92,
+      "change_pct": 2.17,
+      "open": 25.6,
+      "high": 25.98,
+      "low": 25.03,
+      "pre_close": 25.37,
+      "volume": 2571700,
+      "amount": 65721400.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "000157",
+      "name": "中联重科",
+      "price": 7.09,
+      "change_pct": 0.14,
+      "open": 7.06,
+      "high": 7.1,
+      "low": 6.98,
+      "pre_close": 7.08,
+      "volume": 43687990,
+      "amount": 307376034.4,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "601061",
+      "name": "中信金属",
+      "price": 11.92,
+      "change_pct": -0.83,
+      "open": 11.9,
+      "high": 12.01,
+      "low": 11.74,
+      "pre_close": 12.02,
+      "volume": 17595100,
+      "amount": 209370299.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "600160",
+      "name": "巨化股份",
+      "price": 39.54,
+      "change_pct": 3.64,
+      "open": 38.22,
+      "high": 39.68,
+      "low": 38.1,
+      "pre_close": 38.15,
+      "volume": 38424384,
+      "amount": 1495942337.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "600346",
+      "name": "�恒力石化",
+      "price": 18.9,
+      "change_pct": 3.34,
+      "open": 18.29,
+      "high": 19.13,
+      "low": 18.18,
+      "pre_close": 18.29,
+      "volume": 29416119,
+      "amount": 549786177.0,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "000708",
+      "name": "中信特�钢",
+      "price": 13.95,
+      "change_pct": -0.78,
+      "open": 14.06,
+      "high": 14.11,
+      "low": 13.85,
+      "pre_close": 14.06,
+      "volume": 10851310,
+      "amount": 151366643.34,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "300748",
+      "name": "金力永�磁",
+      "price": 27.41,
+      "change_pct": 1.52,
+      "open": 26.77,
+      "high": 27.49,
+      "low": 26.71,
+      "pre_close": 27.0,
+      "volume": 17837281,
+      "amount": 484906808.7,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "002180",
+      "name": "�奔图科技",
+      "price": 17.41,
+      "change_pct": 3.57,
+      "open": 17.05,
+      "high": 17.6,
+      "low": 16.97,
+      "pre_close": 16.81,
+      "volume": 11870954,
+      "amount": 204331654.1,
+      "data_date": "2026-08-27"
+    },
+    {
+      "symbol": "300847",
+      "name": "中船汉光",
+      "price": 14.12,
+      "change_pct": 0.86,
+      "open": 14.0,
+      "high": 14.14,
+      "low": 13.92,
+      "pre_close": 14.0,
+      "volume": 2624700,
+      "amount": 36884570.0,
+      "data_date": "2026-08-27"
+    }
+  ],
+  "market_overview": {
+    "up": 23,
+    "down": 6,
+    "total": 30,
+    "total_amount_billion": 443.44
+  },
+  "signals": [
+    {
+      "price": 27.93,
+      "change_pct": 0.58,
+      "volume": 135372960,
+      "vol_ratio": 1.25,
+      "indicators": {
+        "MACD": -0.1677,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 27.54,
+        "EMA26": 27.69,
+        "EMA_bull": false,
+        "RSI14": 53.7
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "600030",
+      "name": "中信证�券",
+      "data_source": "hist"
+    },
+    {
+      "price": 25.78,
+      "change_pct": 2.02,
+      "volume": 28701724,
+      "vol_ratio": 1.25,
+      "indicators": {
+        "MACD": -0.3713,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 25.33,
+        "EMA26": 25.67,
+        "EMA_bull": false,
+        "RSI14": 51.1
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "601066",
+      "name": "中信建投",
+      "data_source": "hist"
+    },
+    {
+      "price": 39.58,
+      "change_pct": -0.55,
+      "volume": 61459228,
+      "vol_ratio": 0.78,
+      "indicators": {
+        "MACD": 0.198,
+        "MACD_bull": true,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 39.2,
+        "EMA26": 38.95,
+        "EMA_bull": true,
+        "RSI14": 57.2
+      },
+      "signal": {
+        "level": "���🟡 关注",
+        "score": 2,
+        "reasons": "MACD多头; EMA多头排列",
+        "risks": "无"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "600036",
+      "name": "�招商银行",
+      "data_source": "hist"
+    },
+    {
+      "price": 34.86,
+      "change_pct": 0.9,
+      "volume": 20464676,
+      "vol_ratio": 1.11,
+      "indicators": {
+        "MACD": -0.3191,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 34.45,
+        "EMA26": 34.78,
+        "EMA_bull": false,
+        "RSI14": 50.6
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "601995",
+      "name": "中金公司",
+      "data_source": "hist"
+    },
+    {
+      "price": 7.78,
+      "change_pct": 0.91,
+      "volume": 31859395,
+      "vol_ratio": 1.26,
+      "indicators": {
+        "MACD": -0.0676,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 7.61,
+        "EMA26": 7.66,
+        "EMA_bull": false,
+        "RSI14": 54.9
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "000987",
+      "name": "越秀资本",
+      "data_source": "hist"
+    },
+    {
+      "price": 76.54,
+      "change_pct": 3.97,
+      "volume": 97465042,
+      "vol_ratio": 0.69,
+      "indicators": {
+        "MACD": -1.3484,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 76.83,
+        "EMA26": 78.14,
+        "EMA_bull": false,
+        "RSI14": 47.9
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "600584",
+      "name": "长电科技",
+      "data_source": "hist"
+    },
+    {
+      "price": 126.33,
+      "change_pct": 1.76,
+      "volume": 34377690,
+      "vol_ratio": 0.64,
+      "indicators": {
+        "MACD": -3.8747,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 126.3,
+        "EMA26": 130.06,
+        "EMA_bull": false,
+        "RSI14": 45.8
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "688981",
+      "name": "中�芯国际",
+      "data_source": "hist"
+    },
+    {
+      "price": 63.73,
+      "change_pct": 4.05,
+      "volume": 86562956,
+      "vol_ratio": 0.72,
+      "indicators": {
+        "MACD": -0.9841,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 63.12,
+        "EMA26": 64.02,
+        "EMA_bull": false,
+        "RSI14": 49.5
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "002156",
+      "name": "通富微电",
+      "data_source": "hist"
+    },
+    {
+      "price": 7.95,
+      "change_pct": 1.92,
+      "volume": 31767386,
+      "vol_ratio": 0.51,
+      "indicators": {
+        "MACD": -0.1853,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 8.04,
+        "EMA26": 8.26,
+        "EMA_bull": false,
+        "RSI14": 43.8
+      },
+      "signal": {
+        "level": "���🟠 �� 谨�慎",
+        "score": -1,
+        "reasons": "无",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "002413",
+      "name": "雷科防务",
+      "data_source": "hist"
+    },
+    {
+      "price": 55.47,
+      "change_pct": -0.77,
+      "volume": 31980579,
+      "vol_ratio": 0.81,
+      "indicators": {
+        "MACD": -0.2596,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 55.57,
+        "EMA26": 55.74,
+        "EMA_bull": false,
+        "RSI14": 48.6
+      },
+      "signal": {
+        "level": "���🟠 �� 谨�慎",
+        "score": -1,
+        "reasons": "无",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "300014",
+      "name": "亿�纬�锂能",
+      "data_source": "hist"
+    },
+    {
+      "price": 48.23,
+      "change_pct": 1.41,
+      "volume": 33930699,
+      "vol_ratio": 0.73,
+      "indicators": {
+        "MACD": -0.8684,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 47.73,
+        "EMA26": 48.25,
+        "EMA_bull": false,
+        "RSI14": 49.6
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "002466",
+      "name": "天�齐�锂业",
+      "data_source": "hist"
+    },
+    {
+      "price": 9.94,
+      "change_pct": -1.68,
+      "volume": 21196023,
+      "vol_ratio": 0.75,
+      "indicators": {
+        "MACD": 0.066,
+        "MACD_bull": true,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 10.35,
+        "EMA26": 10.39,
+        "EMA_bull": false,
+        "RSI14": 42.6
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "MACD多头",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "601865",
+      "name": "福莱特",
+      "data_source": "hist"
+    },
+    {
+      "price": 70.01,
+      "change_pct": 9.19,
+      "volume": 111997956,
+      "vol_ratio": 0.83,
+      "indicators": {
+        "MACD": -0.2852,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 67.1,
+        "EMA26": 67.56,
+        "EMA_bull": false,
+        "RSI14": 52.7
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "300285",
+      "name": "国�瓷材料",
+      "data_source": "hist"
+    },
+    {
+      "price": 45.05,
+      "change_pct": 2.5,
+      "volume": 13254144,
+      "vol_ratio": 0.77,
+      "indicators": {
+        "MACD": -1.5568,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 45.52,
+        "EMA26": 47.11,
+        "EMA_bull": false,
+        "RSI14": 44.0
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "603308",
+      "name": "应流股份",
+      "data_source": "hist"
+    },
+    {
+      "price": 62.12,
+      "change_pct": 0.36,
+      "volume": 13471259,
+      "vol_ratio": 0.56,
+      "indicators": {
+        "MACD": -0.8891,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 61.21,
+        "EMA26": 61.99,
+        "EMA_bull": false,
+        "RSI14": 50.2
+      },
+      "signal": {
+        "level": "���🟠 �� 谨�慎",
+        "score": -1,
+        "reasons": "无",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "300124",
+      "name": "�汇川技术",
+      "data_source": "hist"
+    },
+    {
+      "price": 103.0,
+      "change_pct": 6.02,
+      "volume": 10904356,
+      "vol_ratio": 1.49,
+      "indicators": {
+        "MACD": -1.2282,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 103.3,
+        "EMA26": 104.88,
+        "EMA_bull": false,
+        "RSI14": 47.1
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "601100",
+      "name": "�恒立�液压",
+      "data_source": "hist"
+    },
+    {
+      "price": 19.59,
+      "change_pct": 0.0,
+      "volume": 9886941,
+      "vol_ratio": 1.02,
+      "indicators": {
+        "MACD": -0.3287,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 19.62,
+        "EMA26": 19.9,
+        "EMA_bull": false,
+        "RSI14": 45.8
+      },
+      "signal": {
+        "level": "���🟠 �� 谨�慎",
+        "score": -1,
+        "reasons": "无",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "002318",
+      "name": "久立特材",
+      "data_source": "hist"
+    },
+    {
+      "price": 12.16,
+      "change_pct": 2.01,
+      "volume": 4533100,
+      "vol_ratio": 1.32,
+      "indicators": {
+        "MACD": 0.0437,
+        "MACD_bull": true,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 11.72,
+        "EMA26": 11.61,
+        "EMA_bull": true,
+        "RSI14": 60.8
+      },
+      "signal": {
+        "level": "���🟢 � 强烈�买入",
+        "score": 3,
+        "reasons": "MACD多头; EMA多头排列; 放量上�涨",
+        "risks": "无"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "300719",
+      "name": "安达维尔",
+      "data_source": "hist"
+    },
+    {
+      "price": 30.83,
+      "change_pct": 1.92,
+      "volume": 14915026,
+      "vol_ratio": 0.65,
+      "indicators": {
+        "MACD": -0.9498,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 30.75,
+        "EMA26": 31.54,
+        "EMA_bull": false,
+        "RSI14": 45.6
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "002335",
+      "name": "科华数据",
+      "data_source": "hist"
+    },
+    {
+      "price": 56.8,
+      "change_pct": -0.7,
+      "volume": 7549156,
+      "vol_ratio": 0.64,
+      "indicators": {
+        "MACD": 0.6613,
+        "MACD_bull": true,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 56.8,
+        "EMA26": 56.21,
+        "EMA_bull": true,
+        "RSI14": 53.2
+      },
+      "signal": {
+        "level": "���🟡 关注",
+        "score": 2,
+        "reasons": "MACD多头; EMA多头排列",
+        "risks": "无"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "600660",
+      "name": "福�耀�玻�璃",
+      "data_source": "hist"
+    },
+    {
+      "price": 22.11,
+      "change_pct": 2.31,
+      "volume": 34056316,
+      "vol_ratio": 1.1,
+      "indicators": {
+        "MACD": -0.0691,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 21.76,
+        "EMA26": 21.89,
+        "EMA_bull": false,
+        "RSI14": 52.5
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "600570",
+      "name": "�恒生电子",
+      "data_source": "hist"
+    },
+    {
+      "price": 25.92,
+      "change_pct": 2.17,
+      "volume": 2571700,
+      "vol_ratio": 0.82,
+      "indicators": {
+        "MACD": -0.7464,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 25.7,
+        "EMA26": 26.18,
+        "EMA_bull": false,
+        "RSI14": 48.3
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "605566",
+      "name": "福莱�蒽特",
+      "data_source": "hist"
+    },
+    {
+      "price": 7.09,
+      "change_pct": 0.14,
+      "volume": 43687990,
+      "vol_ratio": 0.92,
+      "indicators": {
+        "MACD": -0.09,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 7.07,
+        "EMA26": 7.15,
+        "EMA_bull": false,
+        "RSI14": 46.7
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "000157",
+      "name": "中联重科",
+      "data_source": "hist"
+    },
+    {
+      "price": 11.92,
+      "change_pct": -0.83,
+      "volume": 17595100,
+      "vol_ratio": 0.76,
+      "indicators": {
+        "MACD": 0.1321,
+        "MACD_bull": true,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 11.83,
+        "EMA26": 11.73,
+        "EMA_bull": true,
+        "RSI14": 52.6
+      },
+      "signal": {
+        "level": "���🟡 关注",
+        "score": 2,
+        "reasons": "MACD多头; EMA多头排列",
+        "risks": "无"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "601061",
+      "name": "中信金属",
+      "data_source": "hist"
+    },
+    {
+      "price": 39.54,
+      "change_pct": 3.64,
+      "volume": 38424384,
+      "vol_ratio": 1.1,
+      "indicators": {
+        "MACD": -0.8431,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 39.4,
+        "EMA26": 40.39,
+        "EMA_bull": false,
+        "RSI14": 45.8
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "600160",
+      "name": "巨化股份",
+      "data_source": "hist"
+    },
+    {
+      "price": 18.9,
+      "change_pct": 3.34,
+      "volume": 29416119,
+      "vol_ratio": 0.82,
+      "indicators": {
+        "MACD": 0.3791,
+        "MACD_bull": true,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 18.27,
+        "EMA26": 17.81,
+        "EMA_bull": true,
+        "RSI14": 62.4
+      },
+      "signal": {
+        "level": "���🟢 � 强烈�买入",
+        "score": 3,
+        "reasons": "MACD多头; EMA多头排列; 放量上�涨",
+        "risks": "无"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "600346",
+      "name": "�恒力石化",
+      "data_source": "hist"
+    },
+    {
+      "price": 13.95,
+      "change_pct": -0.78,
+      "volume": 10851310,
+      "vol_ratio": 0.81,
+      "indicators": {
+        "MACD": 0.019,
+        "MACD_bull": true,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 13.94,
+        "EMA26": 13.94,
+        "EMA_bull": true,
+        "RSI14": 50.2
+      },
+      "signal": {
+        "level": "���🟡 关注",
+        "score": 2,
+        "reasons": "MACD多头; EMA多头排列",
+        "risks": "无"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "000708",
+      "name": "中信特�钢",
+      "data_source": "hist"
+    },
+    {
+      "price": 27.41,
+      "change_pct": 1.52,
+      "volume": 17837281,
+      "vol_ratio": 0.7,
+      "indicators": {
+        "MACD": -0.1398,
+        "MACD_bull": false,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 27.28,
+        "EMA26": 27.34,
+        "EMA_bull": false,
+        "RSI14": 50.3
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "放量上�涨",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "300748",
+      "name": "金力永�磁",
+      "data_source": "hist"
+    },
+    {
+      "price": 17.41,
+      "change_pct": 3.57,
+      "volume": 11870954,
+      "vol_ratio": 0.58,
+      "indicators": {
+        "MACD": 0.2954,
+        "MACD_bull": true,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 17.49,
+        "EMA26": 17.38,
+        "EMA_bull": true,
+        "RSI14": 50.4
+      },
+      "signal": {
+        "level": "���🟡 关注",
+        "score": 2,
+        "reasons": "MACD多头; EMA多头排列",
+        "risks": "无"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "002180",
+      "name": "�奔图科技",
+      "data_source": "hist"
+    },
+    {
+      "price": 14.12,
+      "change_pct": 0.86,
+      "volume": 2624700,
+      "vol_ratio": 0.38,
+      "indicators": {
+        "MACD": 0.0343,
+        "MACD_bull": true,
+        "MACD_cross_up": false,
+        "MACD_cross_down": false,
+        "EMA12": 14.1,
+        "EMA26": 14.15,
+        "EMA_bull": false,
+        "RSI14": 49.5
+      },
+      "signal": {
+        "level": "��⚪ 中性",
+        "score": 0,
+        "reasons": "MACD多头",
+        "risks": "EMA空头排列"
+      },
+      "data_date": "2026-08-27",
+      "symbol": "300847",
+      "name": "中船汉光",
+      "data_source": "hist"
+    }
+  ],
+  "zhonglian": {
+    "date": "2026-08-27",
+    "price": 7.09,
+    "change_pct": 0.14,
+    "volume": 43687990,
+    "indicators": {
+      "MACD_DIF": -0.0806,
+      "MACD_DEA": -0.09,
+      "MACD_state": "���📗金�叉",
+      "EMA12": 7.07,
+      "EMA26": 7.15,
+      "EMA_state": "���📕EMA12<26",
+      "RSI14": 41.3
+    },
+    "signals": {
+      "strategy1": {
+        "name": "MACD+RSI<50",
+        "buy": false,
+        "sell": false,
+        "rsi_filter": true,
+        "desc": "MACD状态 + RSI41.3"
+      },
+      "strategy2": {
+        "name": "�综合最�优(EMA+MACD+RSI)",
+        "buy": false,
+        "sell": true,
+        "desc": "MACD金�叉:False EMA12>26:False RSI<60:True"
+      }
+    },
+    "portfolio": {
+      "total_value": 200011.19,
+      "total_return_pct": 0.01
+    }
+  },
+  "news_summary": "- 机构风向标 | 来伊份6037772026年二季度已披露持仓机构仅8家: \n- 来伊份603777.SH)2026年中报净利润为-9213.05万元，同比亏损放大: \n- 来伊份上半年净亏损9213.05万元: \n- 来伊份：上半年亏损9213.05万元: \n- 来伊份上半年净利亏损扩大至约9213.05万元，营收同比下降6.6%: ",
+  "health_score": 7,
+  "health_comment": "今日市场健康度7/10，情绪**正常偏积极**，建议**持股为主、逢低小幅加仓**，避免追高。",
+  "risk_flag": "无",
+  "final_advice": "[\n  {\n    \"symbol\": \"600030\",\n    \"name\": \"中信证�券\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI53.7｜EMA12/26:27.54/27.69\"\n  },\n  {\n    \"symbol\": \"601066\",\n    \"name\": \"中信建投\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI51.1｜EMA12/26:25.33/25.67\"\n  },\n  {\n    \"symbol\": \"600036\",\n    \"name\": \"�招商银行\",\n    \"action\": \"BUY\",\n    \"reason\": \"信号级:🟡关注 分:2｜现价¥39.58｜RSI57.2｜EMA12/26:39.2/38.95｜MACD差0.198｜参考止损¥37.6(-5%)，参考支撑¥36.41；跌破止损位无条件离场\"\n  },\n  {\n    \"symbol\": \"601995\",\n    \"name\": \"中金公司\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI50.6｜EMA12/26:34.45/34.78\"\n  },\n  {\n    \"symbol\": \"000987\",\n    \"name\": \"越秀资本\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI54.9｜EMA12/26:7.61/7.66\"\n  },\n  {\n    \"symbol\": \"600584\",\n    \"name\": \"长电科技\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI47.9｜EMA12/26:76.83/78.14\"\n  },\n  {\n    \"symbol\": \"688981\",\n    \"name\": \"中�芯国际\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI45.8｜EMA12/26:126.3/130.06\"\n  },\n  {\n    \"symbol\": \"002156\",\n    \"name\": \"通富微电\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI49.5｜EMA12/26:63.12/64.02\"\n  },\n  {\n    \"symbol\": \"002413\",\n    \"name\": \"雷科防务\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:🟠谨慎 分:-1｜RSI43.8｜EMA12/26:8.04/8.26\"\n  },\n  {\n    \"symbol\": \"300014\",\n    \"name\": \"亿�纬�锂能\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:🟠谨慎 分:-1｜RSI48.6｜EMA12/26:55.57/55.74\"\n  },\n  {\n    \"symbol\": \"002466\",\n    \"name\": \"天�齐�锂业\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI49.6｜EMA12/26:47.73/48.25\"\n  },\n  {\n    \"symbol\": \"601865\",\n    \"name\": \"福莱特\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI42.6｜EMA12/26:10.35/10.39\"\n  },\n  {\n    \"symbol\": \"300285\",\n    \"name\": \"国�瓷材料\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI52.7｜EMA12/26:67.1/67.56\"\n  },\n  {\n    \"symbol\": \"603308\",\n    \"name\": \"应流股份\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI44.0｜EMA12/26:45.52/47.11\"\n  },\n  {\n    \"symbol\": \"300124\",\n    \"name\": \"�汇川技术\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:🟠谨慎 分:-1｜RSI50.2｜EMA12/26:61.21/61.99\"\n  },\n  {\n    \"symbol\": \"601100\",\n    \"name\": \"�恒立�液压\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI47.1｜EMA12/26:103.3/104.88\"\n  },\n  {\n    \"symbol\": \"002318\",\n    \"name\": \"久立特材\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:🟠谨慎 分:-1｜RSI45.8｜EMA12/26:19.62/19.9\"\n  },\n  {\n    \"symbol\": \"300719\",\n    \"name\": \"安达维尔\",\n    \"action\": \"HOLD\",\n    \"reason\": \"三因素共振未达标:buy_score=59.9(技术90×0.45+基本面12×0.3+情绪63×0.25)：基本面12偏低(ROE-0.0541/增速-69.48)；买入/关注降级为观望，不追。\"\n  },\n  {\n    \"symbol\": \"002335\",\n    \"name\": \"科华数据\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI45.6｜EMA12/26:30.75/31.54\"\n  },\n  {\n    \"symbol\": \"600660\",\n    \"name\": \"福�耀�玻�璃\",\n    \"action\": \"BUY\",\n    \"reason\": \"信号级:🟡关注 分:2｜现价¥56.8｜RSI53.2｜EMA12/26:56.8/56.21｜MACD差0.6613｜参考止损¥53.96(-5%)，参考支撑¥52.26；跌破止损位无条件离场\"\n  },\n  {\n    \"symbol\": \"600570\",\n    \"name\": \"�恒生电子\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI52.5｜EMA12/26:21.76/21.89\"\n  },\n  {\n    \"symbol\": \"605566\",\n    \"name\": \"福莱�蒽特\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI48.3｜EMA12/26:25.7/26.18\"\n  },\n  {\n    \"symbol\": \"000157\",\n    \"name\": \"中联重科\",\n    \"action\": \"SELL\",\n    \"reason\": \"中联重科综合最优策略(�综合最�优(EMA+MACD+RSI))触发卖出；现价7.09，按030风险第一执行离场/减仓\"\n  },\n  {\n    \"symbol\": \"601061\",\n    \"name\": \"中信金属\",\n    \"action\": \"BUY\",\n    \"reason\": \"信号级:🟡关注 分:2｜现价¥11.92｜RSI52.6｜EMA12/26:11.83/11.73｜MACD差0.1321｜参考止损¥11.32(-5%)，参考支撑¥10.97；跌破止损位无条件离场\"\n  },\n  {\n    \"symbol\": \"600160\",\n    \"name\": \"巨化股份\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI45.8｜EMA12/26:39.4/40.39\"\n  },\n  {\n    \"symbol\": \"600346\",\n    \"name\": \"�恒力石化\",\n    \"action\": \"BUY\",\n    \"reason\": \"信号级:🟢强烈买入 分:3｜现价¥18.9｜RSI62.4｜EMA12/26:18.27/17.81｜MACD差0.3791｜参考止损¥17.95(-5%)，参考支撑¥17.39；跌破止损位无条件离场\"\n  },\n  {\n    \"symbol\": \"000708\",\n    \"name\": \"中信特�钢\",\n    \"action\": \"BUY\",\n    \"reason\": \"信号级:🟡关注 分:2｜现价¥13.95｜RSI50.2｜EMA12/26:13.94/13.94｜MACD差0.019｜参考止损¥13.25(-5%)，参考支撑¥12.83；跌破止损位无条件离场\"\n  },\n  {\n    \"symbol\": \"300748\",\n    \"name\": \"金力永�磁\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI50.3｜EMA12/26:27.28/27.34\"\n  },\n  {\n    \"symbol\": \"002180\",\n    \"name\": \"�奔图科技\",\n    \"action\": \"BUY\",\n    \"reason\": \"信号级:🟡关注 分:2｜现价¥17.41｜RSI50.4｜EMA12/26:17.49/17.38｜MACD差0.2954｜参考止损¥16.54(-5%)，参考支撑¥16.02；跌破止损位无条件离场\"\n  },\n  {\n    \"symbol\": \"300847\",\n    \"name\": \"中船汉光\",\n    \"action\": \"HOLD\",\n    \"reason\": \"信号级:⚪中性 分:0｜RSI49.5｜EMA12/26:14.1/14.15\"\n  }\n]",
+  "run_id": "20260827190511_100149",
+  "timestamp": "2026-08-27T19:05:11",
+  "error_count": 0,
+  "done": false
+}

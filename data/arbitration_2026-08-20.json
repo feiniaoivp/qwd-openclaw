@@ -1,0 +1,421 @@
+[
+  {
+    "symbol": "002318",
+    "name": "久立特材",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "300014",
+    "name": "亿纬锂能",
+    "final_action": "减仓",
+    "confidence": 0.6,
+    "position_mult": 0.14,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "技术指标倾向卖出 (加权-1.0)",
+    "arbitration_path": [
+      "TECHNICAL_VOTE"
+    ]
+  },
+  {
+    "symbol": "601066",
+    "name": "中信建投",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "600030",
+    "name": "中信证券",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "300124",
+    "name": "汇川技术",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "601995",
+    "name": "中金公司",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "600584",
+    "name": "长电科技",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "002156",
+    "name": "通富微电",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "002466",
+    "name": "天齐锂业",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "600036",
+    "name": "招商银行",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "600570",
+    "name": "恒生电子",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "605566",
+    "name": "福莱蒽特",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "000987",
+    "name": "越秀资本",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "603308",
+    "name": "应流股份",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "300285",
+    "name": "国瓷材料",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "002413",
+    "name": "雷科防务",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "688981",
+    "name": "中芯国际",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "601865",
+    "name": "福莱特",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "000157",
+    "name": "中联重科",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "300719",
+    "name": "安达维尔",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "601061",
+    "name": "中信金属",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "600660",
+    "name": "福耀玻璃",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "002335",
+    "name": "科华数据",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "601100",
+    "name": "恒立液压",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "600160",
+    "name": "巨化股份",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "600346",
+    "name": "恒力石化",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "000708",
+    "name": "中信特钢",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "300748",
+    "name": "金力永磁",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "002180",
+    "name": "奔图科技",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  },
+  {
+    "symbol": "300847",
+    "name": "中船汉光",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ]
+  }
+]

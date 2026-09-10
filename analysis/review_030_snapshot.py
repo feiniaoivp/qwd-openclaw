@@ -11,7 +11,7 @@ from datetime import datetime
 import logging
 logging.basicConfig(level=logging.CRITICAL)
 
-from close_scan_v2 import calc_full_signal, WATCHLIST
+from close_scan_v2 import calc_full_signal_whitelist as calc_full_signal, WATCHLIST
 
 OUT = {}
 

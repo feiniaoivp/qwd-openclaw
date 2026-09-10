@@ -434,7 +434,14 @@ class NextDaySimulator:
         return f"核心标的{', '.join(names)}竞价≤-3%或开盘急跌破5日线，板块内跌停≥2家，量能<前日70%"
 
     def _gen_disappoint_action(self, direction: str, stocks: List[str], plan: dict, levels: dict) -> str:
-        return f"核心标的跌破止损位（{', '.join(f'{SYMBOL_TO_NAME.get(s,s)}¥{levels.get(f\"{s}_stop\",\"?\")}' for s in stocks[:2] if f'{s}_stop' in levels)}）无条件离场；未持仓者绝不抄底，等待情绪冰点后企稳确认"
+        # 拆分子表达式，避免在 f-string 表达式内使用反斜杠（部分 Python 版本不受支持）
+        parts = []
+        for s in stocks[:2]:
+            if f"{s}_stop" in levels:
+                name = SYMBOL_TO_NAME.get(s, s)
+                stop = levels.get(f"{s}_stop", "?")
+                parts.append(f"{name}¥{stop}")
+        return f"核心标的跌破止损位（{', '.join(parts)}）无条件离场；未持仓者绝不抄底，等待情绪冰点后企稳确认"
 
     def _gen_risk_warnings(self, market_context: dict, position_plan: dict,
                            arbitration_results: List[dict], fatal: bool, high_risk: bool) -> List[str]:

@@ -1,0 +1,110 @@
+{
+  "updated": "2026-09-01",
+  "source": "akshare_stock_financial_abstract",
+  "stocks": {
+    "600089": {
+      "name": "特变电工",
+      "report_date": "20260630",
+      "revenue": 565.85,
+      "net_profit": 25.52,
+      "gross_margin": 7.95,
+      "net_margin": 4.51,
+      "roe": 0,
+      "debt_ratio": 0,
+      "rd_ratio": 0.0,
+      "ar_turnover": 0,
+      "ocf_per_share": 0.0
+    },
+    "600406": {
+      "name": "国电南瑞",
+      "report_date": "20260630",
+      "revenue": 277.67,
+      "net_profit": 30.73,
+      "gross_margin": 12.33,
+      "net_margin": 11.07,
+      "roe": 0,
+      "debt_ratio": 0,
+      "rd_ratio": 0.0,
+      "ar_turnover": 0,
+      "ocf_per_share": 0.0
+    },
+    "000400": {
+      "name": "许继电气",
+      "report_date": "20260630",
+      "revenue": 65.25,
+      "net_profit": 4.16,
+      "gross_margin": 8.11,
+      "net_margin": 6.37,
+      "roe": 0,
+      "debt_ratio": 0,
+      "rd_ratio": 0.0,
+      "ar_turnover": 0,
+      "ocf_per_share": 0.0
+    },
+    "601179": {
+      "name": "中国西电",
+      "report_date": "20260630",
+      "revenue": 122.33,
+      "net_profit": 6.88,
+      "gross_margin": 9.18,
+      "net_margin": 5.62,
+      "roe": 0,
+      "debt_ratio": 0,
+      "rd_ratio": 0.0,
+      "ar_turnover": 0,
+      "ocf_per_share": 0.0
+    },
+    "600312": {
+      "name": "平高电气",
+      "report_date": "20260630",
+      "revenue": 53.74,
+      "net_profit": 8.17,
+      "gross_margin": 19.17,
+      "net_margin": 15.2,
+      "roe": 0,
+      "debt_ratio": 0,
+      "rd_ratio": 0.0,
+      "ar_turnover": 0,
+      "ocf_per_share": 0.0
+    },
+    "002028": {
+      "name": "思源电气",
+      "report_date": "20260630",
+      "revenue": 107.95,
+      "net_profit": 14.64,
+      "gross_margin": 16.25,
+      "net_margin": 13.56,
+      "roe": 0,
+      "debt_ratio": 0,
+      "rd_ratio": 0.0,
+      "ar_turnover": 0,
+      "ocf_per_share": 0.0
+    },
+    "002270": {
+      "name": "华明装备",
+      "report_date": "20260630",
+      "revenue": 12.81,
+      "net_profit": 3.9,
+      "gross_margin": 33.05,
+      "net_margin": 30.43,
+      "roe": 0,
+      "debt_ratio": 0,
+      "rd_ratio": 0.0,
+      "ar_turnover": 0,
+      "ocf_per_share": 0.0
+    },
+    "002130": {
+      "name": "沃尔核材",
+      "report_date": "20260630",
+      "revenue": 46.53,
+      "net_profit": 5.67,
+      "gross_margin": 14.6,
+      "net_margin": 12.18,
+      "roe": 0,
+      "debt_ratio": 0,
+      "rd_ratio": 0.0,
+      "ar_turnover": 0,
+      "ocf_per_share": 0.0
+    }
+  }
+}

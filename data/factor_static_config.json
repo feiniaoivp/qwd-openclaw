@@ -1,0 +1,549 @@
+{
+  "version": "2026-09-03",
+  "stocks": {
+    "600089": {
+      "core_product": {
+        "market_share_pct": 18.5,
+        "tech_barrier_score": 9,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 12,
+        "oversea_revenue_pct": 35.2,
+        "benchmark_countries": 45,
+        "flagship_projects": [
+          "沙特NEOM 164亿大单",
+          "巴西±800kV",
+          "阿联酋超高压"
+        ]
+      }
+    },
+    "600406": {
+      "core_product": {
+        "market_share_pct": 48.0,
+        "tech_barrier_score": 10,
+        "switching_cost_score": 9
+      },
+      "oversea_qual": {
+        "cert_count": 8,
+        "oversea_revenue_pct": 12.5,
+        "benchmark_countries": 28,
+        "flagship_projects": [
+          "巴西美拉换流站",
+          "德国科堡项目",
+          "印度拉达克±350kV"
+        ]
+      }
+    },
+    "000400": {
+      "core_product": {
+        "market_share_pct": 45.0,
+        "tech_barrier_score": 9,
+        "switching_cost_score": 9
+      },
+      "oversea_qual": {
+        "cert_count": 10,
+        "oversea_revenue_pct": 22.0,
+        "benchmark_countries": 35,
+        "flagship_projects": [
+          "巴西美拉I/II期",
+          "沙特NEOM",
+          "智利Kimal-Lo Aguirre"
+        ]
+      }
+    },
+    "601179": {
+      "core_product": {
+        "market_share_pct": 30.0,
+        "tech_barrier_score": 8,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 6,
+        "oversea_revenue_pct": 18.0,
+        "benchmark_countries": 30,
+        "flagship_projects": [
+          "巴西美拉配套",
+          "沙特输变电",
+          "东南亚多国"
+        ]
+      }
+    },
+    "600312": {
+      "core_product": {
+        "market_share_pct": 25.0,
+        "tech_barrier_score": 9,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 15,
+        "oversea_revenue_pct": 40.0,
+        "benchmark_countries": 70,
+        "flagship_projects": [
+          "意大利380kV GIS",
+          "西班牙项目",
+          "英国国家电网"
+        ]
+      }
+    },
+    "002028": {
+      "core_product": {
+        "market_share_pct": 20.0,
+        "tech_barrier_score": 8,
+        "switching_cost_score": 7
+      },
+      "oversea_qual": {
+        "cert_count": 12,
+        "oversea_revenue_pct": 28.0,
+        "benchmark_countries": 40,
+        "flagship_projects": [
+          "德国50Hertz",
+          "瑞典Svenska Kraftnät",
+          "英国国家电网"
+        ]
+      }
+    },
+    "002270": {
+      "core_product": {
+        "market_share_pct": 60.0,
+        "tech_barrier_score": 7,
+        "switching_cost_score": 9
+      },
+      "oversea_qual": {
+        "cert_count": 5,
+        "oversea_revenue_pct": 30.0,
+        "benchmark_countries": 25,
+        "flagship_projects": [
+          "随特变/西电出口全球"
+        ]
+      }
+    },
+    "002130": {
+      "core_product": {
+        "market_share_pct": 74.0,
+        "tech_barrier_score": 8,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 8,
+        "oversea_revenue_pct": 35.0,
+        "benchmark_countries": 30,
+        "flagship_projects": [
+          "特高压电缆附件随主机出口"
+        ]
+      }
+    },
+    "600584": {
+      "core_product": {
+        "market_share_pct": 12.0,
+        "tech_barrier_score": 8,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 6,
+        "oversea_revenue_pct": 55.0,
+        "benchmark_countries": 20,
+        "flagship_projects": [
+          "全球IDM/设计厂代工"
+        ]
+      }
+    },
+    "688981": {
+      "core_product": {
+        "market_share_pct": 6.0,
+        "tech_barrier_score": 10,
+        "switching_cost_score": 9
+      },
+      "oversea_qual": {
+        "cert_count": 4,
+        "oversea_revenue_pct": 15.0,
+        "benchmark_countries": 10,
+        "flagship_projects": [
+          "全球Fabless代工"
+        ]
+      }
+    },
+    "002156": {
+      "core_product": {
+        "market_share_pct": 8.0,
+        "tech_barrier_score": 7,
+        "switching_cost_score": 7
+      },
+      "oversea_qual": {
+        "cert_count": 5,
+        "oversea_revenue_pct": 40.0,
+        "benchmark_countries": 15,
+        "flagship_projects": [
+          "AMD/英伟达/华为供应链"
+        ]
+      }
+    },
+    "002413": {
+      "core_product": {
+        "market_share_pct": 15.0,
+        "tech_barrier_score": 8,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 6,
+        "oversea_revenue_pct": 18.0,
+        "benchmark_countries": 12,
+        "flagship_projects": [
+          "军工电子配套出口",
+          "雷达/电子对抗设备"
+        ]
+      }
+    },
+    "300014": {
+      "core_product": {
+        "market_share_pct": 15.0,
+        "tech_barrier_score": 9,
+        "switching_cost_score": 9
+      },
+      "oversea_qual": {
+        "cert_count": 10,
+        "oversea_revenue_pct": 60.0,
+        "benchmark_countries": 50,
+        "flagship_projects": [
+          "宝马/大众/戴姆勒定点",
+          "储能全球出货前三"
+        ]
+      }
+    },
+    "002466": {
+      "core_product": {
+        "market_share_pct": 20.0,
+        "tech_barrier_score": 6,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 3,
+        "oversea_revenue_pct": 70.0,
+        "benchmark_countries": 5,
+        "flagship_projects": [
+          "澳洲Greenbushes",
+          "智利SQM股权"
+        ]
+      }
+    },
+    "300285": {
+      "core_product": {
+        "market_share_pct": 35.0,
+        "tech_barrier_score": 9,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 6,
+        "oversea_revenue_pct": 25.0,
+        "benchmark_countries": 15,
+        "flagship_projects": [
+          "村田/太阳诱电/TDK供应链"
+        ]
+      }
+    },
+    "603308": {
+      "core_product": {
+        "market_share_pct": 30.0,
+        "tech_barrier_score": 9,
+        "switching_cost_score": 10
+      },
+      "oversea_qual": {
+        "cert_count": 4,
+        "oversea_revenue_pct": 10.0,
+        "benchmark_countries": 5,
+        "flagship_projects": [
+          "国内航发主供、间接随整机出口"
+        ]
+      }
+    },
+    "300124": {
+      "core_product": {
+        "market_share_pct": 25.0,
+        "tech_barrier_score": 8,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 8,
+        "oversea_revenue_pct": 20.0,
+        "benchmark_countries": 30,
+        "flagship_projects": [
+          "欧洲/印度/东南亚工厂"
+        ]
+      }
+    },
+    "601100": {
+      "core_product": {
+        "market_share_pct": 20.0,
+        "tech_barrier_score": 8,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 7,
+        "oversea_revenue_pct": 30.0,
+        "benchmark_countries": 25,
+        "flagship_projects": [
+          "全球工程机械主机厂配套",
+          "欧洲/北美分销网络"
+        ]
+      }
+    },
+    "002318": {
+      "core_product": {
+        "market_share_pct": 25.0,
+        "tech_barrier_score": 8,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 6,
+        "oversea_revenue_pct": 35.0,
+        "benchmark_countries": 20,
+        "flagship_projects": [
+          "核电/石油化工/海工管材出口"
+        ]
+      }
+    },
+    "300719": {
+      "core_product": {
+        "market_share_pct": 18.0,
+        "tech_barrier_score": 7,
+        "switching_cost_score": 7
+      },
+      "oversea_qual": {
+        "cert_count": 5,
+        "oversea_revenue_pct": 22.0,
+        "benchmark_countries": 15,
+        "flagship_projects": [
+          "连接器/线缆组件全球出口"
+        ]
+      }
+    },
+    "002335": {
+      "core_product": {
+        "market_share_pct": 22.0,
+        "tech_barrier_score": 7,
+        "switching_cost_score": 7
+      },
+      "oversea_qual": {
+        "cert_count": 6,
+        "oversea_revenue_pct": 18.0,
+        "benchmark_countries": 18,
+        "flagship_projects": [
+          "数据中心电源/精密空调出海"
+        ]
+      }
+    },
+    "300748": {
+      "core_product": {
+        "market_share_pct": 15.0,
+        "tech_barrier_score": 8,
+        "switching_cost_score": 7
+      },
+      "oversea_qual": {
+        "cert_count": 5,
+        "oversea_revenue_pct": 25.0,
+        "benchmark_countries": 12,
+        "flagship_projects": [
+          "稀土永磁材料出口日本/欧美"
+        ]
+      }
+    },
+    "600160": {
+      "core_product": {
+        "market_share_pct": 30.0,
+        "tech_barrier_score": 7,
+        "switching_cost_score": 7
+      },
+      "oversea_qual": {
+        "cert_count": 4,
+        "oversea_revenue_pct": 15.0,
+        "benchmark_countries": 10,
+        "flagship_projects": [
+          "氟化工/制冷剂出口"
+        ]
+      }
+    },
+    "600346": {
+      "core_product": {
+        "market_share_pct": 25.0,
+        "tech_barrier_score": 7,
+        "switching_cost_score": 7
+      },
+      "oversea_qual": {
+        "cert_count": 3,
+        "oversea_revenue_pct": 12.0,
+        "benchmark_countries": 8,
+        "flagship_projects": [
+          "PTA/聚酯产业链一体化出海"
+        ]
+      }
+    },
+    "000708": {
+      "core_product": {
+        "market_share_pct": 18.0,
+        "tech_barrier_score": 7,
+        "switching_cost_score": 7
+      },
+      "oversea_qual": {
+        "cert_count": 5,
+        "oversea_revenue_pct": 20.0,
+        "benchmark_countries": 15,
+        "flagship_projects": [
+          "特种钢材出口高端装备制造"
+        ]
+      }
+    },
+    "600660": {
+      "core_product": {
+        "market_share_pct": 30.0,
+        "tech_barrier_score": 7,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 8,
+        "oversea_revenue_pct": 45.0,
+        "benchmark_countries": 30,
+        "flagship_projects": [
+          "美国/俄罗斯/捷克工厂",
+          "全球汽车玻璃龙头"
+        ]
+      }
+    },
+    "600570": {
+      "core_product": {
+        "market_share_pct": 40.0,
+        "tech_barrier_score": 8,
+        "switching_cost_score": 9
+      },
+      "oversea_qual": {
+        "cert_count": 3,
+        "oversea_revenue_pct": 8.0,
+        "benchmark_countries": 5,
+        "flagship_projects": [
+          "东南亚银行核心系统输出"
+        ]
+      }
+    },
+    "605566": {
+      "core_product": {
+        "market_share_pct": 12.0,
+        "tech_barrier_score": 6,
+        "switching_cost_score": 6
+      },
+      "oversea_qual": {
+        "cert_count": 4,
+        "oversea_revenue_pct": 10.0,
+        "benchmark_countries": 8,
+        "flagship_projects": [
+          "消费电子结构件出口"
+        ]
+      }
+    },
+    "000157": {
+      "core_product": {
+        "market_share_pct": 15.0,
+        "tech_barrier_score": 7,
+        "switching_cost_score": 7
+      },
+      "oversea_qual": {
+        "cert_count": 10,
+        "oversea_revenue_pct": 40.0,
+        "benchmark_countries": 50,
+        "flagship_projects": [
+          "全球工程机械前20",
+          "非洲/东南亚/南美销售网络"
+        ]
+      }
+    },
+    "601061": {
+      "core_product": {
+        "market_share_pct": 10.0,
+        "tech_barrier_score": 5,
+        "switching_cost_score": 6
+      },
+      "oversea_qual": {
+        "cert_count": 3,
+        "oversea_revenue_pct": 60.0,
+        "benchmark_countries": 40,
+        "flagship_projects": [
+          "有色金属贸易全球化",
+          "矿山权益海外布局"
+        ]
+      }
+    },
+    "600030": {
+      "core_product": {
+        "market_share_pct": 8.0,
+        "tech_barrier_score": 5,
+        "switching_cost_score": 7
+      },
+      "oversea_qual": {
+        "cert_count": 2,
+        "oversea_revenue_pct": 5.0,
+        "benchmark_countries": 8,
+        "flagship_projects": [
+          "香港/新加坡牌照"
+        ]
+      }
+    },
+    "601066": {
+      "core_product": {
+        "market_share_pct": 6.0,
+        "tech_barrier_score": 5,
+        "switching_cost_score": 7
+      },
+      "oversea_qual": {
+        "cert_count": 2,
+        "oversea_revenue_pct": 4.0,
+        "benchmark_countries": 6,
+        "flagship_projects": [
+          "香港子公司牌照"
+        ]
+      }
+    },
+    "600036": {
+      "core_product": {
+        "market_share_pct": 5.0,
+        "tech_barrier_score": 6,
+        "switching_cost_score": 8
+      },
+      "oversea_qual": {
+        "cert_count": 4,
+        "oversea_revenue_pct": 3.0,
+        "benchmark_countries": 12,
+        "flagship_projects": [
+          "香港/纽约/新加坡/伦敦分行"
+        ]
+      }
+    },
+    "601995": {
+      "core_product": {
+        "market_share_pct": 4.0,
+        "tech_barrier_score": 6,
+        "switching_cost_score": 7
+      },
+      "oversea_qual": {
+        "cert_count": 3,
+        "oversea_revenue_pct": 12.0,
+        "benchmark_countries": 10,
+        "flagship_projects": [
+          "香港/伦敦/纽约/新加坡投行牌照"
+        ]
+      }
+    },
+    "000987": {
+      "core_product": {
+        "market_share_pct": 8.0,
+        "tech_barrier_score": 5,
+        "switching_cost_score": 6
+      },
+      "oversea_qual": {
+        "cert_count": 2,
+        "oversea_revenue_pct": 8.0,
+        "benchmark_countries": 5,
+        "flagship_projects": [
+          "基建投资/港口/高速公路海外资产"
+        ]
+      }
+    }
+  }
+}

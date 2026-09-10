@@ -1,0 +1,536 @@
+{
+  "gateway": {
+    "auth": {
+      "mode": "token",
+      "token": "my-sec…-123"
+    },
+    "mode": "local",
+    "port": 18789,
+    "bind": "loopback",
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    },
+    "controlUi": {
+      "allowInsecureAuth": false
+    }
+  },
+  "models": {
+    "providers": {
+      "custom-1": {
+        "baseUrl": "http://127.0.0.1:8080/v1",
+        "apiKey": "",
+        "models": [
+          {
+            "id": "BAAI/bge-m3",
+            "name": "BAAI/bge-m3",
+            "input": [
+              "text"
+            ],
+            "reasoning": false,
+            "api": "openai-completions"
+          }
+        ],
+        "api": "openai-completions"
+      },
+      "google": {
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai/",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "gemini-2.5-flash",
+            "name": "Gemini 2.5 Flash",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 0.075,
+              "output": 0.3,
+              "cacheRead": 0.01875,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1048576,
+            "maxTokens": 8192
+          },
+          {
+            "id": "gemini-2.5-pro",
+            "name": "Gemini 2.5 Pro",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 1.25,
+              "output": 10,
+              "cacheRead": 0.3125,
+              "cacheWrite": 0
+            },
+            "contextWindow": 2097152,
+            "maxTokens": 8192
+          }
+        ]
+      },
+      "nvidia": {
+        "baseUrl": "https://integrate.api.nvidia.com/v1",
+        "api": "openai-completions",
+        "timeoutSeconds": 300,
+        "models": [
+          {
+            "id": "nvidia/nemotron-3-ultra-550b-a55b",
+            "name": "NVIDIA Nemotron 3 Ultra 550B",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000000,
+            "maxTokens": 16384,
+            "compat": {
+              "requiresStringContent": true
+            },
+            "params": {
+              "chat_template_kwargs": {
+                "enable_thinking": false,
+                "force_nonempty_content": true
+              }
+            }
+          },
+          {
+            "id": "nvidia/nemotron-3-super-120b-a12b",
+            "name": "NVIDIA Nemotron 3 Super 120B",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 262144,
+            "maxTokens": 8192,
+            "compat": {
+              "requiresStringContent": true
+            }
+          }
+        ]
+      },
+      "deepseek": {
+        "baseUrl": "https://api.deepseek.com",
+        "api": "openai-completions",
+        "timeoutSeconds": 300,
+        "models": [
+          {
+            "id": "deepseek-v4-flash",
+            "name": "DeepSeek V4 Flash",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0.14,
+              "output": 0.28,
+              "cacheRead": 0.028,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000000,
+            "maxTokens": 384000,
+            "compat": {
+              "supportsReasoningEffort": true,
+              "supportsUsageInStreaming": true,
+              "maxTokensField": "max_tokens"
+            },
+            "api": "openai-completions"
+          },
+          {
+            "id": "deepseek-v4-pro",
+            "name": "DeepSeek V4 Pro",
+            "reasoning": false,
+            "input": [
+              "text",
+              "image"
+            ],
+            "cost": {
+              "input": 1.74,
+              "output": 3.48,
+              "cacheRead": 0.145,
+              "cacheWrite": 0
+            },
+            "contextWindow": 1000000,
+            "maxTokens": 384000,
+            "compat": {
+              "supportsReasoningEffort": true,
+              "supportsUsageInStreaming": true,
+              "maxTokensField": "max_tokens"
+            },
+            "api": "openai-completions"
+          },
+          {
+            "id": "deepseek-chat",
+            "name": "DeepSeek Chat",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0.28,
+              "output": 0.42,
+              "cacheRead": 0.028,
+              "cacheWrite": 0
+            },
+            "contextWindow": 131072,
+            "maxTokens": 8192,
+            "compat": {
+              "supportsUsageInStreaming": true,
+              "maxTokensField": "max_tokens"
+            },
+            "api": "openai-completions"
+          },
+          {
+            "id": "deepseek-reasoner",
+            "name": "DeepSeek Reasoner",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0.28,
+              "output": 0.42,
+              "cacheRead": 0.028,
+              "cacheWrite": 0
+            },
+            "contextWindow": 131072,
+            "maxTokens": 65536,
+            "compat": {
+              "supportsReasoningEffort": false,
+              "supportsUsageInStreaming": true,
+              "maxTokensField": "max_tokens"
+            },
+            "api": "openai-completions"
+          }
+        ]
+      }
+    },
+    "mode": "merge"
+  },
+  "skills": {
+    "entries": {
+      "apple-notes": {
+        "enabled": false
+      },
+      "clawhub": {
+        "enabled": false
+      },
+      "coding-agent": {
+        "enabled": false
+      },
+      "discord": {
+        "enabled": false
+      },
+      "elite-longterm-memory": {
+        "enabled": false
+      },
+      "gog": {
+        "enabled": false
+      },
+      "goplaces": {
+        "enabled": false
+      },
+      "himalaya": {
+        "enabled": false
+      },
+      "imsg": {
+        "enabled": false
+      },
+      "mcporter": {
+        "enabled": false
+      },
+      "nano-pdf": {
+        "enabled": false
+      },
+      "obsidian": {
+        "enabled": true
+      },
+      "openai-whisper": {
+        "enabled": false
+      },
+      "openai-whisper-api": {
+        "enabled": false
+      },
+      "openhue": {
+        "enabled": false
+      },
+      "oracle": {
+        "enabled": false
+      },
+      "ordercli": {
+        "enabled": false
+      },
+      "peekaboo": {
+        "enabled": false
+      },
+      "sag": {
+        "enabled": false
+      },
+      "session-logs": {
+        "enabled": false
+      },
+      "sherpa-onnx-tts": {
+        "enabled": false
+      },
+      "slack": {
+        "enabled": false
+      },
+      "songsee": {
+        "enabled": false
+      },
+      "sonoscli": {
+        "enabled": false
+      },
+      "spotify-player": {
+        "enabled": false
+      },
+      "summarize": {
+        "enabled": false
+      },
+      "things-mac": {
+        "enabled": false
+      },
+      "tmux": {
+        "enabled": false
+      },
+      "trello": {
+        "enabled": false
+      },
+      "voice-call": {
+        "enabled": false
+      },
+      "wacli": {
+        "enabled": false
+      },
+      "xurl": {
+        "enabled": false
+      },
+      "apple-reminders": {
+        "enabled": false
+      },
+      "bear-notes": {
+        "enabled": false
+      },
+      "blucli": {
+        "enabled": false
+      },
+      "camsnap": {
+        "enabled": false
+      },
+      "diagram-maker": {
+        "enabled": false
+      },
+      "eightctl": {
+        "enabled": false
+      },
+      "meme-maker": {
+        "enabled": false
+      },
+      "video-frames": {
+        "enabled": false
+      },
+      "weather": {
+        "enabled": false
+      },
+      "prismfy-search": {
+        "enabled": true,
+        "apiKey": "my-sec…-123"
+      },
+      "x-search": {
+        "enabled": false
+      }
+    }
+  },
+  "wizard": {
+    "lastRunAt": "2026-07-30T13:51:54.972Z",
+    "lastRunVersion": "2026.6.11",
+    "lastRunCommand": "doctor",
+    "lastRunMode": "local"
+  },
+  "memory": {
+    "backend": "builtin",
+    "qmd": {
+      "includeDefaultMemory": true,
+      "rerank": true
+    },
+    "citations": "on"
+  },
+  "agents": {
+    "defaults": {
+      "bootstrapMaxChars": 20000,
+      "bootstrapTotalMaxChars": 150000,
+      "contextInjection": "always",
+      "model": {
+        "primary": "deepseek/deepseek-chat",
+        "fallbacks": [
+          "nvidia/nemotron-3-super-120b-a12b",
+          "google/gemini-2.5-flash",
+          "deepseek/deepseek-reasoner",
+          "nvidia/nemotron-3-ultra-550b-a55b"
+        ]
+      },
+      "memorySearch": {
+        "provider": "openai-compatible",
+        "model": "BAAI/bge-m3",
+        "remote": {
+          "baseUrl": "http://127.0.0.1:8080/v1"
+        },
+        "extraPaths": [
+          "data/news"
+        ]
+      }
+    }
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "tools": {
+    "profile": "coding",
+    "web": {
+      "search": {
+        "provider": "tavily",
+        "enabled": true
+      }
+    }
+  },
+  "plugins": {
+    "allow": [
+      "memory-core",
+      "memory-wiki"
+    ],
+    "slots": {
+      "memory": "memory-core"
+    },
+    "entries": {
+      "openrouter": {
+        "enabled": true
+      },
+      "tavily": {
+        "enabled": true
+      },
+      "google": {
+        "enabled": true
+      },
+      "nvidia": {
+        "enabled": true
+      },
+      "telegram": {
+        "enabled": true
+      },
+      "deepseek": {
+        "enabled": true
+      },
+      "memory-core": {
+        "enabled": true,
+        "config": {
+          "dreaming": {
+            "enabled": true
+          }
+        }
+      },
+      "memory-lancedb-dreaming": {
+        "enabled": false
+      },
+      "memory-lancedb": {
+        "enabled": false
+      },
+      "memory-wiki": {
+        "enabled": true,
+        "config": {
+          "vaultMode": "bridge",
+          "bridge": {
+            "enabled": true,
+            "readMemoryArtifacts": true,
+            "indexDailyNotes": true,
+            "indexMemoryRoot": true,
+            "followMemoryEvents": true
+          },
+          "vault": {
+            "renderMode": "obsidian"
+          }
+        }
+      }
+    }
+  },
+  "auth": {
+    "profiles": {
+      "openrouter:default": {
+        "provider": "openrouter",
+        "mode": "api_key"
+      },
+      "google:default": {
+        "provider": "google",
+        "mode": "api_key"
+      },
+      "nvidia:default": {
+        "provider": "nvidia",
+        "mode": "api_key"
+      },
+      "deepseek:default": {
+        "provider": "deepseek",
+        "mode": "api_key"
+      }
+    }
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "boot-md": {
+          "enabled": true
+        },
+        "self-improvement": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "botToken": "8782173086:AAEtGcnGrG5rqiDab5-OVbScGFRZnOstkLg",
+      "enabled": true,
+      "name": "stock-monitor",
+      "markdown": {
+        "tables": "code"
+      }
+    }
+  },
+  "mcp": {
+    "servers": {
+      "filesystem": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@modelcontextprotocol/server-filesystem",
+          "/Users/duguke/.openclaw/workspace",
+          "/Users/duguke/Projects",
+          "/Users/duguke/Downloads"
+        ]
+      },
+      "tradingwizard": {
+        "url": "https://www.tradingwizard.ai/api/mcp",
+        "transport": "streamable-http"
+      }
+    }
+  },
+  "secrets": {},
+  "meta": {
+    "lastTouchedVersion": "2026.7.1-2",
+    "lastTouchedAt": "2026-08-09T22:51:05.319Z"
+  }
+}

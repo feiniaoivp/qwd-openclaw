@@ -10,6 +10,7 @@
 
 import os, sys, json, time, warnings
 from datetime import datetime
+from typing import Dict, List
 import pandas as pd
 import pandas_ta as ta
 import baostock as bs
@@ -20,6 +21,14 @@ warnings.filterwarnings("ignore")
 
 # 导入护城河因子
 from analysis.moat_factor import calc_moat_score, is_core_moat_stock, get_moat_tags
+
+# 导入政权检测器 (P1 自适应参数)
+try:
+    from analysis.regime_detector import detect_regime
+    HAS_REGIME_DETECTOR = True
+except ImportError as e:
+    HAS_REGIME_DETECTOR = False
+    print(f"⚠️ regime_detector 导入失败: {e}")
 
 # ═══════════════════════════════════════════
 # 030 核心模块导入
@@ -208,7 +217,7 @@ def load_latest_validation():
             merged = json.load(fh)
     return merged
 
-# ── 31只关注股 ──
+# ── 39只关注股 (含8只电力设备/特高压出海) ──
 STOCKS = [
     ("002318","久立特材"),("300014","亿纬锂能"),("601066","中信建投"),
     ("600030","中信证券"),("300124","汇川技术"),("601995","中金公司"),
@@ -223,6 +232,9 @@ STOCKS = [
     ("600346","恒力石化"),("000708","中信特钢"),("300748","金力永磁"),
     # ── 2026-08-06 替换: 撤上能电气, 加打印机国产替代龙头 ──
     ("002180","奔图科技"),("300847","中船汉光"),
+    # ── 2026-09-07 新增: 电力设备/特高压出海板块 (观察池优先) ──
+    ("600089","特变电工"),("600406","国电南瑞"),("000400","许继电气"),("601179","中国西电"),
+    ("600312","平高电气"),("002028","思源电气"),("002270","华明装备"),("002130","沃尔核材"),
 ]
 
 # ── validation中文策略名 → 信号函数key 映射 ──
@@ -330,6 +342,27 @@ def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
     end_ymd = datetime.now().strftime("%Y-%m-%d")
     today_str = datetime.now().strftime("%Y-%m-%d")
 
+    # 2026-08-18 优化: baostock 拉历史在网络受限时常卡死(单股30s+，30股串行→200s+)，
+    # 而新浪日K _fetch_sina_daily 每只仅 2.9~4.1s。改为【新浪日K优先】作为主数据源，
+    # baostock 降级为新浪失败时的历史兜底。彻底消除 premarket_report 内 180s 子进程超时。
+    if realtime_fallback:
+        try:
+            df = _fetch_sina_daily(symbol)
+        except Exception as _sina_err:
+            print(f"  [降级] {symbol} 新浪日K异常({_sina_err}) → 尝试baostock")
+            df = None
+        if df is not None and len(df) >= 60:
+            latest = df["date"].iloc[-1].strftime("%Y-%m-%d")
+            if latest < today_str:
+                rt = fetch_today_realtime([symbol])
+                if symbol in rt:
+                    r = rt[symbol]
+                    new_row = {"date": pd.Timestamp(r["date"]), "open": r["open"],
+                               "close": r["close"], "high": r["high"], "low": r["low"],
+                               "volume": r["volume"]}
+                    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+            return df
+
     for attempt in range(max_retry):
         try:
             lg = bs.login()
@@ -378,7 +411,10 @@ def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
 
     # baostock彻底失败 → 兜底（先新浪日K历史，能过60门槛+算指标；失败再退回新浪实时单条）
     if realtime_fallback:
-        df = _fetch_sina_daily(symbol)
+        try:
+            df = _fetch_sina_daily(symbol)
+        except Exception:
+            df = None
         if df is not None and len(df) >= 60:
             # 确保包含当日，若新浪日K不含今日且为交易日，拼一条实时
             latest = df["date"].iloc[-1].strftime("%Y-%m-%d")
@@ -409,21 +445,85 @@ def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
 # 五个策略的信号发生器
 # ════════════════════════════════════════
 
+def _compute_atr_stop(price: float, atr_val: float) -> float:
+    return price - 2.0 * atr_val if atr_val > 0 else 0.0
+
+def compute_fib_targets(df: pd.DataFrame, lookback: int = 150) -> Dict:
+    """计算斐波那契扩展位止盈目标 (1.0/1.272/1.618/2.618)"""
+    if df is None or len(df) < 30:
+        return {}
+    d = df.tail(lookback).reset_index(drop=True)
+    closes = d["close"].values
+    highs = d["high"].values
+    lows = d["low"].values
+    n = len(d)
+    cur = float(closes[-1])
+
+    def is_low(idx):
+        lo, lg = max(0, idx - 4), min(n, idx + 5)
+        return lows[idx] == min(lows[lo:lg]) and lows[idx] <= closes[idx]
+
+    def is_high(idx):
+        lo, lg = max(0, idx - 4), min(n, idx + 5)
+        return highs[idx] == max(highs[lo:lg])
+
+    candidate_hi = None
+    for i in range(n - 2, max(0, n - 90) - 1, -1):
+        if is_high(i) and highs[i] > cur:
+            candidate_hi = i
+            break
+    if candidate_hi is None:
+        for i in range(n - 2, max(0, n - 90) - 1, -1):
+            if is_high(i):
+                candidate_hi = i
+                break
+    if candidate_hi is None:
+        return {}
+    swing_high = float(highs[candidate_hi])
+
+    swing_low_i, swing_low = None, None
+    for i in range(candidate_hi - 1, max(0, candidate_hi - 70) - 1, -1):
+        if is_low(i):
+            swing_low_i, swing_low = i, lows[i]
+            break
+    if swing_low_i is None:
+        swing_low_i, swing_low = 0, float(min(lows[:candidate_hi]))
+
+    run_pct = swing_high / swing_low - 1 if swing_low > 0 else 0
+    if run_pct < 0.05:
+        return {}
+
+    after = lows[candidate_hi:]
+    pullback_low = float(min(after))
+
+    if cur < swing_low * 0.95:
+        return {}
+
+    base = pullback_low
+    amp = swing_high - swing_low
+    targets = {}
+    for ratio in (1.0, 1.272, 1.618, 2.618):
+        targets[str(ratio)] = round(base + ratio * amp, 2)
+    return targets
+
 def signal_bollinger_atr(df, params=None):
     p = dict(DEFAULT_PARAMS["bollinger"]); p.update(params or {})
     bb = ta.bbands(df["close"], length=p["length"], std=p["std"])
     bbu = bb[[c for c in bb.columns if "BBU" in c.upper()][0]]
     bbm = bb[[c for c in bb.columns if "BBM" in c.upper()][0]]
     atr = ta.atr(df["high"], df["low"], df["close"], length=14)
+    atr_val = float(atr.iloc[-1])
     row, prev = df.iloc[-1], df.iloc[-2]
     price = float(row["close"])
     action, reason = "持有", "无信号"
     if float(prev["close"]) <= float(bbu.iloc[-2]) and float(row["close"]) > float(bbu.iloc[-1]):
-        action = "🟢买入"; reason = f"布林上轨突破(¥{float(bbu.iloc[-1]):.2f})"
+        action = "🟢买入"; reason = f"布林上轨突破(¥{float(bbu.iloc[-1]):.2f}) ATR={atr_val:.2f} 止损¥{_compute_atr_stop(price, atr_val):.2f}"
     elif float(prev["close"]) >= float(bbm.iloc[-2]) and float(row["close"]) < float(bbm.iloc[-1]):
         action = "🔴卖出"; reason = f"跌破中轨(¥{float(bbm.iloc[-1]):.2f})"
     return {"action": action, "reason": reason, "price": price,
-            "indicators": f"上轨{float(bbu.iloc[-1]):.2f} 中轨{float(bbm.iloc[-1]):.2f} ATR{float(atr.iloc[-1]):.2f}"}
+            "indicators": f"上轨{float(bbu.iloc[-1]):.2f} 中轨{float(bbm.iloc[-1]):.2f} ATR{atr_val:.2f}",
+            "atr": atr_val, "atr_stop": _compute_atr_stop(price, atr_val),
+            "fib_tp": {"targets": compute_fib_targets(df)}}
 
 
 def signal_kdj_cci(df, params=None):
@@ -435,23 +535,45 @@ def signal_kdj_cci(df, params=None):
     d_col = [c for c in kdj.columns if "D_" in c.upper()][0]
     j_col = [c for c in kdj.columns if "J_" in c.upper()][0]
     k, d, j = kdj[k_col], kdj[d_col], kdj[j_col]
+    atr = ta.atr(df["high"], df["low"], df["close"], length=14)
+    atr_val = float(atr.iloc[-1])
     row, prev = df.iloc[-1], df.iloc[-2]
     price = float(row["close"])
     action, reason = "持有", "无信号"
     cpi = float(cci_pct.iloc[-1]) if pd.notna(cci_pct.iloc[-1]) else 50
     j_cross_up = float(j.iloc[-2]) <= float(k.iloc[-2]) and float(j.iloc[-1]) > float(k.iloc[-1])
     j_cross_down = float(j.iloc[-2]) >= float(k.iloc[-2]) and float(j.iloc[-1]) < float(k.iloc[-1])
+    # ── 2026-08-18 修复#1：KDJ 系弱策略二次确认护栏 ──
+    # KDJ+CCI 五策略回测垫底(总分20.6, 负夏普)却高频使用。给信号加趋势二次确认：
+    # 买信号需 EMA12>EMA26（趋势向上）确认；卖信号需 EMA12<EMA26（趋势向下）确认，
+    # 否则降级为持有/观望，避免弱策略单信号频繁误触发。
+    ema12 = ta.ema(df["close"], length=12)
+    ema26 = ta.ema(df["close"], length=26)
+    ema12_v = float(ema12.iloc[-1]) if pd.notna(ema12.iloc[-1]) else price
+    ema26_v = float(ema26.iloc[-1]) if pd.notna(ema26.iloc[-1]) else price
+    trend_up = ema12_v > ema26_v
+    trend_down = ema12_v < ema26_v
+    guard_ema = params is not None and params.get("guard", True)
     if cpi < 20 and j_cross_up:
-        action = "🟢买入"; reason = f"CCI低位({cpi:.0f}%)+KDJ金叉 K={float(k.iloc[-1]):.1f}"
+        if guard_ema and not trend_up:
+            action = "持有"; reason = f"KDJ金叉但EMAT趋势未确认(EMA12 {ema12_v:.2f}<EMA26 {ema26_v:.2f})，弱策略观望，需二次确认"
+        else:
+            action = "🟢买入"; reason = f"CCI低位({cpi:.0f}%)+KDJ金叉 K={float(k.iloc[-1]):.1f}{' (EMAT确认)' if guard_ema else ''} 止损¥{_compute_atr_stop(price, atr_val):.2f}"
     elif cpi > 80 or j_cross_down:
         reasons = []
         if cpi > 80:
             reasons.append(f"CCI高位({cpi:.0f}%)")
         if j_cross_down:
             reasons.append("KDJ死叉")
-        action = "🔴卖出"; reason = " | ".join(reasons)
+        if guard_ema and not trend_down:
+            # 反向背离护栏：卖出信号但趋势仍向上 → 仅降级观望，不卖（避免震荡中被洗出）
+            action = "持有"; reason = " / ".join(reasons) + f" 但EMA仍向上(EMA12 {ema12_v:.2f}>EMA26 {ema26_v:.2f})，弱策略观望，需二次确认"
+        else:
+            action = "🔴卖出"; reason = " | ".join(reasons)
     return {"action": action, "reason": reason, "price": price,
-            "indicators": f"CCI_pct={cpi:.0f}% K={float(k.iloc[-1]):.1f} J={float(j.iloc[-1]):.1f}"}
+            "indicators": f"CCI_pct={cpi:.0f}% K={float(k.iloc[-1]):.1f} J={float(j.iloc[-1]):.1f}",
+            "atr": atr_val, "atr_stop": _compute_atr_stop(price, atr_val),
+            "fib_tp": {"targets": compute_fib_targets(df)}}
 
 
 def signal_ema_obv(df, params=None):
@@ -459,6 +581,8 @@ def signal_ema_obv(df, params=None):
     ema20 = ta.ema(df["close"], length=p["length"])
     obv = ta.obv(df["close"], df["volume"])
     obv_ema20 = ta.ema(obv, length=p["length"])
+    atr = ta.atr(df["high"], df["low"], df["close"], length=14)
+    atr_val = float(atr.iloc[-1])
     row, prev = df.iloc[-1], df.iloc[-2]
     price = float(row["close"])
     action, reason = "持有", "无信号"
@@ -468,7 +592,7 @@ def signal_ema_obv(df, params=None):
     obv_cross_up = float(obv.iloc[-2]) <= float(obv_ema20.iloc[-2]) and obv_now > obv_ema
     obv_cross_down = float(obv.iloc[-2]) >= float(obv_ema20.iloc[-2]) and obv_now < obv_ema
     if price > e20 and obv_cross_up:
-        action = "🟢买入"; reason = f"EMA20上方(¥{e20:.2f}) + OBV上穿"
+        action = "🟢买入"; reason = f"EMA20上方(¥{e20:.2f}) + OBV上穿 止损¥{_compute_atr_stop(price, atr_val):.2f}"
     elif price < e20 or obv_cross_down:
         reasons = []
         if price < e20:
@@ -477,24 +601,30 @@ def signal_ema_obv(df, params=None):
             reasons.append("OBV下穿")
         action = "🔴卖出"; reason = " | ".join(reasons)
     return {"action": action, "reason": reason, "price": price,
-            "indicators": f"EMA20={e20:.2f} OBV/EMA={obv_now/obv_ema:.2f}x" if obv_ema > 0 else f"EMA20={e20:.2f}"}
+            "indicators": f"EMA20={e20:.2f} OBV/EMA={obv_now/obv_ema:.2f}x" if obv_ema > 0 else f"EMA20={e20:.2f}",
+            "atr": atr_val, "atr_stop": _compute_atr_stop(price, atr_val),
+            "fib_tp": {"targets": compute_fib_targets(df)}}
 
 
 def signal_ema_cross(df, params=None):
     p = dict(DEFAULT_PARAMS["ema_cross"]); p.update(params or {})
     ema12 = ta.ema(df["close"], length=p["fast"])
     ema26 = ta.ema(df["close"], length=p["slow"])
+    atr = ta.atr(df["high"], df["low"], df["close"], length=14)
+    atr_val = float(atr.iloc[-1])
     row, prev = df.iloc[-1], df.iloc[-2]
     price = float(row["close"])
     action, reason = "持有", "无信号"
     e12, e26 = float(ema12.iloc[-1]), float(ema26.iloc[-1])
     pe12, pe26 = float(ema12.iloc[-2]), float(ema26.iloc[-2])
     if pe12 <= pe26 and e12 > e26:
-        action = "🟢买入"; reason = f"EMA{p['fast']}({e12:.2f})金叉EMA{p['slow']}({e26:.2f})"
+        action = "🟢买入"; reason = f"EMA{p['fast']}({e12:.2f})金叉EMA{p['slow']}({e26:.2f}) 止损¥{_compute_atr_stop(price, atr_val):.2f}"
     elif pe12 >= pe26 and e12 < e26:
         action = "🔴卖出"; reason = f"EMA{p['fast']}({e12:.2f})死叉EMA{p['slow']}({e26:.2f})"
     return {"action": action, "reason": reason, "price": price,
-            "indicators": f"EMA{p['fast']}={e12:.2f} EMA{p['slow']}={e26:.2f}"}
+            "indicators": f"EMA{p['fast']}={e12:.2f} EMA{p['slow']}={e26:.2f}",
+            "atr": atr_val, "atr_stop": _compute_atr_stop(price, atr_val),
+            "fib_tp": {"targets": compute_fib_targets(df)}}
 
 
 def signal_macd(df, params=None):
@@ -504,17 +634,21 @@ def signal_macd(df, params=None):
     sig_col = [c for c in macd_df.columns if "MACDS_" in c.upper()][0]
     macd_line = macd_df[dif_col]
     signal_line = macd_df[sig_col]
+    atr = ta.atr(df["high"], df["low"], df["close"], length=14)
+    atr_val = float(atr.iloc[-1])
     row, prev = df.iloc[-1], df.iloc[-2]
     price = float(row["close"])
     action, reason = "持有", "无信号"
     m = float(macd_line.iloc[-1]); s = float(signal_line.iloc[-1])
     pm = float(macd_line.iloc[-2]); ps = float(signal_line.iloc[-2])
     if pm <= ps and m > s:
-        action = "🟢买入"; reason = f"MACD金叉({m:.4f}/{s:.4f})"
+        action = "🟢买入"; reason = f"MACD金叉({m:.4f}/{s:.4f}) 止损¥{_compute_atr_stop(price, atr_val):.2f}"
     elif pm >= ps and m < s:
         action = "🔴卖出"; reason = f"MACD死叉({m:.4f}/{s:.4f})"
     return {"action": action, "reason": reason, "price": price,
-            "indicators": f"MACD柱={m-s:.4f} Signal={s:.4f}"}
+            "indicators": f"MACD柱={m-s:.4f} Signal={s:.4f}",
+            "atr": atr_val, "atr_stop": _compute_atr_stop(price, atr_val),
+            "fib_tp": {"targets": compute_fib_targets(df)}}
 
 
 SIGNAL_FUNCS = {
@@ -669,6 +803,31 @@ def scan_all():
         change_pct = calc_change_pct(df)
         cur_price = float(df.iloc[-1]["close"])
         
+        # 🔄 P1: 检测市场政权并获取自适应参数
+        regime_params = {}
+        regime_info = {}
+        if HAS_REGIME_DETECTOR:
+            try:
+                regime_res = detect_regime(df)
+                regime_params = regime_res.suggested_params
+                regime_info = {
+                    "regime": regime_res.regime,
+                    "adx": regime_res.adx,
+                    "di_plus": regime_res.di_plus,
+                    "di_minus": regime_res.di_minus,
+                    "chop": regime_res.chop,
+                    "ema_gap_atr": regime_res.ema_gap_atr,
+                    "chop_zone": regime_res.chop_zone,
+                    "avoid_trade": regime_res.avoid_trade,
+                    "reason": regime_res.reason
+                }
+                if regime_res.chop_zone:
+                    print(f"  ⚠️ {symbol} 处于均线夹缝震荡区(chop_zone)，建议回避")
+                elif regime_res.avoid_trade:
+                    print(f"  ⚠️ {symbol} 政权={regime_res.regime}(ADX={regime_res.adx:.1f}, CHOP={regime_res.chop:.1f})，建议回避交易")
+            except Exception as e:
+                print(f"  ⚠️ {symbol} 政权检测失败: {e}")
+        
         # 🔍 检测出货形态
         dist_patterns = detect_distribution_patterns(df, lookback=5)
         max_dist_strength = max([p["strength"] for p in dist_patterns], default=0)
@@ -681,7 +840,12 @@ def scan_all():
         for entry in top2:
             sname = entry["strategy"]
             strat_usage[sname] = strat_usage.get(sname, 0) + 1
-            params = entry.get("params")
+            # 合并参数：优先级 regime_params > entry.params > DEFAULT_PARAMS
+            params = dict(DEFAULT_PARAMS.get(sname, {}))
+            if entry.get("params"):
+                params.update(entry["params"])
+            if regime_params.get(sname):
+                params.update(regime_params[sname])
             try:
                 sig = SIGNAL_FUNCS[sname](df, params)
                 sigs.append({
@@ -689,7 +853,7 @@ def scan_all():
                     "strategy_label": STRATEGY_LABELS[sname],
                     "validation_score": entry["score"],
                     "avg_return": entry.get("avg_return"),
-                    "params": params or DEFAULT_PARAMS.get(sname, {}),
+                    "params": params,
                     "price": cur_price,
                     "action": sig["action"],
                     "reason": sig["reason"],
@@ -768,7 +932,24 @@ def scan_all():
                 )
             except Exception as e:
                 print(f"⚠️ 裁决引擎失败 {symbol}: {e}")
-        
+
+        # ── 2026-08-19 三因素共振门控：买入类裁决需通过 情绪+基本面 两维 ──
+        _gate_blocked = None  # 若为 str 则该标的买入被拦截
+        if arbitration_result is not None:
+            try:
+                from analysis.three_factor_helper import ResonanceGate  # 惰性 import 防循环
+                _act = arbitration_result.final_action.value
+                if _act in ("小仓买入", "买入", "积极买入"):
+                    _ok, _info = ResonanceGate().check_buy(str(symbol))
+                    if not _ok:
+                        _gate_blocked = _info.get("reason", "")
+                        # 降级裁决：买入 → 持有/观望, 清仓位
+                        from analysis.signal_arbitrator import SignalAction
+                        arbitration_result.final_action = SignalAction.HOLD
+                        arbitration_result.position_mult = 0.0
+            except Exception as _e:
+                _gate_blocked = None
+
         results.append({
             "symbol": symbol, "name": name,
             "price": cur_price,
@@ -781,6 +962,8 @@ def scan_all():
             "moat_score": moat_score,
             "moat_tags": moat_tags,
             "is_core_moat": is_core,
+            # P1 政权信息
+            "regime": regime_info,
             # 030 新增字段
             "arbitration": {
                 "final_action": arbitration_result.final_action.value if arbitration_result else "未裁决",
@@ -790,6 +973,7 @@ def scan_all():
                 "support_price": arbitration_result.support_price if arbitration_result else None,
                 "reason": arbitration_result.reason if arbitration_result else "",
                 "arbitration_path": arbitration_result.arbitration_path if arbitration_result else [],
+                "resonance_gate": _gate_blocked,  # 若为 str 表示买入被三因素门控拦截的原因
             } if arbitration_result else None,
             "position_advice": {
                 "max_amount": round(position_plan.get("single_stock_max_amount", 0) * 

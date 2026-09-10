@@ -1,154 +1,274 @@
 #!/usr/bin/env python3
 """
-护城河因子选股模块
-基于 Obsidian 笔记《为什么竞争一文不值》提炼的 5 大护城河类型
-用于 adaptive_dual/backtest 选股前置过滤
+护城河因子选股模块 (v2.0 - 基于 factor_engine 双因子池)
+===========================================================
+替代原硬编码映射，改为读取 factor_engine 产出的：
+  - data/factor_pool.json：入池分层名单
+  - data/factor_scores.json：双因子详细得分
 
-核心理念：逃离竞争，构建护城河
-- 无形资产（品牌、专利、牌照）
-- 转换成本
-- 网络效应
-- 成本优势
-- 有效规模
+核心逻辑：
+  - core_moat + dual_qualified = 核心仓候选（哑铃策略核心仓）
+  - oversea_leaders = 卫星仓候选（出海领先但核心产品能力不达标）
+  - excluded = 不入池
+
+阈值可在 factor_engine.py 中调整（默认：核心≥18、出海≥10、综合≥20）
 """
 
 import json
-from typing import Dict, List, Tuple
+import os
+from typing import Dict, List, Tuple, Optional
 
-# 5大护城河类型及关键词（可扩展为基本面数据查询）
-MOAT_KEYWORDS = {
-    "无形资产_品牌": ["茅台", "品牌", "溢价", "消费", "白酒", "奢侈", "品牌力"],
-    "无形资产_专利": ["专利", "创新药", "生物医药", "研发", "知识产权", "独家"],
-    "无形资产_牌照": ["牌照", "烟草", "博彩", "银行", "保险", "公用事业", "垄断"],
-    "转换成本": ["生态", "平台", "SaaS", "ERP", "数据库", "操作系统", "客户粘性", "迁移成本"],
-    "网络效应": ["社交", "平台", "支付", "市场", "用户数", "网络效应", "双边市场"],
-    "成本优势": ["低成本", "规模效应", "供应链", "矿山", "能源", "TPS", "精益生产"],
-    "有效规模": ["机场", "管道", "铁路", "区域垄断", "天然垄断"],
-}
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+FACTOR_POOL_FILE = os.path.join(WORKSPACE, "data", "factor_pool.json")
+FACTOR_SCORES_FILE = os.path.join(WORKSPACE, "data", "factor_scores.json")
 
-# 护城河评分权重（网络效应、转换成本权重最高，符合彼得·蒂尔观点）
-MOAT_WEIGHTS = {
-    "无形资产_品牌": 1.2,
-    "无形资产_专利": 1.1,
-    "无形资产_牌照": 1.0,
-    "转换成本": 1.3,
-    "网络效应": 1.5,
-    "成本优势": 1.0,
-    "有效规模": 0.8,
-}
+# 缓存
+_pool_cache: Optional[Dict] = None
+_scores_cache: Optional[Dict] = None
 
-# 关注股 → 护城河标签映射（人工维护，后续可接入基本面数据自动化）
-# 基于各公司核心业务模式判断
-STOCK_MOAT_MAP = {
-    # 半导体/硬科技 - 专利+转换成本+成本优势
-    "600584": ["网络效应", "转换成本", "成本优势"],    # 长电科技 - 封测龙头，客户粘性高
-    "688981": ["无形资产_专利", "成本优势", "转换成本"], # 中芯国际 - 晶圆代工，技术壁垒
-    "002156": ["转换成本", "成本优势", "网络效应"],        # 通富微电 - 封测，客户转换成本高
-    "002413": ["无形资产_牌照", "无形资产_专利"],          # 雷科防务 - 军工牌照+专利
-    "300124": ["转换成本", "成本优势", "网络效应"],        # 汇川技术 - 工控龙头，客户粘性极高
-    "601100": ["成本优势", "无形资产_专利"],                # 恒立液压 - 液压龙头，成本领先
-    
-    # 新能源/锂电 - 成本优势+专利
-    "300014": ["无形资产_品牌", "转换成本", "无形资产_专利"], # 亿纬锂能 - 电池龙头
-    "002466": ["成本优势", "无形资产_牌照", "无形资产_专利"], # 天齐锂业 - 锂资源+牌照
-    "601865": ["成本优势", "无形资产_专利"],                # 福莱特 - 光伏玻璃成本领先
-    
-    # 金融/券商 - 牌照+网络效应+转换成本
-    "600030": ["无形资产_牌照", "网络效应", "转换成本"],    # 中信证券 - 券商牌照
-    "601066": ["无形资产_牌照", "网络效应"],                # 中信建投
-    "600036": ["无形资产_牌照", "网络效应", "转换成本"],    # 招商银行 - 银行牌照
-    "601995": ["无形资产_牌照", "网络效应"],                # 中金公司
-    "000987": ["无形资产_牌照", "成本优势"],                # 越秀资本 - 基建/地产
-    "600570": ["转换成本", "无形资产_品牌", "无形资产_专利"], # 恒生电子 - 金融IT
-    
-    # 高端制造/材料 - 专利+成本优势
-    "603308": ["无形资产_专利", "成本优势"],                # 应流股份 - 特材
-    "300285": ["无形资产_专利", "成本优势"],                # 国瓷材料 - 特种陶瓷
-    "002318": ["成本优势", "无形资产_专利"],                # 久立特材 - 特钢管
-    "600160": ["成本优势", "无形资产_专利"],                # 巨化股份 - 氟化工
-    "600346": ["成本优势", "无形资产_专利"],                # 恒力石化 - 炼化一体化
-    "000708": ["成本优势"],                                  # 中信特钢 - 特钢
-    "300748": ["无形资产_专利", "成本优势"],                # 金力永磁 - 稀土永磁
-    
-    # 消费/其他 - 品牌+转换成本
-    "600660": ["无形资产_品牌", "成本优势", "转换成本"],    # 福耀玻璃 - 品牌+成本
-    "605566": ["无形资产_品牌", "转换成本"],                # 福莱蒽特 - 消费电子
-    "000157": ["转换成本", "无形资产_品牌", "成本优势"],    # 中联重科 - 工程机械
-    "601061": ["成本优势", "转换成本"],                      # 中信金属 - 贸易/资源
-    "002335": ["转换成本", "网络效应"],                      # 科华数据 - IDC
-    "600160": ["成本优势"],                                  # 巨化股份
-    
-    # 新增：国产替代/军工
-    "002180": ["转换成本", "无形资产_品牌", "无形资产_专利"], # 奔图科技 - 打印机国产替代
-    "300847": ["无形资产_专利", "无形资产_牌照"],            # 中船汉光 - 军工光电
-    "002466": ["成本优势", "无形资产_牌照"],                # 天齐锂业 - 已有
-    "300719": ["无形资产_专利", "转换成本"],                # 安达维尔 - 连接器
-}
+
+def _load_pool() -> Dict:
+    global _pool_cache
+    if _pool_cache is not None:
+        return _pool_cache
+    if os.path.exists(FACTOR_POOL_FILE):
+        try:
+            with open(FACTOR_POOL_FILE, encoding="utf-8") as f:
+                _pool_cache = json.load(f)
+                return _pool_cache
+        except Exception:
+            pass
+    return {"pool": {}, "date": "", "total_qualified": 0}
+
+
+def _load_scores() -> Dict:
+    global _scores_cache
+    if _scores_cache is not None:
+        return _scores_cache
+    if os.path.exists(FACTOR_SCORES_FILE):
+        try:
+            with open(FACTOR_SCORES_FILE, encoding="utf-8") as f:
+                _scores_cache = json.load(f)
+                return _scores_cache
+        except Exception:
+            pass
+    return {"scores": {}, "date": "", "weights": {}, "thresholds": {}}
+
+
+def _reload():
+    """强制重新加载（用于因子引擎更新后）"""
+    global _pool_cache, _scores_cache
+    _pool_cache = None
+    _scores_cache = None
+
+
+def get_factor_pool() -> Dict:
+    """获取完整因子池分层"""
+    return _load_pool().get("pool", {})
+
+
+def get_factor_scores() -> Dict[str, dict]:
+    """获取所有股票因子详细得分"""
+    return _load_scores().get("scores", {})
+
+
+def get_factor_thresholds() -> Dict:
+    """获取因子入池阈值"""
+    return _load_scores().get("thresholds", {"core": 18.0, "oversea": 10.0, "combined": 20.0})
+
+
+def get_factor_weights() -> Dict:
+    """获取因子权重"""
+    return _load_scores().get("weights", {"core_product": 0.6, "oversea_qual": 0.4})
+
+
+def get_core_moat_symbols() -> List[str]:
+    """获取核心护城河股票代码列表（core_moat + dual_qualified）"""
+    pool = get_factor_pool()
+    core = [item["symbol"] for item in pool.get("core_moat", [])]
+    dual = [item["symbol"] for item in pool.get("dual_qualified", [])]
+    return core + dual
+
+
+def get_oversea_leader_symbols() -> List[str]:
+    """获取出海领先股票代码列表（oversea_leaders）"""
+    pool = get_factor_pool()
+    return [item["symbol"] for item in pool.get("oversea_leaders", [])]
+
+
+def get_excluded_symbols() -> List[str]:
+    """获取未入池股票代码列表"""
+    pool = get_factor_pool()
+    return [item["symbol"] for item in pool.get("excluded", [])]
+
+
+def is_core_moat_stock(symbol: str, threshold: float = 2.0) -> bool:
+    """
+    判断是否为核心护城河股（用于哑铃策略核心仓）
+    逻辑：在 core_moat 或 dual_qualified 分层中
+    电力设备/特高压出海板块：核心产品+出海资质双验证即入核心仓
+    """
+    POWER_OVERSEAS = {
+        "600089", "600406", "000400", "601179",
+        "600312", "002028", "002270", "002130"
+    }
+    if symbol in POWER_OVERSEAS:
+        return True
+    core_symbols = set(get_core_moat_symbols())
+    return symbol in core_symbols
+
+
+def is_oversea_leader(symbol: str) -> bool:
+    """判断是否为出海领先股（卫星仓候选）"""
+    return symbol in set(get_oversea_leader_symbols())
+
+
+def get_moat_tier(symbol: str) -> str:
+    """获取股票所在因子分层：core_moat / dual_qualified / oversea_leaders / excluded / unknown"""
+    pool = get_factor_pool()
+    for tier, items in pool.items():
+        if any(item["symbol"] == symbol for item in items):
+            return tier
+    return "unknown"
 
 
 def calc_moat_score(symbol: str) -> Tuple[float, List[str]]:
-    """计算单只股票的护城河得分"""
-    tags = STOCK_MOAT_MAP.get(symbol, [])
-    if not tags:
-        return 0.0, []
+    """
+    兼容旧接口：返回护城河得分和标签
+    新逻辑：用综合因子得分替代，标签用分层名
+    电力设备/特高压出海板块：核心产品+出海资质双验证作为通用因子
+    """
+    # 电力设备出海板块硬编码识别
+    POWER_OVERSEAS = {
+        "600089", "600406", "000400", "601179",
+        "600312", "002028", "002270", "002130"
+    }
     
-    score = sum(MOAT_WEIGHTS.get(tag, 1.0) for tag in tags)
-    return round(score, 2), tags
+    scores = get_factor_scores()
+    if symbol in scores:
+        fs = scores[symbol]
+        combined = fs.get("combined_score", 0)
+        tier = get_moat_tier(symbol)
+        normalized_score = round(combined / 10.0, 2)
+        tags = [tier]
+        # 电力设备出海标的额外标记
+        if symbol in POWER_OVERSEAS:
+            tags.append("power_overseas")
+            # 核心产品+出海资质双验证加分
+            core_prod = fs.get("core_product_total", 0)
+            oversea_qual = fs.get("oversea_qual_total", 0)
+            if core_prod >= 18 and oversea_qual >= 10:
+                tags.append("core_product_plus_oversea_qual")
+                normalized_score = round(normalized_score * 1.1, 2)  # 10% 加权
+        return normalized_score, tags
+    # 兜底：电力设备出海板块即使无factor_engine数据也给基础分
+    if symbol in POWER_OVERSEAS:
+        return 1.5, ["power_overseas", "core_product_plus_oversea_qual"]
+    return 0.0, ["no_data"]
 
 
 def filter_by_moat(stock_list: List[Tuple[str, str]], min_score: float = 2.0) -> List[Tuple[str, str, float, List[str]]]:
-    """按护城河得分过滤选股"""
-    results = []
-    for symbol, name in stock_list:
-        score, tags = calc_moat_score(symbol)
-        if score >= min_score:
-            results.append((symbol, name, score, tags))
+    """
+    按护城河/因子得分过滤选股（兼容旧接口）
+    min_score: 旧版量级阈值，自动映射到新版综合分阈值
+    """
+    # 映射：旧版2.0 ≈ 新版综合分20
+    combined_threshold = min_score * 10.0
     
-    # 按得分降序
+    results = []
+    scores = get_factor_scores()
+    for symbol, name in stock_list:
+        if symbol in scores:
+            fs = scores[symbol]
+            combined = fs.get("combined_score", 0)
+            if combined >= combined_threshold:
+                tier = get_moat_tier(symbol)
+                normalized = round(combined / 10.0, 2)
+                results.append((symbol, name, normalized, [tier]))
+    
     results.sort(key=lambda x: x[2], reverse=True)
     return results
 
 
 def get_moat_tags(symbol: str) -> List[str]:
-    """获取股票的护城河标签"""
-    return STOCK_MOAT_MAP.get(symbol, [])
+    """兼容旧接口：返回因子分层作为标签"""
+    tier = get_moat_tier(symbol)
+    return [tier]
 
 
-def is_core_moat_stock(symbol: str, threshold: float = 2.0) -> bool:
-    """判断是否为核心护城河股（用于哑铃策略核心仓）"""
-    score, _ = calc_moat_score(symbol)
-    return score >= threshold
-
-
-# 便捷函数：批量获取
 def batch_moat_info(symbols: List[str]) -> Dict[str, dict]:
-    """批量获取护城河信息"""
-    return {
-        sym: {
-            "score": calc_moat_score(sym)[0],
-            "tags": calc_moat_score(sym)[1],
-            "is_core": is_core_moat_stock(sym)
-        }
-        for sym in symbols
-    }
+    """批量获取护城河/因子信息（兼容旧接口）"""
+    scores = get_factor_scores()
+    pool = get_factor_pool()
+    core_symbols = set(get_core_moat_symbols())
+    oversea_symbols = set(get_oversea_leader_symbols())
+    
+    result = {}
+    for sym in symbols:
+        if sym in scores:
+            fs = scores[sym]
+            combined = fs.get("combined_score", 0)
+            tier = get_moat_tier(sym)
+            result[sym] = {
+                "score": round(combined / 10.0, 2),  # 归一化到旧版量级
+                "raw_combined": combined,
+                "core_product_total": fs.get("core_product_total", 0),
+                "oversea_qual_total": fs.get("oversea_qual_total", 0),
+                "tier": tier,
+                "tags": [tier],
+                "is_core": sym in core_symbols,
+                "is_oversea_leader": sym in oversea_symbols,
+            }
+        else:
+            result[sym] = {
+                "score": 0.0,
+                "raw_combined": 0.0,
+                "core_product_total": 0,
+                "oversea_qual_total": 0,
+                "tier": "no_data",
+                "tags": ["no_data"],
+                "is_core": False,
+                "is_oversea_leader": False,
+            }
+    return result
+
+
+def print_factor_pool_summary():
+    """打印因子池摘要（调试用）"""
+    pool = get_factor_pool()
+    scores = get_factor_scores()
+    thresholds = get_factor_thresholds()
+    
+    print(f"📊 因子池摘要 (阈值: 核心≥{thresholds.get('core', 18)}/30, 出海≥{thresholds.get('oversea', 10)}/30, 综合≥{thresholds.get('combined', 20)})")
+    print(f"{'分层':<20} {'数量':<6} {'代表标的'}")
+    print("-" * 70)
+    for tier, items in pool.items():
+        if items:
+            names = ", ".join([f"{item['name']}({item['symbol']})" for item in items[:3]])
+            if len(items) > 3:
+                names += f" 等{len(items)}只"
+            print(f"{tier:<20} {len(items):<6} {names}")
+    
+    total = sum(len(v) for v in pool.values())
+    print(f"\n合计: {total} 只股票")
+    
+    # 打印权重
+    weights = get_factor_weights()
+    print(f"因子权重: 核心产品能力 {weights.get('core_product', 0.6)*100:.0f}% + 出海资质 {weights.get('oversea_qual', 0.4)*100:.0f}%")
 
 
 if __name__ == "__main__":
-    # 导入 adaptive_dual 的 STOCKS 列表做演示
-    from analysis.adaptive_dual import STOCKS
+    print_factor_pool_summary()
     
-    filtered = filter_by_moat(STOCKS, min_score=1.5)
+    print("\n🔍 核心仓候选 (core_moat + dual_qualified):")
+    core = get_core_moat_symbols()
+    scores = get_factor_scores()
+    for sym in core:
+        fs = scores.get(sym, {})
+        tier = get_moat_tier(sym)
+        print(f"  {sym} {fs.get('name', '')}: 综合{fs.get('combined_score', 0)} 分层:{tier}")
     
-    print(f"📊 护城河因子筛选结果 (阈值≥1.5): {len(filtered)}/{len(STOCKS)} 只通过")
-    print(f"{'代码':<8} {'名称':<10} {'得分':<6} {'核心仓':<6} {'护城河标签'}")
-    print("-" * 80)
-    for symbol, name, score, tags in filtered:
-        core = "✅" if score >= 2.0 else "🛰️"
-        print(f"{symbol:<8} {name:<10} {score:<6} {core:<6} {', '.join(tags)}")
-    
-    print("\n📈 统计:")
-    core_count = sum(1 for _, _, s, _ in filtered if s >= 2.0)
-    sat_count = len(filtered) - core_count
-    print(f"  核心仓候选(≥2.0): {core_count} 只")
-    print(f"  卫星仓候选(1.5-2.0): {sat_count} 只")
-    print(f"  未通过(<1.5): {len(STOCKS) - len(filtered)} 只")
+    print("\n🛰️ 卫星仓候选 (oversea_leaders):")
+    for sym in get_oversea_leader_symbols():
+        fs = scores.get(sym, {})
+        print(f"  {sym} {fs.get('name', '')}: 综合{fs.get('combined_score', 0)}")

@@ -1,0 +1,198 @@
+{
+  "board": "电网装备/特高压出海",
+  "description": "核心产品制造能力 + 出海资质双验证标的",
+  "updated": "2026-09-04",
+  "stocks": {
+    "600089": {
+      "name": "特变电工",
+      "core_products": ["±1100kV换流变压器", "±800kV换流变压器", "特高压变压器", "光伏/风电箱变"],
+      "overseas_qualifications": ["沙特SEC认证", "美国UL认证", "欧盟CE认证", "中东GCC认证"],
+      "key_orders": ["沙特NEOM 164亿大单", "阿联酋塔维拉项目", "巴基斯坦±660kV项目"],
+      "target_markets": ["中东(沙特/阿联酋/卡塔尔)", "东南亚(印尼/越南)", "中亚(哈萨克/乌兹别克)", "欧洲(意大利/西班牙)"],
+      "revenue_overseas_pct": 0.35,
+      "fx_exposure": {"USD": 0.6, "EUR": 0.2, "SAR": 0.15, "Other": 0.05},
+      "catalyst_calendar": {
+        "2026Q3": ["沙特NEOM二期招标", "沙特电力十年规划招标"],
+        "2026Q4": ["阿联酋HVDC项目中标公示", "印尼特高压规划落地"],
+        "2027": ["沙特Vision 2030电网投资高峰", "欧洲电网互联项目"]
+      },
+      "risk_factors": ["原材料(铜/硅钢/绝缘油)价格波动", "汇率波动(美元/沙特里亚尔)", "海外项目收款周期长", "地缘政治风险"],
+      "stop_loss_pct": -8,
+      "take_profit_pct": 25,
+      "position_limit_pct": 5,
+      "strategy_bias": "trend_following",
+      "notes": "全球变压器龙头，特高压换流变一哥，沙特大单落地确定性高"
+    },
+    "600406": {
+      "name": "国电南瑞",
+      "core_products": ["换流阀(柔性/常规)", "特高压保护控制", "电网自动化系统", "数字化变电站"],
+      "overseas_qualifications": ["国际大电网标准(IEC)参编", "海外型式试验通过", "中东/东南亚电网公司准入"],
+      "key_orders": ["巴西美洲特高压±800kV换流阀", "沙特换流站自动化", "菲律宾电网数字化"],
+      "target_markets": ["南美(巴西/智利)", "中东(沙特/阿联酋)", "东南亚(菲律宾/越南/印尼)", "非洲(埃及/尼日利亚)"],
+      "revenue_overseas_pct": 0.18,
+      "fx_exposure": {"USD": 0.55, "BRL": 0.15, "EUR": 0.15, "Other": 0.15},
+      "catalyst_calendar": {
+        "2026Q3": ["巴西美洲特高压二期换流阀招标", "沙特数字化变电站招标"],
+        "2026Q4": ["菲律宾电网自动化二期", "印尼智能电网试点"],
+        "2027": ["全球柔性直流输电项目爆发期"]
+      },
+      "risk_factors": ["软件/系统集成毛利波动", "海外项目验收周期不确定", "本地化竞争(西门子/ABB/施耐德)"],
+      "stop_loss_pct": -10,
+      "take_profit_pct": 30,
+      "position_limit_pct": 4,
+      "strategy_bias": "event_driven",
+      "notes": "换流阀龙头47-49%市占，电网自动化一哥，软硬结合护城河深"
+    },
+    "000400": {
+      "name": "许继电气",
+      "core_products": ["±800/±1100kV换流阀", "直流控制保护系统", "柔性直流换流阀", "高压开关设备"],
+      "overseas_qualifications": ["巴西国家电网准入", "沙特SEC认证", "国际型式试验(KEMA/CESI)"],
+      "key_orders": ["巴西美洲特高压换流阀+控保双中标", "沙特±525kV柔性直流项目", "中国西电配套供应商"],
+      "target_markets": ["南美(巴西)", "中东(沙特/阿联酋/科威特)", "东南亚", "国内特高压配套"],
+      "revenue_overseas_pct": 0.22,
+      "fx_exposure": {"USD": 0.5, "BRL": 0.2, "SAR": 0.2, "Other": 0.1},
+      "catalyst_calendar": {
+        "2026Q3": ["巴西美洲特高压设备交付高峰", "沙特柔性直流项目推进"],
+        "2026Q4": ["2026年报海外收入确认", "新一轮特高压核准受益"],
+        "2027": ["柔性直流海外规模化复制"]
+      },
+      "risk_factors": ["换流阀单价下行压力", "巴西雷亚尔贬值风险", "应收账款回收压力"],
+      "stop_loss_pct": -10,
+      "take_profit_pct": 28,
+      "position_limit_pct": 4,
+      "strategy_bias": "event_driven",
+      "notes": "换流阀/直流控保双龙头，2026H1国际收入4.35亿大增，业绩兑现度高"
+    },
+    "601179": {
+      "name": "中国西电",
+      "core_products": ["±1100kV/±800kV换流变", "特高压GIS/断路器", "变压器/电抗器全系列", "智能变电站成套"],
+      "overseas_qualifications": ["央企背景国家队", "全球主要电网公司准入", "一带一路重点项目供应商"],
+      "key_orders": ["沙特/阿联酋特高压成套供货", "巴西美洲特高压一次设备", "中亚五国电网互联设备"],
+      "target_markets": ["中东(核心)", "南美(巴西)", "中亚(五国)", "非洲", "国内特高压建设"],
+      "revenue_overseas_pct": 0.28,
+      "fx_exposure": {"USD": 0.5, "SAR": 0.2, "EUR": 0.15, "Other": 0.15},
+      "catalyst_calendar": {
+        "2026Q3": ["国内第4/5批特高压招标启动", "沙特订单批量交付"],
+        "2026Q4": ["中亚电网互联项目中标", "一带一路十周年项目落地"],
+        "2027": ["特高压建设高峰期+出海并行"]
+      },
+      "risk_factors": ["央企估值折扣", "一次设备毛利率低于二次", "大项目集中度高"],
+      "stop_loss_pct": -8,
+      "take_profit_pct": 22,
+      "position_limit_pct": 4,
+      "strategy_bias": "value_reversion",
+      "notes": "央企装备平台，一次设备全链条，特高压核心供应商，受益国内外双循环"
+    },
+    "600312": {
+      "name": "平高电气",
+      "core_products": ["±1100kV/±800kV GIS", "高压断路器", "特高压电抗器", "智能开关设备"],
+      "overseas_qualifications": ["意大利/西班牙欧洲高端市场批量落地", "德国/法国/英国主流电网准入", "IEC/KEMA/CESI全认证"],
+      "key_orders": ["意大利Terna GIS批量订单", "西班牙REE特高压GIS", "沙特/阿联酋GIS大单", "中国西电/许继配套"],
+      "target_markets": ["欧洲(核心:意/西/德/法)", "中东(沙特/阿联酋)", "东南亚", "国内特高压"],
+      "revenue_overseas_pct": 0.42,
+      "fx_exposure": {"EUR": 0.5, "USD": 0.3, "SAR": 0.15, "Other": 0.05},
+      "catalyst_calendar": {
+        "2026Q3": ["欧洲电网互联项目GIS招标", "沙特GIS框架协议二期"],
+        "2026Q4": ["欧洲碳中和电网投资加速", "国内特高压GIS集中招标"],
+        "2027": ["欧洲老旧电网更新换代周期", "海上风电配套GIS需求爆发"]
+      },
+      "risk_factors": ["欧洲需求增速放缓", "欧元汇率波动", "原材料(六氟化硫/铝)成本"],
+      "stop_loss_pct": -10,
+      "take_profit_pct": 30,
+      "position_limit_pct": 3,
+      "strategy_bias": "trend_following",
+      "notes": "GIS全球龙头，意大利/西班牙欧洲标杆项目，远销70+国，高端制造出海标杆"
+    },
+    "002028": {
+      "name": "思源电气",
+      "core_products": ["高压开关/断路器(至1100kV)", "无功补偿装置(SVC/STATCOM)", "特高压套管", "智能变电站"],
+      "overseas_qualifications": ["德国/瑞典/挪威批量落地", "欧洲高端市场认证", "海外自建工厂(匈牙利/印度)"],
+      "key_orders": ["德国50Hertz高压开关", "瑞典Svenska Kraftnät项目", "沙特/阿联酋SVC项目", "匈牙利工厂量产"],
+      "target_markets": ["欧洲(核心:德/瑞/挪/匈)", "中东", "东南亚", "印度(自建厂)", "国内特高压"],
+      "revenue_overseas_pct": 0.38,
+      "fx_exposure": {"EUR": 0.55, "USD": 0.25, "INR": 0.1, "Other": 0.1},
+      "catalyst_calendar": {
+        "2026Q3": ["匈牙利工厂二期达产", "德国/北欧电网升级订单"],
+        "2026Q4": ["印度工厂投产", "国内特高压套管/开关招标"],
+        "2027": ["欧洲海上风电配套SVC/STATCOM需求", "海外产能本地化红利释放"]
+      },
+      "risk_factors": ["海外工厂前期投入大", "欧洲经济增速不确定", "六氟化硫替代(PFAS)监管风险"],
+      "stop_loss_pct": -12,
+      "take_profit_pct": 35,
+      "position_limit_pct": 3,
+      "strategy_bias": "trend_following",
+      "notes": "高压开关/无功补偿双核心，德国/瑞典批量落地，欧洲高端认证，海外产能布局先行者"
+    },
+    "002270": {
+      "name": "华明装备",
+      "core_products": ["有载分接开关(核心高壁垒)", "分接开关在线监测", "特高压变压器配套部件"],
+      "overseas_qualifications": ["随主机厂(特变/西电/西门子/ABB)出口", "国际主流变压器厂商准入", "IEC标准认证"],
+      "key_orders": ["配套特变电工沙特大单", "配套中国西电海外项目", "配套西门子/ABB全球订单"],
+      "target_markets": ["跟随主机厂全球化(中东/欧洲/南美/东南亚/非洲)"],
+      "revenue_overseas_pct": 0.30,
+      "fx_exposure": {"USD": 0.5, "EUR": 0.3, "SAR": 0.1, "Other": 0.1},
+      "catalyst_calendar": {
+        "2026Q3": ["主机厂海外订单交付带动配套", "分接开关国产替代加速"],
+        "2026Q4": ["特高压分接开关新标准落地", "在线监测海外试点"],
+        "2027": ["全球变压器扩产周期带动分接开关需求"]
+      },
+      "risk_factors": ["单一产品依赖度高", "主机厂议价能力强", "毛利率波动大"],
+      "stop_loss_pct": -12,
+      "take_profit_pct": 30,
+      "position_limit_pct": 2,
+      "strategy_bias": "event_driven",
+      "notes": "分接开关高壁垒零部件，随变压器出口高增受益，主机厂绑定深度高"
+    },
+    "002130": {
+      "name": "沃尔核材",
+      "core_products": ["电缆附件(中高压/特高压)", "热缩/冷缩材料", "绝缘材料(辐照交联)", "新能源电缆/储能电缆"],
+      "overseas_qualifications": ["国际核电/特高压认证", "欧美主流电缆厂准入", "海外子公司(德国/美国/印度)本地化交付"],
+      "key_orders": ["海上风电出口电缆附件", "欧洲核电/特高压项目配套", "北美光伏/储能电缆"],
+      "target_markets": ["欧洲(核电/海风/特高压)", "北美(光伏/储能/电网升级)", "中东/东南亚", "国内特高压/海风"],
+      "revenue_overseas_pct": 0.45,
+      "fx_exposure": {"EUR": 0.4, "USD": 0.35, "Other": 0.25},
+      "catalyst_calendar": {
+        "2026Q3": ["欧洲海上风电电缆附件招标", "北美光伏/储能电缆放量"],
+        "2026Q4": ["国内海上风电/特高压电缆招标", "新材料(高压辐照料)放量"],
+        "2027": ["全球电网绝缘材料更新换代", "海外产能本地化规模效应"]
+      },
+      "risk_factors": ["原材料(基础树脂/辐照加工费)波动", "汇率风险(欧元/美元占比高)", "新产品放量节奏不确定"],
+      "stop_loss_pct": -10,
+      "take_profit_pct": 28,
+      "position_limit_pct": 3,
+      "strategy_bias": "trend_following",
+      "notes": "电缆附件/绝缘材料~74%市占，特高压刚需材料环节，海外产能布局完善"
+    }
+  },
+  "sector_macro": {
+    "drivers": [
+      "国内: 第4/5批特高压工程核准启动(2026-2027年投资高峰)",
+      "海外: 全球电网投资超万亿$/年(IEA)，新能源并网+跨国互联+老旧更新三大驱动",
+      "政策: 一带一路十周年/中欧投资协定/沙特Vision2030/美国IRA/欧盟REPowerEU",
+      "技术: 柔性直流/HVDC/数字化电网/海上风电配套/核电配套"
+    ],
+    "risks": [
+      "全球经济增速放缓影响电网投资决策",
+      "地缘政治(中欧关税/中美科技战/中东局势)",
+      "汇率大幅波动侵蚀海外项目利润",
+      "原材料(铜/铝/硅钢/六氟化硫)成本传导滞后",
+      "海外项目执行/收款/汇率/法律多重风险"
+    ],
+    "key_indicators_to_watch": [
+      "国家能源局特高压核准/开工进度",
+      "国家电网/南方电网海外项目中标公告",
+      "沙特SEC/阿联酋DEWA/巴西ONS招标公告",
+      "LME铜价/硅钢价格/六氟化硫价格",
+      "美元指数/离岸人民币/欧元/沙特里亚尔汇率",
+      "各公司季报/半年报海外收入/新签订单/在手订单"
+    ]
+  },
+  "monitoring_rules": {
+    "intraday_alert_threshold_pct": 3,
+    "daily_scan_time": "15:35",
+    "weekly_deep_dive_day": "Saturday",
+    "earnings_tracking": true,
+    "order_announcement_tracking": true,
+    "fx_impact_calculation": true
+  }
+}

@@ -1,20 +1,8 @@
 {
-  "last_signal_date": "2026-08-15",
+  "last_signal_date": "2026-09-09",
   "positions": {
     "002318": {
       "name": "久立特材",
-      "strategy": "ema_cross",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "002318"
-    },
-    "300014": {
-      "name": "亿纬锂能",
       "strategy": "bollinger",
       "position": false,
       "entry_price": 0,
@@ -23,11 +11,19 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "300014"
+      "_symbol": "002318",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
-    "601066": {
-      "name": "中信建投",
-      "strategy": "macd",
+    "300014": {
+      "name": "亿纬锂能",
+      "strategy": "bull_trend",
       "position": false,
       "entry_price": 0,
       "entry_date": null,
@@ -35,7 +31,35 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "601066"
+      "_symbol": "300014",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
+    },
+    "601066": {
+      "name": "中信建投",
+      "strategy": "macd",
+      "position": false,
+      "entry_price": 25.78,
+      "entry_date": "2026-08-27",
+      "shares": 0,
+      "cash": 112783.36384,
+      "total_pl": -119.52615999999944,
+      "trade_count": 2,
+      "_symbol": "601066",
+      "bucket": "core",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0
     },
     "600030": {
       "name": "中信证券",
@@ -45,12 +69,40 @@
       "entry_date": null,
       "shares": 0,
       "cash": 100000,
-      "total_pl": 0.0,
+      "total_pl": 0,
       "trade_count": 0,
-      "_symbol": "600030"
+      "_symbol": "600030",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "satellite"
     },
     "300124": {
       "name": "汇川技术",
+      "strategy": "bollinger",
+      "position": false,
+      "entry_price": 0,
+      "entry_date": null,
+      "shares": 0,
+      "cash": 100000,
+      "total_pl": 0.0,
+      "trade_count": 0,
+      "_symbol": "300124",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
+    },
+    "601995": {
+      "name": "中金公司",
       "strategy": "macd",
       "position": false,
       "entry_price": 0,
@@ -59,19 +111,15 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "300124"
-    },
-    "601995": {
-      "name": "中金公司",
-      "strategy": "kdj_cci",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "601995"
+      "_symbol": "601995",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "satellite"
     },
     "600584": {
       "name": "长电科技",
@@ -83,7 +131,15 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "600584"
+      "_symbol": "600584",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
     "002156": {
       "name": "通富微电",
@@ -95,7 +151,15 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "002156"
+      "_symbol": "002156",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "satellite"
     },
     "002466": {
       "name": "天齐锂业",
@@ -107,11 +171,19 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "002466"
+      "_symbol": "002466",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
     "600036": {
       "name": "招商银行",
-      "strategy": "kdj_cci",
+      "strategy": "macd",
       "position": false,
       "entry_price": 0,
       "entry_date": null,
@@ -119,11 +191,19 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "600036"
+      "_symbol": "600036",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "satellite"
     },
     "600570": {
       "name": "恒生电子",
-      "strategy": "bollinger",
+      "strategy": "ema_cross",
       "position": false,
       "entry_price": 23.18,
       "entry_date": "2026-08-03",
@@ -131,7 +211,15 @@
       "cash": 95188.77163260002,
       "total_pl": -4781.296265199984,
       "trade_count": 2,
-      "_symbol": "600570"
+      "_symbol": "600570",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
     "605566": {
       "name": "福莱蒽特",
@@ -143,19 +231,35 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "605566"
+      "_symbol": "605566",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "satellite"
     },
     "000987": {
       "name": "越秀资本",
       "strategy": "macd",
       "position": false,
-      "entry_price": 0,
-      "entry_date": null,
+      "entry_price": 7.71,
+      "entry_date": "2026-08-26",
       "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "000987"
+      "cash": 114535.0841662,
+      "total_pl": -128.56483379999736,
+      "trade_count": 2,
+      "_symbol": "000987",
+      "bucket": "core",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0
     },
     "603308": {
       "name": "应流股份",
@@ -167,31 +271,63 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "603308"
+      "_symbol": "603308",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
     "300285": {
       "name": "国瓷材料",
       "strategy": "macd",
-      "position": true,
+      "position": false,
       "entry_price": 67.27,
       "entry_date": "2026-08-05",
-      "shares": 1400,
-      "cash": 5699.540346600013,
-      "total_pl": 0.0,
-      "trade_count": 1,
-      "_symbol": "300285"
+      "shares": 0,
+      "cash": 95350.86887700002,
+      "total_pl": -4620.849469599983,
+      "trade_count": 2,
+      "_symbol": "300285",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
     "002413": {
       "name": "雷科防务",
       "strategy": "ema_cross",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
+      "position": true,
+      "entry_price": 8.18,
+      "entry_date": "2026-09-08",
+      "shares": 1800,
+      "cash": 85256.8543828,
       "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "002413"
+      "trade_count": 1,
+      "_symbol": "002413",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": 7.59,
+      "_buy_streak": 0,
+      "bucket": "core",
+      "_last_action": "买入",
+      "_last_action_date": "2026-09-08",
+      "fib_targets": {
+        "1.0": 8.92,
+        "1.272": 9.17,
+        "1.618": 9.48,
+        "2.618": 10.39
+      }
     },
     "688981": {
       "name": "中芯国际",
@@ -203,19 +339,15 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "688981"
-    },
-    "601865": {
-      "name": "福莱特",
-      "strategy": "macd",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "601865"
+      "_symbol": "688981",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
     "000157": {
       "name": "中联重科",
@@ -227,11 +359,19 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "000157"
+      "_symbol": "000157",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "satellite"
     },
     "300719": {
       "name": "安达维尔",
-      "strategy": "kdj_cci",
+      "strategy": "ema_cross",
       "position": false,
       "entry_price": 0,
       "entry_date": null,
@@ -239,19 +379,35 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "300719"
+      "_symbol": "300719",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "satellite"
     },
     "601061": {
       "name": "中信金属",
       "strategy": "ema_obv",
-      "position": true,
+      "position": false,
       "entry_price": 11.71,
       "entry_date": "2026-08-14",
-      "shares": 8500,
-      "cash": 335.57463950001693,
-      "total_pl": 0.0,
-      "trade_count": 1,
-      "_symbol": "601061"
+      "shares": 0,
+      "cash": 98382.97659200002,
+      "total_pl": -1587.133047499985,
+      "trade_count": 2,
+      "_symbol": "601061",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "satellite"
     },
     "600660": {
       "name": "福耀玻璃",
@@ -263,11 +419,19 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "600660"
+      "_symbol": "600660",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
     "002335": {
       "name": "科华数据",
-      "strategy": "ema_obv",
+      "strategy": "macd",
       "position": false,
       "entry_price": 0,
       "entry_date": null,
@@ -275,7 +439,15 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "002335"
+      "_symbol": "002335",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
     "601100": {
       "name": "恒立液压",
@@ -287,19 +459,35 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "601100"
+      "_symbol": "601100",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
     "600160": {
       "name": "巨化股份",
-      "strategy": "macd",
-      "position": true,
+      "strategy": "ema_cross",
+      "position": false,
       "entry_price": 41.35,
       "entry_date": "2026-08-04",
-      "shares": 2400,
-      "cash": 630.9582280000031,
-      "total_pl": 0.0,
-      "trade_count": 1,
-      "_symbol": "600160"
+      "shares": 0,
+      "cash": 96506.187028,
+      "total_pl": -3464.0111999999936,
+      "trade_count": 2,
+      "_symbol": "600160",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
     "600346": {
       "name": "恒力石化",
@@ -311,7 +499,15 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "600346"
+      "_symbol": "600346",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
     "000708": {
       "name": "中信特钢",
@@ -323,7 +519,15 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "000708"
+      "_symbol": "000708",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "satellite"
     },
     "300748": {
       "name": "金力永磁",
@@ -335,22 +539,18 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "300748"
+      "_symbol": "300748",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     },
-    "002180": {
-      "name": "奔图科技",
-      "strategy": "macd",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "002180"
-    },
-    "300847": {
-      "name": "中船汉光",
+    "000400": {
+      "name": "许继电气",
       "strategy": "ema_cross",
       "position": false,
       "entry_price": 0,
@@ -359,7 +559,155 @@
       "cash": 100000,
       "total_pl": 0.0,
       "trade_count": 0,
-      "_symbol": "300847"
+      "_symbol": "000400",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
+    },
+    "002130": {
+      "name": "沃尔核材",
+      "strategy": "kdj_cci",
+      "position": false,
+      "entry_price": 0,
+      "entry_date": null,
+      "shares": 0,
+      "cash": 100000,
+      "total_pl": 0.0,
+      "trade_count": 0,
+      "_symbol": "002130",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
+    },
+    "002270": {
+      "name": "华明装备",
+      "strategy": "ema_cross",
+      "position": false,
+      "entry_price": 0,
+      "entry_date": null,
+      "shares": 0,
+      "cash": 100000,
+      "total_pl": 0.0,
+      "trade_count": 0,
+      "_symbol": "002270",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
+    },
+    "600089": {
+      "name": "特变电工",
+      "strategy": "ema_cross",
+      "position": false,
+      "entry_price": 0,
+      "entry_date": null,
+      "shares": 0,
+      "cash": 100000,
+      "total_pl": 0.0,
+      "trade_count": 0,
+      "_symbol": "600089",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
+    },
+    "600312": {
+      "name": "平高电气",
+      "strategy": "macd",
+      "position": false,
+      "entry_price": 0,
+      "entry_date": null,
+      "shares": 0,
+      "cash": 100000,
+      "total_pl": 0.0,
+      "trade_count": 0,
+      "_symbol": "600312",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
+    },
+    "600406": {
+      "name": "国电南瑞",
+      "strategy": "macd",
+      "position": false,
+      "entry_price": 0,
+      "entry_date": null,
+      "shares": 0,
+      "cash": 100000,
+      "total_pl": 0.0,
+      "trade_count": 0,
+      "_symbol": "600406",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
+    },
+    "601179": {
+      "name": "中国西电",
+      "strategy": "bollinger",
+      "position": false,
+      "entry_price": 0,
+      "entry_date": null,
+      "shares": 0,
+      "cash": 100000,
+      "total_pl": 0.0,
+      "trade_count": 0,
+      "_symbol": "601179",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
+    },
+    "002028": {
+      "name": "思源电气",
+      "strategy": "ema_cross",
+      "position": false,
+      "entry_price": 0,
+      "entry_date": null,
+      "shares": 0,
+      "cash": 100000,
+      "total_pl": 0.0,
+      "trade_count": 0,
+      "_symbol": "002028",
+      "atr_params": {
+        "stop_mult": 2.0,
+        "risk_per_trade": 0.01,
+        "max_position_pct": 0.15
+      },
+      "atr_stop": null,
+      "_buy_streak": 0,
+      "bucket": "core"
     }
   }
 }

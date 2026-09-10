@@ -23,16 +23,56 @@ import json
 import datetime
 import numpy as np
 import pandas as pd
-import baostock as bs
+import requests
 
 WORKSPACE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
+
+# Baostock 单例会话
+import sys
+import os
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+if WORKSPACE not in sys.path:
+    sys.path.insert(0, WORKSPACE)
+from analysis.bs_session import ensure_login, logout as bs_logout, query_history_k_data_plus_retry
 
 # ── 复用主回测脚本的策略与模拟函数 ──
 from backtest_strategies import (
     INITIAL_CAPITAL, COMMISSION, SLIPPAGE,
     run_simulation, ALL_STRATEGIES,
 )
+
+# ════════════════════════════════════════
+# MACD参数联动EMA12/26最优参数
+# ════════════════════════════════════════
+def derive_macd_params_from_ema(ema_fast: int, ema_slow: int) -> dict:
+    """
+    MACD快/慢线直接复用EMA12/26的最优参数，信号线取快线周期的75%向上取整。
+    逻辑：MACD本质是EMA快线-慢线，参数耦合可降低过拟合风险。
+    """
+    return {
+        "fast": ema_fast,
+        "slow": ema_slow,
+        "signal": max(7, round(ema_fast * 0.75))
+    }
+
+# EMA12/26参数网格（验证/调优时共用）
+EMA_CROSS_GRID = [
+    (8, 21), (10, 26), (12, 26), (15, 30),
+    (10, 21), (12, 21), (8, 26), (15, 26),
+]
+
+def get_macd_grid_from_ema(ema_pairs=None):
+    """基于EMA最优参数生成MACD参数网格（MACD参数直接衍生自EMA）"""
+    if ema_pairs is None:
+        ema_pairs = EMA_CROSS_GRID
+    grid = []
+    for fast, slow in ema_pairs:
+        if fast < slow:
+            macd = derive_macd_params_from_ema(fast, slow)
+            if macd not in grid:
+                grid.append(macd)
+    return grid
 
 # ── 多窗口定义 (起点, 年数) ──
 WIN_START = "2020-01-01"          # 长历史起点 (6.5年)
@@ -49,29 +89,123 @@ def baostock_code(symbol):
             else "sz.") + symbol
 
 
+def fetch_long_akshare(symbol, name, start, end, max_retry=3):
+    """备用数据源：akshare 新浪接口获取前复权日线"""
+    for attempt in range(max_retry):
+        try:
+            import akshare as ak
+            df = ak.stock_zh_a_hist(symbol=symbol, period="daily", adjust="qfq",
+                                    start_date=start.replace("-", ""), end_date=end.replace("-", ""))
+            if df is None or df.empty:
+                raise ValueError("空数据")
+            df = df.rename(columns={
+                '日期': 'date', '开盘': 'open', '收盘': 'close',
+                '最高': 'high', '最低': 'low', '成交量': 'volume'
+            })
+            for col in ['open', 'close', 'high', 'low', 'volume']:
+                df[col] = pd.to_numeric(df[col], errors='coerce')
+            df['date'] = pd.to_datetime(df['date'])
+            df = df.sort_values('date').reset_index(drop=True)
+            df = df.dropna()
+            if len(df) >= 150:
+                print(f"    ✅ {name}({symbol}): akshare新浪 {len(df)}条日线")
+                return df
+        except Exception as e:
+            if attempt == max_retry - 1:
+                print(f"    ⚠️ {name} akshare拉取失败: {e}")
+    return None
+
+
+def fetch_long_sina_jsonp(symbol, name, start, end, max_retry=3):
+    """备用数据源：新浪 jsonp 历史日线（周末也稳定）"""
+    import requests
+    import re
+    # 代码格式转换
+    if symbol.startswith("6"):
+        sina_sym = f"sh{symbol}"
+    else:
+        sina_sym = f"sz{symbol}"
+    
+    # 新浪日K jsonp 接口：scale=240 为日线，datalen 足够大覆盖全历史
+    # 使用 money.finance.sina.com.cn 接口（quotes.sina.cn 已失效返回 Invalid service name）
+    # 注意：该接口返回纯 JSON 数组，非 JSONP 格式
+    url = f"https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol={sina_sym}&scale=240&ma=no&datalen=2500"
+    
+    for attempt in range(max_retry):
+        try:
+            headers = {"Referer": "https://finance.sina.com.cn/"}
+            resp = requests.get(url, headers=headers, timeout=10)
+            text = resp.text
+            # 直接解析 JSON 数组
+            data = json.loads(text)
+            if not data:
+                raise ValueError("空数据")
+            df = pd.DataFrame(data)
+            # 新浪字段: day, open, high, low, close, volume
+            df = df.rename(columns={"day": "date", "open": "open", "high": "high",
+                                    "low": "low", "close": "close", "volume": "volume"})
+            for col in ["open", "high", "low", "close", "volume"]:
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.sort_values("date").reset_index(drop=True)
+            df = df.dropna()
+            # 截取日期范围
+            start_dt = pd.to_datetime(start)
+            end_dt = pd.to_datetime(end)
+            df = df[(df["date"] >= start_dt) & (df["date"] <= end_dt)]
+            if len(df) >= 150:
+                print(f"    ✅ {name}({symbol}): 新浪jsonp {len(df)}条日线")
+                return df
+        except Exception as e:
+            if attempt == max_retry - 1:
+                print(f"    ⚠️ {name} 新浪jsonp拉取失败: {e}")
+    return None
+
+
 def fetch_long(symbol, name, start, end, max_retry=3):
-    """拉取长历史日线(前复权)"""
+    """拉取长历史日线(前复权)：新浪jsonp(主，稳定) -> akshare新浪(备用1) -> baostock(备用2，加行数保护)"""
+    # 尝试 1: 新浪 jsonp 接口（主源：周末也稳定、无死循环）
+    df = fetch_long_sina_jsonp(symbol, name, start, end, max_retry)
+    if df is not None:
+        return df
+    
+    # 尝试 2: akshare 新浪接口
+    df = fetch_long_akshare(symbol, name, start, end, max_retry)
+    if df is not None:
+        return df
+    
+    # 尝试 3: baostock（备用，加行数上限保护防死循环）
     code = baostock_code(symbol)
     for attempt in range(max_retry):
         try:
-            rs = bs.query_history_k_data_plus(
+            rs = query_history_k_data_plus_retry(
                 code, "date,open,high,low,close,volume,amount",
                 start_date=start, end_date=end,
-                frequency="d", adjustflag="2")  # 2=前复权
+                frequency="d", adjustflag="2",  # 2=前复权
+                max_retries=1, wait_seconds=1.0
+            )
+            if rs is None:
+                raise ValueError("查询失败")
             rows = []
-            while (rs.error_code == "0") and rs.next():
+            max_rows = 5000  # 6.5年约1600个交易日，5000为安全上限
+            while rs.next() and len(rows) < max_rows:
                 rows.append(rs.get_row_data())
-            if len(rows) >= 100:
+            if len(rows) >= max_rows:
+                print(f"    ⚠️ {name} baostock返回异常行数({len(rows)})，疑似死循环，已截断")
+            if len(rows) >= 150:
                 df = pd.DataFrame(rows, columns=[
                     "date", "open", "high", "low", "close", "volume", "amount"])
                 for c in ["open", "high", "low", "close", "volume", "amount"]:
                     df[c] = pd.to_numeric(df[c], errors="coerce")
                 df["date"] = pd.to_datetime(df["date"])
                 df = df.dropna(subset=["close"]).reset_index(drop=True)
+                print(f"    ✅ {name}({symbol}): baostock {len(df)}条日线")
                 return df
         except Exception as e:
             if attempt == max_retry - 1:
-                print(f"    ⚠️ {name} 拉取失败: {e}")
+                print(f"    ⚠️ {name} baostock拉取失败: {e}")
+    
+    print(f"    ❌ {name}({symbol}) 所有数据源均失败")
     return None
 
 
@@ -91,6 +225,7 @@ def pick_safe_strategy_names(df, sfunc):
 
 def main():
     write_map = "--write-map" in sys.argv
+    arbitrate = "--arbitrate" in sys.argv
     stock_arg = None
     if "--stocks" in sys.argv:
         i = sys.argv.index("--stocks")
@@ -98,9 +233,10 @@ def main():
 
     today = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    login = bs.login()
-    if login.error_code != "0":
-        print("❌ baostock 登录失败:", login.error_msg); sys.exit(1)
+    # 确保 baostock 登录（单例）
+    if not ensure_login():
+        print("❌ baostock 登录失败")
+        sys.exit(1)
 
     # 股票清单 (默认全量30只)
     from backtest_strategies import STOCKS
@@ -135,7 +271,7 @@ def main():
             stock_out["windows"][wname] = wmetrics
         results[symbol] = stock_out
 
-    bs.logout()
+    bs_logout()
 
     # ── 跨窗口稳定性评分 ──
     print("\n" + "=" * 70)
@@ -210,6 +346,7 @@ def main():
         key_map = {
             "布林带+ATR": "bollinger", "KDJ+CCI": "kdj_cci", "EMA+OBV": "ema_obv",
             "EMA12/26金叉(基准C)": "ema_cross", "纯MACD(基准B)": "macd",
+            "牛市趋势跟踪": "bull_trend",
         }
         best_map[symbol] = {
             "strategy": key_map.get(best["strategy"], "ema_cross"),
@@ -227,46 +364,132 @@ def main():
     outfile = os.path.join(WORKSPACE, "analysis", f"validation_{today}.json")
     with open(outfile, "w", encoding="utf-8") as f:
         json.dump(best_map, f, ensure_ascii=False, indent=2)
+
+    # ── 全局数据完整度门槛：至少需有效股票数达标才允许写回映射 ──
+    valid_stocks = sum(1 for s in results.values() if "error" not in s)
+    MIN_VALID_STOCKS = 20
+    if write_map and valid_stocks < MIN_VALID_STOCKS:
+        print(f"\n⚠️ 全局数据完整度不足: 仅 {valid_stocks}/{len(stocks)} 只股票有完整跨周期数据，低于阈值 {MIN_VALID_STOCKS}")
+        print(f"   拒绝写回 adaptive_strategy_map.json，保留原映射")
+        write_map = False
+
     print(f"\n✅ 稳健策略验证结果保存: {outfile}")
 
-    # ── 可选: 写回 adaptive_strategy_map.json (带置信度护栏) ──
-    # 护栏: 只有得分>=25 且 夏普>=0.25 的变更才写回，否则保留原策略(避免低置信度过拟合)
-    if write_map:
+    # ── 读取 param_tune 的候选策略（用于仲裁）──
+    tune_map = {}
+    tune_details = {}
+    params_file = os.path.join(WORKSPACE, "data", "adaptive_params.json")
+    if os.path.exists(params_file):
+        try:
+            with open(params_file, "r", encoding="utf-8") as f:
+                tune_data = json.load(f)
+            tune_stocks = tune_data.get("stocks", {})
+            for symbol, info in tune_stocks.items():
+                if "error" not in info and "strategy" in info:
+                    tune_map[symbol] = info["strategy"]
+                    tune_details[symbol] = info
+        except Exception as e:
+            print(f"  ⚠️ 读取 param_tune 结果失败: {e}")
+
+    # ── 置信度仲裁：验证结果(跨窗口稳健) vs 调优结果(近期最优参数) ──
+    def confidence_guard(score, sharpe, trades):
+        """统一的置信度护栏"""
+        if score < 25:
+            return False, f"得分{score}<25"
+        thr = 0.4 if trades < 6 else 0.25
+        if sharpe < thr:
+            return False, f"夏普{sharpe}<{thr}(低笔数{int(trades)}笔需更严)"
+        return True, ""
+
+    if write_map or arbitrate:
         mapfile = os.path.join(WORKSPACE, "data", "adaptive_strategy_map.json")
         with open(mapfile, "r", encoding="utf-8") as f:
             cur = json.load(f)
+        
         changes = 0
         skipped = []
+        arbitrated = []
+        
         for symbol, info in best_map.items():
             if "error" in info or "strategy" not in info:
                 continue
-            new_s = info["strategy"]
-            old_s = cur.get(symbol)
-            if old_s == new_s:
-                continue
-            # 置信度护栏: 得分和夏普都达标才覆盖; 低笔数策略需更高夏普(防低样本侥幸)
-            score = info.get("score", -999)
-            sharpe = info.get("avg_sharpe", -999)
-            trades = info.get("avg_trades", 999)
-            # 笔数<6 时, 要求夏普>=0.4 才允许覆盖(更严格); 笔数>=6 用 0.25
-            sharpe_threshold = 0.4 if trades < 6 else 0.25
-            if score >= 25 and sharpe >= sharpe_threshold:
-                print(f"  📝 {info.get('name', symbol)}: {old_s} -> {new_s} "
-                      f"(得分{score} 夏普{sharpe} 交易{trades}笔)")
-                cur[symbol] = new_s
-                changes += 1
+            val_s = info["strategy"]           # 验证推荐
+            tune_s = tune_map.get(symbol)       # 调优推荐
+            old_s = cur.get(symbol)             # 当前生效
+            
+            val_score = info.get("score", -999)
+            val_sharpe = info.get("avg_sharpe", -999)
+            val_trades = info.get("avg_trades", 999)
+            
+            # 验证候选是否通过护栏
+            val_ok, val_reason = confidence_guard(val_score, val_sharpe, val_trades)
+            
+            # 调优候选是否通过护栏
+            tune_ok = False
+            tune_score = tune_sharpe = tune_trades = -999
+            if tune_s and tune_s in tune_details.get(symbol, {}).get("details", {}):
+                tinfo = tune_details[symbol]["details"][tune_s]
+                tune_score = tinfo.get("best_score", -999)
+                tune_sharpe = tinfo.get("avg_sharpe", -999)
+                tune_trades = tinfo.get("avg_trades", 999)
+                tune_ok, _ = confidence_guard(tune_score, tune_sharpe, tune_trades)
+            
+            # ── 仲裁逻辑 ──
+            final_s = old_s
+            reason = ""
+            
+            # 情况 1: 调优无候选 (tune_s 为 None 或空)
+            if not tune_s:
+                if val_ok:
+                    final_s = val_s
+                    reason = f"仅验证有候选且过护栏: {val_s}"
+                else:
+                    reason = f"验证候选未过护栏({val_reason})，保留原策略"
+            # 情况 2: 双方一致
+            elif val_s == tune_s:
+                if val_ok or tune_ok:
+                    final_s = val_s
+                    reason = f"双方一致({val_s}) 验证={'✅' if val_ok else '❌'} 调优={'✅' if tune_ok else '❌'}"
+                else:
+                    reason = f"双方一致({val_s})但均未过护栏，保留原策略"
+            # 情况 3: 双方不一致
             else:
-                skipped.append((symbol, info.get("name", symbol), old_s, new_s, score, sharpe, trades, sharpe_threshold))
+                # 调优显著更优: 三维度同时满足 (分数+10, 夏普+0.1, 样本量>=6)
+                if tune_ok and tune_score > val_score + 10 and tune_sharpe > val_sharpe + 0.1 and tune_trades >= 6:
+                    final_s = tune_s
+                    reason = f"调优显著更优: {tune_s}(分{tune_score} 夏普{tune_sharpe}) > {val_s}(分{val_score} 夏普{val_sharpe})"
+                # 默认采信验证(跨窗口稳健)
+                elif val_ok:
+                    final_s = val_s
+                    reason = f"采信验证(跨窗口稳健): {val_s}(分{val_score} 夏普{val_sharpe}) vs 调优:{tune_s}(分{tune_score} 夏普{tune_sharpe})"
+                # 无明确优势方，保留原策略
+                else:
+                    reason = f"验证未过护栏({val_reason})，调优{'过' if tune_ok else '未过'}护栏，保留原策略"
+            
+            if final_s != old_s:
+                print(f"  📝 {info.get('name', symbol)}: {old_s} -> {final_s} ({reason})")
+                cur[symbol] = final_s
+                changes += 1
+                if val_s != tune_s:
+                    arbitrated.append((symbol, info.get('name', symbol), val_s, tune_s, final_s, reason))
+            else:
+                skipped.append((symbol, info.get('name', symbol), old_s, val_s, tune_s, val_score, val_sharpe, val_trades, val_reason))
+        
         with open(mapfile, "w", encoding="utf-8") as f:
             json.dump(cur, f, ensure_ascii=False, indent=2)
         print(f"\n✅ 已写回 {mapfile} (变更 {changes} 处)")
+        
+        if arbitrated:
+            print(f"\n⚖️ 仲裁决策 ({len(arbitrated)} 处):")
+            for sym, name, val_s, tune_s, final_s, reason in arbitrated:
+                print(f"   {name}({sym}): 验证={val_s} 调优={tune_s} -> 最终={final_s} ({reason})")
+        
         if skipped:
-            print("\n⏸️ 以下因低置信度保留原策略(不覆盖):")
-            for sym, name, old_s, new_s, score, sharpe, trades, thr in skipped:
-                reason = f"夏普{sharpe}<{thr}(低笔数{int(trades)}笔需更严)" if trades < 6 else f"得分{score}<25 或 夏普{sharpe}<{thr}"
-                print(f"   {name}({sym}): {old_s} 保留 (稳健候选{new_s} {reason})")
+            print("\n⏸️ 以下保留原策略:")
+            for sym, name, old_s, val_s, tune_s, v_sc, v_sh, v_tr, v_reason in skipped:
+                print(f"   {name}({sym}): 当前={old_s} 验证={val_s}(分{v_sc} 夏普{v_sh}) 调优={tune_s} -> 保留 ({v_reason})")
     else:
-        print("\n(未写入 adaptive_strategy_map.json，需加 --write-map 才会覆盖)")
+        print("\n(未写入 adaptive_strategy_map.json，需加 --write-map 或 --arbitrate 才会覆盖)")
 
 
 if __name__ == "__main__":

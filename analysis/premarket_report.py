@@ -6,6 +6,7 @@
 """
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -15,14 +16,17 @@ from pathlib import Path
 WORKSPACE = Path("/Users/duguke/.openclaw/workspace")
 
 
-def run_script(script_path, args=None, capture=True, timeout=120):
+def run_script(script_path, args=None, capture=True, timeout=300):
     """运行脚本，返回 (success, stdout, stderr)"""
     cmd = [sys.executable, str(script_path)]
     if args:
         cmd.extend(args)
     try:
+        env = dict(os.environ)
+        env["PYTHONPATH"] = str(WORKSPACE) + os.pathsep + env.get("PYTHONPATH", "")
         result = subprocess.run(
-            cmd, cwd=WORKSPACE, capture_output=capture, text=True, timeout=timeout
+            cmd, cwd=WORKSPACE, capture_output=capture, text=True, timeout=timeout,
+            env=env
         )
         return result.returncode == 0, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
@@ -336,14 +340,16 @@ def main():
 
     # 3. 双策略扫描
     print("🎯 [3/5] 双策略最优扫描...")
-    ok, out, err = run_script(WORKSPACE / "analysis" / "adaptive_dual.py", timeout=180)
+    # adaptive_dual.py 实测约 200s+（30只串行拉baostock），180s必超时，提至 320s
+    ok, out, err = run_script(WORKSPACE / "analysis" / "adaptive_dual.py", timeout=320)
     dual_data = parse_dual_scan_output(out) if ok else None
     if not ok:
         print(f"   ⚠️ 双策略失败: {err}")
 
     # 4. AI 智能体研判
     print("🤖 [4/5] AI 智能体综合研判...")
-    ok, out, err = run_script(WORKSPACE / "analysis" / "agent" / "run_agent.py", timeout=180)
+    # run_agent.py 含LLM调用较慢，180s易超时，提至 420s
+    ok, out, err = run_script(WORKSPACE / "analysis" / "agent" / "run_agent.py", timeout=420)
     agent_data = parse_agent_output(out) if ok else None
     if not ok:
         print(f"   ⚠️ 智能体失败: {err}")

@@ -1,0 +1,145 @@
+{
+  "generated": "2026-08-29 09:54",
+  "gate": {
+    "score": 25,
+    "sharpe_high": 0.4,
+    "sharpe_low": 0.25
+  },
+  "results": {
+    "600089": {
+      "name": "特变电工",
+      "strategy": "ema_cross",
+      "strategy_cn": "EMA12/26金叉(基准C)",
+      "score": 86.55,
+      "avg_return": 123.43,
+      "avg_sharpe": 0.208,
+      "avg_dd": -25.17,
+      "avg_trades": 10.8,
+      "windows_used": 4,
+      "details": [
+        {
+          "strategy": "EMA12/26金叉(基准C)",
+          "score": 86.55,
+          "avg_return": 123.43,
+          "avg_sharpe": 0.208,
+          "avg_dd": -25.17,
+          "avg_trades": 10.8,
+          "sample_weight": 1.0,
+          "windows": 4
+        },
+        {
+          "strategy": "布林带+ATR",
+          "score": 75.13,
+          "avg_return": 69.62,
+          "avg_sharpe": 0.559,
+          "avg_dd": -30.36,
+          "avg_trades": 13.2,
+          "sample_weight": 1.0,
+          "windows": 4
+        },
+        {
+          "strategy": "纯MACD(基准B)",
+          "score": 48.68,
+          "avg_return": 49.51,
+          "avg_sharpe": 0.316,
+          "avg_dd": -26.51,
+          "avg_trades": 26.8,
+          "sample_weight": 1.0,
+          "windows": 4
+        }
+      ],
+      "pass": "False",
+      "sharpe_threshold": 0.25
+    },
+    "600312": {
+      "name": "平高电气",
+      "strategy": "macd",
+      "strategy_cn": "纯MACD(基准B)",
+      "score": 32.5,
+      "avg_return": 28.6,
+      "avg_sharpe": 0.265,
+      "avg_dd": -31.16,
+      "avg_trades": 24.8,
+      "windows_used": 4,
+      "details": [
+        {
+          "strategy": "纯MACD(基准B)",
+          "score": 32.5,
+          "avg_return": 28.6,
+          "avg_sharpe": 0.265,
+          "avg_dd": -31.16,
+          "avg_trades": 24.8,
+          "sample_weight": 1.0,
+          "windows": 4
+        },
+        {
+          "strategy": "KDJ+CCI",
+          "score": 21.3,
+          "avg_return": 14.94,
+          "avg_sharpe": 0.324,
+          "avg_dd": -10.67,
+          "avg_trades": 9.0,
+          "sample_weight": 0.75,
+          "windows": 4
+        },
+        {
+          "strategy": "EMA12/26金叉(基准C)",
+          "score": 15.55,
+          "avg_return": 19.34,
+          "avg_sharpe": 0.082,
+          "avg_dd": -31.94,
+          "avg_trades": 10.8,
+          "sample_weight": 1.0,
+          "windows": 4
+        }
+      ],
+      "pass": "True",
+      "sharpe_threshold": 0.25
+    },
+    "300207": {
+      "name": "思源电气",
+      "strategy": "ema_obv",
+      "strategy_cn": "EMA+OBV",
+      "score": -29.94,
+      "avg_return": -2.88,
+      "avg_sharpe": -0.47,
+      "avg_dd": -28.34,
+      "avg_trades": 25.5,
+      "windows_used": 4,
+      "details": [
+        {
+          "strategy": "EMA+OBV",
+          "score": -29.94,
+          "avg_return": -2.88,
+          "avg_sharpe": -0.47,
+          "avg_dd": -28.34,
+          "avg_trades": 25.5,
+          "sample_weight": 1.0,
+          "windows": 4
+        },
+        {
+          "strategy": "EMA12/26金叉(基准C)",
+          "score": -33.07,
+          "avg_return": 1.89,
+          "avg_sharpe": -0.452,
+          "avg_dd": -44.23,
+          "avg_trades": 12.2,
+          "sample_weight": 1.0,
+          "windows": 4
+        },
+        {
+          "strategy": "布林带+ATR",
+          "score": -40.35,
+          "avg_return": -14.26,
+          "avg_sharpe": -0.494,
+          "avg_dd": -34.28,
+          "avg_trades": 13.0,
+          "sample_weight": 1.0,
+          "windows": 4
+        }
+      ],
+      "pass": "False",
+      "sharpe_threshold": 0.25
+    }
+  }
+}

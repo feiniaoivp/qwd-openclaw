@@ -4,8 +4,13 @@ Agent 入口脚本：编译 LangGraph 工作流并执行，
 输出报告文本（供 cron 捕获并通过 Telegram 推送）。
 """
 
-import os, sys, json, re, traceback
+import os, sys, json, re, traceback, socket
 from datetime import datetime
+
+# 防御性兜底：本环境对 quotes.sina.cn 等外部接口存在间歇性 TLS 握手挂起
+# （实测 SSL do_handshake 在 poll 上无限阻塞、绕过 per-call timeout，导致 cron SIGKILL）。
+# 对所有新建 socket（含 https/SSL 握手）设置全局默认超时，确保任何一步都绝不会无限阻塞。
+socket.setdefaulttimeout(15)
 
 # 确保可以从工作区根导入模块
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
@@ -67,6 +72,20 @@ def build_report_text(state) -> str:
     tp = state.get("trader_picks")
     L.append("操盘手选股:")
     L.append(json.dumps(tp or [], ensure_ascii=False, indent=2))
+
+    # 斐波那契波段止盈参考（独立小节，复用已锁定基线，纯参考不画靶）
+    try:
+        from analysis.fib_track import build_take_profit_section
+        prices = {}
+        for s in (signals or []):
+            if isinstance(s, dict) and s.get("symbol") and s.get("price"):
+                prices[s["symbol"]] = s["price"]
+        fib_note = build_take_profit_section(prices)
+        L.append("")
+        L.append(fib_note)
+    except Exception as e:
+        L.append("")
+        L.append("📐 斐波那契波段止盈参考: (生成失败: %s)" % e)
     return "\n".join(L)
 
 

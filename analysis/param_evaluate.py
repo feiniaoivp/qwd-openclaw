@@ -119,18 +119,67 @@ def load_change_log():
 
 
 def symbol_name_map():
-    # 从自适应参数文件取股票名
+    # 从自适应参数文件取股票名 (new 优先, 缺失时回退 prev)
     m = {}
-    if os.path.exists(NEW_FILE):
+    for path in (NEW_FILE, PREV_FILE):
+        if os.path.exists(path):
+            try:
+                with open(path) as f:
+                    data = json.load(f)
+                for sym, info in data.get("stocks", {}).items():
+                    if sym in m:
+                        continue  # new 优先, 不覆盖
+                    if isinstance(info, dict) and info.get("name"):
+                        m[sym] = info["name"]
+            except Exception:
+                pass
+    return m
+
+
+def _load_stocks_map(path):
+    """读取 adaptive_params json 的 stocks 字典, 失败/不存在返回空 dict。"""
+    if os.path.exists(path):
         try:
-            with open(NEW_FILE) as f:
-                data = json.load(f)
-            for sym, info in data.get("stocks", {}).items():
-                if isinstance(info, dict) and info.get("name"):
-                    m[sym] = info["name"]
+            with open(path) as f:
+                return json.load(f).get("stocks", {}) or {}
         except Exception:
             pass
-    return m
+    return {}
+
+
+def _effective_param(sym_info):
+    """取一只股票『顶部实际生效』的策略名 + 参数。
+    若未指定 strategy 或 params 非 dict, 返回 None(视为「未实质调参」)。"""
+    if not isinstance(sym_info, dict):
+        return None
+    strat = sym_info.get("strategy")
+    params = sym_info.get("params")
+    if not strat or not isinstance(params, dict):
+        return None
+    # 参数键排序, 保证 {'a':1,'b':2} 与 {'b':2,'a':1} 视为相同
+    return (str(strat),), tuple(sorted((str(k), str(v)) for k, v in params.items()))
+
+
+def effectively_changed_symbols():
+    """对比 prev vs new 顶部 strategy+params, 返回『参数实质改变』的股票集合。
+    仅在两侧都存在且能取到生效参数时比较; 一侧缺失则视为「无法确认」返回 None,
+    由调用方决定(保守起见不误报为实质变更)。"""
+    prev = _load_stocks_map(PREV_FILE)
+    new = _load_stocks_map(NEW_FILE)
+    changed = set()
+    for sym in set(prev) | set(new):
+        p = _effective_param(prev.get(sym))
+        n = _effective_param(new.get(sym))
+        if p is None and n is None:
+            continue          # 两侧都未指定 → 视为未实质调参
+        if p is not None and n is not None:
+            if p != n:
+                changed.add(sym)
+            # 两侧一致 → 未实质变更, 不加入
+        else:
+            # 一侧有、一侧无 → 无法可靠判定, 加个占位由 evaluate 决定
+            changed.add(sym)
+    return changed
 
 
 def evaluate(since=None):
@@ -142,11 +191,21 @@ def evaluate(since=None):
     trades = load_trades()
     change_log = load_change_log()
 
-    # 收集该时段内被调参的股票 (从调参日志)
+    # ⭐ 过滤「参数实质未变」股票: 用 prev vs new 顶部生效 strategy+params 做实质对比,
+    #    仅对真正改参数/换策略的股票纳入赛后评估。
+    #    避免 change_log 中因冗余 best_params/策略集数量变化而误报(如某股 details.best_params
+    #    变了但顶部生效 strategy+params 不变) → 导致「没改参数却报恶化→建议回滚」的误判。
+    eff_changed = effectively_changed_symbols()
+
+    # 收集该时段内被调参且「参数实质变更」的股票
     tuned_symbols = set()
     for entry in change_log:
         if entry.get("date", "") >= since:
             tuned_symbols.update(entry.get("changes", {}).keys())
+
+    if eff_changed is not None:
+        # 仅保留实质变更 + 有成交记录(在观察池内)的股票; 无实质变更则本轮无可验证
+        tuned_symbols = tuned_symbols & eff_changed
 
     # 从成交流水统计每只股票该时段的实际盈亏
     by_symbol = {}

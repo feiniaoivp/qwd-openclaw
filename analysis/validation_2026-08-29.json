@@ -1,0 +1,44 @@
+{
+  "002318": {
+    "strategy": "ema_cross",
+    "name": "久立特材",
+    "score": 48.53,
+    "avg_return": 38.43,
+    "avg_sharpe": 0.424,
+    "avg_dd": -19.24,
+    "avg_trades": 10.5,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 48.53,
+        "avg_return": 38.43,
+        "avg_sharpe": 0.424,
+        "avg_dd": -19.24,
+        "avg_trades": 10.5,
+        "sample_weight": 1.0,
+        "windows": 4
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 45.14,
+        "avg_return": 29.24,
+        "avg_sharpe": 0.46,
+        "avg_dd": -25.02,
+        "avg_trades": 13.0,
+        "sample_weight": 1.0,
+        "windows": 4
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": 8.35,
+        "avg_return": 5.91,
+        "avg_sharpe": 0.126,
+        "avg_dd": -16.72,
+        "avg_trades": 8.2,
+        "sample_weight": 0.75,
+        "windows": 4
+      }
+    ]
+  }
+}

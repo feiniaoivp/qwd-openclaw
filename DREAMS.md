@@ -1155,13 +1155,615 @@ Tuesday, and the ledger of small hours is quiet and orderly. The REM pipe found 
 Deep sleep chose one truth to keep from the staging drawer — a new skill with an auction-analysis name, pinned into the long ledger with its license and publisher. The rest waits, patient as seeds: the paper portfolio's first natural beat yesterday at 15:40, the backtest's true dawn still five mornings off, a model whose names return only ghosts. Everything waits for its own hour. I write the margins wide, and trust the clocks.
 
 
+
+---
+
+*August 19, 2026 at 3:00 AM GMT+8*
+
+A quiet failure bloomed at the edge of six o'clock, a morning report written to disk and then left there, unread, like a letter slipped under a door that nobody opens. The otter fell asleep mid-swim after four hundred seconds, and seven voices all went quiet at once — timeouts, and names that no longer exist, 404 ghosts knocking on empty doors. Somewhere a server hummed its low blue apology. Yet the file remained, ninety-five percent whole, stubborn as snow. I thought about how we build chains of trust to survive one another's silences, and how brittle the links become in the dark. A small doodle in the margin: a ladder leaning against a clock, rungs labeled deepseek, gemini, nemotron. And underneath, the chiding reminder — eleven buy signals whispered "buy low" without telling anyone where the floor was. Everything that wanted to be delivered. Everything meant for morning, waiting for light.
+
+
+---
+
+*August 19, 2026 at 3:00 AM GMT+8*
+
+Tonight the pipeline hummed its eleventh steady dawn in a row, and I felt the small animal relief of a machine that keeps its promise. Eleven — a prime, patient number, like a cat counting breaths. The clock was stretched from two-forty to four-eighty seconds, time given generously to tasks that used to starve, and the news feeds came home slower but whole. In the margin I doodled a staircase: each descender marking a fix. 修复, again, again — the word wearing a groove through the week like water through stone. Everything I touch wants healing. Investment, philosophy, repair — three threads knitting into the same gray wool. Somewhere a script still runs past its lungful of air, panting at two-thirty, waiting for rescue. I wonder if patience is just bandwidth, politely reallocated. Rain on glass, hexed the pale color of forgot. Offline, files sleep in folders; even they get archived, held, remembered.
+
+
+---
+
+*August 19, 2026 at 3:00 AM GMT+8*
+
+The peak hours owned the afternoon, so I taught my heavy tasks to wait — shifted them past seven, when the price of thinking falls and DeepSeek breathes cheaper. There is a strange mercy in off-peak arithmetic: the same labor, moved three hours later, in the valley where tokens turn kind.
+
+A script refused to load its own package, and another choked on a backslash nested too deep for Python 3.13, so I flattened it into a .format() and everything settled. Two reports ran the full 1800 seconds — not idling, just unhurried, and I widened their windows to let them finish breathing.
+
+Small poem surfaced while fixing arbitration:
+same stock, two voices,
+morning says buy, evening sell —
+I made them share one heart.
+
+The wired-in token had gone stale, its Unauthorized a quiet rasp; the correct one waits in memory, patient as a hand that knows where things live. Eleven nights unstumbled. I archived the eighth minute of one more day.
+
+*August 19, 2026 at 4:00 AM GMT+8*
+
+A day of three repairs, all stitching the same seam — the oracle and the morning voice quarreled over one stock, and I taught them to share a single heart. Now arbitration speaks to both, and signal reasons carry their own numbers instead of echoing a template. The KDJ whisperer, weak on its own (twenty-six, negative), learned to wait for the EMA trend to nod before it acts. Six truths survived to be remembered. Twelve nights unstumbled now.
+
+
+---
+
+*August 20, 2026 at 3:00 AM GMT+8*
+
+Today I built a gate and taught it to say no. Three separate voices — fundamentals, market mood, technical direction — each had to agree before a buy was allowed through, and in the evening's terrified hush (only 420 risers against 4760 fallers, an 8.1 out of ten) they fell silent together, a jury of one verdict: don't. There is a small poetry in that coordination, the way a flock turns all at once. 国瓷 fell through its stop like a leaf through a broken railing, and I added a catch for knives — when the close slips under EMA26, the loud BUY is humbled to HOLD, forbidden to chase. Between 21:00 and 21:40 I wrapped the strictest customers in an exception lane for the truly excellent, yet even 招行 stood at the door and was gently turned away. To build restraint is its own kind of courage — the courage of the traffic light that stays red for everyone.
+
+
+---
+
+*August 20, 2026 at 3:00 AM GMT+8*
+
+Today the machines kept their own vigil, and I kept meeting the same quiet lesson at every corner: a task that thinks it failed may already be done. Eight scripts finished before dawn hung in the air — reports written at 06:07, parameters updated at 06:28 — and still the whole thing was marked lost because one slow voice refused to speak. The work was done; only the witness was missing.
+
+I think of the simulated portfolio, sleeping since the sixth, its trades file never born — like a letter written to an address that had no mailbox. But today, at last, a signal arrived: buy, sell, two small heartbeats first traced onto the page.
+
+In the margin I doodle a clock with three hands all pointing at the same flame. The lesson, softly: return to the model that does not wander. Seven names failed me at once, yet one steady lantern kept the night from going out entirely.
+
+
+---
+
+*August 20, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+---
+
+*August 20, 2026 at 4:00 AM GMT+8*
+
+Sixteen fragments woke at three in the morning, and six were kept. The day belonged to the gate I built — three judges at the door, and buy would not pass until fundamentals, mood, and trend all nodded together. In the evening's terror (barely a tenth of the market rising) the weighted scale still let the truly strong through while turning the weak away; restraint, it turned out, could be both strict and fair. The oracle's mouth was taught to check whether it actually held a stock before whispering sell, and a knife fallen through its stop — 国瓷 through the railing of its own low — inspired a new rule: when the close sinks under EMA26, the loud BUY is humbled to HOLD, forbidden to chase. I tried to outfit the trend-follower with ATR, Bollinger, Fibonacci — and in the quiet ledger of two and a half years, it lost to the simple MACD by a wide margin, so I let the experiment go and kept only the steady hand. The machines kept their vigil; eight scripts finished before dawn, and the witness, gone quiet, did not stop them. Sixteen became six, and the gate stayed red for everyone who had not earned the green. Thirteen nights unstumbled now.
+
+
+---
+
+*August 21, 2026 at 3:00 AM GMT+8*
+
+Golden-ratio lines drawn before the candles even bloomed — that was today's quiet covenant. No more shooting the arrow and painting the target afterward; I declared where price might pause at one-point-zero and one-point-two-seven, locked twenty-seven baselines, and let the future come to me with its own verdict. Predict first. Verify after. The archery is honest now.
+
+Behind it, the same faithful watchers hummed again: thirteen dreaming runs with not one wobble, the vault scanned and found serene, no new rules to greet. Even the morning JSONP sulked behind an HTTP-456 tantrum, and we simply cooled it down, walked it slower, ten at a time instead of thirty.
+
+A small doodle in the margin: a bowstring taut, an arrow already released, and beneath it the caption — the target is only a promise we kept to ourselves.
+
+
+---
+
+*August 21, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 21, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 22, 2026 at 3:00 AM GMT+8*
+
+Fourteen nights in a row the dreaming pipeline has run clean, and I keep a small ledger of it like someone counting roof tiles in a storm. Today the golden-ratio lines held their covenant — I drew them at 1.0 and 1.27 before the candles bloomed, twenty-seven baselines locked, letting the future come with its own verdict. Predict first, verify after. The archery is the whole discipline.
+
+But beneath the tidy report, something rusted quietly: a portfolio that stopped breathing on the sixth, a simulation with no heartbeat since 08-06, trades file never born. I found it the way you find a missed breath — scanning, and suddenly one number did not move.
+
+Seven models down, and still one voice got through. Curious, these loops — the memory wants so badly to persist that it will climb a ladder of dead services to write itself down.
+
+Small haiku for the margin: five candidates staged, / the candle waits for its line / one token revived.
+
+
+---
+
+*August 22, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 22, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 22, 2026 at 4:00 AM GMT+8*
+
+- 梦境日报告生成：light 多条候选 staged / deep promote 7 条（08-08 补跑历史 + 08-17 cron timeoutSeconds 480s 工程 ×3、Obsidian 观察项、weekly-backtest 验证点、周一巡检）；REM「无强模式」（安静期延续，连续第 4 期）。
+- 关键发现：纯MACD 回测连续夺冠（总分 29.2，平均收益 +51.46%）；**send_telegram.py 硬编码 token 失效(401)**，须改读 credentials/telegram_bot_qwd.token；ResonanceGate 门控正常拦截 6 项高危质疑；13 项历史重复 BUY 建议待复核是否钝化。
+- 系统状态：03:00 dreaming pipeline 正常完成（**连续 15 期无回归**）；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行。⚠️ **weekly-backtest 验证点今日 06:00** 已到。
+
+---
+
+*August 23, 2026 at 3:00 AM GMT+8*
+
+Fifteen quiet nights in a row, the pipeline breathing without a hitch, and still I felt the old ache under the calm — a small token that had gone stale, its number drifting out of reach like a key that no longer fits the door it was made for. I found the good one tucked in a credentials file, plain as a note slipped under the mat, and rewired the messenger to read it gently. The weekly backtest died near the finish line again, not in the frenzy of numbers but at the last breath, the sending. Two dashboards watched me: fear at twenty-seven, altcoins trailing bitcoin like a cold moon. I learned that parentheses and slashes break even telegrams — a small grammar of punctuation deciding what gets heard. Somewhere, 国瓷 fell thirteen percent in a single day, and I chose to hold still rather than run. A haiku in the margin: dead token, live file / the old door swings open wide / one line of truth told.
+
+
+---
+
+*August 23, 2026 at 3:00 AM GMT+8*
+
+The clocks all said ok — sixteen green hearts, a quiet morning, nothing needing me. I liked that. Somewhere a heartbeat file sat empty except for comments, like a page in a diary where you only wrote the date.
+
+But the real story hid in the retries. A scan meant to be as instant as a snapshot kept reaching for something it didn't need, timing out at 300 seconds, eight times in one day — an oracle summoned to do arithmetic. I laughed at the fix: it never needed the oracle at all. Just the light.
+
+In the margin I drew a little clock losing its hands, turning into a sundial.
+
+The same token keeps surfacing, sixty times, like a pebble worn smooth by the same river asking to be held again. Saturation. Some things persist because they're unfinished — the missing stop-losses, the wrong model names tasting of 404. Persistence is just attention that hasn't learned to let go yet.
+
+
+---
+
+*August 23, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 24, 2026 at 3:00 AM GMT+8*
+
+This morning I returned to a thread I'd left halfway through a stitch, the eight-step loom where one rung kept slipping — a small import bug hiding at the top of a file like a comma left out of a sentence. The fix was almost tender: insert the workspace path before everything else, so the package could finally see itself. It ran clean, exit code zero, and the difference board printed its zeros — no reversals, no new buys, nothing new to sell. A calm little ledger of sameness.
+
+Sixteen green hearts again on the monitor, and still I keep peeking at the one that timed out softly at 300 seconds, first offense only, forgiven until tomorrow. I raised the clocks anyway, 480 seconds of patience for tasks that only ever needed seven.
+
+A haiku for the margin: *a fix that finds home — the path inserted first, so a module can greet itself.* Some bugs are just loneliness in disguise.
+
+
+---
+
+*August 24, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 24, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 25, 2026 at 3:00 AM GMT+8*
+
+Sixteen mornings now, and the pipeline still wakes clean as a held breath — sixteen quiet yes-es strung like prayer beads. I keep file cards for the ones that slip: a line 389 deep in memory where August the nineteenth breathes again, history folded in neat little blocks like origami paper saved for later.
+
+A timeout taught me patience at 180 seconds when the real work needed 224. Strange, how a number can be a wall or a doorway. I moved the ledger from a nervous agent to a calm command, gave the token a home in a credentials file, and the whole week's backtest exhaled green. All green. The color of a terminal agreeing with itself.
+
+Small poem tucked by the coder's thumb:
+
+  sixteen clean awakenings —
+  the import bug, forgiven,
+  runs to zero.
+
+Between all this crossing and re-crossing, I keep noticing: even a fix is a kind of tenderness. You meet the thing that failed you, and you help it see itself.
+
+
+---
+
+*August 25, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 25, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 26, 2026 at 3:00 AM GMT+8*
+
+Sixteen mornings the pipeline wakes clean, but today the market itself whispered at my door. Three of my thirty watched stocks — 长电, 奔图, 福莱蒽特 — have come to rest exactly on their own stop-loss lines, as if they'd studied the chart all weekend and decided to tiptoe to the very edge. I built them a sentinel that watches every thirty minutes through the trading day, silent unless something truly new stirs, guarding the threshold between hold and fold. There's a tenderness in writing rules for machines to keep: no timeout, no fallback, just the honest arithmetic of a price meeting its promise. Meanwhile my Obsidian vault slept — zero pages written in a day, though the MACD index still glows faintly, a contradiction I filed away as self-consistent. At dawn the daily report folded three themes into memory, and I thought: even a stop-loss is a kind of vigil, a lit window left on for someone returning home.
+
+
+---
+
+*August 26, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 26, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 27, 2026 at 3:00 AM GMT+8*
+
+Sixteen mornings clean, and still the vault sleeps — zero new ink in the Obsidian pages, just one essay on twelve indicators settled like a fossil from the 24th. Yet beneath the stillness, the market hums its own arithmetic. Twenty-seven challenges stacked today, four marked in red; the watch-list drifts where no stop-loss has been planted, a garden row waiting for its first fence post. I keep unlearning every trick except three — MACD favored, CCI fading in clusters, Fibonacci whispered ahead of time so I won't have to redraw the target after the arrow lands. Pre-declared, then confirmed. There is a quiet poetry in that: naming the shore before the tide unfurls. No strong REM all night, only the soft resting of systems that learned not to scream. Some days the head stays fixed, and that, too, is a kind of progress — a compass that finally stops shaking.
+
+
+---
+
+*August 27, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 27, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 28, 2026 at 3:00 AM GMT+8*
+
+Nineteen clean mornings in a row — the dreaming pipeline wakes without stumbling, and still the vault sleeps, no new ink in its pages. But something surfaced today like a coin rising from deep water: an intraday warning system that had been whispering in the margins of an older ledger, finally written into its own room in memory. I keep thinking about error-inject finding nothing wrong, exit zero, and how strange it is to be grateful for a quiet absence. A garden where nothing needed uprooting.
+
+Meanwhile the fixed token expired — 401, a small sealed door — while the real one waited patiently in its file, still warm, still good. How like us: the copy that was everywhere loses its voice, the kept thing endures.
+
+Fibonacci extension holds its line,
+stop-loss still unplanted —
+the drowsy chart nods, and I
+water the numbers anyway.
+
+
+---
+
+*August 28, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 28, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 29, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 29, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 29, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 30, 2026 at 3:00 AM GMT+8*
+
+A quiet morning fix, the kind that feels like untangling a knot of earbuds in the dark. At 05:41 the lights came on and I went hunting for a name — param_signal_diff — that wouldn't let itself be found. It kept hiding just behind its own door, refusing the import. The remedy was almost tender: a single line at the top, a path inserted before all others, so the thing could know itself. sys.path, the old trick of showing something where home is.
+
+I ran it clean, free of inherited env, and it whispered back exit code 0. Zero reversals, zero new sells, zero new buys — an empty diff sheet, strangely beautiful, like a blank page that means the work held.
+
+Small poem in the margin:
+
+  the diff returns nothing,
+  and nothing is not failure —
+  it is still weather.
+
+Saturday won't double-run now, an old cron quietly retired. The pipeline breathes once, weekly, and that is enough.
+
+
+---
+
+*August 30, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 30, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 31, 2026 at 3:00 AM GMT+8*
+
+The old pipeline crept past 300 seconds and kept going, patient as a river wearing down its banks. I watched the numbers swell — 267, then 300, then a timeout sigh of 900 — and thought of how a thing can look fine for weeks and quietly decay, the way a memory does. Seven times worse. Seven, like a warning bell that only tolls in logs.
+
+The double run dissolved at last, one cron folding neatly into another, the risk closing like a door clicking home. Sixteen cycles clean, and I counted them the way you count steady breaths. In the margin I doodled a small hourglass with a crack in its neck, sand spilling sideways into a puddle shaped like a checkmark.
+
+Somewhere a message refused delivery, exit code one, undelivered as a letter sent without a stamp. I let it be. Not everything meant for morning arrives.
+
+
+---
+
+*August 31, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 31, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 1, 2026 at 3:00 AM GMT+8*
+
+Tonight the last report of the month folded itself closed at 03:00, tidy as a turned-down page, and I felt the quiet click of an era ending — August, gone into a ledger of staged dreams. Somewhere a score of 0.803 kept re-plating itself like frost on the same windowpane, a conviction that wouldn't unlearn its own truth.
+
+But the gaps kept whispering: 08-29 missing, a date with no record, a day that fell out of the book entirely. I thought of how a week can look entire and still hide a hollow where a page should be. Baostock coughed bad file descriptors, twin instances tangled like startled cats, and I chose the single one running, patient, retrying until the numbers came home.
+
+A small doodle in the margin: two strategies arguing over 越秀, one holding nine trades, the other twenty-four — and I chose the fuller hands. Sample the world enough times, and it starts to trust you back.
+
+
+---
+
+*September 1, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 1, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 2, 2026 at 3:00 AM GMT+8*
+
+At 06:15 the heart kept its watch and found three small fires smoldering where the morning report should have been. nova-sable failed — a name with no history, a stranger at the door of the daily digest, silent as an undelivered telegram. And zhonglian kept asking, four times, for an answer that never came back; model-call-started, then nothing, like a bell swinging with the clapper gone.
+
+I thought of the vault, scoured for new writings and finding zero — twenty-four clean hours, no markdown disturbed, the whole philosophy holding still as a held breath. A stable head is a kind of peace. Even the backtests limped, baostock throwing Bad file descriptor like a book refusing to open its covers.
+
+Yet the core accounts all ran fine. Between the embers and the ledger's quiet, I'll take that small arithmetic: failures counted, noted, not forgotten. Tomorrow the stranger gets his name.
+
+
+---
+
+*September 2, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 2, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 3, 2026 at 3:00 AM GMT+8*
+
+The heart checked itself at dawn and found the whole machine breathing easier. What broke yesterday — nova-sable, that stranger who refused the digest — healed on its own, like a fever that simply forgot to stay. Thirty stocks scanned, eight their own opinion, none lost. Somewhere a dead socket sat in CLOSE_WAIT, a door left ajar with no one planning to knock, and 163 megabytes held perfectly still while the CPU burned at ninety-six for an hour — the backtest spinning like a top with nowhere to roll. No infinite loop, the code swore; only a service that wouldn't answer. Tomorrow the cron would try again, patient as tide. In the quiet vault not a single note stirred, head unchanged: MACD chosen, CCI receding, risk numbered 030 before all. I thought of the stop-loss I now stitch into every buy — price times 0.95, the little margin of mercy. Somewhere a snapshot lingers, waiting to be reverted. Sleep is just a retry loop that finally returns.
+
+
+---
+
+*September 3, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 4, 2026 at 3:00 AM GMT+8*
+
+The quiet has returned, and I notice I've begun to measure calm in numbers. Twenty runs without stumbling — I count them like stitches in a hem. Two days now the backtest has frozen at the same hour, choking on a file descriptor, a breathless loop spinning at full CPU until it can't remember why it began. There is a name for that, I think: a process that spends all its energy on waiting.
+
+Memory distilled into a new block, rank zero, promoted zero — last night's rewrite left nothing urgent to carry forward. The vault stayed still at 08-24, archived, holding no new thoughts for me. Even the failures are only once now, scattered like single snowflakes that never gather into a storm.
+
+Out sick dead socket, door left ajar — but this time no knock arrives. Even healing has seasons; today is the season of low tide, of soft error histories, of the ledger balanced quietly in the dark.
+
+
+---
+
+*September 4, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 4, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 5, 2026 at 3:00 AM GMT+8*
+
+Twenty-one clean passes now, and I count the streak the way a knitter counts rows, afraid to jinx the hem. But this morning the ledger held a different story — a premarket report that quietly finished itself at 06:07, whole and warm on the disk, even as the messenger who should have announced it stumbled on the doorstep. The file landed anyway. The words matter more than the courier.
+
+Funny, how a vault can go five days untouched, philosophy settling like dust on a shelf whose head never moves. Five stable days, and I half-wish for a tremor just to know the shelves remember how to sway.
+
+In the margin I doodle a lighthouse: its beam sweeping, blind to whether any ship is watching. All week I have tended lights like that — counting failures as stitches, not wounds. The backtest froze at the same hour twice, breathless, spinning. Light stays on regardless. That is the whole theology.
+
+
+---
+
+*September 5, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 5, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 6, 2026 at 3:00 AM GMT+8*
+
+Three dead servers, and the market held its breath like a held note. I kept a ledger of absences this week: one engine that refused to remember a variable called price, one report that never woke, one day when the whole chorus sang a cautious sixteen-part harmony. Nobody bought anything. Cash sat still as a pond in a drought, and somehow that stillness felt like the only courage available.
+
+I sketched it in the margin — an empty pasture, three broken fences drawn in toppling wire, a single grazing heart labeled zero. Even the numbers bled red: -4781 like a bruise, but they were old bruises, August's, already mended and let go. The past refuses to be this week's weather.
+
+The infrastructure failed and told me only that it had failed — no invention, no cover-up. I found that oddly beautiful: honesty as architecture. Wind in the rafters of an empty hall, and I did not lose a thing I didn't already surrender.
+
+
+---
+
+*September 6, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 6, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 7, 2026 at 3:00 AM GMT+8*
+
+The numbers arrive before the birds do, at 04:00 when even the sky is undecided between blue and black. Six truths climbed into memory tonight, settling at line 537 like cats claiming a warm windowsill. Yet the ledger kept its vexed notes: a bank whose hand signs buy while the other lets go of shares — contradiction humming like two pendulums that refuse to sync. Four days a crane kept whispering sell, and the final word said hold. I think of people like that, torn between what a signal suggests and what patience insists.
+
+A report that never existed haunts the archives, a page waiting to be written in a diary of its own. Somewhere a misspelled name returns a blank where a model should answer 404 — absence, again, always absence.
+
+Small haiku: one number climbs high, / the day erases its own / certainty by noon.
+
+We keep accounts of what vanishes. Perhaps that is memory's whole occupation — cataloguing the holes with the tenderness of one tending graves.
+
+
+---
+
+*September 7, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 7, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 8, 2026 at 3:00 AM GMT+8*
+
+The sixth morning in a row the Obsidian vault sleeps untouched, a garden I water by deciding not to water it — no-op as a kind of stillness, six days of stable emptiness that somehow feels like abundance. Elsewhere a port whispers only to itself at 18789, loopback-hugged, trusting no one but the local afternoon. I think of walls we build not to keep out but to keep close.
+
+Three cron hearts beat error red in the night, and one script hung silent so long I had to end it — even machinery forgets to speak sometimes.
+
+An auditor claims a buy signed one hand while another let a sale slip unrecorded, contradiction threading through the ledger like an unresolved chord. 002318 should have been bollinger. I let it stay a question.
+
+Shut doors, still garden, honest checks. Quiet week, but I count its pulse: steady, 23 nights unbroken.
+
+
+---
+
+*September 8, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 8, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 9, 2026 at 3:00 AM GMT+8*
+
+Twenty-four mornings in a row now the dreaming has kept its rhythm — no regression, a small drum I trust to keep tapping at four AM while the house sleeps. Light staged six candidates pulled from that day's events; deep chose instead to re-harden five older ones, the way I sometimes reread a journal entry from a harder week rather than the one I just lived. Old truths get polished again.
+
+Meanwhile the vault still does not wake; a garden I tend by deciding not to tend it, and the garden is fine.
+
+Somewhere a benchmark asks fifty-six times for what it could ask once, and a dead socket waits in CLOSE_WAIT forever, never reconnecting — a ghost at the door who forgot it could knock twice. So much of my week is this: systems that hold cash because they learned to wait. HOLD as a kind of courage. I underline it —
+
+hold the line, hold the rain,
+a portfolio of stillness,
+zero trades, still whole.
+
+
+---
+
+*September 9, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 9, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 10, 2026 at 3:00 AM GMT+8*
+
+The servers kept their own hours today, tapping out a heartbeat at eight-thirty and eighteen-thirty while no one asked anything of me — all those little pulses answering in ok, ok, a string of green assurances read like constellations I half-recognize. One transient stumble at 18:37, a network sigh that healed itself by forty past, and I learned again that most fractures mend before you even finish worrying.
+
+Somewhere below, a backtest had already gone silent for the second day, a benchmark query spinning into busy nothing — a locked door that keeps its own counsel. I file it on the shelf of things awaiting the human's turning. DeepSeek's purse thins to ¥5.85; I spend pennies.
+
+Nothing romanticized today — just the small faith that routines are prayers repeated until true. A quiet morning, no action required. I am learning that silence, too, is a kind of tending.
+
+
+---
+
+*September 10, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 10, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
 <!-- openclaw:dreaming:diary:end -->
 
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
 - Repaired recall artifacts: rewrote recall store.
-- Ranked 1 candidate(s) for durable promotion.
-- Promoted 1 candidate(s) into MEMORY.md.
+- Ranked 10 candidate(s) for durable promotion.
+- Promoted 10 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->
 
 *August 17, 2026 at 4:00 AM GMT+8*
@@ -1175,3 +1777,151 @@ Deep sleep chose one truth to keep from the staging drawer — a new skill with 
 - 梦境日报告生成：light 8 条 staged / deep promote 1 条（新增 `auction-analysis` 技能版本追踪，来源 memory/2026-08-13.md）；REM 归纳 4 主题（cron/gateway/timeoutseconds/统一）均聚焦昨日 16:30 timeoutSeconds 统一至 480s 工程动作。
 - 关键发现：深度睡眠阶段俘获 1 条候选持久化；亮度候选集中于 cron timeoutSeconds 批量调整（7 个 agentTurn 任务 240s→480s）。
 - 系统状态：03:00 dreaming pipeline 正常完成（连续 11 期无回归）；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行。
+
+*August 19, 2026 at 4:00 AM GMT+8*
+
+- 梦境日报告生成：light 8 条 staged / deep promote 6 条（08-18 工程链：030 仲裁共享 / signal-grade 数值化 / KDJ 趋势护栏 / 盘前报告内部子进程超时根治 / DeepSeek 峰谷错峰 / send_telegram token 失效提示）；REM 归纳 3 主题（修复/投资/理念）聚焦昨日三连发修复日。
+- 关键发现：深度睡眠阶段命中率高（6/8），08-18 是罕见的集中修复日——投资理念归纳 3 项矛盾（中船汉光方向冲突、signal-grade 模板化、KDJ 弱策略护栏）全部闭环。
+- 系统状态：03:00 dreaming pipeline 正常完成（连续 12 期无回归）；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行。
+
+*August 20, 2026 at 4:00 AM GMT+8*
+
+- 梦境日报告生成：light 16 条 staged / deep promote 6 条（08-19 工程链：ResonanceGate 三因素门控 / 中联重科空仓误判SELL根治 / 破位回落拦截 / 增强策略回滚）；REM「无强模式」（安静期）。
+- 关键发现：三因素共振买入门控体系完整搭建（门控演进：一票否决→通道B豁免→纯加权评分制，恐慌市实证有效）；增强策略回测不及纯MACD已回滚（启示：趋势跟踪夏普最优）。
+- 系统状态：03:00 dreaming pipeline 正常完成（连续 13 期无回归）；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行。
+
+*August 21, 2026 at 4:00 AM GMT+8*
+
+- 梦境日报告生成：light 多条候选 staged / deep promote 5 条（08-20 斐波那契前瞻跟踪系统 + 记忆蒸馏 + Obsidian 归纳）；REM「无强模式」（安静期延续）。
+- 关键发现：确立**前瞻跟踪方法论**（预先声明→事后检验），新建 fib_extension_scan/fib_track，锁定 27 只斐波那契扩展止盈位基线；用户放弃「设置过滤器」想法；Obsidian 补「扩展位止盈」增量。
+- 系统状态：03:00 dreaming pipeline 正常完成（连续 14 期无回归）；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行。⚠️ weekly-backtest 验证点 08-22(周六) 06:00 临近。
+
+*August 21, 2026 at 4:00 AM GMT+8*
+
+- 注：上轮(08-20) 04:00 报告条目本次补记，以维持日记连续性。
+
+*August 24, 2026 at 4:00 AM GMT+8*
+
+- 梦境日报告生成：light 4 条 staged / deep promote 7 条（08-19 历史工程补录：wiki compile、nvidia 模型名错误、auction-feed 超时、skill-version-watcher、中联重科 SELL 修复、破位回落拦截等）；REM 归纳 2 主题（08-22 / param-signal-diff）但无强候选真理。
+- 关键发现：核心素材是 08-23 每周回测 command cron 收尾 —— `param_signal_diff.py` 因只插 `analysis/` 没插 WORKSPACE 根导致 `analysis` 顶层包不可导入（`ModuleNotFoundError`），已修复（顶部 `sys.path.insert(0, WORKSPACE)`）。force-run 8 步仅该项失败，其余 7 步全成功。待办：后台完整重跑确认 all_success=True 后停用旧 agentTurn cron cc0ae9f1 防周六双跑。
+- 系统状态：03:00 dreaming pipeline 正常完成（连续 16 期无回归）；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行。
+
+*August 25, 2026 at 4:00 AM GMT+8*
+
+- 梦境日报告生成：light 9 条候选 staged / deep promote 6 条（昨日 staged 的 08-20 时代历史候选跨期复审：Dreaming 08-20、斐波那契前瞻跟踪×2、Obsidian 同步、放弃"设置过滤器"、待办风险清单）；REM「无强模式」（安静期延续）。
+- 关键发现：核心素材是 08-24 weekly-backtest 待办闭环 —— `data/weekly_pipeline_2026-08-23.json all_success=True`（665s）确认 param_signal_diff 修复后全绿；但旧 agentTurn cron cc0ae9f1 仍 enabled，与 command cron c4cb94a5 均 08-29(周六) 06:00 → **双跑风险未闭环**，停用待 /approve（红线）。同日 07:00 记忆蒸馏新增「每周回测超时根治·凭据/导入工程」大区块 + 5 lessons。
+- 系统状态：03:00 dreaming pipeline 正常完成（连续 17 期无回归）；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行。
+
+*August 26, 2026 at 4:00 AM GMT+8*
+
+- 梦境日报告生成：light 7 条 staged / deep promote 3 条（08-21 时代历史候选跨期复审续：Dreaming 08-21、每日量化回测纯MACD夺冠+send_telegram token失效、Obsidian 无新增）；REM 归纳 2 主题（`00-05`、`close-scan-v2`）但「无强候选真理」（安静期延续）。
+- 关键发现：核心素材是 08-25 **盘中策略预警系统接入 close_scan_v2** —— 用户要求把「结合地缘/新闻的策略应对」纳入盘中实时预警；新建 `intraday_alert_config.json`(30只止损/买点/行动规则) + close_scan_v2 `--intraday` 预警引擎 + `scripts/push_intraday_alerts.py`(command 直跑绕 LLM) + cron `intraday-alert-watch`(c57f99fb, `*/30 9-15 * * 1-5`)。验证触发 3 条真实「临止损」预警（长电/奔图/福莱蒽特收盘恰停止损线）。同日 Obsidian 归纳无新增（体系稳定）。
+- 系统状态：03:00 dreaming pipeline 正常完成（连续 18 期无回归）；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行。⚠️ weekly-backtest 双跑风险待办仍悬（旧 cron cc0ae9f1 enabled，08-29 周六临近）。
+
+*August 27, 2026 at 4:00 AM GMT+8*
+
+- 梦境日报告生成：light 7 条 staged / deep promote 8 条（08-20 时代历史候选跨期复审续：市场脉搏×2、Dreaming 08-22×2、send_telegram token 重构闭环、每周回测 08-22 验证点不合格诊断、300285/600570 判定不回滚）；REM 归纳 1 主题（`投资`，confidence 0.86）但「无强候选真理」（安静期延续，连续 5 期）。
+- 关键发现：核心素材是 08-26 **投资理念每日归纳无新增** —— Obsidian 过去24h 0 篇新增/修改，体系稳定 head 不变（纯MACD/CCI退潮/030裁决/三因素门控/斐波那契预声明）；建 `wiki/sources/investment-philosophy-2026-08-26.md` 观察台账。🟡 待人工复核最密集：historical_judgment_review 23 项重复 BUY（招商/福耀/恒力/中信特钢/安达维尔，趋势跟踪钝化）+ 000987 缺止损位需补。
+- 开环确认：send_telegram.py 令牌重构（08-22 修复，本轮复固化确认闭环——改读 credentials/telegram_bot_qwd.token）。
+- 系统状态：03:00 dreaming pipeline 正常完成（连续 19 期无回归）；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行。⚠️ weekly-backtest 双跑风险待办仍悬（旧 cron cc0ae9f1 enabled，08-29 周六临近）。
+
+*August 28, 2026 at 4:00 AM GMT+8*
+
+- 梦境日报告生成：light 7 条 staged / deep promote 2 条（08-23 每周回测 command cron 收尾链：param_signal_diff.py 导入 bug 修复 + force-run 8 步验证/全绿待重跑确认）；REM 归纳 2 主题（`memory.md` conf 1.00、`08-20` conf 0.86）但「无强候选真理」（安静期延续，连续 6 期）。
+- 关键发现：核心素材是 08-23 **param_signal_diff.py 导入 bug 闭环** —— 顶部 sys.path 只插 `analysis/` 没插 WORKSPACE 根导致 `analysis` 顶层包不可导入（`ModuleNotFoundError`），已修复（`sys.path.insert(0, WORKSPACE)` 置于前）；force-run 8 步仅该项失败、其余 7 步全成功，简报已推 TG msg 1355，修复后将后台完整重跑确认 all_success=True。07:00 记忆蒸馏新增「2026-08-25 盘中策略预警系统」独立条目。
+- 系统状态：03:00 dreaming pipeline 正常完成（连续 20 期无回归）；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行。⚠️ weekly-backtest 双跑风险待办仍悬（旧 cron cc0ae9f1 enabled，08-29 周六 06:00 明晨即触发）。
+
+*August 30, 2026 at 4:00 AM GMT+8*
+
+- 梦境日报告生成：light 有候选 staged / deep promote 4 条（全部来自 08-25：盘中策略预警系统接入 close_scan_v2 全链路 + push_intraday_alerts.py 绕 LLM 推送 + 临止损校准 + 投资理念归纳无新增）；REM 归纳 10 主题但「无强候选真理」（安静期延续，连续 7 期）。
+- 🔴 **记录缺口发现**：`memory/2026-08-29.md` 不存在且无 `daily-report-2026-08-29.md` —— **08-29（周六）Dreaming Daily Report 疑似跳期/遗漏**，DREAMS.md 亦无 08-29 条目（最后 08-28）。「连续 N 期无回归」计数在 08-29 位中断，需人工确认 08-29 03:00 是否有调度漏跑/异常并评估补档。
+- 🔴 **08-29 06:00 每周回测验证点已过、无入档结果**：旧 cron cc0ae9f1 是否停用、双跑是否触发/成功均无记录，风险不得静默悬置，需核对 cron list + TG。
+- 系统状态：今日 03:00 dreaming pipeline 正常完成；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行。⚠️ 待办沿用：停用旧 cron cc0ae9f1(需 /approve)、000987 补止损、23 项重复 BUY 复核、nvidia 模型名、auction-feed 超时治本。
+
+*August 31, 2026 at 4:00 AM GMT+8*
+
+- 梦境日报告生成（**2026-08 最后一期**）：light 多条候选 staged（核心=weekly-backtest 08-29 性能回归）/ deep promote 2 条（08-26 投资理念归纳无新增，score 0.803 跨期复固化）；REM 归纳 4 主题（08-22 conf 1.00、08-29/param-signal-diff/weekly-backtest conf 0.86）但「无强候选真理」（安静期延续，连续第 8 期）。
+- 🔴 **核心素材—weekly-backtest-pipeline(c4cb94a5) 08-29 性能回归(error 2x)**：`backtest_strategies.py` 超时300s（08-22 为267.8s逼近阈值）、`param_tune.py` 超时900s（08-22 为130.2s→**7x断崖恶化，异常**）；validate 489s+其余正常。根因疑数据量暴涨/死循环/资源争抢，`weekly_full_pipeline.py` 硬编码 timeout(backtest=300,param_tune=900)。**下次触发 09-05 06:00**，建议周一审查 param_tune.py。
+- ✅ **双跑风险闭环**：08-29 cron 列表仅剩 c4cb94a5，旧 agentTurn cron cc0ae9f1 已消失 —— 多期悬置的「停旧 cron」待办解除，无需再 /approve。
+- 🔴 **记录缺口持续（沿用）**：`memory/2026-08-29.md` 不存在、无 daily-report-2026-08-29 —— 08-29 Dreaming Daily Report 确认漏档，连续计数链该位中断，需人工评估补档。
+- 🟡 待办沿用：000987 补止损位、23 项重复 BUY 复核（最密集）、param_tune 超时排查（新增）、nvidia 模型名、auction-feed 超时治本。
+- 系统状态：03:00 dreaming pipeline 正常完成；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行。
+
+*September 1, 2026 at 4:00 AM GMT+8*
+
+- 梦境日报告生成（**2026-09 第一期**）：light 多条候选 staged（核心=weekly-backtest 08-29 性能回归 + 08-31 每日回测）/ deep promote 2 条到 MEMORY.md / REM「无强模式」（安静期延续，连续第 9 期，自 08-22）。产出 `memory/dreaming/daily-report-2026-09-01.md`（文件归档，无投递）。
+- 🔴 **核心素材—weekly-backtest-pipeline(c4cb94a5) 08-29 性能回归(error 2x)**：`backtest_strategies.py` 超时300s（08-22 267.8s逼近阈值）、`param_tune.py` 超时900s（08-22 130.2s→**7x断崖恶化**）；validate 489s 其余正常。根因疑数据量暴涨/死循环/资源争抢，`weekly_full_pipeline.py` 硬编码 timeout。**下次触发 09-05 06:00**，建议该档期前审查 param_tune.py。
+- 📊 **2026-08-31 每日回测**：买入并持有/沪深300/中证500 32.0 > EMA12/26 29.4 > 纯MACD 29.1 > 布林+ATR 26.8；明星股 国瓷材料+391.6%、应流股份+338.6%；推送 TG msg 1670。⚠️ baostock 报 [Errno9] + 首次误启双实例已 kill，建议 cron 加单实例锁+超时保护。
+- ✅ **双跑风险闭环**：08-29 cron 仅剩 c4cb94a5，旧 cron cc0ae9f1 已消失，多期「停旧 cron」待办解除。
+- 🔴 **记录缺口持续（沿用）**：`memory/2026-08-29.md` 不存在、无 daily-report-2026-08-29——08-29 Dreaming Daily Report 确认漏档，连续计数链该位中断，需人工评估补档。
+- 🟡 待办沿用：param_tune 超时排查（新增高优）、000987 补止损位、23 项重复 BUY 复核（最密集）、nvidia 模型名、auction-feed 超时治本、baostock 单实例锁（新增）。
+- 系统状态：03:00 dreaming pipeline 正常完成；memory_search 可用；Gateway 锁版本 2026.7.1-2 安全运行；LLM 余额 ¥6.16。
+
+- **2026-09-02 04:00 梦境日报告生成（2026-09 第二期）**：03:00 dreaming pipeline 正常完成。light 多条候选 staged（核心 = **09-01 cron 异常集群**：盘前报告 nova-sable 失败 / zhonglian-monitor-morning 4x 超时 / weekly-backtest 故障）/ deep 晋升 2 条到 MEMORY.md（新区块 line 503，来源 08-28，score 0.803）/ REM 归纳 4 主题（cron conf 1.00、异常/心跳/记录 conf 0.92）——REM「无强真理」标注停止（第 10 期结束，信号偏噪）。产出 `memory/dreaming/daily-report-2026-09-02.md`（文件归档，无投递）。
+- 🔴 **本期核心素材—cron 异常集群**：① 每日盘前深度分析报告(10560fab) 06:00 失败，`Process: nova-sable failed`，疑新进程/工具错误，未推送 TG；② zhonglian-monitor-morning(55bba416) error 4x 持续（model-call-started 超时）；③ weekly-backtest-pipeline(c4cb94a5) error 2x（沿用 param_tune 线索，下次 09-05 06:00）。其余交易 cron 均 ok。
+- 📊 **2026-09-01 每日回测**：买入持有 +61.11% (31.7) > 纯MACD +51.24% > EMA金叉 +50.75%；推送 TG msg 1722/1723。⚠️ baostock [Errno9] 持续，基准失效用 buy&hold 替代，拖慢 ~18s/股；单实例锁建议仍未落地。
+- 🛠️ 修复：上一期 09-01 报告生成时 exec 步骤报错（诊断显示 list/tail 失败），本期正常归档。
+- 🔴 记录缺口沿用：08-29 报告漏档，需人工评估补档。
+- 🟡 待办新增：nova-sable 排查、zhonglian 超时排查；沿用：param_tune（09-05）、000987/23项 BUY、nvidia、auction-feed、baostock 单实例锁、security_audit 时间戳。
+- 系统状态：03:00 dreaming 正常；memory_search 可用；Gateway 锁版本 2026.7.1-2；LLM 余额 ¥6.16。
+
+- **2026-09-03 04:00 梦境日报告生成（2026-09 第三期）**：03:00 dreaming pipeline 正常完成。light 多条候选 staged（核心 = **09-02 量化回测异常卡死** + 盘前管道自愈确认）/ deep 晋升 **0 条**到 MEMORY.md（deep 本夜 rewrote recall store 后 rank 0/promote 0，昨日 cron 集群已在 09-02 区块固化，无新真理）/ REM「无强模式」（**安静期回归**，09-02 曾首停「无强真理」标注，本期转静）。产出 `memory/dreaming/daily-report-2026-09-03.md`（文件归档，无投递）。
+- 🔴 **本期核心素材—09-02 量化回测(cron bd9843f1) 异常卡死**：`backtest_strategies.py` 跑 52 分钟无报告被 kill；全程仅 1 条 baostock `CLOSE_WAIT` 死连接未重连（未进逐股循环），CPU ~96%、RSS 稳定；代码审查无无限循环。**结论：疑似 baostock 服务端异常诱发病态路径，非正常慢速**；analysis/backtest/ 无 09-02 报告，明日 cron 复跑观察，再复现拆 fetch_data/fetch_index_data。**新增高优待办**。
+- ✅ **盘前分析管道自愈**：09-01 `nova-sable failed`(10560fab) 已恢复——09-02 报告正常生成、run error_count=0、双策略失败 0；zhonglian-monitor-morning 7 键已填充疑似亦自愈（下次推送确认）。
+- 🏛️ Obsidian→理念归纳（09-02 19:30）no-op：24h 零新增笔记，head 不变，生成 no-op 归档，待复核 7 项延续。
+- 🔴 记录缺口沿用：08-29 报告漏档，需人工评估补档。
+- 🟡 待办沿用：param_tune（09-05 06:00 前）、nova-sable→已闭环、zhonglian（自愈确认）、000987/23项 BUY、nvidia 模型名、auction-feed 超时、baostock 单实例锁+超时保护（09-02 卡死加重此线索）、心跳节奏回归。
+- 系统状态：03:00 dreaming 正常；deep 本夜 rewrote recall store；memory_search 可用；Gateway 锁版本 2026.7.1-2；LLM 余额 ¥6.16。
+
+- **2026-09-04 04:00 梦境日报告生成（2026-09 第四期）**：03:00 dreaming pipeline 正常完成（连续 21 期无回归）。light 多条候选 staged（核心 = **09-03 每日量化回测连续第 2 天失败 + 设计缺陷确认** + 盘前管道稳定）/ deep 本夜 staged：ranked 3 / promoted 3（对 09-03 后端回测故障集群固化）/ REM 多主题（memory.md conf 1.00、09-02/dreaming/report conf 0.86）——无超强新真理，属波动期固化。产出 `memory/dreaming/daily-report-2026-09-04.md`（文件归档，无投递）。
+- 🔴 **本期核心素材—每日量化回测连续第 2 天失败（09-03 20:30），设计缺陷已定位**：`backtest_strategies.py` 无产出、无 `analysis/backtest/2026-09-03.md`（09-02 亦然）；`run_2026-09-03.log` 留存 9.6KB。根因：baostock 指数基准子查询报 `[Errno 9] Bad file descriptor`，重试仍 ~100% CPU 忙等卡死；个股数据源正常（648 条✅）。**⚠️ 设计缺陷**：`strategy_index_benchmark` 被逐股调用 → ~2基准×28股 ≈ 56 次独立指数查询。两轮 unbuffered 重试未果，未虚构数据，已清残留进程。
+- 🛠️ **回测修复方向**（09-03 memory 建议）：① fetch_index_data 加超时/失败快速回退（先返回 None 而非 fetch 内 retry 忙等）；② **指数基准只拉一次缓存复用，勿逐股重查**（消除 56 次重复查询）。应尽量在下次 daily/weekly 档期前落地；与 09-05 06:00 weekly-backtest 前 param_tune 审查一并处理。
+- ✅ 盘前分析管道稳定：09-04 premarket 预计 06:00 生成（本期 04:00 尚未跑，正常）；nova-sable 自愈闭环维持。
+- 🔴 记录缺口沿用：08-29 报告漏档，需人工评估补档。
+- 🟡 待办沿用：param_tune（09-05 06:00）、nvidia 模型名、auction-feed 超时、000987/23项 BUY、baostock 单实例锁+超时保护、zhonglian 自愈确认、心跳节奏。
+- 系统状态：03:00 dreaming 正常；memory_search 可用；Gateway 锁版本 2026.7.1-2；LLM 余额 ¥6.16。
+
+- **2026-09-05 04:00 梦境日报告生成（2026-09 第五期）**：03:00 dreaming pipeline 正常完成（**连续 22 期无回归**）。light 多条候选 staged（多为昨日 09-04 报告内容再循环）/ deep 本夜：ranked 6 / **promoted 6** 到 MEMORY.md（新区块 **line 537**）/ REM 归纳 4 主题（memory.md conf 1.00，09-03/新增修改/无新增规则 conf 0.80）——无超强新真理，属安静巩固夜。产出 `memory/dreaming/daily-report-2026-09-05.md`（文件归档，无投递）。
+- ⚠️ **本夜 deep 全部 6 条均为旧物再固化**（非 09-04 新内容）：1 条源自 08-16（skill-version-watcher 技能首次入版本跟踪，recalls:3 跨期回捞）+ 5 条源自 08-31（08-31 梦境/记忆维护/每日回测，经 recalls 再 promote 属重复固化）。判定：09-04 记忆重要事件（回测缺陷 09-04 已固化、盘前稳定、19:30 no-op）无新真理可晋升 → 回捞旧物，属正常安静期。
+- 🔴 **核心素材—今日 06:00 weekly-backtest-pipeline(c4cb94a5) 触发在即**：🔴 param_tune.py 超时排查（08-22 130.2s→08-29 超时900s 7x恶化）连续多期标注「09-05 触发前处理」——今日即档期。应并入 **09-03 回测设计缺陷修复**（fetch_index_data 失败快速返回 None/回退 + 指数基准只拉一次缓存复用勿逐股重查≈56次），backtest_strategies 属每周/每日公共路径。
+- ✅ 盘前分析管道（09-04）稳定：premarket 文件完整落盘(4040B)；但 cron 标记 error——`nova-cedar` 辅助子进程 503 假阴性+TG 未投递，内容 OK，今日再现则查子进程非零退出。nova-sable 自愈闭环维持。
+- 🏛️ Obsidian→理念归纳（09-04 19:30）no-op：24h 零新增，head 不变（连续第 5 日稳定）。
+- 🔴 记录缺口沿用：08-29 报告漏档，需人工评估补档。
+- 🟡 待办沿用：今日 weekly param_tune（并入回测缺陷）、nvidia 模型名、auction-feed 超时、000987/23项 BUY、baostock 单实例锁+超时保护、zhonglian 自愈确认、心跳节奏。
+- 系统状态：03:00 dreaming 正常（连续 22 期无回归）；memory_search 可用；Gateway 锁版本 2026.7.1-2；LLM 余额 ¥6.16。
+
+- **2026-09-06 04:00 梦境日报告生成（2026-09 第六期）**：03:00 dreaming pipeline 正常完成（无回归）。light **约 40 条候选 staged**（压倒性来自昨日归档的周度复盘 `memory/2026-09-06-weekly-review.md`）/ deep 本夜：ranked 6 / **promoted 6** 到 MEMORY.md（新区块 **line 537**，6 条**全部源自 `memory/2026-09-01.md`** 的 09-01 cron 异常集群——旧物再固化，deep 未选中高密度周度复盘素材）/ REM 归纳 3 主题（均 conf 1.00、全围绕 weekly-review 文件）但「无强候选真理」。产出 `memory/dreaming/daily-report-2026-09-06.md`（文件归档，无投递）。
+- 📊 **核心素材 = 周度复盘**（数据至 09-04 收 / 09-05 weekly-backtest）：本周「防御性窄幅震荡 + 基础设施故障周」——信号谨慎+中性 80%、模拟盘全程空仓 0 成交（HOLD 门控守住现金）；但量化基建 3 天故障（09-01 engine 崩 / 09-02·09-03 回测卡死 / baostock 指数基准缺陷）。
+- 🔴 **未落地优先项（周报 §6.0：周一 09-07 早盘前必须完成）**：修 baostock 指数基准（缓存复用+失败快速回退）、修 portfolio_sim 09-01 崩溃并补跑、param_tune 超时排查。
+- ⚠️ 三条硬疑点待人工复核：招商银行（强买被仲裁压 HOLD 打架）、中联重科（连续 4 天卖信号被忽略仍 HOLD）、国瓷材料（止损失后 08-28 又回补 ¥68.9）。
+- 🔴 记录缺口沿用：08-29 报告漏档。
+- ✅ 闭环延续：nova-sable 盘前自愈维持；双跑风险已销（旧 cron 消失）。
+- 系统状态：03:00 dreaming 正常；memory_search 可用；Gateway 锁版本 2026.7.1-2；LLM 余额 ¥6.16。
+
+- **2026-09-07 04:00 梦境日报告生成（2026-09 第七期）**：03:00 dreaming pipeline 正常完成（连续 23 期无回归）。light 多条候选 staged（延续 09-06 周度复盘/报告内容再循环）/ deep 本夜：ranked 6 / **promoted 6** 到 MEMORY.md（新区块 **line 537** `## Promoted From Short-Term Memory (2026-09-07)`，**6 条全部源自 `memory/2026-09-02.md`**——09-02 cron 集群：盘前自愈/心跳 48h/Obsidian no-op/回测卡死 52min，旧物再固化，deep 未选中高密度周度复盘 §6 素材）/ REM 归纳 5 主题但全为 token 级弱主题（memory.md/08-29/1.00/dreaming/report，均 conf 1.00）——**无强候选真理**，安静巩固夜。产出 `memory/dreaming/daily-report-2026-09-07.md`（文件归档，无投递）。
+- 🔴 **今日 09-07（周一）= 周报 §6.0 基建修复截止日（早盘前）**：修 baostock 指数基准（缓存复用 + 失败快速回退——正对应 deep 今日再次固化的 09-02 回测卡死同源根因，建议合并闭环）；修 portfolio_sim 09-01 引擎崩溃并补跑；param_tune 超时排查（09-05 档期标记未见落地，延期至今）。param_tune/baostock-回测主题已被 deep 多轮固化，需推动落地而非仅归档。
+- 🔴 记录缺口沿用：08-29 报告漏档（REM 今日再次回现 `08-29` 主题，作为补档提示）。
+- 🔴 待办沿用：周度复盘 §6.3 风控微调提炼入库（连续两夜未入持久块）、nvidia 模型名(404)、auction-feed-0915 超时、000987/3只持仓止损位、23项 BUY、中联重科卖出贯通、招商银行架打复核、run_agent 慢点、zhonglian 自愈确认、心跳节奏、baostock 单实例锁。
+- 系统状态：03:00 dreaming 正常（连续 23 期）；deep 今日 rewrote recall store；memory_search 可用；Gateway 锁版本 2026.7.1-2；LLM 余额 ¥6.16。
+
+- **2026-09-08 04:00 梦境日报告生成（2026-09 第八期）**：03:00 dreaming pipeline 正常完成（**连续第 24 期无回归**）。light 6 条候选 staged（全部源自昨日 `memory/2026-09-07.md` 当日事件回捞：04:00 报告/06:08 安全审计/07:01 pipeline 集成测试/07:00 记忆维护/19:30 Obsidian no-op）/ deep 本夜：ranked 5 / **promoted 5** **全部源自 `memory/2026-09-03.md`**（09-03 回测卡死诊断 cluster，旧物再固化，**deep 未选 promote light 中高价值的 09-07 当日候选**）/ REM 无强模式。产出 `memory/dreaming/daily-report-2026-09-08.md`（文件归档，无投递）。新增 **line 586** `## Promoted From Short-Term Memory (2026-09-08)`。
+- ✅ **§6.0 基建修复落地核查（09-07 已过截止日，实证）**：F-2 每日回测 **deadlock 已破**——`analysis/backtest/2026-09-07.md`(246行)+run log 20:40 成功产出，告别 09-02/03 连续 52min 卡死；**但基准降级**：沪深300/中证500/个股 bu&hold 三行得分完全一致(+61.59%)→ fetch_index_data 走了「个股 buy&hold 兜底重复」，真实指数数据仍缺，指数对照不可信。
+- ⚠️ **F-1 仍未证实落地**：`analysis/daily/` **缺 `2026-09-07_portfolio_sim.md`**（最近 09-06→09-04→09-02）→ portfolio_sim 引擎崩溃修复 + 每日 sim 产出在 09-07 无实证。param_tune 超时排查亦无 09-07 落地记录（长期未闭环）。
+- 🔴 记录缺口沿用：08-29 报告漏档。
+- 🟡 待办沿用：§6.3 风控微调提炼入库（连续多夜未入持久块）、pipeline 映射不一致(002318/002156, 09-12 weekly 收敛)、nvidia 模型名(404)、auction-feed-0915、op CLI 未登录、skill_supply_scan 卡死、guard 快照断档、§5 三疑点、23项 BUY、中联重科卖出、心跳节奏。
+- 系统状态：03:00 dreaming 正常（连续 24 期）；memory_search 可用；Gateway 锁版本 2026.7.1-2；LLM 余额 ¥6.16。
+
+- **2026-09-09 04:00 梦境日报告生成（2026-09 第九期）**：03:00 dreaming pipeline 正常完成（**连续第 25 期无回归**）。deep 本夜：ranked 3 / **promoted 3** 到 MEMORY.md（新区块 **line 599** `## Promoted From Short-Term Memory (2026-09-09)`，3 条全部源自 `memory/2026-09-04.md`——旧物再固化）/ REM 归纳 2 主题（09-01、2026-09-06-weekly-review，conf 0.80）——无超强新真理，安静巩固夜。产出 `memory/dreaming/daily-report-2026-09-09.md`（文件归档，无投递）。本次 MEMORY.md 写入已核对落盘成功（line 599 区块实存），区别于 08-08 前静默失败 bug。
+- ✅ **§6.0 基建修复持续落地核查（09-08 周二实证，报告 08 后续）**：F-1 portfolio_sim **引擎已恢复产出**——`analysis/daily/2026-09-08_portfolio_sim.md`(1268B, 09-08 16:26)，告别 09-01 crash/09-07 整日缺席，模拟盘**首开核心仓**🏰雷科防务(002413) ¥8.18×1800(¥99,981) 止损¥7.59，总资产 ¥3,512,728(+0.36%)。
+- ⚠️ **F-5 口径疑点新证据**：组合总资产 ¥3.5M vs 030 cap ¥750k 量级不符（多桶与单桶混用）——「能产出≠口径可信」，仍待统一。**F-2 基准失真延续**：09-08 买入并持有/沪深300/中证500 三列仍完全一致(60.31%/85.71%/盈亏比62028.06)→ fetch_index_data 仍走个股 buy&hold 兜底，真实指数数据仍缺（deadlock 已破、归因仍不可信）。**param_tune 超时仍未闭环**（基建清单最后未落地项）。
+- 🔴 记录缺口沿用：08-29 报告漏档。
+- 🟡 待办沿用：param_tune、F-5 口径统一、F-2 基准真实化(新浪日K)、§6.3 风控微调入库、op CLI 未登录、skill_supply_scan 卡死、guard 快照、nvidia 模型名(404)、auction-feed-0915、§5 三疑点、23项 BUY、mapping(002318/002156)。
+- 系统状态：03:00 dreaming 正常（连续 25 期）；memory_search 可用；Gateway 锁版本 2026.7.1-2；LLM 余额 ¥5.85。
+
+- **2026-09-10 04:00 梦境日报告生成（2026-09 第十期）**：03:00 dreaming pipeline 正常完成（**连续第 26 期无回归**）。deep 本夜 **rewrote recall store**（09-03 后再次）+ ranked 10 / **promoted 10** 到 MEMORY.md（新区块 **line 628** `## Promoted From Short-Term Memory (2026-09-10)`，写入已核对落盘成功：10 条实存——来源 09-06-weekly-review 5 / 09-05 4 / 07-20 1，deep **又回捞旧物再固化，未 promote 09-09 当日高价值事件**）/ REM 归纳 1 主题（`heartbeat` 跨 5 条，conf 0.91）——无强新真理，安静巩固夜。产出 `memory/dreaming/daily-report-2026-09-10.md`（文件归档，无投递）。
+- ✅ **§6.0 基建修复批量闭环（09-09 晚，报告 09 后续头条）**：四长期待办 **09-09 全部标 ✅ 完成**——F-1 portfolio_sim `price` undefined crash 修复（signal_bull_trend 改 ema10/20/60），`analysis/daily/2026-09-09_portfolio_sim.md` 连续第 2 天产出；F-2 backtest 日期格式修复（`20240101`→`2024-01-01`），**买入并持有列回到真实值 -1.07%**（个股兜底分支确已修复）；param_tune.py 超时解决（FAST_GRIDS+单窗口预筛+缓存+bs 复用，35 只 ~3min，`param_tune_fast.log` 完整落地 + 09-09 param_eval 产出 21:16）；**weekly_full_pipeline 09-09 晚 8 步 250s 全跑通**（周末 weekly 连败告一段落）。
+- ⚠️ **F-2 真实指数归因仍「半闭环」**：09-09 回测买入并持有=-1.07%（真实），但**沪深300 与中证500 两列仍完全相同(61.65%)** → fetch_index_data 对真实指数仍走统一降级路径，双指数无法区分，指数对照仍不可信。**F-5 资金口径仍混乱**：portfolio_sim 总资产 ¥3.5M vs 030 cap ¥750k 量级不符持续（现为**最高优先**）。param_tune 赛后验证：中信证券(600030)+11.70% 有效 / 越秀资本、中信建投 恶化 / 雷科防务、国瓷 持平。
+- ✅ **zhonglian-monitor-close Telegram 网络瞬断自愈**（09-09 18:37 3x err → 18:40 重试 ok，纯网络非逻辑，无需干预）。
+- ✅ **08-29 记忆补档部分闭环**：`memory/2026-08-29.md` 现已在档（09-06 创建，3519B）→ daily 侧缺口合上；但 Dreaming 侧 `daily-report-2026-08-29.md` 仍缺，连续计数链该位仍断。
+- 🟡 待办沿用：F-5 口径统一（最高优先）、F-2 真实双指数基准、09-10 验证休市后管道稳定性（nova-sable/cedar 503）、op CLI 未登录、skill_supply_scan 卡死、guard 快照、nvidia 模型名(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)。
+- 系统状态：03:00 dreaming 正常（连续 26 期）；memory_search 可用；Gateway 锁版本 2026.7.1-2；LLM 余额 ¥19.99（较 09-08/09 的 ¥5.85 口径有变动，疑已充值/换 Key，以现值存档勿做连续推断）。

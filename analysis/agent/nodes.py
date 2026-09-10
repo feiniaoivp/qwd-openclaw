@@ -16,6 +16,7 @@ from analysis.service import (
 from analysis.llm_tool import (get_today_news, get_market_health, call_llm_with_tools, extract_llm_content)
 from analysis.rag.experience_store import retrieve_top_k
 from analysis.trader_stock_picks import get_trader_picks
+from analysis.three_factor_helper import ResonanceGate, SENT_BUY, FUND_BUY
 
 # ---------- � 辅助：生成唯一 run_id ----------
 def _make_run_id() -> str:
@@ -357,16 +358,66 @@ def rule_risk_advice(state):
       - 无止损即无交易：BUY 必须给出参考止损/支撑位。
       - 风险第一：中联重科综合最优触发卖出时强制 SELL。
       - 避免模板化：reason 携带现价/止损位，减少连续数日完全相同理由。
+      - 重复 BUY 钝化：同一股票连续买入信号仅首次执行，后续降级 HOLD。
     """
     signals = state.get("signals", [])
+    # 三因素共振门控（情绪+基本面，技术维度由信号级承载）—— 2026-08-19 接入
+    _res_gate = None
+    try:
+        _res_gate = ResonanceGate()
+    except Exception:
+        _res_gate = None
+    
+    # ── 重复 BUY 钝化：读取/初始化持久化计数器 ──
+    buy_streak_path = os.path.join(os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace"),
+                                    "data", "buy_streak.json")
+    try:
+        with open(buy_streak_path, "r", encoding="utf-8") as _f:
+            buy_streaks = json.load(_f)
+    except Exception:
+        buy_streaks = {}
+    
     serious_buy = serious_sell = fail = 0
     advice_list = []
+
+    # ── 2026-08-18 修复#3：双链路口径一致性校验 ──
+    # adaptive_dual.py 的 030 裁决（含减仓/卖出）已落盘 data/arbitration_YYYY-MM-DD.json。
+    # run_agent 的规则建议若与仲裁方向冲突（本链判 BUY/关注，仲裁判 减仓/卖出），
+    # 一律降级为 HOLD 并注明来源，避免同一股票同日给相反信号。
+    arb_by_symbol = {}
+    try:
+        arb_path = os.path.join(os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace"),
+                                "data", f"arbitration_{datetime.now():%Y-%m-%d}.json")
+        if os.path.exists(arb_path):
+            with open(arb_path, "r", encoding="utf-8") as _f:
+                _arb = json.load(_f)
+            if isinstance(_arb, list):
+                arb_by_symbol = {str(r.get("symbol")): r for r in _arb if isinstance(r, dict)}
+    except Exception:
+        arb_by_symbol = {}  # 仲裁文件缺失/损坏时不阻塞，退回原逻辑
+
     # 中联重科双策略综合最优是否触发卖出
+    # 2026-08-19 修复：卖出建议必须结合实际持仓 —— 空仓时技术面卖出信号只是"不宜买入/持有"，
+    # 不构成"强制SELL"建议（无仓可卖出，应归为 HOLD/观望），否则与 030 仲裁"持有"矛盾
+    # （challenge_review 高危#1 复现）。
     zl_sell, zl_strat = False, None
+    zl_holding = {}  # 记录各策略是否实际持仓
     try:
         zl = state.get("zhonglian") or {}
+        st = load_state() if "load_state" in globals() else {}  # 持久化持仓
         for k, v in (zl.get("signals") or {}).items():
-            if isinstance(v, dict) and v.get("sell"):
+            if not isinstance(v, dict):
+                continue
+            # 判断该策略对应持久化 key 是否持仓；找不到则按空仓处理（保守）
+            holding = False
+            if isinstance(st, dict):
+                for vkey in (k, str(k), "strategy1", "strategy2"):
+                    _h = st.get(vkey)
+                    if isinstance(_h, dict) and _h.get("position"):
+                        holding = True
+                        break
+            zl_holding[k] = holding
+            if v.get("sell") and holding:
                 zl_sell, zl_strat = True, v.get("name") or k
     except Exception:
         pass
@@ -394,22 +445,108 @@ def rule_risk_advice(state):
             action = "SELL"
             reason = "信号级:%s 分:%s" % (level, score)
         elif "强烈买入" in level or "关注" in level:
+            # ── 2026-08-19 修复#4：破位回落拦截 —— 收盘价已跌破 EMA26(中期趋势转空) 时，
+            #    买入/关注信号强制降级为观望(HOLD)，禁止接飞刀。
+            #    依据：2026-08-19 国瓷材料 5日-13%、盘中破止损仍被给"强烈买入"——BUY 评级明显失当；
+            #    以及记忆中的 08-02"天量高开低走=出货"教训。
+            _close_val = float(close) if close else None
+            _ema26_val = None
+            _ind = s.get("indicators") or {}
+            if isinstance(_ind, dict):
+                try: _ema26_val = float(_ind.get("EMA26")) if _ind.get("EMA26") is not None else None
+                except Exception: _ema26_val = None
+            if _close_val is not None and _ema26_val is not None and _close_val < _ema26_val:
+                action = "HOLD"
+                reason = ("破位回落拦截:现价¥%s已跌破EMA26(¥%s)，中期趋势转空，买入/关注降级为观望，禁追。"
+                          % (close, round(_ema26_val,2)))
+                advice_list.append({"symbol": sym, "name": name, "action": action,
+                                    "reason": reason})
+                continue
+            # ── 2026-08-19 三因素共振门控：情绪+基本面两维未达标，买入降级为观望 ──
+            if _res_gate is not None:
+                try:
+                    _ok, _ginfo = _res_gate.check_buy(str(sym))  # 技术维度已由信号级确认
+                    if not _ok:
+                        action = "HOLD"
+                        reason = ("三因素共振未达标:%s；买入/关注降级为观望，不追。"
+                                  % _ginfo.get("reason", ""))
+                        advice_list.append({"symbol": sym, "name": name, "action": action,
+                                            "reason": reason})
+                        continue
+                except Exception:
+                    pass  # 门控异常时退回原 BUY 逻辑，不阻断
+            # ── 2026-08-18 修复#3：与 adaptive_dual 030 仲裁做一致性校验 ──
+            # 仲裁判 减仓/卖出，本链却判 BUY —— 方向冲突，降级为 HOLD 并注明来源，
+            # 避免同一股票同日给相反信号（如中船汉光 08-18：本链关注/BUY vs 仲裁减仓）。
+            _arb = arb_by_symbol.get(str(sym))
+            if _arb:
+                _fa = str(_arb.get("final_action", ""))
+                _bearish_arb = ("减仓" in _fa) or ("卖出" in _fa)
+                if _bearish_arb:
+                    serious_buy -= 1 if serious_buy > 0 else 0
+                    action = "HOLD"
+                    _arb_reason = str(_arb.get("reason", ""))
+                    reason = ("与030仲裁方向冲突(仲裁:%s，本链信号级%s)；降级为持有/观望，不追。"
+                              % (_fa, level))
+                    advice_list.append({"symbol": sym, "name": name, "action": action,
+                                        "reason": reason})
+                    # 仲裁冲突时重置买入钝化计数
+                    buy_streaks[str(sym)] = 0
+                    continue
+            
+            # ── 2026-09-02 重复 BUY 钝化：同一股票连续买入仅首次执行 ──
+            current_streak = buy_streaks.get(str(sym), 0)
+            if current_streak > 0:
+                # 连续买入信号，钝化降级为 HOLD
+                action = "HOLD"
+                reason = ("重复BUY钝化(连续第%s日)：信号级%s 分%s｜现价¥%s｜原止损¥%s；已连续%s日给出买入，暂不追加"
+                          % (current_streak, level, score, close, round(float(close)*0.95,2) if close else 0, current_streak))
+                advice_list.append({"symbol": sym, "name": name, "action": action,
+                                    "reason": reason})
+                buy_streaks[str(sym)] = current_streak + 1
+                continue
+            
             serious_buy += 1
             action = "BUY"
             if close:
                 stop_ref = round(float(close) * 0.95, 2)
                 sup_ref = round(float(close) * 0.92, 2)
-                reason = ("信号级:%s 分:%s｜现价¥%s｜参考止损¥%s(-5%%)，参考支撑¥%s；跌破止损位无条件离场"
-                          % (level, score, close, stop_ref, sup_ref))
+                # 2026-08-18 修复#2：塞入指标数值差异化理由，避免多股同款模板
+                ind = s.get("indicators") or {}
+                if isinstance(ind, dict):
+                    _rsi = ind.get("RSI14"); _e12 = ind.get("EMA12"); _e26 = ind.get("EMA26")
+                    _macd = ind.get("MACD")
+                    diff = f"｜RSI{_rsi}｜EMA12/26:{_e12}/{_e26}｜MACD差{_macd}" if _rsi is not None else ""
+                else:
+                    diff = ""
+                reason = ("信号级:%s 分:%s｜现价¥%s%s｜参考止损¥%s(-5%%)，参考支撑¥%s；跌破止损位无条件离场"
+                          % (level, score, close, diff, stop_ref, sup_ref))
             else:
                 reason = "信号级:%s 分:%s（现价缺失，无法给出精确止损，谨慎执行）" % (level, score)
+            # 首次买入，记录钝化计数
+            buy_streaks[str(sym)] = 1
         else:
             action = "HOLD"
-            reason = "信号级:%s 分:%s" % (level, score)
+            # 非买入信号，重置该股票的买入钝化计数
+            buy_streaks[str(sym)] = 0
+            # 2026-08-18 修复#2：持有/中性也携带指标数值差异化
+            ind = s.get("indicators") or {}
+            if isinstance(ind, dict) and ind.get("RSI14") is not None:
+                reason = "信号级:%s 分:%s｜RSI%s｜EMA12/26:%s/%s" % (
+                    level, score, ind.get("RSI14"), ind.get("EMA12"), ind.get("EMA26"))
+            else:
+                reason = "信号级:%s 分:%s" % (level, score)
         advice_list.append({
             "symbol": sym, "name": name, "action": action,
             "reason": reason,
         })
+    # 保存买入钝化计数器
+    try:
+        with open(buy_streak_path, "w", encoding="utf-8") as _f:
+            json.dump(buy_streaks, _f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+    
     n = len(signals) or 1
     if fail >= n * 0.6:
         return "致命风险", [{"action":"SELL","reason":"数据大面积获取失败，无法确认安全，按 030 风控降仓"}]
@@ -421,7 +558,6 @@ def rule_risk_advice(state):
         return "中风险", advice_list
     if serious_buy >= 5:
         return "无", advice_list
-    return "无", advice_list
     return "无", advice_list
 
 # ---------- Node 9: 生成最终报告（可选） ----------

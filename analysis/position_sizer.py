@@ -23,6 +23,7 @@ from dataclasses import dataclass, asdict
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 DATA_DIR = os.path.join(WORKSPACE, "data")
+ADAPTIVE_PARAMS_FILE = os.path.join(WORKSPACE, "data", "adaptive_params.json")
 os.makedirs(DATA_DIR, exist_ok=True)
 
 # ═══════════════════════════════════════════════════════════════
@@ -52,6 +53,16 @@ SINGLE_STOCK_MAX = {
     "致命风险": {"冰点": 0.00, "修复": 0.00, "高潮": 0.00},
 }
 
+# 加载自适应参数（含ATR止损/仓位参数）
+def load_adaptive_params():
+    if os.path.exists(ADAPTIVE_PARAMS_FILE):
+        try:
+            with open(ADAPTIVE_PARAMS_FILE) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {"stocks": {}}
+
 # 单日单方向最大仓位（占总仓位上限比例）
 DIRECTION_MAX_RATIO = 0.60  # 单日单方向不超过总仓位上限的60%
 
@@ -62,7 +73,7 @@ DIRECTION_MAX_RATIO = 0.60  # 单日单方向不超过总仓位上限的60%
 
 # 仓位矩阵微调范围（当前值 ± 调整步长，不得超出边界）
 POSITION_MATRIX_ADJUSTABLE = {
-    "上升趋势": {"修复": {"current": 0.75, "min": 0.65, "max": 0.80, "step": 0.05}},
+    "上升趋势": {"修复": {"current": 0.7, "min": 0.65, "max": 0.80, "step": 0.05}},
     "震荡筑底": {"修复": {"current": 0.50, "min": 0.40, "max": 0.60, "step": 0.05}},
     "下跌趋势": {"冰点": {"current": 0.15, "min": 0.10, "max": 0.20, "step": 0.05}},
 }
@@ -163,6 +174,9 @@ STOCK_DIRECTION_MAP = {
     "600660": "汽车玻璃", "000157": "工程机械", "601061": "有色贸易",
     # 新增：打印机/国产替代
     "002180": "打印机国产替代", "300847": "军工光电",
+    # 电力设备/特高压出海 (独立方向)
+    "600089": "电力设备出海", "600406": "电力设备出海", "000400": "电力设备出海", "601179": "电力设备出海",
+    "600312": "电力设备出海", "002028": "电力设备出海", "002270": "电力设备出海", "002130": "电力设备出海",
 }
 
 
@@ -194,7 +208,7 @@ class PositionPlan:
 
 
 class PositionSizer:
-    """030 动态仓位计算器"""
+    """030 动态仓位计算器（集成ATR波动率仓位）"""
 
     def __init__(self, total_capital: float = 3_000_000):
         """
@@ -202,6 +216,44 @@ class PositionSizer:
             total_capital: 总资金（默认300万，对应30只×10万基准）
         """
         self.total_capital = total_capital
+        self.adaptive_params = load_adaptive_params()
+
+    def _get_atr_position(self, symbol: str, entry_price: float, atr_value: float) -> dict:
+        """基于ATR计算单股仓位（波动率仓位）
+        单笔风险 = 总资金 × risk_per_trade (默认1%)
+        止损距离 = atr_mult × ATR
+        股数 = 单笔风险金额 / 止损距离
+        最大不超过 max_position_pct
+        """
+        stock_params = self.adaptive_params.get("stocks", {}).get(symbol, {})
+        atr_params = stock_params.get("atr_params", {})
+        
+        stop_mult = atr_params.get("stop_mult", 2.0)
+        risk_per_trade = atr_params.get("risk_per_trade", 0.01)
+        max_position_pct = atr_params.get("max_position_pct", 0.15)
+        
+        if atr_value is None or atr_value <= 0 or entry_price <= 0:
+            return {"shares": 0, "amount": 0, "stop_loss": 0, "risk_amount": 0}
+        
+        stop_distance = stop_mult * atr_value
+        risk_amount = self.total_capital * risk_per_trade
+        shares = int(risk_amount / stop_distance / 100) * 100  # 整百股
+        amount = shares * entry_price
+        max_amount = self.total_capital * max_position_pct
+        
+        if amount > max_amount:
+            shares = int(max_amount / entry_price / 100) * 100
+            amount = shares * entry_price
+        
+        stop_loss_price = entry_price - stop_distance
+        
+        return {
+            "shares": shares,
+            "amount": round(amount, 2),
+            "stop_loss": round(stop_loss_price, 2),
+            "risk_amount": round(risk_amount, 2),
+            "stop_distance": round(stop_distance, 2),
+        }
 
     def calculate(self,
                   market_stage: str,
@@ -250,13 +302,18 @@ class PositionSizer:
 
         total_limit_amount = round(self.total_capital * total_limit_pct, 2)
 
-        # 6. 单股最大仓位
+        # 6. 单股最大仓位（矩阵基础上限，后续受ATR仓位约束）
         single_max_pct = SINGLE_STOCK_MAX.get(effective_stage, {}).get(emotion_cycle, 0.0)
         single_max_pct = round(single_max_pct * health_mult * high_risk_mult, 4)
         single_max_amount = round(self.total_capital * single_max_pct, 2)
 
-        # 7. 买入信号乘数（致命风险/高风险/健康度综合）
-        buy_mult = self._calc_buy_multiplier(fatal_triggered, high_risk_triggered, health_score)
+        # 6b. ATR波动率仓位预估（用于买入信号乘数微调）
+        atr_position_estimates = {}
+        if watchlist:
+            atr_position_estimates = self._estimate_atr_positions(watchlist, held_positions)
+
+        # 7. 买入信号乘数（致命风险/高风险/健康度/ATR仓位综合）
+        buy_mult = self._calc_buy_multiplier(fatal_triggered, high_risk_triggered, health_score, atr_position_estimates)
 
         # 8. 方向级分配建议
         direction_alloc = self._calc_direction_allocation(
@@ -293,20 +350,56 @@ class PositionSizer:
                 return mult
         return 0.2  # 默认最保守
 
-    def _calc_buy_multiplier(self, fatal: bool, high_risk: bool, health: int) -> float:
-        """买入信号强度乘数"""
+    def _calc_buy_multiplier(self, fatal: bool, high_risk: bool, health: int, atr_estimates: dict = None) -> float:
+        """买入信号强度乘数（含ATR仓位约束）"""
         if fatal:
             return 0.0  # 完全禁买
         if high_risk:
             return 0.3  # 高风险防御：仅允许极小仓试探
+        
+        base_mult = 1.0
         if health >= 8:
-            return 1.0
+            base_mult = 1.0
         elif health >= 6:
-            return 0.8
+            base_mult = 0.8
         elif health >= 4:
-            return 0.5
+            base_mult = 0.5
         else:
-            return 0.2
+            base_mult = 0.2
+        
+        # ATR仓位约束：若预估仓位普遍偏小（高波动），降低乘数
+        if atr_estimates:
+            avg_atr_pct = sum(e["stop_distance"] / 10.0 for e in atr_estimates.values()) / len(atr_estimates) if atr_estimates else 0
+            # 简化：如果平均止损距离 > 5%，视为高波动，降权
+            if avg_atr_pct > 0.05:
+                base_mult *= 0.8
+        
+        return round(base_mult, 2)
+
+    def _estimate_atr_positions(self, watchlist: List[str], held_positions: Dict[str, dict] = None) -> dict:
+        """预估监控池各股票的ATR仓位（用于买入信号乘数微调）"""
+        estimates = {}
+        for symbol in watchlist:
+            stock_params = self.adaptive_params.get("stocks", {}).get(symbol, {})
+            atr_params = stock_params.get("atr_params", {})
+            
+            # 尝试从持仓获取成本价，或用自适应参数中的价格估算
+            entry_price = None
+            if held_positions and symbol in held_positions:
+                entry_price = held_positions[symbol].get("cost", 0)
+            
+            # 简单估算：用最近收盘价代替（需要外部数据，这里用默认）
+            if not entry_price:
+                entry_price = 10.0  # 默认价格，实际应接入实时行情
+            
+            # 获取ATR值（简化：用固定比例估算）
+            stop_mult = atr_params.get("stop_mult", 2.0)
+            atr_est = entry_price * 0.03  # 经验值：ATR约占价格3%
+            
+            est = self._get_atr_position(symbol, entry_price, atr_est)
+            if est["amount"] > 0:
+                estimates[symbol] = est
+        return estimates
 
     def _calc_direction_allocation(self,
                                    total_limit: float,
@@ -353,7 +446,7 @@ class PositionSizer:
         if fatal:
             warnings.append("☠️ 触发致命风险：无条件清仓，禁止一切买入，至少空仓1个交易日")
         if high_risk:
-            warnings.append("🟡 高风险防御：核心中军竞价≤-3%，不开新仓，持仓设-5%止损")
+            warnings.append(f"🟡 高风险防御：核心中军竞价≤-3%，不开新仓，持仓设日内止损基于ATR")
         if health <= 3:
             warnings.append(f"🔴 市场健康度极差({health}/10)：建议空仓或极小仓位({total_pct:.0%})")
         elif health <= 5:

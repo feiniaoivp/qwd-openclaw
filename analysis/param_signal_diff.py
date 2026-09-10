@@ -29,6 +29,7 @@ import json
 from datetime import datetime
 
 WORKSPACE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, WORKSPACE)                       # 让 `analysis.xxx` 顶层包可导入
 sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
 
 import adaptive_dual as ad

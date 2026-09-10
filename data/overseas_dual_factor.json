@@ -1,0 +1,84 @@
+{
+  "generated": "2026-09-02 05:28",
+  "methodology": "双因子：制造能力(55%)+出海资质(45%)，短板剔除",
+  "core_candidates": [
+    {
+      "symbol": "600089",
+      "name": "特变电工",
+      "sector": "特高压变压器",
+      "total_score": 79.5,
+      "grade": "A级核心"
+    },
+    {
+      "symbol": "300014",
+      "name": "亿纬锂能",
+      "sector": "储能电池",
+      "total_score": 75.1,
+      "grade": "A级核心"
+    },
+    {
+      "symbol": "600312",
+      "name": "平高电气",
+      "sector": "GIS/变压器",
+      "total_score": 70.4,
+      "grade": "A级核心"
+    }
+  ],
+  "watch_candidates": [],
+  "all_scores": {
+    "600089": {
+      "total": 79.5,
+      "manufacturing": 8.2,
+      "overseas": 7.65,
+      "grade": "A级核心"
+    },
+    "300014": {
+      "total": 75.1,
+      "manufacturing": 7.4,
+      "overseas": 7.65,
+      "grade": "A级核心"
+    },
+    "600312": {
+      "total": 70.4,
+      "manufacturing": 7.4,
+      "overseas": 6.6,
+      "grade": "A级核心"
+    },
+    "002130": {
+      "total": 67.7,
+      "manufacturing": 9.2,
+      "overseas": 3.8,
+      "grade": "剔除(短板)"
+    },
+    "000400": {
+      "total": 66.9,
+      "manufacturing": 8.8,
+      "overseas": 4.1,
+      "grade": "剔除(短板)"
+    },
+    "601179": {
+      "total": 63.0,
+      "manufacturing": 7.4,
+      "overseas": 4.95,
+      "grade": "剔除(短板)"
+    },
+    "002270": {
+      "total": 55.5,
+      "manufacturing": 7.6,
+      "overseas": 3.05,
+      "grade": "剔除(短板)"
+    },
+    "002028": {
+      "total": 50.2,
+      "manufacturing": 5.2,
+      "overseas": 4.8,
+      "grade": "剔除(短板)"
+    },
+    "688981": {
+      "total": 46.2,
+      "manufacturing": 4.8,
+      "overseas": 4.4,
+      "grade": "剔除(短板)"
+    }
+  }
+}

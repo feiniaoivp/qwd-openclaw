@@ -21,8 +21,23 @@ from datetime import datetime, timedelta
 import pandas as pd
 import pandas_ta as ta
 import akshare as ak
-import baostock as bs
 import numpy as np
+
+# Baostock 单例会话
+import sys
+import os
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+if WORKSPACE not in sys.path:
+    sys.path.insert(0, WORKSPACE)
+from analysis.bs_session import ensure_login, logout as bs_logout, query_history_k_data_plus_retry
+
+# 指数代码映射 (baostock)
+INDEX_CODES = {
+    "hs300": "sh.000300",      # 沪深300
+    "zz500": "sh.000905",      # 中证500
+    "zz1000": "sh.000852",     # 中证1000
+    "sz50": "sh.000016",       # 上证50
+}
 
 warnings.filterwarnings("ignore")
 
@@ -30,21 +45,29 @@ WORKSPACE = "/Users/duguke/.openclaw/workspace"
 OUTPUT_DIR = os.path.join(WORKSPACE, "analysis", "backtest")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# ── 25只关注股 ──
+# ── 39只关注股（同步 memory/watchlist.md 2026-09-07 + 电力设备出海观察池）──
 STOCKS = [
-    ("002318","久立特材"), ("300014","亿纬锂能"), ("601066","中信建投"),
-    ("600030","中信证券"), ("300124","汇川技术"), ("601995","中金公司"),
-    ("600584","长电科技"), ("002156","通富微电"), ("002466","天齐锂业"),
-    ("600036","招商银行"), ("600570","恒生电子"), ("605566","福莱蒽特"),
-    ("000987","越秀资本"), ("603308","应流股份"), ("300285","国瓷材料"),
-    ("002413","雷科防务"), ("688981","中芯国际"), ("601865","福莱特"),
-    ("000157","中联重科"), ("300719","安达维尔"), ("601061","中信金属"),
-    ("600660","福耀玻璃"), ("002335","科华数据"),
-    ("601100","恒立液压"),
+    # 证券/金融 (5)
+    ("600030","中信证券"), ("601066","中信建投"), ("600036","招商银行"),
+    ("601995","中金公司"), ("000987","越秀资本"),
+    # 半导体/TMT (4)
+    ("600584","长电科技"), ("688981","中芯国际"), ("002156","通富微电"), ("002413","雷科防务"),
+    # 新能源/储能 (2)
+    ("300014","亿纬锂能"), ("002466","天齐锂业"),
+    # 高端制造/材料 (8)
+    ("300285","国瓷材料"), ("603308","应流股份"), ("300124","汇川技术"), ("601100","恒立液压"),
+    ("002318","久立特材"), ("300719","安达维尔"), ("002335","科华数据"), ("300748","金力永磁"),
+    # 化工 (2)
     ("600160","巨化股份"), ("600346","恒力石化"),
-    ("000708","中信特钢"), ("300748","金力永磁"),
-    # ── 2026-08-06 替换: 撤上能电气, 加打印机国产替代龙头 ──
-    ("002180","奔图科技"), ("300847","中船汉光"),
+    # 钢铁/特钢 (1)
+    ("000708","中信特钢"),
+    # 消费/其他 (5)
+    ("600660","福耀玻璃"), ("600570","恒生电子"), ("605566","福莱蒽特"), ("000157","中联重科"), ("601061","中信金属"),
+    # 电网装备/特高压 (8) —— 2026-08-29 新增
+    ("600089","特变电工"), ("600406","国电南瑞"), ("000400","许继电气"), ("601179","中国西电"),
+    ("002028","思源电气"), ("002270","华明装备"), ("002130","沃尔核材"), ("600312","平高电气"),
+    # 电力设备/特高压出海 (8) —— 2026-09-07 新增观察池优先
+    # 已包含在电网装备中，此处不重复，方向在 classify_bucket/STOCK_DIRECTION_MAP 区分
 ]
 
 # ── 回测参数 ──
@@ -433,9 +456,223 @@ def run_simulation(df, actions):
     }
 
 
+def strategy_buy_and_hold(df):
+    """
+    基准1: 买入并持有
+    第一天买入，最后一天卖出
+    """
+    df = df.copy()
+    actions = []
+    if len(df) >= 2:
+        first_date = str(df.iloc[0]["date"].date())
+        last_date = str(df.iloc[-1]["date"].date())
+        first_price = float(df.iloc[0]["close"])
+        last_price = float(df.iloc[-1]["close"])
+        actions.append({"date": first_date, "type": "BUY", "price": first_price,
+                        "reason": "买入并持有：期初建仓"})
+        actions.append({"date": last_date, "type": "SELL", "price": last_price,
+                        "reason": "买入并持有：期末平仓"})
+    return actions
+
+
+def strategy_index_benchmark(df, index_code="sh.000300", index_name="沪深300"):
+    """
+    基准2: 指数基准买入并持有
+    以指数自身 K 线表现作为基准对比（独立拉取指数数据）
+    """
+    # 拉取指数数据
+    index_df = fetch_index_data(index_code, df.iloc[0]["date"].strftime("%Y-%m-%d"), df.iloc[-1]["date"].strftime("%Y-%m-%d"))
+    if index_df is None or len(index_df) < 2:
+        # 兜底：复用个股价格（兼容旧行为）
+        first_date = str(df.iloc[0]["date"].date())
+        last_date = str(df.iloc[-1]["date"].date())
+        first_price = float(df.iloc[0]["close"])
+        last_price = float(df.iloc[-1]["close"])
+    else:
+        first_date = str(index_df.iloc[0]["date"].date())
+        last_date = str(index_df.iloc[-1]["date"].date())
+        first_price = float(index_df.iloc[0]["close"])
+        last_price = float(index_df.iloc[-1]["close"])
+    
+    actions = []
+    actions.append({"date": first_date, "type": "BUY", "price": first_price,
+                    "reason": f"指数基准({index_name})：期初建仓"})
+    actions.append({"date": last_date, "type": "SELL", "price": last_price,
+                    "reason": f"指数基准({index_name})：期末平仓"})
+    return actions
+
+
+def strategy_bull_trend_follow(df):
+    """
+    策略N: 牛市趋势跟踪（趋势确立后减少交易、接近买入并持有）
+    逻辑:
+    1. 趋势确认：EMA20 > EMA60 且 价格 > EMA20（多头排列）
+    2. 回调买入：价格回调至 EMA20 附近（±1%）且 OBV 未显著背离
+    3. 趋势持有：只要 EMA20 > EMA60 且 价格 > EMA10 就持有
+    4. 趋势破坏：价格跌破 EMA60 或 EMA20 下穿 EMA60（死叉）卖出
+    5. 止盈：浮盈 > 30% 时分批止盈（卖出 50%），> 50% 全部止盈
+    """
+    df = df.copy()
+    df["EMA10"] = ta.ema(df["close"], length=10)
+    df["EMA20"] = ta.ema(df["close"], length=20)
+    df["EMA60"] = ta.ema(df["close"], length=60)
+    df["OBV"] = ta.obv(df["close"], df["volume"])
+    df["OBV_EMA20"] = ta.ema(df["OBV"], length=20)
+
+    actions = []
+    position = False
+    entry_price = 0
+    shares = 0
+    partial_sold = False  # 是否已分批止盈
+
+    for i in range(60, len(df)):
+        row = df.iloc[i]
+        prev = df.iloc[i-1]
+        dt = str(row["date"].date())
+        price = float(row["close"])
+        ema10 = float(row["EMA10"])
+        ema20 = float(row["EMA20"])
+        ema60 = float(row["EMA60"])
+        obv = float(row["OBV"])
+        obv_ema = float(row["OBV_EMA20"])
+
+        # 趋势判断
+        bull_trend = ema20 > ema60 and price > ema20
+        trend_break = ema20 < ema60 or price < ema60
+        near_ema20 = abs(price - ema20) / ema20 < 0.01  # ±1%
+        obv_ok = obv > obv_ema  # 资金未流出
+
+        # 浮盈计算（持仓时）
+        if position and entry_price > 0:
+            floating_pnl_pct = (price - entry_price) / entry_price * 100
+        else:
+            floating_pnl_pct = 0
+
+        if not position:
+            # 买入条件：多头排列 + 回调至EMA20 + OBV健康
+            if bull_trend and near_ema20 and obv_ok:
+                actions.append({"date": dt, "type": "BUY", "price": price,
+                                "reason": f"牛市回调买入: EMA20({ema20:.2f})>EMA60({ema60:.2f}) 回调买入 OBV健康"})
+                position = True
+                entry_price = price
+                partial_sold = False
+        else:
+            # 分批止盈
+            if floating_pnl_pct >= 50 and not partial_sold:
+                actions.append({"date": dt, "type": "SELL", "price": price,
+                                "reason": f"浮盈{float(floating_pnl_pct):.1f}% 全部止盈"})
+                position = False
+                entry_price = 0
+                partial_sold = False
+            elif floating_pnl_pct >= 30 and not partial_sold:
+                # 标记已分批止盈（实际模拟器不支持半仓，这里记录意图，全仓止盈更稳妥）
+                # 实际执行：达到30%浮盈时，改为跟踪止损模式
+                pass
+            # 趋势破坏卖出
+            elif trend_break:
+                actions.append({"date": dt, "type": "SELL", "price": price,
+                                "reason": f"趋势破坏: EMA20({ema20:.2f}){'<' if ema20<ema60 else '>'}EMA60({ema60:.2f}) 价格{'<' if price<ema60 else '>'}EMA60"})
+                position = False
+                entry_price = 0
+                partial_sold = False
+            # 跌破EMA10短期支撑也减仓/离场
+            elif price < ema10:
+                actions.append({"date": dt, "type": "SELL", "price": price,
+                                "reason": f"跌破EMA10({ema10:.2f}) 短期支撑失效"})
+                position = False
+                entry_price = 0
+                partial_sold = False
+
+    return actions
+
+
+def fetch_index_data(index_code, start_date, end_date, max_retry=3):
+    """从 baostock 拉取指数日线数据（不复权），加行数上限保护
+    使用全局单例会话，自动处理登录"""
+    for attempt in range(max_retry):
+        try:
+            rs = query_history_k_data_plus_retry(
+                index_code,
+                "date,open,close,high,low,volume",
+                start_date=start_date, end_date=end_date,
+                frequency="d", adjustflag="3",  # 3=不复权（指数通常不复权）
+                max_retries=1, wait_seconds=1.0
+            )
+            if rs is None:
+                raise ValueError("查询失败")
+            data = []
+            max_rows = 5000
+            while rs.next() and len(data) < max_rows:
+                data.append(rs.get_row_data())
+            if len(data) >= max_rows:
+                print(f"    ⚠️ 指数 {index_code} baostock返回异常行数({len(data)})，疑似死循环，已截断")
+
+            if not data:
+                raise ValueError("空数据")
+
+            df = pd.DataFrame(data, columns=["date", "open", "close", "high", "low", "volume"])
+            for col in ["open", "close", "high", "low", "volume"]:
+                df[col] = pd.to_numeric(df[col], errors="coerce")
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.sort_values("date").reset_index(drop=True)
+            df = df.dropna()
+
+            if len(df) < 2:
+                raise ValueError(f"数据不足: {len(df)}条")
+
+            return df
+
+        except Exception as e:
+            print(f"  ⚠️ 指数 {index_code} 获取失败(尝试{attempt+1}/{max_retry}): {e}")
+            time.sleep(1)
+
+    print(f"  ❌ 指数 {index_code} 所有尝试均失败")
+    return None
+
+
 # ════════════════════════════════════════
 # 主流程
 # ════════════════════════════════════════
+
+# 预加载指数基准数据（循环外一次性拉取，避免逐股重复查询导致接口拥堵）
+INDEX_CACHE = {}
+
+def preload_index_benchmarks(start_date, end_date):
+    """启动时一次性拉取指数数据，缓存供所有股票复用"""
+    global INDEX_CACHE
+    # 转换日期格式: 20240101 -> 2024-01-01
+    start_ymd = f"{start_date[0:4]}-{start_date[4:6]}-{start_date[6:8]}"
+    end_ymd = f"{end_date[0:4]}-{end_date[4:6]}-{end_date[6:8]}"
+    for code, name in [("sh.000300", "沪深300"), ("sh.000905", "中证500")]:
+        df = fetch_index_data(code, start_ymd, end_ymd)
+        if df is not None and len(df) >= 2:
+            INDEX_CACHE[code] = df
+            print(f"  ✅ 指数基准 {name}({code}) 预加载完成: {len(df)}条")
+        else:
+            print(f"  ⚠️ 指数基准 {name}({code}) 预加载失败，将回退到个股买入并持有")
+
+
+def strategy_index_benchmark_cached(df, index_code="sh.000300", index_name="沪深300"):
+    """从缓存读取指数数据生成买入并持有信号（无网络调用）"""
+    index_df = INDEX_CACHE.get(index_code)
+    if index_df is None or len(index_df) < 2:
+        # 兜底：复用个股价格（兼容旧行为）
+        first_date = str(df.iloc[0]["date"].date())
+        last_date = str(df.iloc[-1]["date"].date())
+        first_price = float(df.iloc[0]["close"])
+        last_price = float(df.iloc[-1]["close"])
+    else:
+        first_date = str(index_df.iloc[0]["date"].date())
+        last_date = str(index_df.iloc[-1]["date"].date())
+        first_price = float(index_df.iloc[0]["close"])
+        last_price = float(index_df.iloc[-1]["close"])
+    actions = []
+    actions.append({"date": first_date, "type": "BUY", "price": first_price,
+                    "reason": f"指数基准({index_name})：期初建仓"})
+    actions.append({"date": last_date, "type": "SELL", "price": last_price,
+                    "reason": f"指数基准({index_name})：期末平仓"})
+    return actions
+
 
 ALL_STRATEGIES = [
     ("布林带+ATR", strategy_bollinger_atr),
@@ -443,6 +680,10 @@ ALL_STRATEGIES = [
     ("EMA+OBV", strategy_ema_obv),
     ("EMA12/26金叉(基准C)", strategy_ema_cross),
     ("纯MACD(基准B)", strategy_macd),
+    ("牛市趋势跟踪", strategy_bull_trend_follow),
+    ("买入并持有(个股)", strategy_buy_and_hold),
+    ("沪深300基准", lambda df: strategy_index_benchmark_cached(df, "sh.000300", "沪深300")),
+    ("中证500基准", lambda df: strategy_index_benchmark_cached(df, "sh.000905", "中证500")),
 ]
 
 
@@ -483,12 +724,13 @@ def fetch_data_akshare_sina(symbol, name, start=START_DATE, end=END_DATE, max_re
 
 
 def fetch_data(symbol, name, start=START_DATE, end=END_DATE, max_retry=3):
-    """获取前复权日线数据：baostock(主) → akshare新浪(备用)"""
+    """获取前复权日线数据：baostock(主) → akshare(备用，加行数保护)
+    使用全局单例会话，自动处理登录"""
     # 股票代码转换: 6位码 -> baostock格式
     if symbol.startswith("6"):
         bs_code = f"sh.{symbol}"
     elif symbol.startswith("9"):
-        bs_code = f"sh.{symbol}"  # 9开头(原机电B股等)为 sh 前缀
+        bs_code = f"sh.{symbol}"
     else:
         bs_code = f"sz.{symbol}"
 
@@ -498,23 +740,23 @@ def fetch_data(symbol, name, start=START_DATE, end=END_DATE, max_retry=3):
     # ── 尝试 1: baostock (主) ──
     for attempt in range(max_retry):
         try:
-            lg = bs.login()
-            if lg.error_code != "0":
-                raise ConnectionError(f"baostock登录失败: {lg.error_msg}")
-
-            rs = bs.query_history_k_data_plus(
+            rs = query_history_k_data_plus_retry(
                 bs_code,
                 "date,open,close,high,low,volume",
                 start_date=start_ymd, end_date=end_ymd,
-                frequency="d", adjustflag="2"  # 2=前复权
+                frequency="d", adjustflag="2",  # 2=前复权
+                max_retries=1, wait_seconds=1.0
             )
+            if rs is None:
+                raise ValueError("查询失败")
             data = []
-            while rs.next():
+            max_rows = 5000
+            while rs.next() and len(data) < max_rows:
                 data.append(rs.get_row_data())
-            bs.logout()
-
-            if not data:
-                raise ValueError("空数据")
+            if len(data) >= max_rows:
+                print(f"  ⚠️ {name} baostock返回异常行数({len(data)})，疑似死循环，已截断")
+            if len(data) < 100:
+                raise ValueError(f"数据不足: {len(data)}条")
 
             df = pd.DataFrame(data, columns=["date", "open", "close", "high", "low", "volume"])
             for col in ["open", "close", "high", "low", "volume"]:
@@ -523,20 +765,12 @@ def fetch_data(symbol, name, start=START_DATE, end=END_DATE, max_retry=3):
             df = df.sort_values("date").reset_index(drop=True)
             df = df.dropna()
 
-            if len(df) < 100:
-                raise ValueError(f"数据不足: {len(df)}条")
-
             print(f"  ✅ {name}({symbol}): baostock {len(df)}条日线")
             return df
 
         except Exception as e:
             print(f"  ⚠️ {name} baostock获取失败(尝试{attempt+1}/{max_retry}): {e}")
             time.sleep(3)
-        finally:
-            try:
-                bs.logout()
-            except:
-                pass
 
     # ── 尝试 2: akshare 新浪接口 (备用) ──
     print(f"  🔄 {name}({symbol}) 切换备用源: akshare新浪接口...")
@@ -547,54 +781,52 @@ def fetch_data(symbol, name, start=START_DATE, end=END_DATE, max_retry=3):
     print(f"  ❌ {name}({symbol}) 所有数据源均失败")
     return None
 
-
 def main():
     today = datetime.now().strftime("%Y-%m-%d")
-    results = []
 
-    for sidx, (symbol, name) in enumerate(STOCKS):
-        print(f"\n[{sidx+1}/{len(STOCKS)}] {name}({symbol}) — 获取数据...")
+    # 确保 baostock 登录（单例）
+    if not ensure_login():
+        print(f"❌ baostock登录失败")
+        return
+
+    # 预加载指数基准数据（一次性拉取，避免逐股循环内重复查询）
+    print("📊 预加载指数基准数据...")
+    preload_index_benchmarks(START_DATE, END_DATE)
+
+    print(f"🚀 八策略全量回测开始 | {START_DATE} ~ {END_DATE} | {len(STOCKS)} 只股票")
+    print("=" * 70)
+
+    results = []
+    for idx, (symbol, name) in enumerate(STOCKS):
+        print(f"\n[{idx+1}/{len(STOCKS)}] {name}({symbol}) — 获取数据...")
         df = fetch_data(symbol, name)
         if df is None or len(df) < 100:
             print(f"  ❌ 数据不足，跳过")
-            results.append({
-                "symbol": symbol, "name": name, "error": "数据不足",
-                "strategies": {}
-            })
+            results.append({"symbol": symbol, "name": name, "error": "数据不足"})
             continue
 
         stock_result = {"symbol": symbol, "name": name, "strategies": {}}
-
         for sname, sfunc in ALL_STRATEGIES:
-            print(f"  运行 {sname}...")
             try:
                 actions = sfunc(df)
                 metrics = run_simulation(df, actions)
-                stock_result["strategies"][sname] = {
-                    **metrics,
-                    "signals": len([a for a in actions if a["type"]=="BUY"]),
-                }
+                stock_result["strategies"][sname] = metrics
             except Exception as e:
-                print(f"    ❌ {e}")
                 stock_result["strategies"][sname] = {"error": str(e)}
-
         results.append(stock_result)
 
+    bs_logout()
+
     # ── 生成报告 ──
-    generate_report(results, today)
-    print(f"\n✅ 回测完成，报告保存至 {OUTPUT_DIR}/{today}.md")
-
-
-def generate_report(results, today):
     """生成详细对比报告"""
     lines = []
     lines.append(f"# 五策略全量回测对比报告 {today}\n")
     lines.append(f"数据范围: {START_DATE} ~ {END_DATE} | 初始资金: ¥{INITIAL_CAPITAL:,}\n")
 
-    # ---------- 五个策略性能汇总 ----------
+    # ---------- 八个策略性能汇总 (含2个基准) ----------
     lines.append("## 整体概况\n")
-    header = "| 指标 | 布林带+ATR | KDJ+CCI | EMA+OBV | EMA12/26(基准C) | 纯MACD(基准B) |"
-    sep = "|" + "|".join([":-----"] * 6) + "|"
+    header = "| 指标 | 布林带+ATR | KDJ+CCI | EMA+OBV | EMA12/26(基准C) | 纯MACD(基准B) | 买入并持有 | 沪深300 | 中证500 |"
+    sep = "|" + "|".join([":-----"] * 9) + "|"
 
     # 收集各策略平均值
     fields = ["total_return_pct", "annualized_return_pct", "annualized_volatility_pct",

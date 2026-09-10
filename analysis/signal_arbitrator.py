@@ -22,10 +22,35 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
 from enum import Enum
+import pandas as pd
+import pandas_ta as ta
+import numpy as np
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 DATA_DIR = os.path.join(WORKSPACE, "data")
+FACTOR_SCORES_FILE = os.path.join(WORKSPACE, "data", "factor_scores.json")
 os.makedirs(DATA_DIR, exist_ok=True)
+
+# 缓存因子得分
+_factor_scores_cache = None
+
+def _load_factor_scores() -> Dict:
+    global _factor_scores_cache
+    if _factor_scores_cache is not None:
+        return _factor_scores_cache
+    if os.path.exists(FACTOR_SCORES_FILE):
+        try:
+            with open(FACTOR_SCORES_FILE, encoding="utf-8") as f:
+                _factor_scores_cache = json.load(f)
+                return _factor_scores_cache
+        except Exception:
+            pass
+    return {"scores": {}, "weights": {"core_product": 0.6, "oversea_qual": 0.4}}
+
+def get_factor_score(symbol: str) -> dict:
+    """获取单只股票的因子详细得分"""
+    data = _load_factor_scores()
+    return data.get("scores", {}).get(symbol, {})
 
 
 class SignalAction(Enum):
@@ -82,6 +107,7 @@ class ArbitrationResult:
     reason: str = ""
     raw_signals: List[RawSignal] = None
     arbitration_path: List[str] = None     # 裁决路径，用于审计追溯
+    moat_bonus: float = 0.0    # 护城河加分
 
     def __post_init__(self):
         if self.raw_signals is None:
@@ -194,6 +220,7 @@ class SignalArbitrator:
         stop_loss = self._calc_stop_loss(held_position) if held_position else None
         support = self._calc_support(held_position) if held_position else None
 
+        print(f"  [DEBUG arbitrate] {symbol}: evidence.moat_bonus={evidence.get('moat_bonus', 0.0)}")
         return ArbitrationResult(
             symbol=symbol, name=name,
             final_action=final_action,
@@ -203,7 +230,8 @@ class SignalArbitrator:
             support_price=support,
             reason=reason,
             raw_signals=raw_signals,
-            arbitration_path=path
+            arbitration_path=path,
+            moat_bonus=evidence.get("moat_bonus", 0.0)
         )
 
     def _normalize_action(self, action: str) -> int:
@@ -264,8 +292,25 @@ class SignalArbitrator:
             if any(kw in reason for kw in ["macd", "ema", "kdj", "rsi", "布林", "均线", "金叉", "死叉"]):
                 evidence["technical"].append((s.source, strength, s.reason))
 
-            # 护城河加分
-            if s.moat_score >= 2.0:
+            # 护城河加分：量化 core_product_total / oversea_qual_total
+            factor = get_factor_score(s.symbol)
+            core_prod = factor.get("core_product_total", 0)
+            oversea_qual = factor.get("oversea_qual_total", 0)
+            combined = factor.get("combined_score", 0)
+            
+            print(f"  [DEBUG moat] {s.symbol}: core={core_prod}, oversea={oversea_qual}, factor_keys={list(factor.keys())}")
+            
+            if core_prod > 0 or oversea_qual > 0:
+                # 权重：核心产品 0.6，出海资质 0.4（与 factor_engine 一致）
+                # 归一化：core_product_total 满分 30，oversea_qual_total 满分 25
+                core_norm = min(core_prod / 30.0, 1.0)
+                oversea_norm = min(oversea_qual / 25.0, 1.0)
+                weighted_moat = core_norm * 0.6 + oversea_norm * 0.4
+                bonus = round(weighted_moat * 0.2, 3)  # 最大加 0.2
+                evidence["moat_bonus"] += bonus
+                print(f"  [DEBUG moat] {s.symbol}: core_norm={core_norm:.3f}, oversea_norm={oversea_norm:.3f}, weighted={weighted_moat:.3f}, bonus={bonus}, total_bonus={evidence['moat_bonus']}")
+            elif s.moat_score >= 2.0:
+                # 兜底：兼容旧版 moat_score
                 evidence["moat_bonus"] += 0.1
 
         # 市场健康度作为量能/封单的背景权重
@@ -327,6 +372,17 @@ class SignalArbitrator:
                 if "该弱不弱" in rsn and strg > 0:
                     return SignalAction.BUY, 0.8, f"超预期买入信号：{rsn}", path
 
+        # 层级5.5：RSI 趋势强度过滤器 (P0) —— 在技术投票前插入
+        rsi_trend = self._eval_rsi_trend_strength(signals, ctx)
+        if rsi_trend != 0:
+            path.append("RSI_TREND_FILTER")
+            if rsi_trend > 0:
+                # 趋势多头：提升买入置信度，但不直接触发买入（需技术投票配合）
+                # 记录到 evidence 供技术投票加权使用
+                evidence["technical"].append(("rsi_trend_filter", 1, f"RSI趋势多头强度(health={ctx.get('health_score',5)})"))
+            else:
+                evidence["technical"].append(("rsi_trend_filter", -1, f"RSI趋势空头强度(health={ctx.get('health_score',5)})"))
+
         # 层级6：技术指标综合（加权投票）
         if evidence["technical"]:
             path.append("TECHNICAL_VOTE")
@@ -352,6 +408,71 @@ class SignalArbitrator:
         # 默认：持有/观望
         path.append("DEFAULT_HOLD")
         return SignalAction.HOLD, 0.5, "无明确方向性信号，维持持有/观望", path
+
+    def _eval_rsi_trend_strength(self, signals: List[RawSignal], ctx: dict) -> int:
+        """
+        RSI 趋势强度过滤器 (P0)
+        返回: +1(趋势多头), -1(趋势空头), 0(中性/无信号)
+        
+        逻辑：
+        - 需要从信号中提取 RSI 值，或从最近数据计算
+        - ADX > 25 判定趋势态，ADX < 20 震荡态
+        - 牛市区间 RSI 40-80，熊市区间 20-60
+        - RSI > 60 且 ADX > 25 → 趋势多头 +1
+        - RSI < 40 且 ADX > 25 → 趋势空头 -1
+        - 隐藏背离识别：价格创新高/低但 RSI 未创新高/低 → 趋势延续信号
+        """
+        # 尝试从信号 reasons 中提取 RSI
+        rsi_values = []
+        for s in signals:
+            reason = s.reason
+            # 查找 RSI=xx 或 RSI xx 格式
+            import re
+            m = re.search(r'RSI[=: ]?([\d.]+)', reason, re.IGNORECASE)
+            if m:
+                try:
+                    rsi_values.append(float(m.group(1)))
+                except:
+                    pass
+            # 查找 CCI_pct=xx% 格式 (KDJ+CCI策略用)
+            m = re.search(r'CCI_pct[=: ]?([\d.]+)%', reason, re.IGNORECASE)
+            if m:
+                try:
+                    cci_pct = float(m.group(1))
+                    # CCI_pct 可近似映射 RSI 区间: <20->超卖, >80->超买
+                    # 这里仅作参考，不直接转 RSI
+                except:
+                    pass
+        
+        # 如果信号里没有 RSI，返回 0（后续可接入实时数据计算）
+        if not rsi_values:
+            return 0
+        
+        avg_rsi = sum(rsi_values) / len(rsi_values)
+        
+        # 简易市场牛熊判定：health_score >= 6 视为牛市偏多，<=4 视为熊市偏空
+        health = ctx.get("health_score", 5)
+        is_bull_market = health >= 6
+        is_bear_market = health <= 4
+        
+        # 牛市区间 40-80，熊市区间 20-60
+        if is_bull_market:
+            if avg_rsi > 60:
+                return 1  # 牛市中 RSI>60 趋势强
+            elif avg_rsi < 40:
+                return -1  # 牛市中 RSI<40 回调
+        elif is_bear_market:
+            if avg_rsi > 60:
+                return -1  # 熊市中 RSI>60 反弹乏力
+            elif avg_rsi < 40:
+                return -1  # 熊市中 RSI<40 趋势空
+        else:  # 震荡市
+            if avg_rsi > 70:
+                return -1  # 震荡超买
+            elif avg_rsi < 30:
+                return 1   # 震荡超卖反弹
+        
+        return 0
 
     def _calc_position_mult(self,
                             action: SignalAction,
@@ -397,15 +518,20 @@ class SignalArbitrator:
         return max(0.0, min(final_mult, 1.0))
 
     def _calc_stop_loss(self, held_position: dict) -> Optional[float]:
-        """计算止损价：成本价 * 0.95 或 近期低点"""
-        cost = held_position.get("cost", 0)
+        """计算止损价：优先用 portfolio_sim 计算好的 atr_stop，其次成本价 * 0.95"""
+        # 1. 优先使用 portfolio_sim 已计算的 ATR 止损
+        atr_stop = held_position.get("atr_stop")
+        if atr_stop is not None and atr_stop > 0:
+            return float(atr_stop)
+        # 2. 兼容字段名：cost / entry_price
+        cost = held_position.get("cost") or held_position.get("entry_price") or 0
         if cost > 0:
             return round(cost * 0.95, 2)
         return None
 
     def _calc_support(self, held_position: dict) -> Optional[float]:
         """计算支撑价：成本价 * 0.92"""
-        cost = held_position.get("cost", 0)
+        cost = held_position.get("cost") or held_position.get("entry_price") or 0
         if cost > 0:
             return round(cost * 0.92, 2)
         return None

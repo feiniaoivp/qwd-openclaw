@@ -286,9 +286,13 @@ def check_zhonglian_vs_advice(state):
                 })
     return findings
 def describe_zhonglian(f):
-    return (f"为什么中联重科(000157) 综合最优策略({f['strategy']})触发卖出，"
-            f"但最终建议却是 {f['advice_action']}？理由：{f['advice_reason']} — "
-            f"双策略体系的卖出信号被忽略了吗？")
+    if f.get("holding", True):
+        return (f"为什么中联重科(000157) 综合最优策略({f['strategy']})触发卖出（且持仓中），"
+                f"但最终建议却是 {f['advice_action']}？理由：{f['advice_reason']} — "
+                f"双策略体系的卖出信号被忽略了吗？")
+    else:
+        return (f"中联重科(000157) 综合最优策略({f['strategy']})技术面触发卖出，"
+                f"但当前空仓，最终建议 {f['advice_action']} 属正常（技术面卖出=不宜买入提示）。");
 
 
 # ── 规则 8: 数据源质量 —— 实时行情回退(spot)的股票给出强烈信号 ──

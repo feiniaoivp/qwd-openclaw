@@ -87,17 +87,20 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **[2026-08-22]:** 定时任务反复超时/崩、数据步骤全成功死在 LLM 简报环节且落到 nvidia fallback —— 优先判断能否用 **command cron 直跑自含脚本**绕开 LLM（模板：portfolio-sim-daily）。
 *   **[2026-08-22]:** param_eval 判模拟盘「恶化」是已实现亏损统计，可能是保护性止损的胜利，回滚前先核对：①模拟盘用策略名+默认参数（portfolio_sim 不读 adaptive_params 自定义参数）；②卖出后走势是否证明止损逃顶正确。
 *   **[2026-08-23]:** 顶层包/相对导入靠 sys.path 时，脚本须同时插工作室根 + 子目录；PYTHONPATH 只在交互 shell 生效，定时/子进程不继承。
+*   **[2026-09-09]:** portfolio_sim `signal_bull_trend` 使用未定义变量 `ema50`/`ema200` 导致 `price` undefined 崩溃 —— 修复为实际计算的 `ema10`/`ema20`/`ema60`，信号逻辑改为 EMA20/EMA60 趋势跟踪。
+*   **[2026-09-09]:** backtest_strategies.py `preload_index_benchmarks` 传递日期格式 `20240101` 而非 `2024-01-01` 导致指数预加载失败 —— 修复日期格式转换。
+*   **[2026-09-09]:** portfolio_sim 每次 fetch_data 重复 login/logout baostock 导致连接池耗尽 `[Errno 9] Bad file descriptor` —— 改为单次登录复用会话，脚本结束时统一 logout。
 
 ## User's Stock Watchlist (Definitive - 30 stocks)
 *   **证券/金融:** 中信证券(600030), 中信建投(601066), 招商银行(600036), 中金公司(601995), 越秀资本(000987)
 *   **半导体/TMT:** 长电科技(600584), 中芯国际(688981), 通富微电(002156), 雷科防务(002413)
-*   **新能源/储能:** 亿纬锂能(300014), 天齐锂业(002466), 福莱特(601865)
+*   **新能源/储能:** 亿纬锂能(300014), 天齐锂业(002466)
 *   **高端制造/材料:** 国瓷材料(300285), 应流股份(603308), 汇川技术(300124), 恒立液压(601100), 久立特材(002318), 安达维尔(300719), 科华数据(002335), 金力永磁(300748)
-*   **打印机/办公设备:** 奔图科技(002180), 中船汉光(300847)（国产替代·反制概念，2026-08-06新增）
+*   **打印机/办公设备:** （已清空，2026-08-30移除奔图科技/中船汉光）
 *   **化工:** 巨化股份(600160), 恒力石化(600346)
 *   **钢铁/特钢:** 中信特钢(000708)
 *   **消费/其他:** 福耀玻璃(600660), 恒生电子(600570), 福莱蒽特(605566), 中联重科(000157), 中信金属(601061)
-*   **Note:** 2026-08-06 撤除机电B股(900925, baostock无数据)与上能电气(300827), 关注池由31只变更为 **30只**。重点关注股的完整分析结果保存在 `analysis_summary_all.md`。当需要分析关注股票时，必须：1) 先读 `skill/stock-daily-report/SKILL.md` 获取分析模板；2) 再读 `analysis_summary_all.md` 获取确切列表。**绝不能凭记忆拼凑。**
+*   **Note:** 2026-08-06 撤除机电B股(900925, baostock无数据)与上能电气(300827)，2026-08-30 撤除中船汉光(300847)/奔图科技(002180)/福莱特(601865)，关注池由30只变更为 **27只**。重点关注股的完整分析结果保存在 `analysis_summary_all.md`。当需要分析关注股票时，必须：1) 先读 `skill/stock-daily-report/SKILL.md` 获取分析模板；2) 再读 `analysis_summary_all.md` 获取确切列表。**绝不能凭记忆拼凑。**
 
 ## Important Events After 2026-06-29
 *   **2026-07-10:** Conducted A-share market news and bulletin analysis using akshare (stock_info_global_em) with user discussing market dynamics. Web search via Tavily was still unavailable.
@@ -363,8 +366,53 @@ This file serves as your curated long-term memory, storing significant events, d
 ### 2026-08-09 技能库真实变更（skill-version-watcher 捕获）
 *   **self-improving v1.2.16 → self-improving-agent v4.0.2**（升级+改名, 08-08 21:27 更新）; **hf-mem v1.0.10** 新增(08-08 21:20 安装)。baseline memory/skill-versions.json 已更新。
 
-## 投资理念归纳（每日同步，最新 2026-08-20）
+## 投资理念归纳（每日同步，最新 2026-09-09）
 > 完整可检索历史见 `wiki/sources/investment-philosophy-YYYY-MM-DD.md`；本区块为蒸馏要点。
+> 注：09-01~04 无增量空跑；09-07(周一)24h 0 篇但补录 09-05/06 周末 4 篇方法论(见 09-07 节)；**09-08(周二)24h 新增 9 篇、打破连续 6 日空跑；09-09(周三)新增 2 篇(1 投资+RVI方法论 + 1 爬虫教程非投资)、连续第 2 日真实增量、RSI 主线续作**(见 09-09 节)。
+
+### 2026-09-09 要点（24h 真实增量 · RSI-Pro 频道续作 · RVI 二次确认方法论）
+> **24h 判定**：过去24h（09-08 19:30→09-09 19:30）Obsidian Vault **2 篇**新增/修改。①《Why RSI Signals Fail — The RVI Confirmation Strategy》(09-08 21:26)= 投资方法论，纳入归纳；②Scrapling 爬虫教程 = 非投资，跳过。**连续第 2 日真实增量，主题续 RSI-Pro 频道方法论**。
+- **体系 head（不变，本日无新增 head 级规则）**：纯MACD优选 / CCI聚簇退潮 / 030裁决分级 / 三因素共振门控(ResonanceGate) / 斐波那契扩展止盈 / 波动率仓位(ATR/1%风险) / 选择性入场纪律(1:2盈亏比+40%胜率) / 结构点止损+S/R Flip / 产业链卡位·卖铲人范式(待实践验证)。
+- **核心观点（RVI 二次确认）**：RSI 单用(上穿70/下穿30即入)常出假信号；须引 **RVI(相对活力指数, 收盘vs开盘动量)** 作二次确认：RSI 70+超买 → 等 RVI 死叉(绿线下穿红线)确认做空；RSI<30 超卖 → 等 RVI 金叉确认做多。强趋势中指标信号仍易失效，**入场前必须叠加 Price Action**(支撑/阻力、趋势线反应、K线吞没/流星/锤子、图表双顶双底破位)。
+- **修正候选（本日强化 ①⑧，新增 ③）**：
+  - **修正候选⑧/①（RSI 定位升级，09-07/08/09 连续 3 日强化 → 建议上调复核优先级）**：本文再证——RSI 宜作**动量/趋势过滤器**非孤立超买卖反转工具，且需"动量二次确认 + 价格结构"双重验证。与 08-23 RSI 归辅助/弱信号张力持续累积 3 日。
+  - **新增冲突警示③（引 RVI 与白名单简化张力，需人工复核）**：本文建议引入 RVI(振荡/动量类)作确认——与 08-24「三大不可替代、移除 RSI/KDJ/CCI 等冗余震荡类」的简化本体论存在潜在冲突；更符合简化哲学的做法倾向"以成交量+价格结构作动量确认"而非加新震荡指标。是否引入 RVI 须**回测验证其相对既有验证链(价格结构/OBV 量能)的边际增量**，不直接采纳。
+- **补强/印证**：指标不可孤立用、须叠加价格结构与顺势(强趋势假信号多) → 印证 08-18/08-24 简化本体论 + 09-07/08 系列"勿一步不变"主线。
+- **明确冲突：无规则级**（仅 RVI 引入与白名单简化为本日新增张力候选）。
+- **当日实盘联动**：09-09 adaptive_dual 38 只 双买0/双卖0/双持有27/分歧11、无 030 买入；分歧多集中 **EMA+OBV(量能)🔴卖 vs 其他策略持有**(11只中占多数)——与近期量价系列"量能鉴别背离"及本日 RVI"动量二次确认"逻辑一致：当量能腿卖 vs 趋势/动量腿持有时，正是"该给谁更高确认权重"的实盘张力。中信证券/越秀资本(000987)纯MACD卖腿需留意；000987 缺止损位遗留项与卖出腿联动建议优先人工处理。
+- **待人工复核合计（本日强化 ①②、新增 ③；RSI 定位建议上调优先级）**：①电力设备出海入观察池(最优先延续) ②ATR止损/仓位 ③斐波扩展1.272-1.618止盈 ④MACD权重微调+**(6,13,9)提速** ⑤历史重复BUY钝化 ⑥000987缺止损 ⑦「核心产品+出海资质」通用因子 ⑧**RSI 上调为趋势强度/动量过滤触发器(连续3日强化→上调优先级)** ⑨均线/指标参数动态自适应 ⑩**是否引 RVI 作为第二动量确认(09-09 新增, 与白名单简化张力, 须回测)**。
+- 完整归档：`wiki/sources/investment-philosophy-2026-09-09.md`。
+
+
+### 2026-09-08 要点（24h 真实增量 · 9 篇技术指标方法论）
+> **24h 判定**：过去24h（09-07 19:30→09-08 19:30）Obsidian Vault **9 篇**新增/修改（含 1 空文件）。主题高度聚焦 = YouTube "RSI Pro" 频道方法论拆解 + 成交量量价口诀 + MACD(6,13,9) 强化版；均为系统化指标认知，非当日单一实盘信号。
+- **体系 head（不变，本日无新增 head 级规则）**：纯MACD优选 / CCI聚簇退潮 / 030裁决分级 / 三因素共振门控(ResonanceGate) / 斐波那契扩展止盈 / 波动率仓位(ATR/1%风险) / 选择性入场纪律(1:2盈亏比+40%胜率) / 结构点止损+S/R Flip / 产业链卡位·卖铲人范式(待实践验证)。
+- **新增 2 条可能修正候选（供人工复核，未写入 head）**：
+  - **修正候选①（RSI 定位升级，09-07 连续次日强化）**：本日 C(200/50EMA+RSI回调)/D(EMA-on-RSI过滤)/E(HMA+RSI) 三篇再证——RSI 宜作**趋势/动能过滤触发器**（RSI>50 回踩破位再上穿入场、区间压缩突破前兆、EMA-on-RSI 降假信号、HMA 低延迟+RSI 滤噪），非孤立超标买卖反转工具。与 08-23 将 RSI 归辅助/弱信号定位张力持续存在。
+  - **修正候选②（MACD 提速参数 (6,13,9)）**：F 篇提出比传统(12,26,9) 早数根 K 线出金/死叉。08-18 已定纯MACD 为选池综合最优；**若提速不损信号质量可改善入场时点——须回测验证后纳入，不直接改参**。
+- **补强/印证（重复验证既有体系，非新规则）**：顺势+200EMA 大周期过滤(08-18 印证)；回踩动态支撑(50EMA)结构化入场、杜绝追高(08-18/09-05 印证)；ATR 止损 + 1.5~2:1 盈亏比 + 背离止盈(08-19/08-24 印证)；成交量=不可替代/量在价先 + OBV(08-24+现 EMA+OBV 策略印证)；指标须加过滤/勿一步不变(08-24 本体论印证)。
+- **明确冲突：无**（仅参数自适应/MACD 提速为优化候选，非规则冲突）。
+- **当日实盘联动**：09-08 adaptive_dual 38 只 双买0/双卖0/双持有24/分歧14；030 买入 2(雷科002413/华明002270,0.1x)、减仓3；分歧多集中在 EMA+OBV(量能)卖 vs 其他策略持有——与量价口诀 "量能鉴别" 用法呼应；002413 持仓缺止损位 🔴延续。
+- **待人工复核合计（新增 ⑧⑨ 已有 → 本日强化，另补 MACD 提速）**：①电力设备出海入观察池(最优先) ②ATR止损/仓位 ③斐波扩展1.272-1.618止盈 ④MACD=均线衍生权重微调+**(6,13,9)提速是否采用** ⑤历史重复BUY钝化 ⑥000987缺止损 ⑦「核心产品+出海资质」通用因子 ⑧**RSI 上调为趋势强度过滤触发器**(09-07+09-08 连续强化) ⑨**均线/指标参数按周期+行情动态自适应**(09-07+09-08 印证)。
+- 完整归档：`wiki/sources/investment-philosophy-2026-09-08.md`。
+
+### 2026-09-07 要点（严格24h no-op · 周末积压补录）
+> **24h 判定**：过去24h（09-06 19:30→09-07 19:30）Obsidian Vault **0 篇**新增/修改 → no-op，无新增规则/修正/冲突，体系 head 不变（连续第 6 日稳定）。
+> **⚠️ 周末平台期缺口补录**：09-05(六)/09-06(日) 无 cron 运行，但 Vault 期间改动了 4 篇未处理笔记（均系技术指标方法论，与既有体系印证为主、无直接冲突）。
+- **体系 head（不变，连续第 6 日稳定）**：纯MACD优选 / CCI聚簇退潮 / 030裁决分级 / 三因素共振门控(ResonanceGate) / 斐波那契扩展止盈 / 波动率仓位(ATR/1%风险) / 选择性入场纪律(1:2盈亏比+40%胜率) / 结构点止损+S/R Flip / 产业链卡位·卖铲人范式(待实践验证)。
+- **因周末停顿被遗漏、本次补录的 4 篇（方法论归纳详见 archive 第五节）**：《均线参数指南》(09-06)、SuperTrend AI+RSI(09-06)、MA-7技巧(09-05)、RSI趋势强度过滤器(09-05)。
+- **可能修正候选（供人工复核，非 24h 结论、未写入 head）**：
+  - **修正候选①（RSI 权重）**：RSI 文档提出 RSI 可作**趋势强度过滤器**（牛熊区间偏移 + 隐藏背离=趋势延续 + 牛旗 RSI>60 过滤假突破），非仅震荡超买卖工具；与 08-23 台账将 RSI 归辅助/弱信号的定位或有张力，可评估是否上调 RSI 在趋势确认链路中的权重。
+  - **修正候选②（均线参数动态自适应）**：均线文档主张「无圣杯参数、须按周期/行情动态微调（EMA+SMA 互补、夹缝=震荡弃做、回踩须右侧确认、支撑压力用筹码密集区/斐波/趋势线优于均线）」——与现 adaptive_dual 固定均线参数可评估是否接入窗口/周期自适应。
+- **待人工复核（延续，无变化）**：①电力设备出海入观察池(最优先) ②ATR止损/仓位 ③斐波扩展1.272-1.618止盈 ④MACD=均线衍生权重微调 ⑤历史重复BUY钝化 ⑥000987缺止损 ⑦「核心产品+出海资质」通用因子 + **新增⑧RSI趋势过滤器权重 ⑨均线参数自适应**。
+- 完整归档：`wiki/sources/investment-philosophy-2026-09-07.md`。
+
+
+### 2026-09-03 要点（连续性观察 · OpenClaw 教程非投资）
+> 来源：过去24h Obsidian Vault 1 篇《“投资大师”龙虾实战》（09-03 18:46 修改，3989B）——内容为 OpenClaw 工具配置/自动化教程，**不含任何投资规则/买卖标准/风控/选股因子/纪律**。
+- **体系 head（不变，连续第 4 日稳定）**：纯MACD优选 / CCI聚簇退潮 / 030裁决分级 / 三因素共振门控(ResonanceGate) / 斐波那契扩展止盈 / 波动率仓位(ATR/1%风险) / 选择性入场纪律(1:2盈亏比+40%胜率) / 结构点止损+S/R Flip / 产业链卡位·卖铲人范式(待实践验证)。
+- **待人工复核（延续，无变化）**：①电力设备出海标的入观察池(最优先) ②ATR波动率止损/仓位 ③斐波那契扩展1.272-1.618入波段止盈 ④MACD本质=均线衍生权重微调 ⑤历史重复BUY钝化(23项) ⑥000987缺止损位 ⑦「核心产品能力+出海资质」升级通用选股因子。
+- 完整归纳：`wiki/sources/investment-philosophy-2026-09-03.md`。
 
 ### 2026-08-18 要点
 - **MACD 系确立为自选池综合最优**（五策略2024-2026回测：纯MACD总分29.3夺冠，两两PK胜出压倒性；KDJ+CCI最弱20.6负夏普）→ 策略权重向纯MACD倾斜，KDJ系降为辅助/需二次确认。
@@ -398,22 +446,58 @@ This file serves as your curated long-term memory, storing significant events, d
 - **印证降权决策**：KDJ/CCI信息重叠、回测最弱(20.6负夏普)→现有降辅助二次确认正确；ATR仅风控非趋势核心→呼应08-19 ATR止损定位；斐波那契≈支撑压力重复→呼应"需与水平支撑/EMA共振"原则。
 - **策略启示**：短线看成交量+支撑压力、波段看均线、ATR辅助风控。**无新增参数、无冲突**，体系稳定。
 
-## Promoted From Short-Term Memory (2026-08-24)
+### 2026-08-26 观察台账（cron · 无新增笔记）
+> 过去24h Obsidian Vault **0 篇新增/修改 .md**（最新仍为 08-24《12个技术指标只有3个不可取代》已归档）。**无新增规则、无修正、无冲突**，体系 head 不变。完整见 wiki/sources/investment-philosophy-2026-08-26.md。
 
-<!-- openclaw-memory-promotion:memory:memory/2026-08-19-0528.md:29:32 -->
-- 📋 维护日志摘要: | 步骤 | 结果 | 详情 | |------|------|------| | `wiki compile` | ✅ 成功 | 162 页编译，0 索引需更新 | | `wiki lint` | ✅ 成功 | 0 issues | [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19-0528.md:29-32]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-19.md:15:15 -->
-- 待办（从昨日延续，需用户 /approve 后再动）: ⚠️ nvidia provider 模型名配置错误（kimi-k2.5/glm-5.1/minimax-m2.5 404）持续多日 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19.md:15-15]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-19.md:11:14 -->
-- 待办（从昨日延续，需用户 /approve 后再动）: 🔴 auction-feed-0915 超时治本（工具层改不了 command，需走配置层 remove+add 重建或查 model-call-started 慢点）; 🔴 send_telegram.py token 更新（MEMORY 的 AAEt... 落盘）; ⚠️ run_agent.py 慢点定位（>230s）+ 3 只持仓（300285/601061/600160）缺止损位; ⚠️ weekly-backtest 验证点 08-22(周六) 06:00 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19.md:11-14]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-19.md:18:21 -->
-- 07:02 技能版本检测 (cron skill-version-watcher): 检测到真实变更：**amap-traffic** 技能新增安装 (v1.0.0, slug: amap-traffic); 用途：高德地图实时路况查询与最优自驾路线规划（基于高德交通态势API + 路径规划API）; 安装时间：Aug 19 05:30；ownerId: kn7dkx3sey4sf5s5336q2axad580mwhy; 已推送摘要到 Telegram (@qwd1_bot, chat_id 626141741) [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19.md:18-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-19.md:5:8 -->
-- 04:00 Dreaming Daily Report (a8c18aed) ✅: 03:00 dreaming pipeline 正常完成（连续 12 期无回归）：light 8 条 staged / **deep promote 6 条到 MEMORY.md**（08-18 工程链）/ REM 归纳 3 主题（`修复`、`投资`、`理念`）。; 本期核心素材（08-18 集中修复日）：①DeepSeek 峰谷计价→4 个收盘 LLM 任务错峰到 19:00 后；②盘前报告超时根治（根因 premarket_report.py 内部 subprocess timeout=180 硬截断，改 320/420/300s，adaptive_dual 新浪日K优先 224→195s）；③投资理念归纳 3 项矛盾闭环（030 仲裁共享、signal-grade 数值化、KDJ EMA 趋势护栏）；④发现 send_telegram.py 内置 token 失效（AAH8），需人工换 MEMORY 的 AAEt。; 本报告产出 `memory/dreaming/daily-report-2026-08-19.md`（文件归档，无投递），并在 `DREAMS.md` 追加 08-19 04:00 日记条目 + Deep Sleep 摘要。; memory_search 本报告生成时正常（bge-m3 未超时）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19.md:5-8]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-19.md:26:29 -->
-- 中联重科 HOLD vs SELL 矛盾（root cause + 修复）: 现象：08-19 challenge_review 高危#1：中联信号"谨慎(应HOLD)"但 final 建议 SELL；premarket 报告也建议卖出。; 根因（代码级）：nodes.py `rule_risk_advice` 的中联强制SELL逻辑 `if sym=="000157" and zl_sell: action=SELL` **只看信号层的 sell=True 标志，不看是否实际持仓**。sig2_sell = macd_bear or close<EMA26 是纯技术条件 → 空仓时只要 6.87<EMA26(7.2) 就误判 SELL，与 030 仲裁"持有"矛盾（08-11 曾修过"综合最优触发卖出强制SELL"，但没加持仓判断，空仓也会触发 → 变体回归）。; 修复：zl_sell 判定改为结合 zhonglian_state.json 实际持仓，仅当对应策略 position=True 时才视为真卖出信号；空仓 → HOLD。备份 backups/nodes_20260819_before_zhonglian_fix.py。; 单测：空仓中联=HOLD ✓ / 持仓中联=SELL(风控保留) ✓ [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19.md:26-29]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-19.md:32:35 -->
-- 新增修复#4：破位回落拦截（防止接飞刀）: 现象：国瓷材料 08-19 盘中破止损(最低63.41<70.55)接近跌停(-13.7%)，但收盘信号仍给"强烈买入分3"——BUY评级明显失当。; 修复：nodes.py "强烈买入/关注"分支最前加破位拦截——**收盘价 < EMA26 时 BUY 强制降级 HOLD(禁追)**。; 依据：08-02"天量高开低走=出货"教训 + 今日国瓷/中联。; 单测：国瓷(破位)=HOLD ✓ / 招行(健康)=BUY ✓；真实K线端到端：中联=HOLD、国瓷=HOLD、招行=BUY 全部正确。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-08-19.md:32-35]
+- **体系 head（不变）**：纯MACD优选 / CCI聚簇退潮 / 030裁决分级 / 三因素共振门控(ResonanceGate) / 斐波那契预声明扩展止盈。
+- **非 Obsidian 观察台账（供人工复核，非理念本体）**：
+  - 盘中预警系统(08-25落地 close_scan_v2 --intraday + intraday-alert cron) 08-26 首日运行——新增「实时风控」维度，机制增强非规则新增。
+  - 今日 challenge_review 27项(🔴高危4)：000987缺止损位；中联/中信金属/奔图 mismatch——均符合既有规则(破位回落拦截/030裁决减仓/三因素门控)，非冲突。
+  - historical_judgment_review **23项重复BUY**(招商/福耀/恒力/中信特钢/安达维尔 多日同理由)——"趋势跟踪钝化重复信号"**待人工复核**，今日最密集，建议优先。
+  - 000987(越秀资本) 08-26买入 缺止损位需补。
+
+
+### 2026-08-31 要点（AI电力设备深度分析）
+> 来源：过去24h Obsidian 1 篇《深度拆解2026年Q2科技巨头CapEx + 电力设备巨头财报》（08-28 20:28 修改，未在 08-28 归档时间点被捕获，本次补录）。这是自 08-24 指标简化框架以来首次实质新增笔记，具有重要产业逻辑。
+
+- **核心观点（选股因子维度）**：
+  - **AI 电力「卖铲人/卖水人」逻辑**：AI 算力增长受电力基础设施限制，电力设备供应商（变压器/GIS/换流阀等）订单外溢，长期景气度高。
+  - **核心卡脖子环节**：变压器生产瓶颈（材料/技工/物流），排产至 2029-2030。
+  - **HVDC 高压直流输电**：绿色电力远距离输送关键技术。
+  - **Colo 托管数据中心、EPC & 模块化预制舱**：具备快速交付能力和电力资源者受益。
+  - **美国电力需求**：待建数据中心 307GW，15年消化周期，长景气持续。
+- **中国投资机遇（选股逻辑）**：
+  - **选股标准** = **核心产品制造能力 + 出海资质**（技术成熟 / 性价比高 / 交付强 / 具备海外认证）。
+  - **推荐标的**：特变电工(600089)、国电南瑞(600406)、许继电气(000400)、中国西电(601179)、平高电气(600312)、思源电气(300207)、华明装备(002270)、沃尔核材(002130)。
+- **风控与纪律**：秉持「淘金时代卖铲人」思维，不追终端 AI 概念，关注产业链确定性环节；出海标的关注海外收入占比和认证壁垒。
+
+- **与现有体系对比**：
+  - **新增**：
+    - **NEW-1: 产业链「卖铲人」选股范式**：引入产业逻辑层面的选股因子，弥补现有技术面+护城河维度的不足。
+    - **NEW-2: 「核心产品能力 + 出海资质」双因子选股标准**：可评估升级为通用选股入池因子。
+  - **补充**：护城河因子池可补充「技术壁垒+认证壁垒+订单能见度」维度。
+  - **冲突（待人工复核）**：
+    - **CONFLICT-1（观察池盲区）**：新推荐的 8 只电力设备标的**均不在当前 30 股自选池中**。急需评估是否纳入以覆盖 AI 电力缺口。
+    - **CONFLICT-2（策略脱节）**：现有技术面多策略与本篇行业基本面逻辑互补但脱节。考虑为电力设备主题设立基本面向导的候选跟踪。
+
+- **体系 head 更新**：纯MACD优选 / CCI聚簇退潮 / 030裁决分级 / 三因素共振门控(ResonanceGate) / 斐波那契预声明扩展止盈 **+ 产业链卡位（NEW，待实践验证）**。
+
+- **待人工复核清单（更新）**：
+  1. **是否将电力设备出海标的纳入观察池**（特变/平高/思源/许继等）——最优先，以弥补 AI 电力主题盲区。
+  2. ATR 波动率止损 / 波动率仓位（08-19 延续）
+  3. 斐波那契扩展位 1.272-1.618 纳入波段止盈（08-19/20 延续）
+  4. MACD 本质=均线衍生 → 纯MACD优选权重微调（08-24 延续）
+  5. 历史重复 BUY 信号是否钝化（23项，延续）
+  6. 000987 持仓缺止损位需补（延续）
+  7. **「核心产品能力+出海资质」是否升级为通用选股因子**（NEW，待评估）
+
+### 2026-08-25 盘中策略预警系统（接入 close_scan_v2）⭐
+*   **做了什么:** 把「结合地缘/新闻的策略应对」接入 `close_scan_v2.py` 做盘中实时预警。
+*   **配置:** `data/intraday_alert_config.json` — 30 只关注股手动策略规则（止损位/买点区/急涨急跌/行动指示），basis=08-24 收盘+地缘分析。
+*   **代码:** close_scan_v2.py 新增 `evaluate_strategy_alerts()` + `run_intraday_alert_mode()` + `--intraday` CLI；主 scan 输出 JSON 增加 `strategy_alerts`/`strategy_alert_triggered` 字段；per-价位去重（`data/intraday_alert_state.json`）防重复轰炸。新建 `scripts/push_intraday_alerts.py` 调 `--intraday`，仅新触发时组纯文本推送，**绕开 LLM**（防超时/fallback 崩）。
+*   **Cron:** `intraday-alert-watch`(c57f99fb) `*/30 9-15 * * 1-5` Asia/Shanghai，isolated agentTurn 跑 push 脚本。
+*   **验证:** 主 scan 正常；intraday 模式触发 3 条（长电73.8/奔图16.75/福莱蒽特25.1 恰停在昨收止损线）；telegram 测试推送成功。
+*   **注意:** cron add 接口 payload.kind 只收 agentTurn/systemEvent，`command` 是旧 legacy 格式（如 portfolishim-daily）无法新建 → 盘中预警用 agentTurn 直跑脚本。每个交易日 09:00-15:00 每 30 分钟轮询，用实时价独立评估。
 
 ## 2026-08-22~24 每周回测超时根治 · 凭据/导入工程修复 ⭐
 
@@ -437,3 +521,135 @@ This file serves as your curated long-term memory, storing significant events, d
 ### 2026-08-22 回滚判断：保护的止损胜利 ≠ 策略失效
 *   **结论：不回滚、不改策略**。param_eval 判 300285/600570「恶化」是已实现亏损统计，但属**保护性止损的胜利**：国瓷 300285(macd) 08-19 卖出-4.90%后继续跌到 62.92（卖后至今 -8.62%，止损逃顶正确）；恒生 600570(bollinger) 08-14 卖出-4.79%后一路阴跌至今 -4.91%（避开下跌正确）。
 *   **关键洞察**：portfolio_sim.py **只读 adaptive_strategy_map.json 的策略名 + 默认参数**，不读 adaptive_params.json 的 stocks 自定义参数 → 「回滚参数」对模拟盘本身无意义（只影响盘前分析）。
+
+## 2026-09-09 基建故障修复（F-1/F-2/F-5 闭环）⭐
+*   **F-1 portfolio_sim `signal_bull_trend` price undefined 崩溃修复**：`analysis/portfolio_core.py` 中 `signal_bull_trend` 计算 `ema10`/`ema20`/`ema60` 但代码引用未定义的 `ema50`/`ema200` → 修正变量名并更新趋势逻辑为 EMA20/EMA60 多头排列判断。
+*   **F-2 backtest_strategies.py 指数预加载日期格式错误修复**：`preload_index_benchmarks(START_DATE, END_DATE)` 传递 `20240101` 格式，但 `fetch_index_data` 需要 `YYYY-MM-DD` → 在函数内增加 `start_ymd = f"{start_date[0:4]}-{start_date[4:6]}-{start_date[6:8]}"` 转换，预加载成功（沪深300/中证500 各 651 条）。
+*   **F-5 portfolio_sim baostock 连接池耗尽修复**：`analysis/portfolio_sim.py` 的 `fetch_data` 每次调用都 login/logout，导致 35 只股票产生大量 `[Errno 9] Bad file descriptor` → 新增 `_ensure_bs_login()`/`_ensure_bs_logout()` 全局会话管理，main() 入口单次登录、退出时统一 logout，运行全程零连接错误。
+*   **验证**：portfolio_sim.py 全 35 只跑通无报错；backtest_strategies.py 全 35 只×9 策略回测完成（耗时 ~15min），输出报告正常。
+
+## 2026-08-29~31 每周回测性能回归 + 双跑风险闭环 ⭐
+
+### 2026-08-29 weekly-backtest-pipeline (c4cb94a5) 运行性能回归 🔴
+*   **现象**：08-29 触发(06:01, 耗时~28min) `error (2x)`，失败通知已投 TeleTG。
+    *   ❌ `backtest_strategies.py` **超时 300s**（08-22 为 267.8s，逼近阈值）。
+    *   ✅ `validate_strategies.py` 489s。
+    *   ❌ `param_tune.py` **超时 900s**（08-22 为 130.2s → **7x 断崖恶化**，异常）。
+    *   ✅ 其余 (param_signal_diff / param_evaluate / auto_adjust) 正常。
+*   **根因线索**：`weekly_full_pipeline.py` 硬编码 timeout（backtest=300、param_tune=900）。param_tune 130s→>900s 疑似数据量暴涨 / 死循环 / 资源争抢，需排查。
+*   **待办**：下次触发 09-05 06:00。周一审查 param_tune.py 输入数据量 & 是否引入低效逻辑；必要时调大 timeout 或优化。
+*   **教训**：pipeline 硬编码 timeout 会随数据量增长隐性失配——定期核对各步骤实际耗时与阈值余量。
+
+### ✅ 双跑风险闭环（2026-08-29 验证确认）
+*   多期「停用旧 agentTurn cron `weekly-backtest-strategy-refresh`(cc0ae9f1)」待办**解除**：08-29 周六 06:00 cron 列表**仅剩 c4cb94a5**，旧 cron 已消失，双跑不再发生。
+
+### ⚠️ 08-29 记忆缺口
+*   `memory/2026-08-29.md` 不存在、无 daily-report-2026-08-29，08-29 Dreaming Daily Report 确认漏档，需人工评估补档。
+
+## 待办看板（截至 2026-08-31）
+*   🟡 000987(越秀资本) 缺止损位需补。
+*   🟡 23 项重复 BUY（趋势跟踪钝化）待人工复核——最密集，建议优先。
+*   🔴 param_tune.py 超时排查（新增，09-05 触发前）。
+*   🔴 nvidia provider 模型名配置错误（404）。
+*   🔴 auction-feed-0915 超时治本。
+*   🟡 08-29 记忆补档。
+
+## 2026-09-01~03 盘前管道波动 + 每日回测卡死排查 ⭐
+
+### 盘前深度分析管道 09-01 失败 → 09-02 自愈
+*   **09-01 06:00**：每日盘前深度分析 (10560fab) 执行失败，错误 `Process: nova-sable failed`，未投递 Telegram。原因不明（nova-sable 疑新进程/工具名，无历史记录可查）。
+*   **09-02 06:11**：✅ **自愈** —— 报告正常生成(`analysis/daily/2026-09-02_premarket_report.md`)，agent run `error_count=0`（run_id 20260902060629）；zhonglian-monitor-morning(55bba416, 连续超时4x) 亦疑似自愈（zhonglian 字段 7 键已填充）。两待办闭环。
+*   **教训**：单次 `nova-sable` 类进程/模型 transient 失败会自愈，不必过度处理；先观察下一 run 是否恢复再排查。
+
+### 🔴 09-02 每日量化回测 (bd9843f1) 卡死 52min 无报告 → 被 kill
+*   **现象**：20:30 启动 `backtest_strategies.py`，运行 52 分钟未产出报告，判定卡死并 kill；`analysis/backtest/` 无 2026-09-02 报告。
+*   **诊断证据（09-03 04:00 dreaming 固化）**：全程仅 1 条 TCP 连接（baostock fd3 `CLOSE_WAIT` **死连接，从未重连**）→ 说明未进入逐股数据抓取循环；CPU 全程 ~96% 持续 45+min、RSS 稳定 ~163MB（无内存膨胀）；代码逐段审查**无无限循环**（所有 for range / while rs.next / retry=3 均有界）；正常历史 ~18min 即写完报告。
+*   **结论**：推断为 **baostock 服务端异常**（起始 6s CPU 停滞 + CLOSE_WAIT 死连接未重连）诱发的病态路径，非正常慢速（否则应有断续新 socket）。**非脚本逻辑缺陷。**
+*   **待办（高优）**：明日 cron 会再跑；若复现需拆查 `fetch_data`/`fetch_index_data` 对 baostock 断连的降级/重连病态分支。同日 baostock 指数查询亦报 `[Errno 9] Bad file descriptor`（09-01 起沪深300/中证500 基准失败，用个股 buy&hold 替代）。
+*   💡 备注：09-01 回测正常（28股x9策略），baostock 服务端时好时坏——印证 08-02「新浪 hq/日K 才是唯一实测稳定主源」结论，回测/指数基准应评估接入新浪日K 为主、baostock 为辅。
+
+### 🟡 09-01 记忆维护记账缺口
+*   `记忆维护-周一` (01b13330) 09-01 运行 ok，但 **未更新 heartbeat-state.json 的 security_audit 时间戳**（仍停在 08-03）——属记账缺口非失败，下次顺手补（当前仍为 1785708000=08-03）。
+
+## 待办看板（截至 2026-09-03，自 08-31 更新）
+*   🔴 **每日回测 baostock 卡死/断连病态路径排查**（09-02 复现后新增，高优）——再复现拆 fetch_data/fetch_index_data 重连分支；评估新浪日K为主源。
+*   🔴 param_tune.py 超时排查（09-05 周六 06:00 weekly-backtest-pipeline 触发前）——数据量暴涨/低效逻辑。
+*   🟡 000987(越秀资本) 缺止损位需补（延续）。
+*   🟡 23 项重复 BUY（趋势跟踪钝化）待人工复核——最密集，建议优先（延续）。
+*   🔴 nvidia provider 模型名配置错误（404）（延续）。
+*   🔴 auction-feed-0915 超时治本（延续）。
+*   🟡 08-29 记忆补档（延续）。
+*   🟡 heartbeat-state security_audit 时间戳补记（08-03 停滞，记账缺口）。
+
+## 2026-09-04~07 基建故障周复盘（weekly-review 09-06 蒸馏）＋周一安全审计 ⭐
+
+**周性判断**：本周(09-01~09-05)为「防御窄震 + 基础设施故障」双周：30 标的信号持续偏空(谨慎+中性 80%)，模拟盘全程 0 持仓、实际成交 0 笔(空仓守住现金)。但量化/组合基建三天故障(09-01 组合引擎全崩、09-02/03 回测卡死无报告、09-03 日报缺失)——数据可信度打折，是下周第一优先修复项。
+
+### 🔴 F-1~F-5 组合/数据基建故障清单（下周 09-08 早盘前必修）
+*   **F-1 portfolio_sim 09-01 全 27 股信号引擎崩**：`cannot access local variable 'price'`（atr 计算路径），资产字段还夹带 ¥200,000 -92.59% 失真（初始资金口径错乱）。待修 + 补跑 09-01 缺失信号。
+*   **F-2 每日回测 09-02/09-03 卡死 52min 无报告**：`strategy_index_benchmark` 在 ALL_STRATEGIES 内被**逐股调用** → ~2 基准 × 28 股 ≈ 56 次独立 baostock 指数查询全失败([Errno9] Bad fd)→ retry 忙等 CPU100%。**修复：指数序列只拉一次缓存复用勿逐股重查 + fetch_index_data 失败快速返回 None/回退到个股价格兜底，禁 retry 忙等死锁**（09-03 已确认设计缺陷）。
+*   **F-3 portfolio_sim 缺组合权益日时序**：state 只存 per-symbol 扁平累计(已实现盈亏口径，trade_count=2 即一 BUY 一 SELL)，无组合时序 → **无法算周度回撤/夏普/绩效归因**。补日时序记账为铺路。
+*   **F-4 Telegram 投递多次被 nova-sable/nova-cedar 子进程假阴性阻断**(503 回退)：报告落盘 ok 但推送漏，人工可能漏看。09-05 经 3 轮重试才送达周报。
+*   **F-5 state 资金口径混乱**：100k 初始现金标在多数 symbol、600036/000400 双列、多桶资金(核心/卫星/哑铃)与总资产 ¥2.7M 系统对不上——多桶账与单桶 sim 混用。
+*   **配合 08-29 补档关键数据**：08-29 baostock 大面积失效仅 1/30 股成功(久立特材)，validate 拒绝写回映射(完整度<20% 阈值)；param_tune 全量 900s 超时经 weekly_full_pipeline.py 已强制 `--fast`+timeout 1800s 修复。
+
+### ⚠️ §5 三处硬疑点（需人工复核）
+1. **招商银行(600036)**：08-26~09-04 连续“强买/关注”被降 HOLD，且 arbitration 反给“减仓”——技术面与仲裁长期打架。
+2. **中联重科(000157)**：策略连 4 天触卖出(RSI 30 弱)但最终建议持续 HOLD → **卖出信号被最终裁决系统性忽略，疑似“持仓不忍割”偏差**。
+3. **国瓷材料(300285)**：08-19 已 -4.90% 止损后 08-28 又回补 BUY ¥68.9，state total_pl 仍未记第二腿 → 止损纪律被绕过且 PnL 漏记，需人工确认仓位与账面。
+
+### §6.3 风控参数微调（待落地的既定决策）
+1. **仲裁减仓期间 → 禁 BUY（硬规则）**；2. **双策略任一腿🔴卖出且 RSI<35 → 至少减半仓**（修中联卖出被忽略）；3. **030 健康度 ≤6 强制“只减不加”**（覆盖 AI 研判文案“可加仓”措辞）；4. **盘中破 ATR 止损(2.0/risk1%) → 当日必走**，禁隔夜侥幸；5. **科技高估(长电/通富/中芯/亿纬)设 no-new-buy 区**至 re-test 站稳 EMA26。买入乘数本周已 0.5x→0.4x。
+*   ⚠️ 认知偏差教训：多份 AI 研判给“逢低加仓”，但量化信号 80% 谨慎/健康度偏弱 →**研判文案与量化信号脱节**，健康度<6 强制只减不加可消除自相矛盾。
+
+### 📅 09-07(一) 安全审计（记忆维护-周一）结论
+*   ✅ 端口 18789 loopback-only（Ipv4+IPv6 均 localhost）；Gateway pid 27738 锁版本 2026.7.1-2；技能无高危模式；git 无明文 Key；**heartbeat-state security_audit 时间戳已补记 =1788732716（闭环 08-03 停滞缺口）**。
+*   ⚠️ **op CLI 未登录**（No accounts configured）→ `op item list --vault` Secret 核验跳票，待人工补做。
+*   ⚠️ **guard/* 快照仅 1 个且 >30 天**（guard/init-20260808-0530）→ 快照节奏断档，snapshot_guard 应高频跑。
+*   ⚠️ **3 cron error**：weekly-review-trading(error 4x)、weekly-backtest-pipeline(error 3x)、盘前新闻快讯 40731f98(error)——周六两条连续失败待查根因（疑 baostock/子进程 503）。
+*   ⚠️ **skill_supply_scan.sh 本身卡死**（无输出需 kill，疑扫 analysis/ 大目录递归）→ 用定向 grep 兜底，脚本待排查。
+*   ⚠️ LLM 余额降至 ¥6.16（09-05 沿用口径，注意用量）。
+
+## 待办看板（截至 2026-09-10，自 09-07 更新）
+*   ✅ **F-1 portfolio_sim `price` undefined 崩溃已修复** (09-09)：`signal_bull_trend` 使用未定义的 `ema50`/`ema200` → 修复为 `ema10`/`ema20`/`ema60`
+*   ✅ **F-2 backtest_strategies.py 指数预加载日期格式错误已修复** (09-09)：`preload_index_benchmarks` 传递 `20240101` 而非 `2024-01-01` → 增加日期格式转换
+*   ✅ **portfolio_sim baostock 连接池耗尽已修复** (09-09)：fetch_data 每次 login/logout → 改为单次登录复用会话
+*   ✅ **param_tune.py 超时已解决** (09-09)：FAST_GRIDS + 单窗口预筛选 + DataRouter缓存 + bs_session复用，35只快速模式 ~3分钟（原 >900s）
+*   ✅ **weekly_full_pipeline 完整跑通** (09-09 晚)：8步骤 250秒全成功，回测→调优→验证→差异榜→赛后验证→030微调→推送
+*   ✅ **F-3 portfolio_sim 缺组合权益日时序已修复** (09-10)：`append_equity_snapshot` 移至循环外，每日仅记录一条 CSV 行，支持周度回撤/夏普/绩效归因
+*   🔴 09-10 验证早晚盘管道在两日休市后稳定（nova-sable/cedar 503 是否再犯）
+*   🟡 op CLI 未登录需人工补（Secret 落盘核验跳票）；skill_supply_scan.sh 卡死排查；guard/* 快照高频补。
+*   🟡 **§5 三疑点人工复核**（600036 仲裁打架 / 000157 卖出被忽略 / 300285 止损后回补）。
+*   🟡 08-29 记忆补档（沿用，weekly-review 已含 08-29 部分关键复盘数据）。
+*   🔴 nvidia provider 模型名 404（沿用）；auction-feed-0915 超时（沿用）。
+*   🟡 F-4 Telegram 投递被子进程假阴性阻断（需纯文本推送避免 Markdown 实体解析）
+*   🟡 F-5 state 资金口径混乱（多桶账与单桶 sim 混用）
+
+## 2026-09-10 完整维护补充记录（memory-maintenance-check）
+*   **F-2 residual ⚠️（09-10 澄清）**：日期格式修复已让预加载成功（沪深300/中证500 各 651 条），但 `fetch_index_data` 走「个股兜底重复」——回测里沪深300==中证500==个股 buy&hold 三行得分完全一致(+61.59%)，**真实双指数数据仍缺**。需核对指数序列为何仍走兜底（是否 fetch_index_data 仍逐股调用或缓存未真实命中）。
+*   **💧 LLM 余额下降趋势（预算哨）**：09-09 ¥5.85 → 09-10 ¥3.70，继续走低需谨慎大重跑，观察充值。
+*   **🧠 dreaming 晋升行为规律（连续 3 日）**：09-08/09-09/09-10 deep 均「回捞旧物再 promote」（源多为 09-05/09-06-weekly-review/07-20 等），**未 promote 当日（T-1）高价值事件**；REM 多为弱主题。判定属安静巩固期非异常，但若持续提示 dreaming 短时记忆召回对「当日新增」覆盖不足。
+*   **📋 weekly-review-2026-09-10 已归档**（`memory/2026-09-10-weekly-review.md`）：周期 09-04~09-10，模拟盘 1/35 持仓(雷科防务 ema_cross)、本周卖 1 笔 +¥11,714 胜率 100%、盘中预警 29 条。
+
+## Promoted From Short-Term Memory (2026-09-10)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-07-20.md:1:16 -->
+- # Daily: 2026-07-20 (Monday) ## Session: 06:07 heartbeat poll (memory-maintenance-monday triggered) - Basic system health check: OK - Model: DeepSeek V4 Flash (当前余额 ¥19.99 根据7/18记录) - No new user messages since 2026-07-18 - Cron jobs running: 12 active, 3 had lastRunStatus=error (skill-version-watcher, daily-a-share-analysis, Memory Dreaming Promotion), need investigation - No recent (7/19-7/20) memory or activity to distill ## Notable - 今天是周一，memory-maintenance-monday cron 已触发（056520c1），lastRunStatus=ok - error-pattern-injector（42c6687f）lastRunStatus=ok - 需要关注的cron异常: skill-version-watcher (error), daily-a-share-analysis (error),... [score=0.881 recalls=3 avg=0.593 source=memory/2026-07-20.md:1-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-05.md:4:7 -->
+- 04:00 Dreaming Daily Report (a8c18aed) ✅: 03:00 dreaming pipeline 正常完成（**连续 22 期无回归**）：light 多条候选 staged（多为昨日 09-04 报告内容再循环）/ deep 本夜 ranked 6 / **promoted 6** 到 MEMORY.md（新区块 **line 537**）/ REM 归纳 4 主题（memory.md conf 1.00、09-03/新增修改/无新增规则 conf 0.80）——无超强新真理，属安静巩固夜。; 本报告产出 `memory/dreaming/daily-report-2026-09-05.md`（文件归档，无投递），并在 DREAMS.md 追加 09-05 04:00 日记条目。; ⚠️ **deep 全部 6 条均为旧物再固化（非 09-04 新内容）**：1 条源 08-16（skill-version-watcher 技能首次入版本跟踪，recalls:3 跨期回捞）+ 5 条源 08-31（08-31 梦境/记忆维护/每日回测，经 recalls 再 promote 属重复固化）。判定：09-04 记忆重要事件（09-03 回测缺陷已在 09-04 固化、盘前稳定、19:30 no-op）**无新真理可晋升** → deep 回捞旧物。属正常安静期，非异常。; 🔴 **核心素材（最高优先，今日档期）**：**今日... [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-05.md:4-7]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-05.md:8:11 -->
+- 04:00 Dreaming Daily Report (a8c18aed) ✅: ✅ 盘前分析管道（09-04）稳定：premarket 文件完整落盘（`analysis/daily/2026-09-04_premarket_report.md` 4040B）；但 cron 标记 error——`nova-cedar` 辅助子进程 503 假阴性 + TG 未投递，内容 OK。今日 06:00 再现则查子进程为何非零退出。nova-sable 自愈闭环维持。; 🏛️ Obsidian→理念归纳（09-04 19:30）no-op：24h 零新增笔记，head 不变（连续第 5 日稳定）。; 🔴 记录缺口沿用：`memory/2026-08-29.md` 不存在、无 daily-report-2026-08-29，需人工评估补档。; 🟡 待办沿用：今日 weekly param_tune（并入回测缺陷修复）、nvidia 模型名(404)、auction-feed-0915 超时、000987/23项 BUY 复核、baostock 单实例锁+超时保护、zhonglian 自愈确认、心跳节奏回归。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-05.md:8-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-05.md:12:12 -->
+- 04:00 Dreaming Daily Report (a8c18aed) ✅: 系统状态：03:00 dreaming 正常；memory_search 可用；Gateway 锁版本 2026.7.1-2；LLM 余额 ¥6.16。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-05.md:12-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-05.md:15:18 -->
+- 07:40 Weekly-Review 投递重试（第 3 次）✅归档已就绪: 周度复盘报告已于 07:23:52 归档至 `memory/2026-09-06-weekly-review.md`（14813B，含 07:23 周度回测，156 行，完整）。; 前两轮（Run1 07:22 / Run2 07:25）分析+归档均成功，但 Telegram 投递连失败两次（OutboundDeliveryError: sendRichMessage 网络错误，delivered:false）。; 本轮（第三轮重试）确认报告无需重生成，直接整体投递全文至 **Telegram 626141741（纯文本）**。; 无新增市场数据需要并入；07:23 起至本轮无更晚回测产出。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-05.md:15-18]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-06-weekly-review.md:3:3 -->
+- 周度复盘 2026-09-01 ~ 09-05（周六 09-06 复核归档）: > 数据截至 09-04 收盘 / 09-05 06:00 weekly-backtest。本报告试图只基于**落盘事实**复盘，凡数据缺失/损坏处均显式标注，不虚构。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-06-weekly-review.md:3-3]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-06-weekly-review.md:9:9 -->
+- 本周性质判断（先给结论）: **本周是一个「防御性窄幅震荡周 + 基础设施故障周」**： [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-06-weekly-review.md:9-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-06-weekly-review.md:10:13 -->
+- 本周性质判断（先给结论）: 30 标的市场信号分布持续偏空：09-04 信号分布 = 谨慎 16 / 中性 8 / 关注 3 / 强烈买入 3 → **谨慎+中性占比 80%**，09-01~09-04 无可成交的重仓买入。; 多次 **盘中跌破止损**（见 §3.3），集中在半导体/锂电/机械链，印证科技高估值风格在退潮。; 模拟盘**全程空仓（持仓 0/27）**，实际成交 **0 笔**——不是“没执行”，而是系统性的 HOLD 门控在弱市中守住了现金。; ⚠️ 但本周**量化/组合基础设施三天故障**（09-01 组合信号引擎整体报错、09-02/09-03 每日回测卡死无报告、09-03 组合日报文件缺失），数据可信度打折，是下周第一优先修复项。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-06-weekly-review.md:10-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-06-weekly-review.md:20:23 -->
+- 1.1 本周（09-01~09-05）信号 vs 成交: | 日期 | 组合信号 | 实际成交 | 说明 | |---|---|---|---| | 09-01 | **0（引擎全挂）** | 0 | 27 股全抛 `cannot access local variable 'price'`，信号计算失败，文件还夹带 ¥200,000 -92.59% 的资产假象（初始资金口径错乱） | | 09-02 | 🔴卖 2（招商银行 CCI高位82%、中信金属 破EMA20+OBV下穿） | 0 | 持仓本就 0，卖出信号属“已离场后的二次确认”，无需执行 | [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-06-weekly-review.md:20-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-06-weekly-review.md:24:26 -->
+- 1.1 本周（09-01~09-05）信号 vs 成交: | 09-03 | （report 缺失） | 0 | ⚠️ `portfolio_sim` 日报文件整日未生成 | | 09-04 | 🔴卖 3（招商银行 CCI88、中芯国际 KDJ死叉、中信金属 破EMA20） | 0 | 同上，持仓 0，信号落空 | | 09-05 | 休市前 weekly-backtest 待跑 | — | baostock 基准缺陷高危，见下 | [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-06-weekly-review.md:24-26]

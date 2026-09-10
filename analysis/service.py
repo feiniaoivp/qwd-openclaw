@@ -4,11 +4,16 @@
 所有�函数仅返回数据，不做打印或文件写入，便于被上�层 Agent �� 调用。
 """
 
-import os, sys, json, time, logging, urllib.request, re
+import os, sys, json, time, logging, urllib.request, re, socket
 from datetime import datetime, date
 import pandas as pd
 import akshare as ak
 import pandas_ta as ta
+
+# 防御性兜底：外部数据接口有时会间歇性 TLS/IP 挂起，绕过硬编码的 per-call timeout
+# 并在 poll 上无限阻塞（实测 quotes.sina.cn 多次触发，最终导致上层 cron SIGKILL）。
+# 对所有新建 socket（含 https/SSL 握手）设置全局默认超时，保证任何一步都绝不无限阻塞。
+socket.setdefaulttimeout(15)
 
 log = logging.getLogger(__name__)
 
