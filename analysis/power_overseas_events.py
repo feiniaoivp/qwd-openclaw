@@ -231,66 +231,60 @@ class EventClassifier:
 # ============================================================================
 
 class EastMoneyAdapter:
-    """东方财富全市场公告适配器"""
-    
+    """东方财富公告适配器 (直连 API, 带超时)
+
+    2026-09-13 修复: 原用 ak.stock_notice_report() 全市场接口，实测超时且
+    列名已变(关键列缺失→0条)。akshare 的逐股 _stock_notice_report 内部
+    requests.get 无 timeout 且逐页翻页，实测会卡死。故改为直连
+    np-anotice-stock.eastmoney.com API，逐股请求 + 5s 超时 + 失败跳过。
+    """
+
+    API = "https://np-anotice-stock.eastmoney.com/api/security/ann"
+
+    @staticmethod
+    def _fetch_one(code: str, begin: str, end: str, timeout: int = 8) -> List[Dict]:
+        import requests
+        params = {
+            "sr": "-1", "page_size": "50", "page_index": "1",
+            "ann_type": "A", "client_source": "web", "f_node": "0", "s_node": "0",
+            "stock_list": code, "begin_time": begin, "end_time": end,
+        }
+        r = requests.get(EastMoneyAdapter.API, params=params, timeout=timeout,
+                         headers={"User-Agent": "Mozilla/5.0"})
+        payload = r.json()
+        rows = (payload.get("data") or {}).get("list") or []
+        out = []
+        for it in rows:
+            codes = it.get("codes") or []
+            sym = str(codes[0].get("stock_code", ""))[:6] if codes else code
+            out.append({
+                "symbol": sym,
+                "name": POWER_STOCKS.get(code, ""),
+                "title": it.get("title", ""),
+                "content": "",
+                "pub_date": str(it.get("notice_date", ""))[:10],
+                "source": "eastmoney",
+                "url": f"https://data.eastmoney.com/notices/detail/{sym}/{it.get('art_code','')}.html",
+                "notice_type": it.get("columns", [{}])[0].get("column_name", "") if it.get("columns") else "",
+            })
+        return out
+
     @staticmethod
     def fetch_recent(days: int = 7) -> List[Dict]:
-        if not HAS_AKSHARE:
-            return []
-        
-        try:
-            # 东方财富全市场公告
-            df = ak.stock_notice_report()
-            if df is None or df.empty:
-                return []
-            
-            # 字段标准化
-            # 列名可能变化，做兼容
-            cols = df.columns.tolist()
-            log.debug(f"东财公告列名: {cols}")
-            
-            # 常见列名映射
-            title_col = next((c for c in cols if "标题" in c or "title" in c.lower()), cols[0])
-            code_col = next((c for c in cols if "代码" in c or "code" in c.lower()), None)
-            date_col = next((c for c in cols if "时间" in c or "date" in c.lower() or "发布" in c), None)
-            content_col = next((c for c in cols if "内容" in c or "摘要" in c or "content" in c.lower()), None)
-            url_col = next((c for c in cols if "链接" in c or "url" in c.lower() or "href" in c.lower()), None)
-            type_col = next((c for c in cols if "类型" in c or "type" in c.lower()), None)
-            
-            if not code_col or not date_col:
-                log.warning("东财公告关键列缺失")
-                return []
-            
-            # 过滤目标标的
-            df = df[df[code_col].astype(str).str[:6].isin(POWER_STOCKS.keys())]
-            if df.empty:
-                return []
-            
-            # 日期过滤
-            df[date_col] = pd.to_datetime(df[date_col], errors="coerce")
-            cutoff = datetime.now() - timedelta(days=days)
-            df = df[df[date_col] >= cutoff]
-            
-            results = []
-            for _, row in df.iterrows():
-                code = str(row[code_col])[:6]
-                results.append({
-                    "symbol": code,
-                    "name": POWER_STOCKS.get(code, ""),
-                    "title": str(row[title_col]),
-                    "content": str(row[content_col]) if content_col and pd.notna(row[content_col]) else "",
-                    "pub_date": row[date_col].strftime("%Y-%m-%d"),
-                    "source": "eastmoney",
-                    "url": str(row[url_col]) if url_col and pd.notna(row[url_col]) else "",
-                    "notice_type": str(row[type_col]) if type_col and pd.notna(row[type_col]) else ""
-                })
-            
-            log.info(f"东财公告获取: {len(results)} 条 (近{days}天)")
-            return results
-            
-        except Exception as e:
-            log.error(f"东财公告获取失败: {e}")
-            return []
+        begin = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+        end = datetime.now().strftime("%Y-%m-%d")
+        results: List[Dict] = []
+        for code in POWER_STOCKS.keys():
+            try:
+                results.extend(EastMoneyAdapter._fetch_one(code, begin, end))
+            except Exception as e:
+                log.debug(f"{code} 公告获取失败(跳过): {type(e).__name__}")
+                continue
+        # 按日期过滤
+        cutoff = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+        results = [r for r in results if r.get("pub_date") and r["pub_date"] >= cutoff]
+        log.info(f"东财公告获取: {len(results)} 条 (近{days}天, 直连逐股)")
+        return results
 
 class CninfoAdapter:
     """巨潮资讯网适配器 (简易版，需网页解析)"""
