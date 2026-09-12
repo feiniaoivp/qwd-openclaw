@@ -17,13 +17,14 @@ import argparse
 
 # 追踪标的配置 (8只核心 + 自选池重叠股)
 TRACK_TARGETS = [
-    {"code": "300593", "name": "沃尔核材", "market": "SZ", "focus": "特高压电缆/海缆出口"},
+    {"code": "002130", "name": "沃尔核材", "market": "SZ", "focus": "电缆附件/绝缘材料/海缆出口"},
     {"code": "600312", "name": "平高电气", "market": "SH", "focus": "GIS/变压器/特高压出口"},
     {"code": "002028", "name": "思源电气", "market": "SZ", "focus": "换流阀/GIS/变压器出口"},
     {"code": "600089", "name": "特变电工", "market": "SH", "focus": "变压器/电缆/EPC出口"},
     {"code": "601179", "name": "中国西电", "market": "SH", "focus": "±1100kV换流阀/变压器出口"},
+    {"code": "600406", "name": "国电南瑞", "market": "SH", "focus": "换流阀(47-49%市占)/电网自动化出口"},
     {"code": "000400", "name": "许继电气", "market": "SZ", "focus": "换流站设备/柔直技术出口"},
-    {"code": "600157", "name": "永泰能源", "market": "SH", "focus": "煤电联营+电网服务"},
+    {"code": "002270", "name": "华明装备", "market": "SZ", "focus": "分接开关/变压器零部件出口"},
 ]
 
 # CSV 字段定义
@@ -367,7 +368,7 @@ def main():
     existing = load_existing_records()
     print(f"[LOAD] Existing records: {len(existing)}")
 
-    # 瘦身：仅保留配置内标的（防止已移除标的残留，如旧的 000410）
+    # 瘦身：仅保留配置内标的（防止已从 TRACK_TARGETS 移除的标的残留）
     valid_codes = {t["code"] for t in TRACK_TARGETS}
     for k in [k for k in list(existing) if k[0] not in valid_codes]:
         print(f"[PRUNE] 移除不在 TRACK_TARGETS 的记录: {k}")

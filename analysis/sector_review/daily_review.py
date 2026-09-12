@@ -18,13 +18,14 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 CORE_STOCKS = [
-    {"code": "300593", "name": "沃尔核材", "oversea_pct": 45, "mkt": "sz"},
+    {"code": "002130", "name": "沃尔核材", "oversea_pct": 45, "mkt": "sz"},
     {"code": "600312", "name": "平高电气", "oversea_pct": 42, "mkt": "sh"},
     {"code": "002028", "name": "思源电气", "oversea_pct": 38, "mkt": "sz"},
     {"code": "600089", "name": "特变电工", "oversea_pct": 30, "mkt": "sh"},
     {"code": "601179", "name": "中国西电", "oversea_pct": 25, "mkt": "sh"},
+    {"code": "600406", "name": "国电南瑞", "oversea_pct": 22, "mkt": "sh"},
     {"code": "000400", "name": "许继电气", "oversea_pct": 20, "mkt": "sz"},
-    {"code": "600157", "name": "永泰能源", "oversea_pct": 10, "mkt": "sh"},
+    {"code": "002270", "name": "华明装备", "oversea_pct": 18, "mkt": "sz"},
 ]
 
 REVIEW_DIR = Path("analysis/sector_review/daily")
