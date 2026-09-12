@@ -6,12 +6,16 @@
 """
 
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 import re
-import sys
+
+# 本地工具库
+sys.path.insert(0, str(Path(__file__).parent))
+from push_utils import write_heartbeat, retry
 
 # 数据源配置
 SOURCES = {
