@@ -59,6 +59,16 @@
 
 ## 待处置
 
-- `daily-news-reading-push`、`obsidian-notes-to-investment-philosophy`：
-  建议改为脚本渲染 + LLM 只转发，或明确要求"不得添加脚本未包含的数字"。
-- `memory-maintenance-check`：保留 LLM 能力（记忆维护需判断），但建议限制写入范围。
+- ~~`daily-news-reading-push`~~ ✅ 已完成（移除 write，加硬约束）
+- ~~`memory-maintenance-check`~~ ✅ 已完成（移除 web_search 等，限制写入范围）
+- ~~`obsidian-notes-to-investment-philosophy`~~ ✅ 工具集本无 write，风险可控
+
+## 第二阶段完成 (2026-09-13 02:00)
+
+MED 组 6 条全部改为 command 模式，详见下方。至此 HIGH+MED 共 8 条全部处置完毕。
+
+### 剩余 LOW（9 条，可不动）
+`test-arbitration-logic`、`daily-premarket-analysis-cmd`、`test-pipeline-integration`、
+`zhonglian-monitor-*`(3)、`daily-supervision-review`、`weekly-review-trading`、
+`weekly-backtest-pipeline`
+—— 均为 `cd && python3 script.py` 形式，LLM 仅转发脚本输出，无编造动机。
