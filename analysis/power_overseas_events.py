@@ -242,7 +242,8 @@ class EastMoneyAdapter:
     API = "https://np-anotice-stock.eastmoney.com/api/security/ann"
 
     @staticmethod
-    def _fetch_one(code: str, begin: str, end: str, timeout: int = 8) -> List[Dict]:
+    def _fetch_one(code: str, begin: str, end: str, timeout: int = 45) -> List[Dict]:
+        # 注: 实测该 API 在此网络下固定耗时 ~31s/请求，故 timeout 需 >31s
         import requests
         params = {
             "sr": "-1", "page_size": "50", "page_index": "1",
