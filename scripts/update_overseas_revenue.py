@@ -23,7 +23,6 @@ TRACK_TARGETS = [
     {"code": "600089", "name": "特变电工", "market": "SH", "focus": "变压器/电缆/EPC出口"},
     {"code": "601179", "name": "中国西电", "market": "SH", "focus": "±1100kV换流阀/变压器出口"},
     {"code": "000400", "name": "许继电气", "market": "SZ", "focus": "换流站设备/柔直技术出口"},
-    {"code": "000410", "name": "山东电工", "market": "SZ", "focus": "电网设备配套出口"},
     {"code": "600157", "name": "永泰能源", "market": "SH", "focus": "煤电联营+电网服务"},
 ]
 
@@ -40,6 +39,7 @@ CSV_FIELDS = [
     "source_announcement",   # 来源公告标题
     "source_url",            # 来源公告链接
     "quarter",               # 所属季度(如 2026Q3)
+    "data_status",           # 数据状态: official(季报/公告正式口径) | estimate(估算) | pending(待披露)
     "notes",                 # 备注(新纳税单/首单等)
 ]
 
@@ -237,7 +237,9 @@ def parse_announcement_for_overseas_data(ann: dict, target: dict) -> dict | None
 def manual_entry_mode(targets: list[dict]) -> list[dict]:
     """人工录入模式(用于季报日全量刷新)"""
     print("\n=== 人工录入模式 (季报全量刷新) ===")
-    print("逐只录入，留空跳过。字段: 海外营收(亿) 占比(%) 新签(亿) 在手(亿) 毛利率(%) 季度 备注")
+    print("逐只录入，留空跳过。")
+    print("格式: 海外营收(亿) 占比(%) 新签(亿) 在手(亿) 毛利率(%) 季度 [official|estimate] 备注")
+    print("(第7段可选，默认 estimate；无正式出处请勿标 official)")
     new_rows = []
     for t in targets:
         print(f"\n--- {t['code']} {t['name']} ---")
@@ -261,7 +263,8 @@ def manual_entry_mode(targets: list[dict]) -> list[dict]:
                 "source_announcement": "人工录入(季报)",
                 "source_url": "",
                 "quarter": parts[5],
-                "notes": " ".join(parts[6:]) if len(parts) > 6 else "",
+                "data_status": parts[6] if len(parts) > 6 and parts[6] in ("official", "estimate", "pending") else "estimate",
+                "notes": " ".join(parts[7:]) if len(parts) > 7 else "",
             }
             new_rows.append(row)
             print(f"  ✓ 录入: {row['quarter']} 海外营收{row['overseas_revenue']}亿 占比{row['overseas_revenue_pct']}%")
@@ -311,10 +314,13 @@ def merge_and_save(new_rows: list[dict], existing: dict):
     for row in new_rows:
         key = (row["code"], row["quarter"])
         if key in existing:
-            # 对比字段是否有变化
             old = existing[key]
-            changed = any(old.get(f) != row.get(f) for f in CSV_FIELDS if f not in ["date", "source_announcement", "source_url", "notes"])
+            changed = any(str(old.get(f, "")) != str(row.get(f, "")) for f in CSV_FIELDS if f not in ["date", "source_announcement", "source_url", "notes"])
             if changed:
+                # 保护: 不得用 estimate/pending 覆盖已有的 official 正式口径数据
+                if old.get("data_status") == "official" and row.get("data_status") != "official":
+                    print(f"  [SKIP] {row['code']} {row['quarter']} 已有 official 数据，拒绝被 {row.get('data_status')} 覆盖")
+                    continue
                 existing[key] = row
                 updated += 1
                 append_changelog({
@@ -360,6 +366,12 @@ def main():
     ensure_csv_exists()
     existing = load_existing_records()
     print(f"[LOAD] Existing records: {len(existing)}")
+
+    # 瘦身：仅保留配置内标的（防止已移除标的残留，如旧的 000410）
+    valid_codes = {t["code"] for t in TRACK_TARGETS}
+    for k in [k for k in list(existing) if k[0] not in valid_codes]:
+        print(f"[PRUNE] 移除不在 TRACK_TARGETS 的记录: {k}")
+        existing.pop(k)
     
     if args.full:
         new_rows = manual_entry_mode(TRACK_TARGETS)

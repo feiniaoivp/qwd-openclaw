@@ -1,51 +1,52 @@
 {
   "date": "2026-09-13",
-  "timestamp": "2026-09-13T00:34:35.793494",
+  "timestamp": "2026-09-13T00:42:51.066858",
   "commodities": {
     "LME_Copper_3M": {
-      "name": "LME铜 3M (SHFE代理)",
+      "name": "LME铜 3M",
       "unit": "USD/t",
-      "price": 11835.22,
-      "change": -62.62,
-      "pct_change": -0.5263157894736842,
-      "high_usd": 11835.22,
-      "low_usd": 11730.85,
-      "open_usd": 11881.44,
-      "prev_close_usd": 11897.84,
-      "volume": 15975,
-      "contract": "CU2501",
-      "date": "0",
-      "source": "sina_shfe_proxy",
-      "fx_rate_used": 6.7071,
-      "shfe_price_cny": 79380.0
+      "price": 14218.55,
+      "change": -21.45,
+      "pct_change": -0.1506,
+      "high_usd": 14241.0,
+      "low_usd": 14151.5,
+      "open_usd": 14152.0,
+      "prev_close_usd": 14240.0,
+      "bid_usd": 14225.5,
+      "volume": 27505,
+      "quote_time": "01:59:00",
+      "date": "2026-09-12",
+      "source": "sina_lme_direct",
+      "source_code": "hf_CAD",
+      "note": "LME伦铜直连 (非沪铜代理)"
     },
     "Silicon_Steel_50W470": {
-      "name": "硅钢代理(钢材指数SC0)",
+      "name": "钢铁板块代理(热轧卷板连续)",
       "unit": "元/吨",
-      "price": 606.5,
-      "change": -8.700000000000045,
-      "pct_change": -1.41417425227569,
-      "high": 611.7,
-      "low": 605.0,
-      "open": 612.3,
-      "prev_close": 615.2,
+      "price": 3720.0,
+      "change": -9.0,
+      "pct_change": -0.2414,
+      "high": 3740.0,
+      "low": 3666.0,
+      "open": 3731.0,
+      "prev_close": 3729.0,
       "date": "0",
-      "source": "sina_steel_index_proxy",
-      "note": "SC0钢材综合指数，非硅钢专用价格，仅供趋势参考"
+      "source": "sina_steel_proxy_HC0",
+      "note": "钢铁板块趋势代理，非硅钢专用价，勿当成本数"
     },
     "Silicon_Steel_50W600": {
-      "name": "硅钢代理(钢材指数SC0)",
+      "name": "钢铁板块代理(螺纹钢连续)",
       "unit": "元/吨",
-      "price": 606.5,
-      "change": -8.700000000000045,
-      "pct_change": -1.41417425227569,
-      "high": 611.7,
-      "low": 605.0,
-      "open": 612.3,
-      "prev_close": 615.2,
+      "price": 3538.0,
+      "change": -3.0,
+      "pct_change": -0.0847,
+      "high": 3556.0,
+      "low": 3484.0,
+      "open": 3544.0,
+      "prev_close": 3541.0,
       "date": "0",
-      "source": "sina_steel_index_proxy",
-      "note": "SC0钢材综合指数，非硅钢专用价格，仅供趋势参考"
+      "source": "sina_steel_proxy_RB0",
+      "note": "钢铁板块趋势代理，非硅钢专用价，勿当成本数"
     },
     "SF6": {
       "name": "六氟化硫",
@@ -92,33 +93,17 @@
     "DXY": {
       "name": "美元指数",
       "unit": "点",
-      "price": 126.34,
-      "source": "er_api_calculated",
-      "components": {
-        "EURUSD": 1.1601,
-        "USDJPY": 153.76,
-        "GBPUSD": 1.3522,
-        "USDCAD": 1.3861,
-        "USDSEK": 9.6978,
-        "USDCHF": 0.8161
-      },
-      "extra_rates": {
-        "USDCNH": 6.708504,
-        "CNY": 6.725314,
-        "SAR": 3.75
-      }
-    },
-    "CNY": {
-      "name": "在岸人民币",
-      "unit": "元",
-      "price": 6.725314,
-      "source": "er_api"
-    },
-    "SAR": {
-      "name": "沙特里亚尔",
-      "unit": "里亚尔",
-      "price": 3.75,
-      "source": "er_api"
+      "price": 99.0901,
+      "change": 0.0,
+      "pct_change": 0.0,
+      "open": 99.0839,
+      "high": 99.3708,
+      "low": 98.9635,
+      "prev_close": 99.0901,
+      "quote_time": "05:25:51",
+      "date": "2026-09-12",
+      "source": "sina_dxy_direct",
+      "note": "ICE美元指数直连"
     }
   }
 }

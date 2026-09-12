@@ -22,7 +22,6 @@ CORE_STOCKS = [
     {"code": "600089", "name": "特变电工", "oversea_pct": 30},
     {"code": "601179", "name": "中国西电", "oversea_pct": 25},
     {"code": "000400", "name": "许继电气", "oversea_pct": 20},
-    {"code": "000410", "name": "山东电工", "oversea_pct": 15},
     {"code": "600157", "name": "永泰能源", "oversea_pct": 10},
 ]
 
@@ -39,14 +38,21 @@ def load_json(filepath: Path) -> dict | list | None:
     return None
 
 def load_revenue_csv(filepath: Path, monday: str, friday: str) -> list[dict]:
-    """加载本周相关的营收数据"""
+    """加载本周相关的营收数据。
+
+    仅收录 data_status=official 或 estimate 且日期在本周内的记录；
+    pending(待披露) 与日期为空的占位行不计入周报，避免拿空值/假值污染结论。
+    """
     records = []
     if filepath.exists():
         with filepath.open("r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                # 简单筛选：本周内录入的记录
-                if row.get("date", "") >= monday and row.get("date", "") <= friday:
+                status = (row.get("data_status") or "").strip()
+                d = (row.get("date") or "").strip()
+                if status == "pending" or not d:
+                    continue
+                if monday <= d <= friday:
                     records.append(row)
     return records
 
@@ -82,6 +88,55 @@ def detect_available_week() -> tuple[str, str]:
     monday = latest - timedelta(days=latest.weekday())
     friday = monday + timedelta(days=4)
     return monday.strftime("%Y-%m-%d"), friday.strftime("%Y-%m-%d")
+
+def md5_of(path: Path) -> str | None:
+    """文件内容 MD5(用于检测多日数据被同一文件复制的伪造)"""
+    import hashlib
+    if not path.exists():
+        return None
+    return hashlib.md5(path.read_bytes()).hexdigest()
+
+def validate_data_integrity(data: dict, monday: str) -> list[str]:
+    """数据真实性守卫: 返回警告列表。
+
+    捕获两类历史事故:
+      1) commodity_fx_*.json 文件名是日期 A，内部 date 字段却是 B(拿今天快照改名充数)
+      2) 多日文件 md5 完全一致(同一份数据复制多份)，导致周变化全为 +0.00%
+    这类假数据会让周报静默输出 0 广度/0.00% 变化，必须显式报错而非静默。
+    """
+    warnings = []
+    fx = data.get("commodity_fx", {})
+
+    for day, payload in fx.items():
+        inner = payload.get("date", "")
+        if inner and inner != day:
+            warnings.append(
+                f"[FABRICATION] commodity_fx_{day}.json 内部 date={inner} ≠ 文件名日期，疑似拿其他日快照改名充数"
+            )
+
+    hashes = {}
+    for day in sorted(fx.keys()):
+        h = md5_of(DATA_DIR / f"commodity_fx_{day}.json")
+        if h:
+            hashes.setdefault(h, []).append(day)
+    for h, days in hashes.items():
+        if len(days) > 1:
+            warnings.append(
+                f"[DUPLICATE] 以下 {len(days)} 天 commodity_fx 文件内容完全相同({h[:8]}): {', '.join(days)} — 周变化将全部为 0，不可信"
+            )
+
+    for day, text in data.get("daily_reviews", {}).items():
+        if "2026-09-XX" in text or "数据待实时接口填充" in text:
+            warnings.append(
+                f"[TEMPLATE] {day}_evening_review.md 仍是未填充模板(含占位符)，非真实行情生成"
+            )
+
+    if len(fx) < 5:
+        warnings.append(
+            f"[MISSING] 本周大宗商品汇率仅 {len(fx)}/5 天有数据，周变化区间不完整"
+        )
+
+    return warnings
 
 def load_weekly_data(monday: str, friday: str) -> dict:
     """加载本周所有数据文件"""
@@ -271,8 +326,8 @@ def generate_report(monday: str, friday: str, data: dict, analysis: dict) -> str
     # 4. 基本面兑现进度
     lines.append("## 4. 基本面兑现进度 (季报/公告)")
     lines.append("")
-    lines.append("| 代码 | 名称 | 最新季度 | 海外营收(亿) | 占比 | 新签订单(亿) | 在手订单(亿) | 毛利率 | 关键进展 |")
-    lines.append("|------|------|----------|--------------|------|--------------|--------------|--------|----------|")
+    lines.append("| 代码 | 名称 | 最新季度 | 数据状态 | 海外营收(亿) | 占比 | 新签订单(亿) | 在手订单(亿) | 毛利率 | 关键进展 |")
+    lines.append("|------|------|----------|----------|--------------|------|--------------|--------------|--------|----------|")
     
     # 从 revenue_updates 填充
     rev_by_code_q = {}
@@ -280,14 +335,15 @@ def generate_report(monday: str, friday: str, data: dict, analysis: dict) -> str
         key = (r["code"], r["quarter"])
         rev_by_code_q[key] = r
     
+    STATUS_LABEL = {"official": "✅官方", "estimate": "⚠️估算", "pending": "⏳待披露"}
     for s in CORE_STOCKS:
-        # 尝试找最新季度
         latest_q = "2026Q3"
         rev = rev_by_code_q.get((s["code"], latest_q))
         if rev:
-            lines.append(f"| {s['code']} | {s['name']} | {latest_q} | {rev.get('overseas_revenue','-')} | {rev.get('overseas_revenue_pct','-')}% | {rev.get('new_orders','-')} | {rev.get('backlog_orders','-')} | {rev.get('gross_margin','-')}% | {rev.get('notes','-')} |")
+            st = STATUS_LABEL.get(rev.get("data_status", ""), rev.get("data_status", "-"))
+            lines.append(f"| {s['code']} | {s['name']} | {latest_q} | {st} | {rev.get('overseas_revenue','-')} | {rev.get('overseas_revenue_pct','-')}% | {rev.get('new_orders','-')} | {rev.get('backlog_orders','-')} | {rev.get('gross_margin','-')}% | {rev.get('notes','-')} |")
         else:
-            lines.append(f"| {s['code']} | {s['name']} | {latest_q} | - | - | - | - | - | - |")
+            lines.append(f"| {s['code']} | {s['name']} | {latest_q} | ⏳待披露 | - | - | - | - | - | 2026Q3季报未披露 |")
     lines.append("")
     
     # 5. 技术面周度结构
@@ -344,14 +400,39 @@ def main():
     DATA_DIR.mkdir(exist_ok=True)
     
     data = load_weekly_data(monday, friday)
-    
+
+    # 数据真实性守卫: 先校验，若有伪造/模板/重复则显式报告
+    warnings = validate_data_integrity(data, monday)
+    if warnings:
+        print("\n" + "=" * 60)
+        print("⚠️  数据真实性警告 (周报结论可能不可信)")
+        print("=" * 60)
+        for w in warnings:
+            print(f"  {w}")
+        print("=" * 60 + "\n")
+    else:
+        print("[GUARD] 数据真实性检查通过\n")
+
     analysis = {
         "price_action": analyze_price_action(data["daily_reviews"]),
         "commodity_fx": analyze_commodity_fx(data["commodity_fx"]),
         "tenders": analyze_tenders(data["tender_hits"]),
     }
-    
+
     report = generate_report(monday, friday, data, analysis)
+
+    # 将警告写入报告，避免读者把假数据当真实结论
+    if warnings:
+        banner = [
+            "",
+            "## ⚠️ 数据真实性警告",
+            "",
+            "本报告所用数据存在以下问题，结论仅供参考:",
+            "",
+        ]
+        banner += [f"- {w}" for w in warnings]
+        banner += ["", "---", ""]
+        report = report.replace("## 1. 本周核心观察", "\n".join(banner) + "## 1. 本周核心观察", 1)
     
     output_file = REVIEW_DIR / f"weekly_{friday}.md"
     output_file.write_text(report, encoding="utf-8")
