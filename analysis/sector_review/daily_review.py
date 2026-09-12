@@ -17,16 +17,40 @@ from datetime import datetime
 from pathlib import Path
 from urllib.request import Request, urlopen
 
-CORE_STOCKS = [
-    {"code": "002130", "name": "沃尔核材", "oversea_pct": 45, "mkt": "sz"},
-    {"code": "600312", "name": "平高电气", "oversea_pct": 42, "mkt": "sh"},
-    {"code": "002028", "name": "思源电气", "oversea_pct": 38, "mkt": "sz"},
-    {"code": "600089", "name": "特变电工", "oversea_pct": 30, "mkt": "sh"},
-    {"code": "601179", "name": "中国西电", "oversea_pct": 25, "mkt": "sh"},
-    {"code": "600406", "name": "国电南瑞", "oversea_pct": 22, "mkt": "sh"},
-    {"code": "000400", "name": "许继电气", "oversea_pct": 20, "mkt": "sz"},
-    {"code": "002270", "name": "华明装备", "oversea_pct": 18, "mkt": "sz"},
-]
+# 核心标的 - 从权威配置读取，避免与 power_overseas_config.json 漂移
+CONFIG_FILE = Path(__file__).resolve().parents[2] / "data" / "power_overseas_config.json"
+
+def _load_core_stocks() -> list[dict]:
+    """从 data/power_overseas_config.json 读取权威标的列表。
+    配置不可用时回退到内置常量(已与配置对齐)。
+    """
+    fallback = [
+        {"code": "002130", "name": "沃尔核材", "mkt": "sz"},
+        {"code": "600312", "name": "平高电气", "mkt": "sh"},
+        {"code": "002028", "name": "思源电气", "mkt": "sz"},
+        {"code": "600089", "name": "特变电工", "mkt": "sh"},
+        {"code": "601179", "name": "中国西电", "mkt": "sh"},
+        {"code": "600406", "name": "国电南瑞", "mkt": "sh"},
+        {"code": "000400", "name": "许继电气", "mkt": "sz"},
+        {"code": "002270", "name": "华明装备", "mkt": "sz"},
+    ]
+    try:
+        cfg = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+        out = []
+        for code, meta in cfg.get("stocks", {}).items():
+            pct = meta.get("revenue_overseas_pct")
+            out.append({
+                "code": code,
+                "name": meta.get("name", code),
+                "oversea_pct": round(pct * 100) if isinstance(pct, (int, float)) else None,
+                "mkt": "sh" if code.startswith("6") else "sz",
+            })
+        return out or fallback
+    except Exception as e:
+        print(f"[WARN] 读取权威配置失败({e})，使用内置回退列表")
+        return fallback
+
+CORE_STOCKS = _load_core_stocks()
 
 REVIEW_DIR = Path("analysis/sector_review/daily")
 SINA_URL = "https://hq.sinajs.cn/list="

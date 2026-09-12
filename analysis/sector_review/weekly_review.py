@@ -14,17 +14,12 @@ import argparse
 from datetime import datetime, timedelta
 from pathlib import Path
 
-# 核心标的
-CORE_STOCKS = [
-    {"code": "002130", "name": "沃尔核材", "oversea_pct": 45},
-    {"code": "600312", "name": "平高电气", "oversea_pct": 42},
-    {"code": "002028", "name": "思源电气", "oversea_pct": 38},
-    {"code": "600089", "name": "特变电工", "oversea_pct": 30},
-    {"code": "601179", "name": "中国西电", "oversea_pct": 25},
-    {"code": "600406", "name": "国电南瑞", "oversea_pct": 22},
-    {"code": "000400", "name": "许继电气", "oversea_pct": 20},
-    {"code": "002270", "name": "华明装备", "oversea_pct": 18},
-]
+# 导入价格分析模块
+sys.path.insert(0, str(Path(__file__).parent))
+from price_analyzer import CORE_STOCKS, analyze_all_stocks
+
+# 核心标的统一从 price_analyzer 导入(其又从 data/power_overseas_config.json 读取)，
+# 保证全链路单一数据源，避免各处硬编码代码漂移。
 
 DATA_DIR = Path("data")
 REVIEW_DIR = Path("analysis/sector_review")
@@ -182,23 +177,48 @@ def parse_daily_review_for_price(text: str, code: str) -> dict | None:
     # TODO: 实现正则解析表格
     return None
 
-def analyze_price_action(daily_reviews: dict) -> dict:
-    """分析本周价格行为 - 从每日复盘文本提取"""
-    # 尝试从最后一天复盘提取收盘价，第一天提取开盘价
-    if not daily_reviews:
-        return {"weekly_performance": {}, "sector_breadth": {"up": 0, "down": 0, "flat": 0}, "leaders": [], "laggards": []}
-    
-    days = sorted(daily_reviews.keys())
-    first_day, last_day = days[0], days[-1]
-    
-    # 简易：返回空，等待真实数据接入
-    return {
-        "weekly_performance": {},
-        "sector_breadth": {"up": 0, "down": 0, "flat": 0},
-        "leaders": [],
-        "laggards": [],
-        "note": "价格分析待接入实时行情数据源"
-    }
+def analyze_price_action(daily_reviews: dict, monday: str, friday: str) -> dict:
+    """分析本周价格行为 - 调用 price_analyzer 基于 baostock 周线数据"""
+    try:
+        results = analyze_all_stocks(monday, friday)
+        if not results:
+            return {"weekly_performance": {}, "sector_breadth": {"up": 0, "down": 0, "flat": 0}, "leaders": [], "laggards": [], "note": "baostock 无数据"}
+        
+        # 转换为周报所需格式
+        weekly_perf = {}
+        up = down = flat = 0
+        for r in results:
+            chg = r["chg_pct"]
+            if chg > 0.1:
+                up += 1
+            elif chg < -0.1:
+                down += 1
+            else:
+                flat += 1
+            weekly_perf[r["code"]] = {
+                "chg_pct": chg,
+                "volume_ratio": r["volume_ratio"],
+                "volume_vs_ma5": r["volume_vs_ma5"],
+                "ma_trend": r["MA_trend"],
+                "macd_signal": r["MACD_signal"],
+                "rsi": r["RSI"],
+                "bb_position": r["BB_position"],
+            }
+        
+        # 领涨/领跌
+        sorted_res = sorted(results, key=lambda x: x["chg_pct"], reverse=True)
+        leaders = [f"{r['code']} {r['name']}({r['chg_pct']:+.2f}%)" for r in sorted_res[:2]]
+        laggards = [f"{r['code']} {r['name']}({r['chg_pct']:+.2f}%)" for r in sorted_res[-2:]]
+        
+        return {
+            "weekly_performance": weekly_perf,
+            "sector_breadth": {"up": up, "down": down, "flat": flat},
+            "leaders": leaders,
+            "laggards": laggards,
+        }
+    except Exception as e:
+        print(f"[WARN] price_analyzer failed: {e}")
+        return {"weekly_performance": {}, "sector_breadth": {"up": 0, "down": 0, "flat": 0}, "leaders": [], "laggards": [], "note": f"分析异常: {e}"}
 
 def analyze_commodity_fx(commodity_fx: dict) -> dict:
     """分析大宗商品汇率周度变化"""
@@ -415,7 +435,7 @@ def main():
         print("[GUARD] 数据真实性检查通过\n")
 
     analysis = {
-        "price_action": analyze_price_action(data["daily_reviews"]),
+        "price_action": analyze_price_action(data["daily_reviews"], monday, friday),
         "commodity_fx": analyze_commodity_fx(data["commodity_fx"]),
         "tenders": analyze_tenders(data["tender_hits"]),
     }
