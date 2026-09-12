@@ -31,6 +31,30 @@ from analysis.portfolio_core import (
     COMMISSION, SLIPPAGE, INITIAL_CAPITAL, ATR_STOP_MULT,
 )
 import time
+from datetime import time as dtime
+
+# 交易时段守卫（带开盘缓冲，避免开盘前几分钟抓到 stale price）
+TRADING_HOURS = [
+    (dtime(9, 30), dtime(11, 30)),   # 上午
+    (dtime(13, 0), dtime(15, 0)),    # 下午
+]
+
+# 开盘缓冲分钟数：开盘后前 N 分钟不信任实时行情
+OPEN_BUFFER_MINUTES = 15
+
+def is_trading_time(dt=None) -> bool:
+    """判断是否处于 A 股交易时段（含午休判断 + 开盘缓冲）"""
+    if dt is None:
+        dt = datetime.now()
+    if dt.weekday() >= 5:  # 周末
+        return False
+    t = dt.time()
+    for start, end in TRADING_HOURS:
+        # 开盘缓冲：开盘后前 OPEN_BUFFER_MINUTES 分钟不使用实时行情
+        buffer_end = dtime(start.hour, start.minute + OPEN_BUFFER_MINUTES)
+        if buffer_end <= t <= end:
+            return True
+    return False
 
 OUTPUT_DIR = os.path.join(WORKSPACE, "analysis", "daily")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -73,8 +97,8 @@ def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
             if realtime_fallback:
                 latest_bs_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
                 if latest_bs_date < today_str:
-                    import datetime as dt
-                    if dt.date.today().weekday() < 5:
+                    # 仅在交易时段内使用实时行情，避免午休/闭市时抓到 stale price
+                    if is_trading_time():
                         rt = fetch_today_realtime([symbol])
                         if symbol in rt:
                             r = rt[symbol]
@@ -157,8 +181,8 @@ def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
             if realtime_fallback:
                 latest_bs_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
                 if latest_bs_date < today_str:
-                    import datetime as dt
-                    if dt.date.today().weekday() < 5:
+                    # 仅在交易时段内使用实时行情，避免午休/闭市时抓到 stale price
+                    if is_trading_time():
                         rt = fetch_today_realtime([symbol])
                         if symbol in rt:
                             r = rt[symbol]
@@ -172,7 +196,8 @@ def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
             print(f"  ⚠️ {symbol} 获取失败(尝试{attempt+1}/{max_retry}): {e}")
             time.sleep(1)
     
-    if realtime_fallback:
+    # 兜底：仅在交易时段使用实时行情
+    if realtime_fallback and is_trading_time():
         rt = fetch_today_realtime([symbol])
         if symbol in rt:
             r = rt[symbol]
@@ -185,6 +210,13 @@ def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
 
 
 def main():
+    # Cron 时间窗口守卫：防止调度器时区 bug 导致非预期时段执行
+    # 配置为 15:40，允许窗口 15:00-16:00
+    now = datetime.now()
+    if not (now.weekday() < 5 and dtime(15, 0) <= now.time() <= dtime(16, 0)):
+        print(f"⏭️ 非执行窗口 ({now.strftime('%H:%M')})，退出。配置窗口：工作日 15:00-16:00")
+        return
+
     today_str = datetime.now().strftime("%Y-%m-%d")
 
     # 确保 baostock 登录

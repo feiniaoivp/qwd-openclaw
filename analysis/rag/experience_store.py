@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-经验库（RAG）实现：从 memory/*.md 中�抽取经验句子，
-�优先使用 BAAI/bge-m3 + FAISS；若torch/faiss不可用，则退化为
-TF-IDF + 余�弦相似度（基于 scikit-learn），保持相同的接口。
+经验库（RAG）实现：从 memory/*.md 中抽取经验句子，
+优先使用 BAAI/bge-m3 + FAISS；若torch/faiss不可用，则退化为
+TF-IDF + 余弦相似度（基于 scikit-learn），保持相同的接口。
 """
 
 import os, json, re, pickle
@@ -30,7 +30,7 @@ except Exception:
     cosine_similarity = None
 
 if _HAS_TORCH_RAG:
-    # 使用你本地已经在运行的 BGE‑M3 � 模型（保持与 memory 系统一致）
+    # 使用你本地已经在运行的 BGE‑M3 模型（保持与 memory 系统一致）
     EMBED_MODEL = SentenceTransformer("BAAI/bge-m3")
 else:
     EMBED_MODEL = None
@@ -44,8 +44,8 @@ VECTORIZER_PATH = os.path.join(WORKSPACE, "data", "experience_vectorizer.pkl")
 TFIDF_MATRIX_PATH = os.path.join(WORKSPACE, "data", "experience_tfidf_matrix.pkl")
 
 def _extract_experience_sentences() -> List[str]:
-    """从 memory/*.md 中�抽出看起来像经验或教�训的句子。
-    这里采用简单的正则：�寻�找包含“经验”、“教�训”、“注意”、“警示”、“�避免”等关�键词的句子。
+    """从 memory/*.md 中抽出看起来像经验或教训的句子。
+ 这里采用简单的正则：寻找包含“经验”、“教训”、“注意”、“警示”、“避免”等关键词的句子。
     """
     experiences = []
     for root, _, files in os.walk(EXPERIENCE_DIR):
@@ -57,13 +57,13 @@ def _extract_experience_sentences() -> List[str]:
                         text = fp.read()
                 except Exception:
                     continue
-                # � 按中文句号、英文句号、换行分割
+                # 按中文句号、英文句号、换行分割
                 sentences = re.split(r'[。\.!\n]+', text)
                 for s in sentences:
                     s = s.strip()
                     if len(s) < 10:
                         continue
-                    if any(k in s for k in ["经验", "教�训", "注意", "警示", "�避免", "错误", "失误", "提�醒"]):
+                    if any(k in s for k in ["经验", "教训", "注意", "警示", "避免", "错误", "失误", "提醒"]):
                         experiences.append(s)
     return experiences
 
@@ -78,7 +78,7 @@ def _build_torch_index() -> Tuple[object, List[str]]:
         return index, []
     embeds = EMBED_MODEL.encode(sentences, normalize_embeddings=True)
     dim = embeds.shape[1]
-    index = faiss.IndexFlatIP(dim)   # � 内�积等价于余�弦相似度（已归一化）
+    index = faiss.IndexFlatIP(dim)   # 内积等价于余弦相似度（已归一化）
     index.add(np.array(embeds, dtype="float32"))
     os.makedirs(os.path.dirname(INDEX_PATH), exist_ok=True)
     faiss.write_index(index, INDEX_PATH)
@@ -128,7 +128,7 @@ def _load_sklearn_index() -> Tuple[TfidfVectorizer, np.ndarray, List[str]]:
 
 def build_or_load_index():
     """
-    返回 (index_or_vectorizer, sentences_or_matrix, sentences_list, mode)
+ 返回 (index_or_vectorizer, sentences_or_matrix, sentences_list, mode)
     mode: 'torch' or 'sklearn' or 'none'
     """
     # Prefer torch if available
@@ -157,7 +157,7 @@ def build_or_load_index():
 
 def retrieve_top_k(query: str, k: int = 3) -> List[str]:
     """返回与 query 最相关的 k 条经验句子。
-    根据可用的后端选择相应的�检索方式。
+ 根据可用的后端选择相应的检索方式。
     """
     idx, data, sentences, mode = build_or_load_index()
     if mode == 'none' or not sentences:
@@ -179,8 +179,8 @@ def retrieve_top_k(query: str, k: int = 3) -> List[str]:
     else:
         return []
 
-# � 若想直接�测试
+# 若想直接测试
 if __name__ == "__main__":
-    exp = retrieve_top_k("今日市场情�绪与操作建议", k=3)
+    exp = retrieve_top_k("今日市场情绪与操作建议", k=3)
     for i, e in enumerate(exp, 1):
         print(f"{i}. {e}")

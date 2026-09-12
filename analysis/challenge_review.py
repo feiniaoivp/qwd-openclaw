@@ -17,6 +17,15 @@ WORKSPACE = "/Users/duguke/.openclaw/workspace"
 AGENT_RUNS_DIR = os.path.join(WORKSPACE, "data", "agent_runs")
 DAILY_DIR = os.path.join(WORKSPACE, "analysis", "daily")
 
+# 编码污染护栏 (2026-09-11): 历史 run json 里可能固化了 U+FFFD 污染的信号标签,
+# 若不清洗会导致「专注」等关键词匹配静默失配、审核报告漏报矛盾。
+sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
+try:
+    from encoding_guard import sanitize as _sanitize
+except ImportError:
+    def _sanitize(x):  # type: ignore[misc]
+        return x.replace("\ufffd", "").replace("\ufeff", "") if isinstance(x, str) else x
+
 # ──────────────────────────────────────────
 # 规则质疑集：每条规则对应一个 why 追问
 # ──────────────────────────────────────────
@@ -275,16 +284,41 @@ def check_zhonglian_vs_advice(state):
             advice_list = json.loads(state.get("final_advice", "[]"))
         except Exception:
             advice_list = []
+        # ── 修复 (2026-09-11): 必须读取策略2实际持仓状态 ──
+        # 空仓时卖出信号无意义(=不宜买入提示)，与 HOLD 不构成矛盾。
+        # 旧版本从不写 holding 字段，导致 f.get("holding", True) 恒为 True，
+        # describe_zhonglian 永远走"卖出被忽略"分支 —— 必然误报。
+        holding = _zhonglian_strat2_holding()
         for a in advice_list:
             if a.get("symbol") == "000157" and a.get("action") in ("BUY", "HOLD"):
                 findings.append({
                     "type": "zhonglian_strat2_sell_vs_buy",
                     "strategy": strat2.get("name"),
                     "strat2_sell": True,
+                    "holding": holding,
                     "advice_action": a.get("action"),
                     "advice_reason": a.get("reason"),
+                    # 空仓时卖出信号无意义(仅=不宜买入提示)，降为 LOW 信息项，
+                    # 避免占用 HIGH 高危位淹没真正的风险矛盾。
+                    "_severity_override": "HIGH" if holding else "LOW",
                 })
     return findings
+
+
+def _zhonglian_strat2_holding() -> bool:
+    """读取中联重科策略2(综合最优)的真实持仓状态。
+
+    run json 不保存持仓，需从 data/zhonglian_state.json 读取。
+    读取失败时保守返回 True (沿用旧的告警行为，不静默掩盖)。
+    """
+    state_file = os.path.join(WORKSPACE, "data", "zhonglian_state.json")
+    try:
+        with open(state_file, encoding="utf-8") as f:
+            st = json.load(f)
+        return bool((st.get("strategy2") or {}).get("position", False))
+    except (OSError, json.JSONDecodeError, ValueError):
+        log.warning("challenge_review: 无法读取 zhonglian_state.json, 保守视为持仓")
+        return True
 def describe_zhonglian(f):
     if f.get("holding", True):
         return (f"为什么中联重科(000157) 综合最优策略({f['strategy']})触发卖出（且持仓中），"
@@ -538,7 +572,19 @@ def find_latest_agent_run() -> Optional[str]:
 
 def load_state(path: str) -> Dict:
     with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        state = json.load(f)
+    return _deep_sanitize(state)
+
+
+def _deep_sanitize(obj):
+    """递归清洗 dict/list 中所有字符串的编码污染 (U+FFFD / BOM)。"""
+    if isinstance(obj, str):
+        return _sanitize(obj)
+    if isinstance(obj, dict):
+        return {_deep_sanitize(k): _deep_sanitize(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_deep_sanitize(x) for x in obj]
+    return obj
 
 
 def run_all_challenges(state: Dict) -> List[Dict]:
@@ -546,6 +592,11 @@ def run_all_challenges(state: Dict) -> List[Dict]:
     for rule in ALL_RULES:
         findings = rule.apply(state)
         all_findings.extend(findings)
+    # 应用规则级严重度覆盖 (允许 check 函数根据上下文动态降级/升级)
+    for f in all_findings:
+        override = f.pop("_severity_override", None)
+        if override:
+            f["severity"] = override
     # 按严重度排序
     sev_order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
     all_findings.sort(key=lambda f: sev_order.get(f.get("severity", "LOW"), 3))

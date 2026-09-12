@@ -25,7 +25,7 @@ import time
 import math
 import logging
 import argparse
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time as dtime
 from typing import Any, Optional, Dict, List
 from functools import lru_cache
 
@@ -516,6 +516,27 @@ def run_weekly_mode():
     for ind in config["sector_macro"]["key_indicators_to_watch"]:
         print(f"  🔍 {ind}")
 
+def _check_eod_window() -> bool:
+    """收盘复盘模式时间窗口守卫：仅工作日 15:00-16:00 允许执行"""
+    now = datetime.now()
+    if not (now.weekday() < 5 and dtime(15, 0) <= now.time() <= dtime(16, 0)):
+        print(f"⏭️ 非 EOD 执行窗口 ({now.strftime('%H:%M')})，退出。配置窗口：工作日 15:00-16:00")
+        return False
+    return True
+
+
+def _check_intraday_window() -> bool:
+    """盘中预警模式时间窗口守卫：仅交易时段 9:30-11:30, 13:00-15:00 允许执行"""
+    now = datetime.now()
+    if now.weekday() >= 5:
+        return False
+    t = now.time()
+    if not ((dtime(9, 30) <= t <= dtime(11, 30)) or (dtime(13, 0) <= t <= dtime(15, 0))):
+        print(f"⏭️ 非盘中预警窗口 ({now.strftime('%H:%M')})，退出。配置窗口：交易时段 9:30-11:30 / 13:00-15:00")
+        return False
+    return True
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="电网装备/特高压出海板块专项监控")
     parser.add_argument("--mode", choices=["intraday", "eod", "weekly"], default="eod",
@@ -523,8 +544,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     if args.mode == "intraday":
+        if not _check_intraday_window():
+            sys.exit(0)
         run_intraday_mode()
     elif args.mode == "eod":
+        if not _check_eod_window():
+            sys.exit(0)
         run_eod_mode()
     elif args.mode == "weekly":
+        # 周末研报无时间窗口限制
         run_weekly_mode()

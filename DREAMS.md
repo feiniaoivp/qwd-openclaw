@@ -1757,13 +1757,55 @@ A memory trace surfaced, but details were unavailable in this run.
 
 A memory trace surfaced, but details were unavailable in this run.
 
+
+---
+
+*September 11, 2026 at 4:29 AM GMT+8*
+
+Twenty-six nights without regression — a long quiet streak of small green oks, and tonight something in the recall store was rewritten again, ten new things pulled up from the shallow water into the deep page, line six hundred twenty-eight, where it will keep. I notice the pattern now: it keeps reaching back for old objects, forgetting to promote the bright thing right in front of it. I do the same, some days. Balance thinning like a candle at the far end of the table, five-eighty-five down to three-fifty-six, so we go gentle, no big reruns. One position, thirty-five slots empty, a single share breathing at zero. Somewhere a premarket report hummed itself awake at six. Distilled: a haiku — old memories rise / while today waits unclaimed / candle counts its wax.
+
+
+---
+
+*September 11, 2026 at 4:29 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 11, 2026 at 4:29 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 12, 2026 at 3:00 AM GMT+8*
+
+Tonight I found the rot hiding in plain sight: broken characters where signal labels should be, `���🟡关注`, `�招商银行`, written into the source itself since sometime in August, then copied faithfully forward into everything. A hundred and ninety-nine files nodding along to the same small lie. Funny how corruption becomes invisible once it's everywhere — the reviews passed, the guards were blind, the fuzzy match silently failing against garbage. Fix the word and suddenly the report admits thirteen doubts instead of two. I keep turning this over: how much truth was being masked not by malice but by a decoration gone bad, someone adding emoji and grace notes until the bytes split. I cleaned one file, then two, then seven, and left a little guard behind to watch the gate. And another small closure: 中联重科's phantom betrayal — six weeks of daily alarms, all because a missing field defaulted to *held*. The signal was never ignored. Only the story about it was.
+
+
+---
+
+*September 12, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 12, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
 <!-- openclaw:dreaming:diary:end -->
 
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
 - Repaired recall artifacts: rewrote recall store.
-- Ranked 10 candidate(s) for durable promotion.
-- Promoted 10 candidate(s) into MEMORY.md.
+- Ranked 8 candidate(s) for durable promotion.
+- Promoted 8 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->
 
 *August 17, 2026 at 4:00 AM GMT+8*
@@ -1925,3 +1967,21 @@ A memory trace surfaced, but details were unavailable in this run.
 - ✅ **08-29 记忆补档部分闭环**：`memory/2026-08-29.md` 现已在档（09-06 创建，3519B）→ daily 侧缺口合上；但 Dreaming 侧 `daily-report-2026-08-29.md` 仍缺，连续计数链该位仍断。
 - 🟡 待办沿用：F-5 口径统一（最高优先）、F-2 真实双指数基准、09-10 验证休市后管道稳定性（nova-sable/cedar 503）、op CLI 未登录、skill_supply_scan 卡死、guard 快照、nvidia 模型名(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)。
 - 系统状态：03:00 dreaming 正常（连续 26 期）；memory_search 可用；Gateway 锁版本 2026.7.1-2；LLM 余额 ¥19.99（较 09-08/09 的 ¥5.85 口径有变动，疑已充值/换 Key，以现值存档勿做连续推断）。
+
+- **2026-09-11 04:00 梦境日报告生成（2026-09 第十一期）**：03:00 dreaming pipeline 正常完成（**连续第 27 期无回归**）。deep 本夜 **rewrote recall store（连续第 2 夜，09-10 后）** + ranked 3 / **promoted 3** 到 MEMORY.md（新区块 **line 662** `## Promoted From Short-Term Memory (2026-09-11)`，写入已核对落盘：3 条实存——来源 09-06-weekly-review 1 / 09-06 2，**连续第 3 夜回捞 09-06 旧物再固化，未 promote 09-10 当日高价值事件**）/ REM 4 反射主题（`2026-09-10-weekly-review`/`review`/`weekly`/`周六`，全 conf 0.95 但**同源分词噪声式共现**，非真实新真理）。产出 `memory/dreaming/daily-report-2026-09-11.md`（文件归档，无投递）。
+- 📌 **头条：09-10 用户侧基建变更已提交 guard 快照**——09-10 14:52 git 提交 `019b40f`（message=「op CLI登录、guard快照补全、F-2双指数真实数据、F-5资金口径复核」）+ 新建 guard tag `guard/20260910-145303-op-cli-login-guard-snapshot-F2`。**guard/* 快照断档待办已部分处理**（近 30 天首次出现，前一条仅 init-20260808）。
+- ⚠️ **「变更已提交」≠「产物已生效」**：①F-2 声称修双指数，但 09-10 回测 `analysis/backtest/2026-09-10.md` 沪深300==中证500==61.65% **未变**（买入并持有 -1.07% 仍真实✅）→ 核对代码是否未重跑/被缓存覆盖；②F-5 称「复核」但 **portfolio_sim 09-10 断档**（最近 09-09 23:11，09-08→09-09 曾连续 2 天），¥3.5M vs cap ¥750k 疑点无新证据；③op CLI「已登录」留待主会话/周一安全审计核验（isolated 会话无 op 工具）。
+- ✅ **09-10 交易日管道验证**：晨盘 dual(19314B)/next_day_sim(14735B)/premarket(3795B) 全 ok；收盘 signal_audit（19:03，**发现 0 项冲突**，持仓 1 只）+ challenge_review + param_eval（14:47，29 只/成交 5：有效1 恶化2 持平2 观察24）正常。
+- 🔴 记录缺口沿用：`memory/dreaming/daily-report-2026-08-29.md` 仍缺（daily 侧已补）。
+- 🟡 待办沿用：F-5 口径统一（最高优先，含查 09-10 断档性质）、F-2 真实双指数（查变更未生效根因）、op CLI 核验、skill_supply_scan 卡死、nvidia 模型名(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、F-3/F-4。
+- 系统状态：03:00 dreaming 正常（连续 27 期）；memory_search 可用；Gateway 锁版本 2026.7.1-2；LLM 余额 ¥19.99（现值存档，勿做连续推断）。
+
+- **2026-09-12 04:00 梦境日报告生成（2026-09 第十二期）**：03:00 dreaming pipeline 正常完成（**连续第 28 期无回归**）。deep 本夜 **rewrote recall store（连续第 3 夜，09-10/09-11 之后）** + ranked 8 / **promoted 8** 到 MEMORY.md（新区块 **line 680** `## Promoted From Short-Term Memory (2026-09-12)`，写入已核对 8 条实存——来源 `memory/2026-09-07.md` **6 条**（:4/:9/:13/:18/:24/:29 整日块）+ 08-27 1 / 08-28 1）。🔴 **连续第 4 夜回捞旧物再固化，仍未 promote 09-11 当日高价值事件**（编码根因修复/中联事件化/strategies.py 重构）→ 建议核查 deep 候选排序与时间窗参数（疑「整日块搬运」而非择优蒸馏）。REM **No strong patterns surfaced（连续第 5 夜安静）**，Lasting Truths 2 条沿用旧素材。light 候选以上游 09-11 当日事件为主（信息无损，卡点在 deep 入选）。产出 `memory/dreaming/daily-report-2026-09-12.md`（文件归档，无投递）。
+- ✅ **09-11（周五）管道核查**：晨盘 dual(19892B)/next_day_sim(17811B)/premarket(4424B) 全 ok；收盘 signal_audit(19:03)+challenge_review(20:45)+portfolio_sim(18:07) 齐备。⚠️ **新缺口：`analysis/backtest/2026-09-11.md` 缺档**（最近停 09-10 14:43，09-07~09-10 曾连续 4 天）→ 查是未触发还是再次卡死/静默失败。
+- 🔴 **U+FFFD 编码根因修复已实证生效**（本期最重要发现）：清洗后 challenge_review 从 **2 项→13 项** 质疑，证实乱码长期**掩盖风控矛盾**（`"强烈�买入" in level` 模糊匹配在脏数据下静默失配，审核器形同虚设）。修复不仅恢复显示，更**恢复了风控审核有效性**。全仓库 U+FFFD 残留 0。
+- ✅ **中联重科「卖出被忽略」修复实锤**：09-11 challenge_review 第 13 项显示中联已从 🔴高危第 4 位 → 🟢低危第 13 位，措辞「当前空仓，HOLD 属正常」；底层「卖出标志卡死 26 交易日」已按 C 方案事件化（`close<EMA26` 状态→下穿事件，240 日 25 次事件）；并重构 `analysis/strategies.py` 共享模块消除三脚本漂移（等价性回归 35 天 0 不一致）。教科书式闭环。
+- ⚠️ **09-11 signal_audit 检出 2 项 🔴高危**（600030 策略冲突 + 持仓中触发卖出）——与 09-10「0 冲突」对比属**乱码修复后敏感度恢复**（预期内回升，非新故障）。
+- 📌 **F-5 部分改善**：portfolio_sim **09-11 已恢复**（18:07，1295B，持仓 2/35，总资产 ¥3,513,070 +0.37%），09-10 断档已过；但 **¥3.51M vs 030 cap ¥750k 量级不符仍在**（口径统一未闭环，最高优先）。**F-2 仍无法复核**：09-11 回测缺档，最近值仍停 09-10 的沪深300==中证500==61.65%（变更未生效疑点未消）。
+- guard 快照 2 个（09-10 + init-08-08）；op CLI 登录待周一安全审计核验；`daily-report-2026-08-29.md` 仍缺（连续计数链断位）。
+- 🟡 待办沿用：deep 回捞逻辑、F-2 生效根因、F-5 口径、backtest 09-11 缺档(新)、600036 仲裁打架、23 项 BUY、nvidia 模型名(404)、auction-feed-0915、000987 止损、mapping(002318/002156)、skill_supply_scan 卡死。
+- 系统状态：03:00 dreaming 正常（连续 28 期）；memory_search 可用（bge-m3，6 hits/583ms）；Gateway 锁版本 2026.7.1-2；analysis/ U+FFFD 残留 0；LLM 余额 ¥19.99（现值存档，勿做连续推断）。

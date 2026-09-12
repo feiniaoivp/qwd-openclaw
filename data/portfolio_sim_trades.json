@@ -169,5 +169,29 @@
     "pnl_pct": 0.0,
     "strategy": "ema_obv",
     "bucket": "core"
+  },
+  {
+    "date": "2026-09-11",
+    "symbol": "600030",
+    "name": "中信证券",
+    "action": "BUY",
+    "price": 27.6,
+    "shares": 100,
+    "pnl": 0,
+    "pnl_pct": 0.0,
+    "strategy": "macd",
+    "bucket": "satellite"
+  },
+  {
+    "date": "2026-09-11",
+    "symbol": "600030",
+    "name": "中信证券",
+    "action": "SELL",
+    "price": 26.92,
+    "shares": 0,
+    "pnl": -74.26,
+    "pnl_pct": -2.69,
+    "strategy": "macd",
+    "note": "午休误触发假金叉修正止损"
   }
 ]

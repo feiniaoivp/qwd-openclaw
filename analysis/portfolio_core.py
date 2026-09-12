@@ -205,6 +205,7 @@ def init_position(symbol: str, name: str, strategy: str) -> Dict:
         "trade_count": 0,
         "_symbol": symbol,
         "_buy_streak": 0,
+        "_stop_cooldown_days": 0,
         "_last_action": None,
         "_last_action_date": None,
         "_strategy_switch_pending": False,
@@ -541,8 +542,15 @@ class RiskGuard:
         1. 连续买入信号天数限制（默认最多连续2天执行，第3天起钝化）
         2. ATR波动率动态调整：高波动股票钝化更强
         3. 连续买入后若价格下跌，自动重置钝化计数（防止追高）
+        4. 止损后禁回补：止损卖出后 N 个交易日内禁止再次买入（防反向回补追高）
         """
         if signal["action"] == "买入":
+            # ── 止损后禁回补检查（P1：国瓷材料 08-19 止损 → 08-28 回补 违纪）──
+            stop_cooldown_days = pos.get("_stop_cooldown_days", 0)
+            if stop_cooldown_days > 0:
+                signal["reason"] = f"{signal.get('reason', '')} | 止损冷却期剩余{stop_cooldown_days}天，禁止回补"
+                return signal, False
+            
             streak = pos.get("_buy_streak", 0) + 1
             pos["_buy_streak"] = streak
             
@@ -575,6 +583,21 @@ class RiskGuard:
         else:
             pos["_buy_streak"] = 0
         return signal, True
+
+    @classmethod
+    def record_stop_loss_cooldown(cls, pos: Dict, cooldown_days: int = 15):
+        """
+        记录止损冷却期：止损卖出后设置禁回补天数
+        每日扫描时自动递减（在 run_portfolio_scan 中调用）
+        """
+        pos["_stop_cooldown_days"] = cooldown_days
+        print(f"⚠️ {pos.get('name', pos.get('_symbol', ''))} 触发止损冷却期：{cooldown_days} 天内禁止买入")
+
+    @classmethod
+    def decay_stop_cooldown(cls, pos: Dict):
+        """每日递减止损冷却天数"""
+        if pos.get("_stop_cooldown_days", 0) > 0:
+            pos["_stop_cooldown_days"] -= 1
 
     @classmethod
     def check_dedup(cls, signal: Dict, pos: Dict, dt: str) -> bool:
@@ -683,6 +706,17 @@ def execute_trade(pos: Dict, signal: Dict, dt: str, strategy: str,
         pos["_buy_streak"] = 0
         pos["_last_action"] = action
         pos["_last_action_date"] = dt
+        # 判断是否为止损卖出（ATR止损或亏损超过阈值）
+        atr_stop = signal.get("atr_stop", 0)
+        is_stop_loss = False
+        if atr_stop and atr_stop > 0 and price <= atr_stop * 1.02:  # 价格接近/触及ATR止损
+            is_stop_loss = True
+        elif pnl < 0 and (pnl / cost_basis) < -0.03:  # 亏损超过3%视为止损性卖出
+            is_stop_loss = True
+        
+        if is_stop_loss:
+            RiskGuard.record_stop_loss_cooldown(pos, cooldown_days=15)
+        
         append_trade({"date": dt, "symbol": pos["_symbol"], "name": pos["name"],
                       "action": "SELL", "price": price, "shares": 0,
                       "pnl": pnl, "pnl_pct": round((pnl / cost_basis) * 100, 2) if cost_basis else 0.0,
@@ -804,6 +838,8 @@ def run_portfolio_scan(
             pos = init_position(sym, name, strategy_map.get(sym, default_strategy))
             state["positions"][sym] = pos
         pos["_symbol"] = sym
+        # 每日递减止损冷却期
+        RiskGuard.decay_stop_cooldown(pos)
         strat = pos["strategy"]
         slabel = STRATEGY_LABELS.get(strat, strat)
 
@@ -836,7 +872,7 @@ def run_portfolio_scan(
 
         # 仅新交易日执行
         if should_exec and state.get("last_signal_date") is not None and data_date != state.get("last_signal_date"):
-            action, msg = execute_trade(pos, signal, data_date, strategy=strat, position_plan=position_plan, state=state)
+            action, msg = execute_trade(pos, signal, data_date, strategy=strat, position_plan=position_plan)
             if action:
                 trade_count += 1
                 all_msgs.append(msg)

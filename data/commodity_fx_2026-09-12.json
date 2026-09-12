@@ -1,0 +1,118 @@
+{
+  "date": "2026-09-13",
+  "timestamp": "2026-09-13T00:13:31.672857",
+  "commodities": {
+    "LME_Copper_3M": {
+      "name": "LME铜 3M",
+      "unit": "USD/t",
+      "price": null,
+      "source": "eastmoney_futures",
+      "status": "parser_not_implemented"
+    },
+    "Silicon_Steel_50W470": {
+      "name": "硅钢 50W470",
+      "unit": "元/吨",
+      "price": null,
+      "source": "mysteel",
+      "status": "parser_not_implemented"
+    },
+    "Silicon_Steel_50W600": {
+      "name": "硅钢 50W600",
+      "unit": "元/吨",
+      "price": null,
+      "source": "mysteel",
+      "status": "parser_not_implemented"
+    },
+    "SF6": {
+      "name": "六氟化硫",
+      "unit": "元/吨",
+      "price": null,
+      "source": "100ppi",
+      "status": "parser_not_implemented"
+    }
+  },
+  "fx": {
+    "USDCNH": {
+      "name": "离岸人民币",
+      "unit": "元",
+      "price": 6.7071,
+      "bid": 6.7091,
+      "ask": 6.7071,
+      "change": -0.11,
+      "pct_change": -0.0074,
+      "high": 6.7145,
+      "low": 6.705,
+      "open": 6.7071,
+      "year_high": 6.9957,
+      "year_low": 6.7032,
+      "date": "2026-09-12",
+      "time": "05:00:00",
+      "source": "sina_fx"
+    },
+    "EURUSD": {
+      "name": "欧元/美元",
+      "unit": "美元",
+      "price": 1.1598,
+      "bid": 1.1602,
+      "ask": 1.1598,
+      "change": -0.1,
+      "pct_change": -0.0012,
+      "high": 1.1614,
+      "low": 1.1568,
+      "open": 1.1598,
+      "year_high": 1.2078,
+      "year_low": 1.1325,
+      "date": "2026-09-12",
+      "time": "04:59:30",
+      "source": "sina_fx"
+    },
+    "USDSAR": {
+      "name": "美元/沙特里亚尔",
+      "unit": "里亚尔",
+      "price": 3.7555,
+      "bid": 3.7557,
+      "ask": 3.7555,
+      "change": 0.01,
+      "pct_change": 0.0005,
+      "high": 3.755,
+      "low": 3.7535,
+      "open": 3.7555,
+      "year_high": 3.757,
+      "year_low": 3.7499,
+      "date": "2026-09-12",
+      "time": "04:59:59",
+      "source": "sina_fx"
+    },
+    "DXY": {
+      "name": "美元指数",
+      "unit": "点",
+      "price": 126.34,
+      "source": "er_api_calculated",
+      "components": {
+        "EURUSD": 1.1601,
+        "USDJPY": 153.76,
+        "GBPUSD": 1.3522,
+        "USDCAD": 1.3861,
+        "USDSEK": 9.6978,
+        "USDCHF": 0.8161
+      },
+      "extra_rates": {
+        "USDCNH": 6.708504,
+        "CNY": 6.725314,
+        "SAR": 3.75
+      }
+    },
+    "CNY": {
+      "name": "在岸人民币",
+      "unit": "元",
+      "price": 6.725314,
+      "source": "er_api"
+    },
+    "SAR": {
+      "name": "沙特里亚尔",
+      "unit": "里亚尔",
+      "price": 3.75,
+      "source": "er_api"
+    }
+  }
+}

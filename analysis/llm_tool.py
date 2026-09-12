@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-LLM + Tool � 层：封装对外部知识的获取（新闻、030健康度）以及通用的 LLM �� 调用（带 Tool/Function Calling � 能力）。
-所有�函数仅返回数据，不做打印或文件写入。
+LLM + Tool 层：封装对外部知识的获取（新闻、030健康度）以及通用的 LLM 调用（带 Tool/Function Calling 能力）。
+所有函数仅返回数据，不做打印或文件写入。
 """
 
 import os, json, requests
@@ -45,12 +45,12 @@ LLM_MODEL = os.getenv("LLM_MODEL", "deepseek-chat")
 HEADERS = {"Authorization": f"Bearer {OPENAI_API_KEY}",
            "Content-Type": "application/json"}
 
-# -------------------- � 工具：获取今日新闻 --------------------
+# -------------------- 工具：获取今日新闻 --------------------
 def get_today_news(limit: int = 5) -> List[Dict[str, str]]:
     """
-    �� 调用 akshare 的 stock_news_em 或其他新闻接口，返回标题与简要摘要。
-    这里直接使用 akshare.stock_news_em（东财新闻）。
-    返回列表，每项包含 title、url、snippet（前200字）。
+ 调用 akshare 的 stock_news_em 或其他新闻接口，返回标题与简要摘要。
+ 这里直接使用 akshare.stock_news_em（东财新闻）。
+ 返回列表，每项包含 title、url、snippet（前200字）。
     """
     try:
         import akshare as ak
@@ -62,25 +62,25 @@ def get_today_news(limit: int = 5) -> List[Dict[str, str]]:
         news = []
         for _, row in df.iterrows():
             title = str(row.get("新闻标题", ""))
-            url = str(row.get("新闻�链接", ""))
+            url = str(row.get("新闻链接", ""))
             content = str(row.get("正文", ""))
-            # � 摘要取前200字
+            # 摘要取前200字
             snippet = content[:200].replace("\n", " ").strip()
             news.append({"title": title, "url": url, "snippet": snippet})
         return news
     except Exception as e:
-        # 出错时返回空列表，上�层会自行处理
+        # 出错时返回空列表，上层会自行处理
         return []
 
-# -------------------- � 工具：获取 030 � 市场健康度 --------------------
+# -------------------- 工具：获取 030 市场健康度 --------------------
 def get_market_health() -> Optional[int]:
     """
-    返回 0‑10 的整数市场健康度。
+ 返回 0‑10 的整数市场健康度。
 
     2026-08-07 修复：原先调用 market_health_score.compute_health 会 ImportError，
-    且其底层 akshare(东财/全A) 接口在本机被拦截。改为直接读取
+ 且其底层 akshare(东财/全A) 接口在本机被拦截。改为直接读取
     close_scan_v2 每日生成的 data/market_health_<日期>.json 的 summary.total_score（新浪数据，可靠）。
-    若读取失败返回 None，上层会走规则兜底。
+ 若读取失败返回 None，上层会走规则兜底。
     """
     import glob
     try:
@@ -97,18 +97,18 @@ def get_market_health() -> Optional[int]:
         pass
     return None
 
-# -------------------- 通用 LLM �� 调用（支持 Tool/Function Calling） --------------------
+# -------------------- 通用 LLM 调用（支持 Tool/Function Calling） --------------------
 def call_llm_with_tools(messages: List[Dict[str, str]],
                         tools: Optional[List[Dict]] = None,
                         tool_choice: str = "auto",
                         temperature: float = 0.2,
                         timeout: int = 30) -> Dict[str, Any]:
     """
-    向 OpenAI‑compatible 端点发送�聊天请求，支持 functions/tools。
-    messages: 标准的�聊天消息列表，每项含 role 和 content。
-    tools: 可选的�函数规范列表（参照 OpenAI � 函数调用格式）。
-    tool_choice: "auto", "none", 或强制指定某个�函数名。
-    返回解�析后的 JSON � 响应（包含 choices 等字段）。
+ 向 OpenAI‑compatible 端点发送聊天请求，支持 functions/tools。
+    messages: 标准的聊天消息列表，每项含 role 和 content。
+    tools: 可选的函数规范列表（参照 OpenAI 函数调用格式）。
+    tool_choice: "auto", "none", 或强制指定某个函数名。
+ 返回解析后的 JSON 响应（包含 choices 等字段）。
     """
     payload = {
         "model": LLM_MODEL,
@@ -124,15 +124,15 @@ def call_llm_with_tools(messages: List[Dict[str, str]],
         resp.raise_for_status()
         return resp.json()
     except Exception as e:
-        # 返回一个结构化的错误信息，便于上�层捕获
+        # 返回一个结构化的错误信息，便于上层捕获
         return {"error": str(e), "status_code": getattr(e.response, "status_code", None) if hasattr(e, 'response') else None}
 
 # -------------------- 提取 LLM 文本内容 --------------------
 def extract_llm_content(resp) -> str:
     """
-    从 call_llm_with_tools 的 OpenAI 兼容返回里提取 assistant 文本。
+ 从 call_llm_with_tools 的 OpenAI 兼容返回里提取 assistant 文本。
     resp 可能：(1) 标准 {choices:[{message:{content}}]}；(2) {"error":...}；(3) 其它。
-    提取不到返回 ""（空串），调用方据此判断是否需要规则兜底。
+ 提取不到返回 ""（空串），调用方据此判断是否需要规则兜底。
     """
     if not isinstance(resp, dict):
         return str(resp)
@@ -145,17 +145,17 @@ def extract_llm_content(resp) -> str:
         return ""
 
 
-# -------------------- 便�捷封装：仅获取文本回复（不使用 tools） --------------------
+# -------------------- 便捷封装：仅获取文本回复（不使用 tools） --------------------
 def call_llm(messages: List[Dict[str, str]],
              temperature: float = 0.2,
              timeout: int = 30) -> str:
     """
-    简单封装：只返回助手的文本内容（第一个 choice 的 message.content）。
-    � 若出错则返回错误信息字符�串。
+ 简单封装：只返回助手的文本内容（第一个 choice 的 message.content）。
+ 若出错则返回错误信息字符串。
     """
     resp = call_llm_with_tools(messages, tools=None, temperature=temperature, timeout=timeout)
     if "error" in resp:
-        return f"LLM �� 调用失败: {resp['error']}"
+        return f"LLM 调用失败: {resp['error']}"
     try:
         return resp["choices"][0]["message"]["content"]
     except Exception:

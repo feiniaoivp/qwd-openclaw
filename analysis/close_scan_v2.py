@@ -32,6 +32,13 @@ from functools import lru_cache
 
 import pandas as pd
 
+# 共享策略库 (2026-09-11): 中联重科双策略统一实现, 消除多脚本重复漂移
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from strategies import analyze_zhonglian as _analyze_zhonglian_shared
+except ImportError:
+    _analyze_zhonglian_shared = None  # 延迟到调用时报错
+
 # 可选依赖
 try:
     import pandas_ta as ta
@@ -805,61 +812,11 @@ def calc_spot_signal(spot: dict) -> dict:
 # ============================================================================
 
 def analyze_zhonglian(df: pd.DataFrame) -> dict:
-    latest = df.iloc[-1]
-    prev = df.iloc[-2]
-    latest_date = str(latest["date"].date())
+    """中联重科双策略 (共享实现 -> analysis/strategies.py, 风格: plain)。
 
-    close = df["close"]
-    ef = close.ewm(span=12, adjust=False).mean()
-    es = close.ewm(span=26, adjust=False).mean()
-    dif = ef - es
-    dea = dif.ewm(span=9, adjust=False).mean()
-
-    delta = close.diff()
-    gain = delta.where(delta > 0, 0).rolling(14).mean()
-    loss = (-delta.where(delta < 0, 0)).rolling(14).mean()
-    rs = gain / loss
-    rsi = 100 - (100 / (1 + rs))
-
-    macd_bull = (dif.iloc[-1] > dea.iloc[-1]) and (dif.iloc[-2] <= dea.iloc[-2])
-    macd_bear = (dif.iloc[-1] < dea.iloc[-1]) and (dif.iloc[-2] >= dea.iloc[-2])
-    rsi_low = rsi.iloc[-1] < 50
-
-    ema12 = close.ewm(span=12, adjust=False).mean()
-    ema26 = close.ewm(span=26, adjust=False).mean()
-    rsi_now = float(rsi.iloc[-1])
-
-    sig1_buy = macd_bull and rsi_low
-    sig1_sell = macd_bear
-
-    sig2_buy = macd_bull and (ema12.iloc[-1] > ema26.iloc[-1]) and (rsi_now < 60)
-    sig2_sell = macd_bear or (latest["close"] < ema26.iloc[-1])
-
-    dif_direction = "多头金叉" if dif.iloc[-1] > dea.iloc[-1] else "多头死叉"
-    ema_direction = "多头EMA12>26" if ema12.iloc[-1] > ema26.iloc[-1] else "多头EMA12<26"
-
-    return {
-        "date": latest_date,
-        "price": round(float(latest["close"]), 2),
-        "change_pct": round((float(latest["close"]) / float(prev["close"]) - 1) * 100, 2),
-        "volume": int(latest["volume"]),
-        "indicators": {
-            "MACD_DIF": round(float(dif.iloc[-1]), 4),
-            "MACD_DEA": round(float(dea.iloc[-1]), 4),
-            "MACD_state": dif_direction,
-            "EMA12": round(float(ema12.iloc[-1]), 2),
-            "EMA26": round(float(ema26.iloc[-1]), 2),
-            "EMA_state": ema_direction,
-            "RSI14": round(rsi_now, 1),
-        },
-        "signals": {
-            "strategy1": {"name": "MACD+RSI<50", "buy": bool(sig1_buy), "sell": bool(sig1_sell),
-                          "rsi_filter": rsi_now < 50,
-                          "desc": f"MACD{'金叉' if macd_bull else '状态'} + RSI{round(rsi_now,1)}"},
-            "strategy2": {"name": "综合最优(EMA+MACD+RSI)", "buy": bool(sig2_buy), "sell": bool(sig2_sell),
-                          "desc": f"MACD金叉:{macd_bull} EMA12>26:{ema12.iloc[-1] > ema26.iloc[-1]} RSI<60:{rsi_now < 60}"}
-        }
-    }
+    2026-09-11: 原三处重复实现已统一, 消除漂移风险 (曾导致同一卖出信号卡死 bug 复发三次)。
+    """
+    return _analyze_zhonglian_shared(df, macd_state_style="plain")
 
 def load_state() -> dict:
     if os.path.exists(STATE_FILE):

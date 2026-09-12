@@ -1,0 +1,124 @@
+{
+  "date": "2026-09-13",
+  "timestamp": "2026-09-13T00:34:35.793494",
+  "commodities": {
+    "LME_Copper_3M": {
+      "name": "LME铜 3M (SHFE代理)",
+      "unit": "USD/t",
+      "price": 11835.22,
+      "change": -62.62,
+      "pct_change": -0.5263157894736842,
+      "high_usd": 11835.22,
+      "low_usd": 11730.85,
+      "open_usd": 11881.44,
+      "prev_close_usd": 11897.84,
+      "volume": 15975,
+      "contract": "CU2501",
+      "date": "0",
+      "source": "sina_shfe_proxy",
+      "fx_rate_used": 6.7071,
+      "shfe_price_cny": 79380.0
+    },
+    "Silicon_Steel_50W470": {
+      "name": "硅钢代理(钢材指数SC0)",
+      "unit": "元/吨",
+      "price": 606.5,
+      "change": -8.700000000000045,
+      "pct_change": -1.41417425227569,
+      "high": 611.7,
+      "low": 605.0,
+      "open": 612.3,
+      "prev_close": 615.2,
+      "date": "0",
+      "source": "sina_steel_index_proxy",
+      "note": "SC0钢材综合指数，非硅钢专用价格，仅供趋势参考"
+    },
+    "Silicon_Steel_50W600": {
+      "name": "硅钢代理(钢材指数SC0)",
+      "unit": "元/吨",
+      "price": 606.5,
+      "change": -8.700000000000045,
+      "pct_change": -1.41417425227569,
+      "high": 611.7,
+      "low": 605.0,
+      "open": 612.3,
+      "prev_close": 615.2,
+      "date": "0",
+      "source": "sina_steel_index_proxy",
+      "note": "SC0钢材综合指数，非硅钢专用价格，仅供趋势参考"
+    },
+    "SF6": {
+      "name": "六氟化硫",
+      "unit": "元/吨",
+      "price": null,
+      "source": "manual_entry",
+      "status": "需人工录入 (生意社/百川盈孚需会员)"
+    }
+  },
+  "fx": {
+    "USDCNH": {
+      "name": "离岸人民币",
+      "unit": "元",
+      "price": 6.7071,
+      "change": -0.11,
+      "pct_change": -0.0074,
+      "high": 6.7145,
+      "low": 6.705,
+      "open": 6.7071,
+      "source": "sina_fx"
+    },
+    "EURUSD": {
+      "name": "欧元/美元",
+      "unit": "美元",
+      "price": 1.1598,
+      "change": -0.1,
+      "pct_change": -0.0012,
+      "high": 1.1614,
+      "low": 1.1568,
+      "open": 1.1598,
+      "source": "sina_fx"
+    },
+    "USDSAR": {
+      "name": "美元/沙特里亚尔",
+      "unit": "里亚尔",
+      "price": 3.7555,
+      "change": 0.01,
+      "pct_change": 0.0005,
+      "high": 3.755,
+      "low": 3.7535,
+      "open": 3.7555,
+      "source": "sina_fx"
+    },
+    "DXY": {
+      "name": "美元指数",
+      "unit": "点",
+      "price": 126.34,
+      "source": "er_api_calculated",
+      "components": {
+        "EURUSD": 1.1601,
+        "USDJPY": 153.76,
+        "GBPUSD": 1.3522,
+        "USDCAD": 1.3861,
+        "USDSEK": 9.6978,
+        "USDCHF": 0.8161
+      },
+      "extra_rates": {
+        "USDCNH": 6.708504,
+        "CNY": 6.725314,
+        "SAR": 3.75
+      }
+    },
+    "CNY": {
+      "name": "在岸人民币",
+      "unit": "元",
+      "price": 6.725314,
+      "source": "er_api"
+    },
+    "SAR": {
+      "name": "沙特里亚尔",
+      "unit": "里亚尔",
+      "price": 3.75,
+      "source": "er_api"
+    }
+  }
+}

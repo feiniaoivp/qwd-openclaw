@@ -1,5 +1,5 @@
 {
-  "last_signal_date": "2026-09-09",
+  "last_signal_date": "2026-09-11",
   "positions": {
     "002318": {
       "name": "久立特材",
@@ -65,12 +65,12 @@
       "name": "中信证券",
       "strategy": "macd",
       "position": false,
-      "entry_price": 0,
-      "entry_date": null,
+      "entry_price": 27.6,
+      "entry_date": "2026-09-11",
       "shares": 0,
-      "cash": 100000,
-      "total_pl": 0,
-      "trade_count": 0,
+      "cash": 99924.91237959999,
+      "total_pl": -74.25879239999995,
+      "trade_count": 2,
       "_symbol": "600030",
       "atr_params": {
         "stop_mult": 2.0,
@@ -79,7 +79,15 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite"
+      "bucket": "satellite",
+      "_last_action": "卖出",
+      "_last_action_date": "2026-09-11",
+      "fib_targets": {
+        "1.0": 28.61,
+        "1.272": 29.0,
+        "1.618": 29.5,
+        "2.618": 30.94
+      }
     },
     "300124": {
       "name": "汇川技术",
@@ -299,6 +307,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
+      "_stop_cooldown_days": 0,
       "bucket": "core"
     },
     "002413": {

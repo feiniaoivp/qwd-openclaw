@@ -632,6 +632,18 @@
       "kind": "verify",
       "events": 1,
       "hit_rate": "0/0(尚无数)"
+    },
+    {
+      "date": "2026-09-10",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "0/0(尚无数)"
+    },
+    {
+      "date": "2026-09-11",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "0/0(尚无数)"
     }
   ]
 }

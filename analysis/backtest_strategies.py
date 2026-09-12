@@ -456,6 +456,69 @@ def run_simulation(df, actions):
     }
 
 
+
+def run_simulation_index(index_df, actions):
+    """指数基准专用模拟器：直接计算指数涨跌幅作为收益（不模拟手数）"""
+    # 找到买入和卖出动作
+    buy_action = None
+    sell_action = None
+    for a in actions:
+        if a["type"] == "BUY":
+            buy_action = a
+        elif a["type"] == "SELL":
+            sell_action = a
+    
+    if buy_action is None or sell_action is None:
+        return {"error": "缺少买入/卖出信号"}
+    
+    # 直接用指数价格计算收益率
+    buy_price = buy_action["price"]
+    sell_price = sell_action["price"]
+    total_return = (sell_price / buy_price - 1) * 100
+    
+    # 年化收益
+    buy_date = pd.to_datetime(buy_action["date"])
+    sell_date = pd.to_datetime(sell_action["date"])
+    days = (sell_date - buy_date).days
+    years = days / 245
+    annualized_return = ((1 + total_return / 100) ** (1 / years) - 1) * 100 if years > 0 else 0
+    
+    # 用指数每日收盘价计算日收益率序列
+    index_df = index_df.copy()
+    index_df = index_df.sort_values("date").reset_index(drop=True)
+    # 截取区间
+    mask = (index_df["date"] >= buy_date) & (index_df["date"] <= sell_date)
+    period_df = index_df[mask].copy()
+    if len(period_df) < 2:
+        return {"error": "区间数据不足"}
+    
+    daily_returns = period_df["close"].pct_change().dropna().values
+    annualized_vol = np.std(daily_returns, ddof=1) * np.sqrt(245) * 100
+    
+    risk_free = 0.02
+    sharpe = ((annualized_return / 100) - risk_free) / (annualized_vol / 100) if annualized_vol > 0 else 0
+    
+    # 最大回撤
+    eq_series = period_df["close"].values
+    peak = np.maximum.accumulate(eq_series)
+    drawdown = (eq_series - peak) / peak * 100
+    max_drawdown = drawdown.min()
+    
+    return {
+        "total_return_pct": round(total_return, 2),
+        "annualized_return_pct": round(annualized_return, 2),
+        "annualized_volatility_pct": round(annualized_vol, 2),
+        "sharpe_ratio": round(sharpe, 3),
+        "max_drawdown_pct": round(max_drawdown, 2),
+        "win_rate_pct": 0.0,  # 指数基准只有1笔交易
+        "profit_loss_ratio": 0.0,
+        "max_consecutive_losses": 0,
+        "total_trades": 1,
+        "avg_days_between_trades": float(days),
+        "final_equity": round(INITIAL_CAPITAL * (1 + total_return / 100), 2),
+    }
+
+
 def strategy_buy_and_hold(df):
     """
     基准1: 买入并持有
@@ -809,7 +872,16 @@ def main():
         for sname, sfunc in ALL_STRATEGIES:
             try:
                 actions = sfunc(df)
-                metrics = run_simulation(df, actions)
+                # 指数基准使用专用模拟器（跑指数自身的K线）
+                if sname in ("沪深300基准", "中证500基准"):
+                    index_code = "sh.000300" if sname == "沪深300基准" else "sh.000905"
+                    index_df = INDEX_CACHE.get(index_code)
+                    if index_df is not None and len(index_df) >= 2:
+                        metrics = run_simulation_index(index_df, actions)
+                    else:
+                        metrics = run_simulation(df, actions)  # 兜底
+                else:
+                    metrics = run_simulation(df, actions)
                 stock_result["strategies"][sname] = metrics
             except Exception as e:
                 stock_result["strategies"][sname] = {"error": str(e)}

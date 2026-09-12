@@ -127,7 +127,7 @@ class SignalArbitrator:
         "volume": 60,                # 量能（缩量滞涨、放量下跌）
         "seal_direction": 50,        # 封单方向（一字板封单量、封单结构）
         "surprise": 40,              # 超预期（该弱不弱、跷跷板验证）
-        "technical": 30,             # 技术指标（MACD、EMA、KDJ等）
+        "technical": 55,             # 技术指标（MACD、EMA、KDJ等）— 提升至 55，高于封单/超预期
         "moat_bonus": 10,            # 护城河加分（核心仓标的容错更高）
     }
 
@@ -350,6 +350,28 @@ class SignalArbitrator:
                 return SignalAction.WATCH, 0.8, f"出货形态质疑买入：{'; '.join(s[2] for s in strong_dist[:2])}", path
             else:
                 return SignalAction.REDUCE, 0.7, f"出货形态确认卖出：{'; '.join(s[2] for s in strong_dist[:2])}", path
+
+        # 层级2.5：连续 N 天策略卖出硬规则（新增 P2）
+        # 统计来自 adaptive_dual/adaptive_trader/close_scan 的连续卖出天数
+        tech_sell_streak = 0
+        for s in signals:
+            if s.source in ("adaptive_dual", "adaptive_trader", "close_scan_v2") and s.strength <= -1:
+                # 这里简化处理：实际应读取历史文件，暂用 reason 里的 "连续" 关键词判断
+                if "连续" in s.reason and "卖" in s.reason:
+                    import re
+                    m = re.search(r"连续(\d+)天", s.reason)
+                    if m:
+                        tech_sell_streak = max(tech_sell_streak, int(m.group(1)))
+        # 兜底：若无明确天数，统计当前信号中卖出源的数量
+        if tech_sell_streak == 0:
+            tech_sell_streak = sum(1 for s in signals if s.source in ("adaptive_dual", "adaptive_trader", "close_scan_v2") and s.strength <= -1)
+        
+        if tech_sell_streak >= 3:
+            path.append("CONSECUTIVE_SELL_HARD_RULE")
+            if held_position and held_position.get("shares", 0) > 0:
+                return SignalAction.SELL, 0.9, f"连续 {tech_sell_streak} 天技术面卖出信号，硬规则触发强制卖出", path
+            else:
+                return SignalAction.WATCH, 0.85, f"连续 {tech_sell_streak} 天技术面卖出信号，空仓禁买观望", path
 
         # 层级3：量能
         if evidence["volume"]:

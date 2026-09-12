@@ -21,6 +21,14 @@ COMMISSION = 0.0003
 SLIPPAGE = 0.001
 CAPITAL = 100_000
 
+# 共享策略库 (2026-09-11): 中联重科双策略统一实现, 消除多脚本重复漂移
+sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
+from strategies import (
+    compute_indicators as _compute_indicators,
+    zhonglian_strategy1 as _zhonglian_strategy1,
+    zhonglian_strategy2 as _zhonglian_strategy2,
+)
+
 # ---------- 指标计算 ----------
 def calc_ema(s, w): return s.ewm(span=w, adjust=False).mean()
 def calc_macd(close, f=12, s=26, sig=9):
@@ -47,71 +55,60 @@ def save_state(state):
         json.dump(state, f, ensure_ascii=False, indent=2, default=str)
 
 def check_signals(df):
-    """计算两个策略的最新信号"""
-    latest = df.iloc[-1]
-    prev = df.iloc[-2]
+    """计算两个策略的最新信号。
+
+    2026-09-11: 指标计算与信号判定改用共享模块 analysis/strategies.py
+    (消除与 service.py / close_scan_v2.py 的三处重复漂移)。
+    本地仅保留本脚本特有的 desc 文案格式。
+    """
+    ind = _compute_indicators(df)
+    latest, prev = ind["latest"], ind["prev"]
     latest_date = str(latest["date"].date())
 
-    # ===== 策略1: MACD+RSI<50 =====
-    dif, dea = calc_macd(df["close"])
-    delta = df["close"].diff()
-    gain = delta.where(delta > 0, 0).rolling(14).mean()
-    loss = (-delta.where(delta < 0, 0)).rolling(14).mean()
-    rs = gain / loss
-    rsi = 100 - (100 / (1 + rs))
-
-    # MACD金叉: dif 上穿 dea
-    macd_bull = (dif.iloc[-1] > dea.iloc[-1]) and (dif.iloc[-2] <= dea.iloc[-2])
-    macd_bear = (dif.iloc[-1] < dea.iloc[-1]) and (dif.iloc[-2] >= dea.iloc[-2])
-    rsi_low = rsi.iloc[-1] < 50
-
-    sig1_buy = macd_bull and rsi_low
-    sig1_sell = macd_bear
-
-    # ===== 策略2: 综合最优(EMA+MACD+RSI) =====
-    ema12 = calc_ema(df["close"], 12)
-    ema26 = calc_ema(df["close"], 26)
-    rsi_now = rsi.iloc[-1]
-
-    # 买入: MACD金叉 + EMA12>EMA26 + RSI<60
-    sig2_buy = macd_bull and (ema12.iloc[-1] > ema26.iloc[-1]) and (rsi_now < 60)
-    # 卖出: MACD死叉 || 收盘价跌破EMA26
-    sig2_sell = macd_bear or (latest["close"] < ema26.iloc[-1])
+    ema12_now = ind["ema12_now"]
+    ema26_now = ind["ema26_now"]
+    rsi_now = ind["rsi_now"]
 
     # 当前持仓方向
-    dif_direction = "📗金叉" if dif.iloc[-1] > dea.iloc[-1] else "📕死叉"
-    ema_direction = "📗EMA12>26" if ema12.iloc[-1] > ema26.iloc[-1] else "📕EMA12<26"
+    dif_direction = "📗金叉" if ind["dif_now"] > ind["dea_now"] else "📕死叉"
+    ema_direction = "📗EMA12>26" if ema12_now > ema26_now else "📕EMA12<26"
+
+    sig1 = _zhonglian_strategy1(ind)
+    sig2 = _zhonglian_strategy2(ind)
 
     return {
         "date": latest_date,
-        "price": round(latest["close"], 2),
-        "change_pct": round((latest["close"] / prev["close"] - 1) * 100, 2),
+        "price": round(ind["close_now"], 2),
+        "change_pct": round((ind["close_now"] / ind["close_prev"] - 1) * 100, 2),
         "volume": int(latest["volume"]),
         "indicators": {
-            "MACD_DIF": round(dif.iloc[-1], 4),
-            "MACD_DEA": round(dea.iloc[-1], 4),
+            "MACD_DIF": round(ind["dif_now"], 4),
+            "MACD_DEA": round(ind["dea_now"], 4),
             "MACD_state": dif_direction,
-            "EMA12": round(ema12.iloc[-1], 2),
-            "EMA26": round(ema26.iloc[-1], 2),
+            "EMA12": round(ema12_now, 2),
+            "EMA26": round(ema26_now, 2),
             "EMA_state": ema_direction,
             "RSI14": round(rsi_now, 1),
         },
         "signals": {
             "strategy1": {
-                "name": "MACD+RSI<50",
-                "buy": bool(sig1_buy),
-                "sell": bool(sig1_sell),
-                "rsi_filter": rsi_now < 50,
-                "desc": f"MACD{'金叉' if macd_bull else '状态'} + RSI{round(rsi_now,1)} {'<50 ✅买入条件' if (macd_bull and rsi_low) else '❌'}"
+                "name": sig1["name"],
+                "buy": sig1["buy"],
+                "sell": sig1["sell"],
+                "rsi_filter": sig1["rsi_filter"],
+                "desc": f"MACD{'金叉' if ind['macd_bull'] else '状态'} + RSI{round(rsi_now,1)} {'<50 ✅买入条件' if (ind['macd_bull'] and rsi_now < 50) else '❌'}"
             },
             "strategy2": {
-                "name": "综合最优(EMA+MACD+RSI)",
-                "buy": bool(sig2_buy),
-                "sell": bool(sig2_sell),
-                "desc": f"MACD金叉:{macd_bull} EMA12>26:{ema12.iloc[-1] > ema26.iloc[-1]} RSI<60:{rsi_now < 60} 卖出信号:{bool(sig2_sell)}"
+                "name": sig2["name"],
+                "buy": sig2["buy"],
+                "sell": sig2["sell"],
+                "sell_event": sig2["sell_event"],
+                "below_ema26": sig2["below_ema26"],
+                "desc": f"MACD金叉:{ind['macd_bull']} EMA12>26:{ema12_now > ema26_now} RSI<60:{rsi_now < 60} 卖出信号:{sig2['sell']}"
             }
         }
     }
+
 
 def execute_trade_strategy1(state, signals):
     """策略1执行交易 - MACD+RSI<50"""

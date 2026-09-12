@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-LangGraph � 节点实现：每个节点都是纯�函数，输入 State、输出更新后的 State。
+LangGraph 节点实现：每个节点都是纯函数，输入 State、输出更新后的 State。
 仅修改自己关心的字段，其余保持不变。
 """
 
@@ -18,7 +18,7 @@ from analysis.rag.experience_store import retrieve_top_k
 from analysis.trader_stock_picks import get_trader_picks
 from analysis.three_factor_helper import ResonanceGate, SENT_BUY, FUND_BUY
 
-# ---------- � 辅助：生成唯一 run_id ----------
+# ---------- 辅助：生成唯一 run_id ----------
 def _make_run_id() -> str:
     return f"{datetime.now():%Y%m%d%H%M%S}_{uuid.uuid4().hex[:6]}"
 
@@ -38,7 +38,7 @@ def node_check_trading_day(state: Dict[str, Any]) -> Dict[str, Any]:
     state["is_trading_day"] = is_trading_day()
     return state
 
-# ---------- Node 3: �� 获取实时行情 ----------
+# ---------- Node 3: 获取实时行情 ----------
 def node_fetch_spot(state: Dict[str, Any]) -> Dict[str, Any]:
     state = state.copy()
     # 新浪实时接口偶发 RemoteDisconnected，做 3 次重试（每次间隔 1s）避免一次抖动清空整个报告
@@ -98,14 +98,14 @@ def node_calc_signals(state: Dict[str, Any]) -> Dict[str, Any]:
 
     state["signals"] = signals
     # 统计简要分布（便于后续节点快速查看）
-    strong_buy = sum(1 for s in signals if "强烈�买入" in s.get("signal", {}).get("level", ""))
+    strong_buy = sum(1 for s in signals if "强烈买入" in s.get("signal", {}).get("level", ""))
     watch = sum(1 for s in signals if "关注" in s.get("signal", {}).get("level", ""))
     neutral = sum(1 for s in signals if "中性" in s.get("signal", {}).get("level", ""))
-    caution = sum(1 for s in signals if "�谨�慎" in s.get("signal", {}).get("level", ""))
-    strong_sell = sum(1 for s in signals if "强烈�卖出" in s.get("signal", {}).get("level", ""))
+    caution = sum(1 for s in signals if "谨慎" in s.get("signal", {}).get("level", ""))
+    strong_sell = sum(1 for s in signals if "强烈卖出" in s.get("signal", {}).get("level", ""))
     state["signal_summary"] = {
-        "强烈�买入": strong_buy, "关注": watch, "中性": neutral,
-        "�谨�慎": caution, "强烈�卖出": strong_sell,
+        "强烈买入": strong_buy, "关注": watch, "中性": neutral,
+        "谨慎": caution, "强烈卖出": strong_sell,
         "失败": sum(1 for s in signals if "error" in s)
     }
     return state
@@ -114,7 +114,7 @@ def node_calc_signals(state: Dict[str, Any]) -> Dict[str, Any]:
 def node_zhonglian(state: Dict[str, Any]) -> Dict[str, Any]:
     state = state.copy()
     try:
-        # � 若历史数据可用则用完整历史，否则回退到仅用 spot
+        # 若历史数据可用则用完整历史，否则回退到仅用 spot
         df = get_daily_hist("000157", "中联重科", start_date="20240101")
         if df is None or len(df) < 120:
             df = get_daily_hist("000157", "中联重科", start_date="20260725")
@@ -123,7 +123,7 @@ def node_zhonglian(state: Dict[str, Any]) -> Dict[str, Any]:
 
         if "error" not in zhonglian:
             state["zhonglian"]["date"] = zhonglian.get("date", state["date"])
-            # 只有在日期变化时才�执行交易（�避免重复下单）
+            # 只有在日期变化时才执行交易（避免重复下单）
             st = load_state()
             if zhonglian.get("date") != st.get("last_signal_date"):
                 st["last_signal_date"] = zhonglian.get("date")
@@ -136,7 +136,7 @@ def node_zhonglian(state: Dict[str, Any]) -> Dict[str, Any]:
                     "total_return_pct": total_ret,
                 }
             else:
-                # 日期未变，仅给出当前持�仓市值
+                # 日期未变，仅给出当前持仓市值
                 st = load_state()
                 price = zhonglian["price"]
                 s1 = st["strategy1"]; s2 = st["strategy2"]
@@ -152,7 +152,7 @@ def node_zhonglian(state: Dict[str, Any]) -> Dict[str, Any]:
         state["zhonglian"] = {"error": str(e)}
     return state
 
-# ---------- Node 6: �� 获取外部知识（新闻 + 030 �� 健康度） ----------
+# ---------- Node 6: 获取外部知识（新闻 + 030 健康度） ----------
 def node_fetch_external(state: Dict[str, Any]) -> Dict[str, Any]:
     state = state.copy()
     try:
@@ -165,11 +165,11 @@ def node_fetch_external(state: Dict[str, Any]) -> Dict[str, Any]:
         state["error_count"] = state.get("error_count", 0) + 1
 
     try:
-        # 2) 030 � 市场健康度（0‑10 分数）
-        health = get_market_health()   # � 已经内部调用 service 里的�函数，返回 int 0‑10
+        # 2) 030 市场健康度（0‑10 分数）
+        health = get_market_health()   # 已经内部调用 service 里的函数，返回 int 0‑10
         state["health_score"] = health
-        # � 再让 LLM �� 做一次简短解读（可选）；LLM 不可用时用规则兜底
-        prompt = f"今日030市场健康度为 {health} / 10，请用一句中文说明市场情�绪（�积极/正常/降�仓/空�仓）并给出简要操作建议。"
+        # 再让 LLM 做一次简短解读（可选）；LLM 不可用时用规则兜底
+        prompt = f"今日030市场健康度为 {health} / 10，请用一句中文说明市场情绪（积极/正常/降仓/空仓）并给出简要操作建议。"
         health_comment = call_llm_with_tools([{"role":"user","content":prompt}])
         txt = extract_llm_content(health_comment)
         if isinstance(health_comment, dict) and "error" in health_comment:
@@ -197,7 +197,7 @@ def rule_health_comment(score):
         return f"市场情绪偏谨慎(健康度{score}/10)：控制仓位，等待企稳信号。"
     return f"市场情绪低迷(健康度{score}/10)：建议降仓或空仓，规避风险。"
 
-# ---------- Node 7: �� 获取操�盘手选股 ----------
+# ---------- Node 7: 获取操盘手选股 ----------
 def node_fetch_trader_picks(state: Dict[str, Any]) -> Dict[str, Any]:
     state = state.copy()
     try:
@@ -210,12 +210,12 @@ def node_fetch_trader_picks(state: Dict[str, Any]) -> Dict[str, Any]:
         state["trader_picks"] = []
     return state
 
-# ---------- Node 8: � 风险规则自然语言化 ----------
+# ---------- Node 8: 风险规则自然语言化 ----------
 def node_apply_risk(state: Dict[str, Any]) -> Dict[str, Any]:
     """
-    读取 prompts/risk_instruction.txt（包含致命风险、�仓位�矩�阵等），
-    让 LLM 在已有信息（signals、news、health）基�础上判断是否�触发风险，
-    并给出调整后的�仓位建议。
+ 读取 prompts/risk_instruction.txt（包含致命风险、仓位矩阵等），
+ 让 LLM 在已有信息（signals、news、health）基础上判断是否触发风险，
+ 并给出调整后的仓位建议。
     """
     state = state.copy()
     try:
@@ -223,7 +223,7 @@ def node_apply_risk(state: Dict[str, Any]) -> Dict[str, Any]:
         with open(prompt_path, "r", encoding="utf-8") as f:
             risk_instruction = f.read()
 
-        # ---------- � 构建基�础上下文 ----------
+        # ---------- 构建基础上下文 ----------
         ctx = {
             "date": state.get("date"),
             "is_trading_day": state.get("is_trading_day"),
@@ -234,7 +234,7 @@ def node_apply_risk(state: Dict[str, Any]) -> Dict[str, Any]:
             "health_comment": state.get("health_comment"),
         }
 
-        # ---------- � 把每只股的信号压�缩成易读文本（只取关�键字段） ----------
+        # ---------- 把每只股的信号压缩成易读文本（只取关键字段） ----------
         lines = []
         for s in state.get("signals", []):
             if "error" in s:
@@ -242,30 +242,30 @@ def node_apply_risk(state: Dict[str, Any]) -> Dict[str, Any]:
             lines.append(
                 f"{s['symbol']}({s['name']}): {s['signal']['level']} "
                 f"(score={s['signal']['score']}) "
-                f"原因:{s['signal']['reasons']} � 风险:{s['signal']['risks']}"
+                f"原因:{s['signal']['reasons']} 风险:{s['signal']['risks']}"
             )
-        ctx["signals_text"] = "\n".join(lines[:30])   # � 防止 prompt 过长
+        ctx["signals_text"] = "\n".join(lines[:30])   # 防止 prompt 过长
 
-        # ---------- � 检索相关经验（few‑shot） ----------
-        # 我们把新闻热点 + � 市场健康度 + � 风险规则作为查�询向量，
-        # 目标是�找出过去类似情况下的经验教�训。
+        # ---------- 检索相关经验（few‑shot） ----------
+        # 我们把新闻热点 + 市场健康度 + 风险规则作为查询向量，
+        # 目标是找出过去类似情况下的经验教训。
         query_parts = []
         if ctx["news_summary"]:
-            query_parts.append(ctx["news_summary"][:200])   # 取前200字�避免过长
+            query_parts.append(ctx["news_summary"][:200])   # 取前200字避免过长
         if ctx["health_score"] is not None:
             query_parts.append(f"030健康度{ctx['health_score']}/10")
-        # � 风险规则本身也可以作为查�询的一部分，但通常较长，这里取前200字
+        # 风险规则本身也可以作为查询的一部分，但通常较长，这里取前200字
         if risk_instruction:
             query_parts.append(risk_instruction[:200])
         query_str = " 。 ".join(query_parts)
         if not query_str.strip():
-            query_str = "今日市场情�绪与操作建议"
+            query_str = "今日市场情绪与操作建议"
         top_experiences = retrieve_top_k(query_str, k=3)
-        experience_block = "\n".join([f"- {exp}" for exp in top_experiences]) if top_experiences else "(�暂无相关经验)"
+        experience_block = "\n".join([f"- {exp}" for exp in top_experiences]) if top_experiences else "(暂无相关经验)"
 
         # ---------- 组装最终 Prompt ----------
         final_prompt = f"""
-你是一位资深的 A �� 股量化风险官。请根据以下信息，严格�遵守下面的风险规则，并给出对每只股票的操作建议（�买入/�卖出/观望），以及是否需要调整总�仓上限。
+你是一位资深的 A 股量化风险官。请根据以下信息，严格遵守下面的风险规则，并给出对每只股票的操作建议（买入/卖出/观望），以及是否需要调整总仓上限。
 
 [风险规则]
 {risk_instruction}
@@ -273,10 +273,10 @@ def node_apply_risk(state: Dict[str, Any]) -> Dict[str, Any]:
 [历史经验（供参考）]
 {experience_block}
 
-[今日行情概�览]
-市场上�涨家数: {ctx['market_overview'].get('up')}
-市场下�跌家数: {ctx['market_overview'].get('down')}
-总成交�额(亿): {ctx['market_overview'].get('total_amount_billion')}
+[今日行情概览]
+市场上涨家数: {ctx['market_overview'].get('up')}
+市场下跌家数: {ctx['market_overview'].get('down')}
+总成交额(亿): {ctx['market_overview'].get('total_amount_billion')}
 
 [信号摘要（前30只）]
 {ctx['signals_text']}
@@ -284,13 +284,13 @@ def node_apply_risk(state: Dict[str, Any]) -> Dict[str, Any]:
 [新闻热点]
 {ctx['news_summary']}
 
-[030 � 市场健康度]
+[030 市场健康度]
 得分: {ctx['health_score']}/10
 解读: {ctx['health_comment']}
 
 请输出JSON格式，包含两个字段：
-1. "risk_flag": � 若�触发致命风险则�填 "致命风险"，否则�填 "无"。
-2. "advice_list": � 每只股票的建议列表，每项包含 symbol、action（BUY/SELL/HOLD）、reason（简要原因）。
+1. "risk_flag": 若触发致命风险则填 "致命风险"，否则填 "无"。
+2. "advice_list": 每只股票的建议列表，每项包含 symbol、action（BUY/SELL/HOLD）、reason（简要原因）。
 """
         # 始终先跑规则化风控（保证止损位、风险第一等硬性规则）——这是权威输出
         rule_flag, rule_advice = rule_risk_advice(state)
@@ -368,15 +368,6 @@ def rule_risk_advice(state):
     except Exception:
         _res_gate = None
     
-    # ── 重复 BUY 钝化：读取/初始化持久化计数器 ──
-    buy_streak_path = os.path.join(os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace"),
-                                    "data", "buy_streak.json")
-    try:
-        with open(buy_streak_path, "r", encoding="utf-8") as _f:
-            buy_streaks = json.load(_f)
-    except Exception:
-        buy_streaks = {}
-    
     serious_buy = serious_sell = fail = 0
     advice_list = []
 
@@ -446,9 +437,9 @@ def rule_risk_advice(state):
             reason = "信号级:%s 分:%s" % (level, score)
         elif "强烈买入" in level or "关注" in level:
             # ── 2026-08-19 修复#4：破位回落拦截 —— 收盘价已跌破 EMA26(中期趋势转空) 时，
-            #    买入/关注信号强制降级为观望(HOLD)，禁止接飞刀。
-            #    依据：2026-08-19 国瓷材料 5日-13%、盘中破止损仍被给"强烈买入"——BUY 评级明显失当；
-            #    以及记忆中的 08-02"天量高开低走=出货"教训。
+            # 买入/关注信号强制降级为观望(HOLD)，禁止接飞刀。
+            # 依据：2026-08-19 国瓷材料 5日-13%、盘中破止损仍被给"强烈买入"——BUY 评级明显失当；
+            # 以及记忆中的 08-02"天量高开低走=出货"教训。
             _close_val = float(close) if close else None
             _ema26_val = None
             _ind = s.get("indicators") or {}
@@ -490,22 +481,12 @@ def rule_risk_advice(state):
                               % (_fa, level))
                     advice_list.append({"symbol": sym, "name": name, "action": action,
                                         "reason": reason})
-                    # 仲裁冲突时重置买入钝化计数
-                    buy_streaks[str(sym)] = 0
                     continue
             
-            # ── 2026-09-02 重复 BUY 钝化：同一股票连续买入仅首次执行 ──
-            current_streak = buy_streaks.get(str(sym), 0)
-            if current_streak > 0:
-                # 连续买入信号，钝化降级为 HOLD
-                action = "HOLD"
-                reason = ("重复BUY钝化(连续第%s日)：信号级%s 分%s｜现价¥%s｜原止损¥%s；已连续%s日给出买入，暂不追加"
-                          % (current_streak, level, score, close, round(float(close)*0.95,2) if close else 0, current_streak))
-                advice_list.append({"symbol": sym, "name": name, "action": action,
-                                    "reason": reason})
-                buy_streaks[str(sym)] = current_streak + 1
-                continue
-            
+            # ── 2026-09-11 重复 BUY 钝化：同一股票连续买入仅首次执行 ──
+            # 注：钝化计数器统一由 portfolio_core.py 维护在 portfolio_sim_state.json 中
+            # 此处仅作规则层面的 HOLD 判定，不再读写独立的 buy_streak.json
+            # （实时钝化由 portfolio_sim 执行层的 RiskGuard.apply_buy_streak_dampening 负责）
             serious_buy += 1
             action = "BUY"
             if close:
@@ -523,12 +504,8 @@ def rule_risk_advice(state):
                           % (level, score, close, diff, stop_ref, sup_ref))
             else:
                 reason = "信号级:%s 分:%s（现价缺失，无法给出精确止损，谨慎执行）" % (level, score)
-            # 首次买入，记录钝化计数
-            buy_streaks[str(sym)] = 1
         else:
             action = "HOLD"
-            # 非买入信号，重置该股票的买入钝化计数
-            buy_streaks[str(sym)] = 0
             # 2026-08-18 修复#2：持有/中性也携带指标数值差异化
             ind = s.get("indicators") or {}
             if isinstance(ind, dict) and ind.get("RSI14") is not None:
@@ -540,12 +517,6 @@ def rule_risk_advice(state):
             "symbol": sym, "name": name, "action": action,
             "reason": reason,
         })
-    # 保存买入钝化计数器
-    try:
-        with open(buy_streak_path, "w", encoding="utf-8") as _f:
-            json.dump(buy_streaks, _f, ensure_ascii=False, indent=2)
-    except Exception:
-        pass
     
     n = len(signals) or 1
     if fail >= n * 0.6:
@@ -563,22 +534,22 @@ def rule_risk_advice(state):
 # ---------- Node 9: 生成最终报告（可选） ----------
 def node_make_report(state: Dict[str, Any]) -> Dict[str, Any]:
     state = state.copy()
-    # 这里只做一个简单的文本报告，实际推送由外�层脚本决定
-    report = f"""=== AI 智能体每日�盯�盘报告 ({state.get('date')}) ===
+    # 这里只做一个简单的文本报告，实际推送由外层脚本决定
+    report = f"""=== AI 智能体每日盯盘报告 ({state.get('date')}) ===
 交易日状态: {"是" if state.get('is_trading_day') else "否（使用最近交易日数据）"}
 数据日期: {state.get('data_date')}
-市场概�览: 上�涨{state.get('market_overview',{}).get('up')}只，
-          下�跌{state.get('market_overview',{}).get('down')}只，
-          成交�额{state.get('market_overview',{}).get('total_amount_billion')}亿。
+市场概览: 上涨{state.get('market_overview',{}).get('up')}只，
+ 下跌{state.get('market_overview',{}).get('down')}只，
+ 成交额{state.get('market_overview',{}).get('total_amount_billion')}亿。
 
-信号分布: � 强烈�买入{state.get('signal_summary',{}).get('强烈�买入',0)}，
-          关注{state.get('signal_summary',{}).get('关注',0)}，
-          中性{state.get('signal_summary',{}).get('中性',0)}，
-          �� 谨�慎{state.get('signal_summary',{}).get('�谨�慎',0)}，
-          � 强烈�卖出{state.get('signal_summary',{}).get('强烈�卖出',0)}，
-          失败{state.get('signal_summary',{}).get('失败',0)}。
+信号分布: 强烈买入{state.get('signal_summary',{}).get('强烈买入',0)}，
+ 关注{state.get('signal_summary',{}).get('关注',0)}，
+ 中性{state.get('signal_summary',{}).get('中性',0)}，
+ 谨慎{state.get('signal_summary',{}).get('谨慎',0)}，
+ 强烈卖出{state.get('signal_summary',{}).get('强烈卖出',0)}，
+ 失败{state.get('signal_summary',{}).get('失败',0)}。
 
-030 �� 健康度: {state.get('health_score')}/10
+030 健康度: {state.get('health_score')}/10
 健康度解读: {state.get('health_comment')}
 今日热点新闻:
 {state.get('news_summary')}
@@ -590,7 +561,7 @@ def node_make_report(state: Dict[str, Any]) -> Dict[str, Any]:
 中联重科双策略:
 {json.dumps(state.get('zhonglian', {}), ensure_ascii=False, indent=2)}
 
-操�盘手选股:
+操盘手选股:
 {json.dumps(state.get('trader_picks', []), ensure_ascii=False, indent=2)}
 """
     state["report_text"] = report
@@ -600,9 +571,9 @@ def node_make_report(state: Dict[str, Any]) -> Dict[str, Any]:
 def node_check_done(state: Dict[str, Any]) -> Dict[str, Any]:
     """
     DoD 定义为：
-    1. 所有关注股的信号已经生成（signals � 长度等于 WATCHLIST � 长度，�忽略错误项）。
-    2. � 已生成最终报告（report_text 非空）。
-    3. 如若出现致命风险，则强制标记为 done（不再继续�循环）。
+    1. 所有关注股的信号已经生成（signals 长度等于 WATCHLIST 长度，忽略错误项）。
+    2. 已生成最终报告（report_text 非空）。
+    3. 如若出现致命风险，则强制标记为 done（不再继续循环）。
     """
     state = state.copy()
     expected = len(WATCHLIST)

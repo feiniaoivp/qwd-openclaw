@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-服务�层：提供统计的数据获取、技术指标计算、信号生成等纯�函数。
-所有�函数仅返回数据，不做打印或文件写入，便于被上�层 Agent �� 调用。
+服务层：提供统计的数据获取、技术指标计算、信号生成等纯函数。
+所有函数仅返回数据，不做打印或文件写入，便于被上层 Agent 调用。
 """
 
 import os, sys, json, time, logging, urllib.request, re, socket
@@ -9,6 +9,21 @@ from datetime import datetime, date
 import pandas as pd
 import akshare as ak
 import pandas_ta as ta
+
+# 编码污染护栏 (2026-09-11): 信号标签在出口处统一清洗, 防止 U+FFFD 污染
+# 向上游传播到 prompt / 报告 / 规则匹配。见 analysis/encoding_guard.py。
+try:
+    from encoding_guard import sanitize as _sanitize, validate_level as _validate_level
+except ImportError:  # 直接以脚本方式运行时的兜底
+    import importlib.util as _ilu, os as _os
+    _spec = _ilu.spec_from_file_location(
+        "encoding_guard",
+        _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "encoding_guard.py"),
+    )
+    _mod = _ilu.module_from_spec(_spec)  # type: ignore[arg-type]
+    _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
+    _sanitize = _mod.sanitize
+    _validate_level = _mod.validate_level
 
 # 防御性兜底：外部数据接口有时会间歇性 TLS/IP 挂起，绕过硬编码的 per-call timeout
 # 并在 poll 上无限阻塞（实测 quotes.sina.cn 多次触发，最终导致上层 cron SIGKILL）。
@@ -23,21 +38,21 @@ CAPITAL = 100_000
 COMMISSION = 0.0003
 SLIPPAGE = 0.001
 
-# �监控股票列表（与之前脚本保持一致）
+# 监控股票列表（与之前脚本保持一致）
 WATCHLIST = [
-    ("600030","中信证�券"),("601066","中信建投"),("600036","�招商银行"),
+    ("600030","中信证券"),("601066","中信建投"),("600036","招商银行"),
     ("601995","中金公司"),("000987","越秀资本"),
-    ("600584","长电科技"),("688981","中�芯国际"),("002156","通富微电"),
+    ("600584","长电科技"),("688981","中芯国际"),("002156","通富微电"),
     ("002413","雷科防务"),
-    ("300014","亿�纬�锂能"),("002466","天�齐�锂业"),("601865","福莱特"),
-    ("300285","国�瓷材料"),("603308","应流股份"),("300124","�汇川技术"),
-    ("601100","�恒立�液压"),("002318","久立特材"),("300719","安达维尔"),
+    ("300014","亿纬锂能"),("002466","天齐锂业"),("601865","福莱特"),
+    ("300285","国瓷材料"),("603308","应流股份"),("300124","汇川技术"),
+    ("601100","恒立液压"),("002318","久立特材"),("300719","安达维尔"),
     ("002335","科华数据"),
-    ("600660","福�耀�玻�璃"),("600570","�恒生电子"),("605566","福莱�蒽特"),
+    ("600660","福耀玻璃"),("600570","恒生电子"),("605566","福莱蒽特"),
     ("000157","中联重科"),("601061","中信金属"),
     ("600160","巨化股份"),
-    ("600346","�恒力石化"),("000708","中信特�钢"),("300748","金力永�磁"),
-    ("002180","�奔图科技"),("300847","中船汉光"),
+    ("600346","恒力石化"),("000708","中信特钢"),("300748","金力永磁"),
+    ("002180","奔图科技"),("300847","中船汉光"),
 ]
 
 # -------------------- 交易日判定 --------------------
@@ -59,7 +74,7 @@ def is_trading_day(check_date=None) -> bool:
         pass
     return True
 
-# -------------------- 新�浪 hq 实时行情 --------------------
+# -------------------- 新浪 hq 实时行情 --------------------
 def fetch_hq_dict(codes: list[str]) -> dict:
     out = {}
     for i in range(0, len(codes), 60):
@@ -74,7 +89,7 @@ def fetch_hq_dict(codes: list[str]) -> dict:
             vals = line.split('"')[1].split(',')
             if len(vals) < 10:
                 continue
-            sym = key[2:]   # � 去�掉 sh/sz 前�缀
+            sym = key[2:]   # 去掉 sh/sz 前缀
             def f(x):
                 try: return float(x)
                 except: return 0.0
@@ -119,7 +134,7 @@ def get_spot_scan() -> tuple[list[dict], str]:
         })
     return results, data_date
 
-# -------------------- � 历史日线（降级路径） --------------------
+# -------------------- 历史日线（降级路径） --------------------
 def _fetch_pytdx_daily(symbol: str):
     try:
         from pytdx.hq import TdxHq_API
@@ -213,7 +228,7 @@ def get_daily_hist(symbol: str, name: str, start_date: str = "20250101",
 
     return None
 
-# -------------------- � 技术指标计算（MACD、EMA、RSI 等） --------------------
+# -------------------- 技术指标计算（MACD、EMA、RSI 等） --------------------
 def calc_full_signal(df: pd.DataFrame) -> dict:
     close = df["close"]
     macd_df = ta.macd(close, fast=12, slow=26, signal=9)
@@ -248,32 +263,33 @@ def calc_full_signal(df: pd.DataFrame) -> dict:
     score = 0
     reasons, risks = [], []
     if macd_cross_up and rsi < 55:
-        score += 2; reasons.append(f"MACD金�叉+RSI{rsi:.0f}<55")
+        score += 2; reasons.append(f"MACD金叉+RSI{rsi:.0f}<55")
     elif macd_bull:
         score += 1; reasons.append("MACD多头")
     if ema_bull:
         score += 1; reasons.append("EMA多头排列")
     if rsi < 30:
-        score += 1; reasons.append(f"RSI超�卖({rsi:.0f})")
+        score += 1; reasons.append(f"RSI超卖({rsi:.0f})")
     elif rsi > 70:
-        score -= 1; risks.append(f"RSI超�买({rsi:.0f})")
+        score -= 1; risks.append(f"RSI超买({rsi:.0f})")
     if vol_ratio > 0.6 and close_now > close_prev:
-        score += 1; reasons.append("放量上�涨")
+        score += 1; reasons.append("放量上涨")
     if macd_cross_down:
-        score -= 2; risks.append("MACD死�叉")
+        score -= 2; risks.append("MACD死叉")
     if not ema_bull:
         score -= 1; risks.append("EMA空头排列")
 
     if score >= 3:
-        level = "���🟢 � 强烈�买入"
+        level = "🟢 强烈买入"
     elif score >= 1:
-        level = "���🟡 关注"
+        level = "🟡 关注"
     elif score <= -2:
-        level = "���🔴 � 强烈�卖出"
+        level = "🔴 强烈卖出"
     elif score <= -1:
-        level = "���🟠 �� 谨�慎"
+        level = "🟠 谨慎"
     else:
-        level = "��⚪ 中性"
+        level = "⚪ 中性"
+    level = _validate_level(level)   # 出口校验: 检出污染回退为合法标签
 
     return {
         "price": close_now,
@@ -293,8 +309,8 @@ def calc_full_signal(df: pd.DataFrame) -> dict:
         "signal": {
             "level": level,
             "score": score,
-            "reasons": "; ".join(reasons) if reasons else "无",
-            "risks": "; ".join(risks) if risks else "无",
+            "reasons": _sanitize("; ".join(reasons) if reasons else "无"),
+            "risks": _sanitize("; ".join(risks) if risks else "无"),
         },
         "data_date": str(cur["date"].date()) if hasattr(cur["date"],"date") else str(cur["date"]),
     }
@@ -305,23 +321,24 @@ def calc_spot_signal(spot: dict) -> dict:
     score = 0
     reasons, risks = [], []
     if chg > 3:
-        score += 2; reasons.append(f"�涨幅{chg:.1f}%")
+        score += 2; reasons.append(f"涨幅{chg:.1f}%")
     elif chg > 1:
-        score += 1; reasons.append(f"微�涨{chg:.1f}%")
+        score += 1; reasons.append(f"微涨{chg:.1f}%")
     elif chg < -5:
-        score -= 2; risks.append(f"�跌幅{chg:.1f}%")
+        score -= 2; risks.append(f"跌幅{chg:.1f}%")
     elif chg < -2:
-        score -= 1; risks.append(f"下�跌{chg:.1f}%")
+        score -= 1; risks.append(f"下跌{chg:.1f}%")
     if score >= 2:
-        level = "���🟢 � 强烈�买入"
+        level = "🟢 强烈买入"
     elif score >= 1:
-        level = "���🟡 关注"
+        level = "🟡 关注"
     elif score == 0:
-        level = "��⚪ 中性"
+        level = "⚪ 中性"
     elif score == -1:
-        level = "���🟠 �� 谨�慎"
+        level = "🟠 谨慎"
     else:
-        level = "���🔴 � 强烈�卖出"
+        level = "🔴 强烈卖出"
+    level = _validate_level(level)   # 出口校验: 检出污染回退为合法标签
     return {
         "price": spot["price"],
         "change_pct": spot["change_pct"],
@@ -330,67 +347,32 @@ def calc_spot_signal(spot: dict) -> dict:
         "signal": {
             "level": level,
             "score": score,
-            "reasons": "; ".join(reasons) if reasons else "无",
-            "risks": "; ".join(risks) if risks else "无",
+            "reasons": _sanitize("; ".join(reasons) if reasons else "无"),
+            "risks": _sanitize("; ".join(risks) if risks else "无"),
         }
     }
 
 # -------------------- 中联重科双策略 --------------------
+# 2026-09-11: 实现已抽至共享模块 analysis/strategies.py, 消除三处重复实现导致的漂移风险。
+# 保留本函数作为 thin wrapper, 维持向后兼容 (调用方 / 外部脚本无需改动)。
+try:
+    from strategies import analyze_zhonglian as _analyze_zhonglian_shared
+except ImportError:  # 以脚本方式直接运行时的兜底
+    import importlib.util as _ilu, os as _os
+    _spec = _ilu.spec_from_file_location(
+        "strategies",
+        _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "strategies.py"),
+    )
+    _mod = _ilu.module_from_spec(_spec)  # type: ignore[arg-type]
+    _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
+    _analyze_zhonglian_shared = _mod.analyze_zhonglian
+
+
 def analyze_zhonglian(df: pd.DataFrame) -> dict:
-    latest = df.iloc[-1]
-    prev = df.iloc[-2]
-    close = df["close"]
-    # MACD
-    ema12 = close.ewm(span=12, adjust=False).mean()
-    ema26 = close.ewm(span=26, adjust=False).mean()
-    dif = ema12 - ema26
-    dea = dif.ewm(span=9, adjust=False).mean()
-    # RSI
-    delta = close.diff()
-    gain = delta.where(delta>0,0).rolling(14).mean()
-    loss = (-delta.where(delta<0,0)).rolling(14).mean()
-    rs = gain / loss
-    rsi = 100 - (100/(1+rs))
+    """中联重科双策略分析 (thin wrapper -> strategies.analyze_zhonglian)。"""
+    return _analyze_zhonglian_shared(df)
 
-    macd_bull = (dif.iloc[-1] > dea.iloc[-1]) and (dif.iloc[-2] <= dea.iloc[-2])
-    macd_bear = (dif.iloc[-1] < dea.iloc[-1]) and (dif.iloc[-2] >= dea.iloc[-2])
-    rsi_low = rsi.iloc[-1] < 50
-    ema12 = close.ewm(span=12, adjust=False).mean()
-    ema26 = close.ewm(span=26, adjust=False).mean()
-    rsi_now = float(rsi.iloc[-1])
-
-    sig1_buy = macd_bull and rsi_low
-    sig1_sell = macd_bear
-    sig2_buy = macd_bull and (ema12.iloc[-1] > ema26.iloc[-1]) and (rsi_now < 60)
-    sig2_sell = macd_bear or (latest["close"] < ema26.iloc[-1])
-
-    dif_dir = "���📗金�叉" if dif.iloc[-1] > dea.iloc[-1] else "���📕死�叉"
-    ema_dir = "���📗EMA12>26" if ema12.iloc[-1] > ema26.iloc[-1] else "���📕EMA12<26"
-
-    return {
-        "date": str(latest["date"].date()),
-        "price": round(float(latest["close"]),2),
-        "change_pct": round((float(latest["close"])/float(prev["close"])-1)*100,2),
-        "volume": int(latest["volume"]),
-        "indicators": {
-            "MACD_DIF": round(float(dif.iloc[-1]),4),
-            "MACD_DEA": round(float(dea.iloc[-1]),4),
-            "MACD_state": dif_dir,
-            "EMA12": round(float(ema12.iloc[-1]),2),
-            "EMA26": round(float(ema26.iloc[-1]),2),
-            "EMA_state": ema_dir,
-            "RSI14": round(rsi_now,1),
-        },
-        "signals": {
-            "strategy1": {"name":"MACD+RSI<50","buy":bool(sig1_buy),"sell":bool(sig1_sell),
-                          "rsi_filter":rsi_now<50,
-                          "desc":f"MACD{'金�叉' if macd_bull else '状态'} + RSI{round(rsi_now,1)}"},
-            "strategy2": {"name":"�综合最�优(EMA+MACD+RSI)","buy":bool(sig2_buy),"sell":bool(sig2_sell),
-                          "desc":f"MACD金�叉:{macd_bull} EMA12>26:{ema12.iloc[-1] > ema26.iloc[-1]} RSI<60:{rsi_now < 60}"}
-        }
-    }
-
-# -------------------- � 持�仓/交易�执行（中联重科专用） --------------------
+# -------------------- 持仓/交易执行（中联重科专用） --------------------
 def load_state():
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE) as f:
@@ -399,7 +381,7 @@ def load_state():
         "last_signal_date": None,
         "strategy1": {"name":"MACD+RSI<50","position":False,"entry_price":0,"entry_date":None,
                       "capital":CAPITAL,"shares":0},
-        "strategy2": {"name":"�综合最�优(EMA+MACD+RSI)","position":False,"entry_price":0,"entry_date":None,
+        "strategy2": {"name":"综合最优(EMA+MACD+RSI)","position":False,"entry_price":0,"entry_date":None,
                       "capital":CAPITAL,"shares":0},
     }
 
@@ -425,7 +407,7 @@ def execute_zhonglian_trade(state, signals):
             s1["entry_price"] = price
             s1["entry_date"] = dt
             actions.append(("strategy1","BUY"))
-            msgs.append(f"���🟢 策略1 �买入 � ¥{price} x {shares}股")
+            msgs.append(f"🟢 策略1 买入 ¥{price} x {shares}股")
     elif sig1["sell"] and s1["position"]:
         sell_val = s1["shares"]*price*(1-SLIPPAGE)
         fee = sell_val*COMMISSION
@@ -434,9 +416,9 @@ def execute_zhonglian_trade(state, signals):
         s1["capital"] += net
         s1["shares"] = 0
         s1["position"] = False
-        emoji = "���🟢" if pnl>0 else "���🔴"
+        emoji = "🟢" if pnl>0 else "🔴"
         actions.append(("strategy1","SELL"))
-        msgs.append(f"{emoji} 策略1 �卖出 � ¥{price} �盈�亏�¥{pnl}")
+        msgs.append(f"{emoji} 策略1 卖出 ¥{price} 盈亏 ¥{pnl}")
 
     s2 = state["strategy2"]; sig2 = signals["signals"]["strategy2"]
     if sig2["buy"] and not s2["position"]:
@@ -452,7 +434,7 @@ def execute_zhonglian_trade(state, signals):
             s2["entry_price"] = price
             s2["entry_date"] = dt
             actions.append(("strategy2","BUY"))
-            msgs.append(f"���🟢 策略2 �买入 � ¥{price} x {shares}股")
+            msgs.append(f"🟢 策略2 买入 ¥{price} x {shares}股")
     elif sig2["sell"] and s2["position"]:
         sell_val = s2["shares"]*price*(1-SLIPPAGE)
         fee = sell_val*COMMISSION
@@ -461,16 +443,16 @@ def execute_zhonglian_trade(state, signals):
         s2["capital"] += net
         s2["shares"] = 0
         s2["position"] = False
-        emoji = "���🟢" if pnl>0 else "���🔴"
+        emoji = "🟢" if pnl>0 else "🔴"
         actions.append(("strategy2","SELL"))
-        msgs.append(f"{emoji} 策略2 �卖出 � ¥{price} �盈�亏�¥{pnl}")
+        msgs.append(f"{emoji} 策略2 卖出 ¥{price} 盈亏 ¥{pnl}")
 
     total_val = (s1["capital"] + (s1["shares"]*price if s1["position"] else 0) +
                  s2["capital"] + (s2["shares"]*price if s2["position"] else 0))
     total_ret = round((total_val - CAPITAL*2)/(CAPITAL*2)*100,2)
     return actions, msgs, state, round(total_val,2), total_ret
 
-# -------------------- � 常用�盘面概�览 --------------------
+# -------------------- 常用盘面概览 --------------------
 def market_overview(spot_data: list[dict]) -> dict:
     up = sum(1 for s in spot_data if "error" not in s and s["change_pct"]>0)
     down = sum(1 for s in spot_data if "error" not in s and s["change_pct"]<0)

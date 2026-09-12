@@ -7,11 +7,22 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 import pandas as pd
 import akshare as ak
-from datetime import datetime
+from datetime import datetime, time as dtime
 import logging
 logging.basicConfig(level=logging.CRITICAL)
 
 from close_scan_v2 import calc_full_signal_whitelist as calc_full_signal, WATCHLIST
+
+# Cron 时间窗口守卫：仅工作日 15:00-16:00 允许执行（配置 cron 为 15:35）
+def _check_eod_window() -> bool:
+    now = datetime.now()
+    if not (now.weekday() < 5 and dtime(15, 0) <= now.time() <= dtime(16, 0)):
+        print(f"⏭️ 非 EOD 执行窗口 ({now.strftime('%H:%M')})，退出。配置窗口：工作日 15:00-16:00", file=sys.stderr)
+        return False
+    return True
+
+if not _check_eod_window():
+    sys.exit(0)
 
 OUT = {}
 

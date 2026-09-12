@@ -40,10 +40,10 @@ def get_fundamentals(symbol: str) -> Dict[str, float]:
         # Get latest row
         latest = df.iloc[-1]
         return {
-            "pe": float(latest.get("市�盈率", 0)) if latest.get("市�盈率") else 0,
-            "pb": float(latest.get("市�净率", 0)) if latest.get("市�净率") else 0,
-            "roe": float(latest.get("�净资产收益率", 0)) if latest.get("�净资产收益率") else 0,
-            "profit": float(latest.get("�销售�净利率", 0)) if latest.get("�销售�净利率") else 0,
+            "pe": float(latest.get("市盈率", 0)) if latest.get("市盈率") else 0,
+            "pb": float(latest.get("市净率", 0)) if latest.get("市净率") else 0,
+            "roe": float(latest.get("净资产收益率", 0)) if latest.get("净资产收益率") else 0,
+            "profit": float(latest.get("销售净利率", 0)) if latest.get("销售净利率") else 0,
         }
     # 2. stock_a_indicator_lg may not exist in some versions; try but ignore errors
     try:
@@ -51,9 +51,9 @@ def get_fundamentals(symbol: str) -> Dict[str, float]:
         if df is not None and not df.empty:
             latest = df.iloc[-1]
             return {
-                "pe": float(latest.get("市�盈率", 0)) if latest.get("市�盈率") else 0,
-                "pb": float(latest.get("市�净率", 0)) if latest.get("市�净率") else 0,
-                "roe": float(latest.get("�净资产收益率", 0)) if latest.get("�净资产收益率") else 0,
+                "pe": float(latest.get("市盈率", 0)) if latest.get("市盈率") else 0,
+                "pb": float(latest.get("市净率", 0)) if latest.get("市净率") else 0,
+                "roe": float(latest.get("净资产收益率", 0)) if latest.get("净资产收益率") else 0,
             }
     except AttributeError:
         pass
@@ -68,12 +68,12 @@ def get_fund_flow(symbol: str) -> Dict[str, float]:
     if df is not None and not df.empty:
         latest = df.iloc[-1]
         return {
-            "main_net_in": float(latest.get("主力�净流入-�净�额", 0)) if latest.get("主力�净流入-�净�额") else 0,
-            "main_net_in_rate": float(latest.get("主力�净流入-�净占比", 0)) if latest.get("主力�净流入-�净占比") else 0,
-            "super_net_in": float(latest.get("超大单�净流入-�净�额", 0)) if latest.get("超大单�净流入-�净�额") else 0,
-            "big_net_in": float(latest.get("大单�净流入-�净�额", 0)) if latest.get("大单�净流入-�净�额") else 0,
-            "medium_net_in": float(latest.get("中单�净流入-�净�额", 0)) if latest.get("中单�净流入-�净�额") else 0,
-            "small_net_in": float(latest.get("小单�净流入-�净�额", 0)) if latest.get("小单�净流入-�净�额") else 0,
+            "main_net_in": float(latest.get("主力净流入-净额", 0)) if latest.get("主力净流入-净额") else 0,
+            "main_net_in_rate": float(latest.get("主力净流入-净占比", 0)) if latest.get("主力净流入-净占比") else 0,
+            "super_net_in": float(latest.get("超大单净流入-净额", 0)) if latest.get("超大单净流入-净额") else 0,
+            "big_net_in": float(latest.get("大单净流入-净额", 0)) if latest.get("大单净流入-净额") else 0,
+            "medium_net_in": float(latest.get("中单净流入-净额", 0)) if latest.get("中单净流入-净额") else 0,
+            "small_net_in": float(latest.get("小单净流入-净额", 0)) if latest.get("小单净流入-净额") else 0,
         }
     return {}
 
@@ -152,7 +152,7 @@ def score_fund_flow(symbol: str, name: str) -> float:
     # Convert to 0-10 scale
     # Simple: if main_net_in > 0 => bullish, else bearish
     if main_net_in > 0:
-        score = 5 + min(5, main_net_in / 20000000)  # � 每 2000万 加 1 分，上限 10
+        score = 5 + min(5, main_net_in / 20000000)  # 每 2000万 加 1 分，上限 10
     else:
         score = 5 - min(5, abs(main_net_in) / 20000000)
     return max(0, min(10, score))
@@ -222,7 +222,7 @@ def get_trader_picks(watchlist: List[tuple]) -> List[Dict[str, Any]]:
         "fund_flow": float,
         "fundamentals": float,
         "technical": float,
-        "stage": str,  # e.g., "吸�筹", "�洗�盘末期", "拉升初期"
+        "stage": str,  # e.g., "吸筹", "洗盘末期", "拉升初期"
         "catalyst": str,
         "advice": str  # BUY/SELL/HOLD with reason
     }
@@ -246,9 +246,9 @@ def get_trader_picks(watchlist: List[tuple]) -> List[Dict[str, Any]]:
         if technical > 6 and fund_flow > 6:
             stage = "拉升初期"
         elif technical < 4 and fund_flow < 4:
-            stage = "�洗�盘末期"
+            stage = "洗盘末期"
         elif chip > 7 and vol_price > 6:
-            stage = "吸�筹"
+            stage = "吸筹"
         else:
             stage = "观察"
         # Catalyst placeholder
@@ -256,13 +256,13 @@ def get_trader_picks(watchlist: List[tuple]) -> List[Dict[str, Any]]:
         # Advice based on total score
         if total >= 35:
             action = "BUY"
-            reason = "�综合评分较高，具备启动条件"
+            reason = "综合评分较高，具备启动条件"
         elif total <= 20:
             action = "SELL"
-            reason = "�综合评分�偏低，注意风险"
+            reason = "综合评分偏低，注意风险"
         else:
             action = "HOLD"
-            reason = "�综合评分中性，建议观望"
+            reason = "综合评分中性，建议观望"
         results.append({
             "symbol": symbol,
             "name": name,

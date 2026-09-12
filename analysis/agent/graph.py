@@ -21,7 +21,7 @@ from analysis.agent.nodes import (
 def build_graph() -> StateGraph:
     workflow = StateGraph(AgentState)
 
-    # � 添加节点
+    # 添加节点
     workflow.add_node("init", node_init)
     workflow.add_node("check_trade", node_check_trading_day)
     workflow.add_node("fetch_spot", node_fetch_spot)
@@ -65,10 +65,10 @@ def build_graph() -> StateGraph:
 
     return workflow.compile()
 
-# � 若想直接以脚本形式运行
+# 若想直接以脚本形式运行
 if __name__ == "__main__":
     graph = build_graph()
-    init_state: AgentState = {}   # 空字典，节点内部会补全必�填字段
+    init_state: AgentState = {}   # 空字典，节点内部会补全必填字段
     final_state = graph.invoke(init_state)
-    # 只输出报告文本，实际推送由外�层脚本决定
+    # 只输出报告文本，实际推送由外层脚本决定
     print(final_state.get("report_text", "(无报告)"))
