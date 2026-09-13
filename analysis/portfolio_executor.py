@@ -102,6 +102,7 @@ class PortfolioExecutor:
         self.state_file = state_file or os.path.join(WORKSPACE, "data", "portfolio_sim_state.json")
 
         # 回测模式：使用独立的内存 state，绝不读写生产 state 文件
+        # （资金桶初始化在 _run_backtest_inner 中按标的逐个完成，此处只建空壳）
         self._is_backtest = execution_port.__class__.__name__ == "BacktestPort"
         if self._is_backtest:
             self.state = {"last_signal_date": None, "positions": {}}
@@ -417,8 +418,10 @@ class PortfolioExecutor:
                 if not RiskGuard.check_dedup(signal, pos, day_str):
                     should_exec = False
                 
-                # 仅新交易日执行
-                if should_exec and self.state.get("last_signal_date") is not None and day_str != self.state.get("last_signal_date"):
+                # 仅新交易日执行（首个交易日也允许执行）
+                last_sig_date = self.state.get("last_signal_date")
+                is_new_day = last_sig_date is None or day_str != last_sig_date
+                if should_exec and is_new_day:
                     # 哑铃策略硬约束检查
                     ok, reason = _check_barbell_constraints(pos, signal, cached_position_plan, self.state)
                     if not ok:
@@ -498,10 +501,20 @@ class PortfolioExecutor:
             save_state(self.state)
             
             # 进度日志（每 100 天或最后一天）
-            total_value = sum(r["value"] for r in results if "value" in r)
+            # 权益口径：直接由权威持仓状态计算（cash + shares×price），
+            # 不依赖 results（信号缺失的标的不会出现在 results 里，
+            # 若用它求和会把现金漏计成 0，导致日权益序列失真）。
+            total_value = 0.0
+            for _sym, _pos in self.state["positions"].items():
+                _df = price_data.get(_sym)
+                if _df is not None and day in _df.index:
+                    _px = float(_df.loc[day, "close"])
+                else:
+                    _px = float(_pos.get("entry_price", 0) or 0)
+                total_value += calc_position_value(_pos, _px)
             total_initial = INITIAL_CAPITAL * len(self.stocks)
             ret = (total_value - total_initial) / total_initial * 100
-            pos_cnt = sum(1 for r in results if r.get("position"))
+            pos_cnt = sum(1 for p in self.state["positions"].values() if p.get("position"))
             daily_equity.append({
                 "date": day_str,
                 "total_value": round(total_value, 2),
