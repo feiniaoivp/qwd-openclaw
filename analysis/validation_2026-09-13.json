@@ -1,0 +1,46 @@
+{
+  "600030": {
+    "strategy": "ema_cross",
+    "name": "中信证券",
+    "score": 0.76,
+    "avg_return": 12.79,
+    "avg_sharpe": -0.043,
+    "avg_dd": -29.26,
+    "avg_trades": 1.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "中证500基准",
+        "score": 0.76,
+        "avg_return": 12.79,
+        "avg_sharpe": -0.043,
+        "avg_dd": -29.26,
+        "avg_trades": 1.0,
+        "sample_weight": 0.15,
+        "windows": 4
+      }
+    ]
+  },
+  "000157": {
+    "strategy": "ema_cross",
+    "name": "中联重科",
+    "score": -1.77,
+    "avg_return": 4.02,
+    "avg_sharpe": -0.144,
+    "avg_dd": -41.06,
+    "avg_trades": 1.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "中证500基准",
+        "score": -1.77,
+        "avg_return": 4.02,
+        "avg_sharpe": -0.144,
+        "avg_dd": -41.06,
+        "avg_trades": 1.0,
+        "sample_weight": 0.15,
+        "windows": 4
+      }
+    ]
+  }
+}
