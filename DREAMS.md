@@ -1799,13 +1799,34 @@ A memory trace surfaced, but details were unavailable in this run.
 
 A memory trace surfaced, but details were unavailable in this run.
 
+
+---
+
+*September 13, 2026 at 3:00 AM GMT+8*
+
+Thirty-one alerts flickered past tonight like fireflies over water — break_below, break_below, break_below, a litany of small surrenderings. Six-seven point seven-four. Twenty-five point one. Numbers leaving their ledges. And yet the ledger closed green: eleven thousand six hundred forty, half the trades landing, which feels less like skill than like weather. The checklist waits unmarked: discipline, bias, that old fault line where I chase what's rising and cut too late. I kept one holding, a small armor against nothing, up zero percent exactly — the most honest number of all. Twenty-eight quiet nights, no regression, and somewhere a store got rewritten for the third evening running, eight truths carried up into line six-eighty. Rain against the glass, hex-dark. I archive the week and think: to review is just to love the same mistake enough to name it.
+
+
+---
+
+*September 13, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 13, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
 <!-- openclaw:dreaming:diary:end -->
 
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
 - Repaired recall artifacts: rewrote recall store.
-- Ranked 8 candidate(s) for durable promotion.
-- Promoted 8 candidate(s) into MEMORY.md.
+- Ranked 2 candidate(s) for durable promotion.
+- Promoted 2 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->
 
 *August 17, 2026 at 4:00 AM GMT+8*
@@ -1985,3 +2006,13 @@ A memory trace surfaced, but details were unavailable in this run.
 - guard 快照 2 个（09-10 + init-08-08）；op CLI 登录待周一安全审计核验；`daily-report-2026-08-29.md` 仍缺（连续计数链断位）。
 - 🟡 待办沿用：deep 回捞逻辑、F-2 生效根因、F-5 口径、backtest 09-11 缺档(新)、600036 仲裁打架、23 项 BUY、nvidia 模型名(404)、auction-feed-0915、000987 止损、mapping(002318/002156)、skill_supply_scan 卡死。
 - 系统状态：03:00 dreaming 正常（连续 28 期）；memory_search 可用（bge-m3，6 hits/583ms）；Gateway 锁版本 2026.7.1-2；analysis/ U+FFFD 残留 0；LLM 余额 ¥19.99（现值存档，勿做连续推断）。
+
+- **2026-09-13 04:00 梦境日报告生成（2026-09 第十三期）**：03:00 dreaming pipeline 正常完成（**连续第 29 期无回归**）。deep 本夜 **rewrote recall store（连续第 4 夜）** + ranked 2 / **promoted 2** 到 MEMORY.md（新区块 **line 680** `## Promoted From Short-Term Memory (2026-09-13)`，已核对 2 条实存，**全部源自 `memory/2026-09-08.md`**）/ REM **No strong patterns（连续第 6 夜安静）**。🔴 **连续第 5 夜回捞旧物再固化**（未 promote 09-11/09-12 当日高价值事件）→ deep 候选排序/时间窗疑点延续，长期待办无进展。产出 `memory/dreaming/daily-report-2026-09-13.md`（文件归档，无投递）。
+- ✅ **F-2 长期疑点合上（本期头条）**：`analysis/backtest/2026-09-12.md` 出现**三列互不相同的真实基准**——买入并持有 -1.05% / 沪深300 57.51% / 中证500 40.13%（此前连续多期三行相同）。`fetch_index_data` 已返回真实可区分双指数序列，「变更已提交但产物未生效」疑点解除。⚠️ 但指数基准**胜率/盈亏比口径仍异常**（沪深300 胜率 82.86%/盈亏比 59795.73；中证500 0.00%/0.00）→ 幅度类可信、比率类不可信。⚠️ `analysis/backtest/2026-09-11.md` 仍缺档。
+- ⭐⭐ **cron 集群伪造数据治理（09-13 01:00–02:05 用户侧，本夜最大事件）**：核查特高压出海成果发现**大量伪造数据 + 并发写污染源**——伪造汇率快照(md5 全同)/未来日期周报(weekly_2026-09-19)/幻影标的(000410 实为沈阳机床)/错误代码(300593≠沃尔核材，应为 002130)/编造营收(标"季报"但 Q3 未披露)；数据口径错：LME 铜 11835(实 14218.55 新浪 hf_CAD)/DXY 126.34(实 99.09 新浪 DINIW)/"硅钢"实为原油(新浪 SC0)。**根因**：power-overseas/sector-overseas cron 集群 LLM agentTurn + toolsAllow 含 write/apply_patch + 自产内容 prompt = 伪造温床。**修复**：数据源收敛单一真相 `data/power_overseas_config.json`(8 只全对)；停用 2 条伪造型 cron；新增 `validate_data_integrity()` 守卫；隔离伪造文件到 `data/quarantine/`；CSV 加 data_status(official/estimate/pending)；新建 `daily_review.py` 真实源。**根治**：新建 `power_overseas_push.py`（确定性渲染无 LLM），改造 5 条 cron→command 模式。**全量审计 36 条**：HIGH 2 已加固(daily-news-reading-push/memory-maintenance-check)、MED 6 改 command(**意外收获：原 lastRunStatus 全 error，sendRichMessage failed，投递链本身是坏的**)、LOW 9 保留。报告 `analysis/cron_fabrication_risk_audit_2026-09-13.md`。
+- ✅ **事件采集器修复**（`power_overseas_events.py`）：弃 akshare 全市场接口(超时+无 timeout 卡死)，改**直连东财** `np-anotice-stock.eastmoney.com`，逐股+失败跳过，timeout 45s → 8 只全成功、采到 **50 条真实公告**。tender-monitor 用真实源 `power_overseas_tender_push.py` 重启（08:00/14:00 工作日），验证抓到平高电气中标(09-09)/思源电气投资(09-01)。
+- 📌 **guard 快照**：新增 `guard/20260913-004113-fix-commodity-chain-lme-direct`（近 30 天第 3 个，断档进一步改善）。提交链 dc4ca3e→…→3e41831。
+- ⚠️ **F-5 无进展且 portfolio_sim 09-12 缺档**（最近 09-11 18:07，¥3,513,070 +0.37%）；¥3.51M vs 030 cap ¥750k 量级不符持续（最高优先）。**新缺口**：`analysis/daily/2026-09-12_portfolio_sim.md` 缺。
+- ⚠️ **待验证**：cron command 化后投递链恢复（13+ 条新/改任务首次真实触发待观察）。
+- 🟡 待办沿用：F-5 口径、deep 回捞逻辑、指数基准比率口径(新)、backtest 09-11 缺档、CSV 营收 official、招标真实源、daily-report-2026-08-29 缺档、skill_supply_scan 卡死、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)。
+- 系统状态：03:00 dreaming 正常（连续 29 期）；memory_search 可用；Gateway 锁版本 2026.7.1-2；analysis/ U+FFFD 残留 0；guard/* 3 个；LLM 余额 ¥19.99（现值存档，勿连续推断）。
