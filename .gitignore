@@ -30,3 +30,9 @@ openclaw*.db
 dist/
 build/
 *.egg-info/
+
+# ── 运行时缓存（DataRouter DiskCache，内容随行情变化，不该进版本库）──
+data_cache/
+*.cache
+*.cache.lock
+*.tmp.*

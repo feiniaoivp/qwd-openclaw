@@ -7,7 +7,7 @@
       而非单一窗口内"恰好获胜"的策略。
 
 方法:
-  1. 用 baostock 拉取 2020-01-01 起的长历史 (覆盖 2020成长牛/2021抱团/2022-23熊/2024-26)
+  1. 用 DataRouter 统一数据源拉取 2020-01-01 起的长历史 (覆盖 2020成长牛/2021抱团/2022-23熊/2024-26)
   2. 对每只股票跑 4 个窗口: W1全量 / W2近3年 / W3近1.5年 / W4近1年
   3. 每个策略在每个窗口计算: 收益排名 + 夏普 + 回撤 + 交易样本量
   4. 跨窗口稳定性评分 = 各窗口表现加权，样本量不足/单窗口侥幸的降权
@@ -15,6 +15,8 @@
 
 运行: python3 analysis/validate_strategies.py [--stocks 代码,代码] [--write-map]
        --write-map  将稳健最优策略写回 data/adaptive_strategy_map.json
+
+已统一使用 analysis.data_layer.router.DataRouter (Phase 1 完成)
 """
 
 import os
@@ -23,18 +25,12 @@ import json
 import datetime
 import numpy as np
 import pandas as pd
-import requests
 
 WORKSPACE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
+sys.path.insert(0, WORKSPACE)
 
-# Baostock 单例会话
-import sys
-import os
-WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
-if WORKSPACE not in sys.path:
-    sys.path.insert(0, WORKSPACE)
-from analysis.bs_session import ensure_login, logout as bs_logout, query_history_k_data_plus_retry
+# 导入统一数据路由器
+from analysis.data_layer.router import get_router
 
 # ── 复用主回测脚本的策略与模拟函数 ──
 from backtest_strategies import (
@@ -83,132 +79,6 @@ WINDOWS = [
     ("W4_近1年", 1, 0),
 ]
 
-# 对应 baostock 代码前缀
-def baostock_code(symbol):
-    return ("sh." if symbol.startswith("6") or symbol.startswith("9")
-            else "sz.") + symbol
-
-
-def fetch_long_akshare(symbol, name, start, end, max_retry=3):
-    """备用数据源：akshare 新浪接口获取前复权日线"""
-    for attempt in range(max_retry):
-        try:
-            import akshare as ak
-            df = ak.stock_zh_a_hist(symbol=symbol, period="daily", adjust="qfq",
-                                    start_date=start.replace("-", ""), end_date=end.replace("-", ""))
-            if df is None or df.empty:
-                raise ValueError("空数据")
-            df = df.rename(columns={
-                '日期': 'date', '开盘': 'open', '收盘': 'close',
-                '最高': 'high', '最低': 'low', '成交量': 'volume'
-            })
-            for col in ['open', 'close', 'high', 'low', 'volume']:
-                df[col] = pd.to_numeric(df[col], errors='coerce')
-            df['date'] = pd.to_datetime(df['date'])
-            df = df.sort_values('date').reset_index(drop=True)
-            df = df.dropna()
-            if len(df) >= 150:
-                print(f"    ✅ {name}({symbol}): akshare新浪 {len(df)}条日线")
-                return df
-        except Exception as e:
-            if attempt == max_retry - 1:
-                print(f"    ⚠️ {name} akshare拉取失败: {e}")
-    return None
-
-
-def fetch_long_sina_jsonp(symbol, name, start, end, max_retry=3):
-    """备用数据源：新浪 jsonp 历史日线（周末也稳定）"""
-    import requests
-    import re
-    # 代码格式转换
-    if symbol.startswith("6"):
-        sina_sym = f"sh{symbol}"
-    else:
-        sina_sym = f"sz{symbol}"
-    
-    # 新浪日K jsonp 接口：scale=240 为日线，datalen 足够大覆盖全历史
-    # 使用 money.finance.sina.com.cn 接口（quotes.sina.cn 已失效返回 Invalid service name）
-    # 注意：该接口返回纯 JSON 数组，非 JSONP 格式
-    url = f"https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol={sina_sym}&scale=240&ma=no&datalen=2500"
-    
-    for attempt in range(max_retry):
-        try:
-            headers = {"Referer": "https://finance.sina.com.cn/"}
-            resp = requests.get(url, headers=headers, timeout=10)
-            text = resp.text
-            # 直接解析 JSON 数组
-            data = json.loads(text)
-            if not data:
-                raise ValueError("空数据")
-            df = pd.DataFrame(data)
-            # 新浪字段: day, open, high, low, close, volume
-            df = df.rename(columns={"day": "date", "open": "open", "high": "high",
-                                    "low": "low", "close": "close", "volume": "volume"})
-            for col in ["open", "high", "low", "close", "volume"]:
-                df[col] = pd.to_numeric(df[col], errors="coerce")
-            df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date").reset_index(drop=True)
-            df = df.dropna()
-            # 截取日期范围
-            start_dt = pd.to_datetime(start)
-            end_dt = pd.to_datetime(end)
-            df = df[(df["date"] >= start_dt) & (df["date"] <= end_dt)]
-            if len(df) >= 150:
-                print(f"    ✅ {name}({symbol}): 新浪jsonp {len(df)}条日线")
-                return df
-        except Exception as e:
-            if attempt == max_retry - 1:
-                print(f"    ⚠️ {name} 新浪jsonp拉取失败: {e}")
-    return None
-
-
-def fetch_long(symbol, name, start, end, max_retry=3):
-    """拉取长历史日线(前复权)：新浪jsonp(主，稳定) -> akshare新浪(备用1) -> baostock(备用2，加行数保护)"""
-    # 尝试 1: 新浪 jsonp 接口（主源：周末也稳定、无死循环）
-    df = fetch_long_sina_jsonp(symbol, name, start, end, max_retry)
-    if df is not None:
-        return df
-    
-    # 尝试 2: akshare 新浪接口
-    df = fetch_long_akshare(symbol, name, start, end, max_retry)
-    if df is not None:
-        return df
-    
-    # 尝试 3: baostock（备用，加行数上限保护防死循环）
-    code = baostock_code(symbol)
-    for attempt in range(max_retry):
-        try:
-            rs = query_history_k_data_plus_retry(
-                code, "date,open,high,low,close,volume,amount",
-                start_date=start, end_date=end,
-                frequency="d", adjustflag="2",  # 2=前复权
-                max_retries=1, wait_seconds=1.0
-            )
-            if rs is None:
-                raise ValueError("查询失败")
-            rows = []
-            max_rows = 5000  # 6.5年约1600个交易日，5000为安全上限
-            while rs.next() and len(rows) < max_rows:
-                rows.append(rs.get_row_data())
-            if len(rows) >= max_rows:
-                print(f"    ⚠️ {name} baostock返回异常行数({len(rows)})，疑似死循环，已截断")
-            if len(rows) >= 150:
-                df = pd.DataFrame(rows, columns=[
-                    "date", "open", "high", "low", "close", "volume", "amount"])
-                for c in ["open", "high", "low", "close", "volume", "amount"]:
-                    df[c] = pd.to_numeric(df[c], errors="coerce")
-                df["date"] = pd.to_datetime(df["date"])
-                df = df.dropna(subset=["close"]).reset_index(drop=True)
-                print(f"    ✅ {name}({symbol}): baostock {len(df)}条日线")
-                return df
-        except Exception as e:
-            if attempt == max_retry - 1:
-                print(f"    ⚠️ {name} baostock拉取失败: {e}")
-    
-    print(f"    ❌ {name}({symbol}) 所有数据源均失败")
-    return None
-
-
 def slice_window(df, start_years_back, _):
     """按年份截取子窗口 (支持小数年，用天数近似)"""
     if start_years_back == 0:
@@ -217,11 +87,26 @@ def slice_window(df, start_years_back, _):
     start_date = end_date - pd.Timedelta(days=int(start_years_back * 365))
     return df[df["date"] >= start_date].copy()
 
-
 def pick_safe_strategy_names(df, sfunc):
     """对窗口内数据跑策略并安全地找到交易信号（复用策略函数）"""
     return sfunc(df)
 
+def fetch_long_history(symbol: str, name: str, start: str, end: str) -> pd.DataFrame:
+    """统一历史日K获取 - 走 DataRouter (内含降级链: 新浪日K -> pytdx -> baostock -> akshare)"""
+    router = get_router()
+    try:
+        df = router.get_daily(symbol, name, start_date=start.replace("-", ""))
+        if df is not None and len(df) >= 150:
+            # 截取日期范围
+            start_dt = pd.to_datetime(start)
+            end_dt = pd.to_datetime(end)
+            df = df[(df["date"] >= start_dt) & (df["date"] <= end_dt)]
+            if len(df) >= 150:
+                print(f"    ✅ {name}({symbol}): {len(df)} 条日线 [DataRouter]")
+                return df
+    except Exception as e:
+        print(f"    ⚠️ {name}({symbol}) DataRouter获取失败: {e}")
+    return None
 
 def main():
     write_map = "--write-map" in sys.argv
@@ -233,10 +118,9 @@ def main():
 
     today = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    # 确保 baostock 登录（单例）
-    if not ensure_login():
-        print("❌ baostock 登录失败")
-        sys.exit(1)
+    # 预加载指数基准（用于回测基准对比）
+    router = get_router()
+    router.preload_index_benchmarks(WIN_START)
 
     # 股票清单 (默认全量30只)
     from backtest_strategies import STOCKS
@@ -249,7 +133,7 @@ def main():
     results = {}
     for sidx, (symbol, name) in enumerate(stocks):
         print(f"\n[{sidx+1}/{len(stocks)}] {name}({symbol}) — 拉取长历史...")
-        df = fetch_long(symbol, name, WIN_START, end)
+        df = fetch_long_history(symbol, name, WIN_START, end)
         if df is None or len(df) < 150:
             print(f"  ❌ 数据不足，跳过")
             results[symbol] = {"error": "数据不足"}
@@ -270,8 +154,6 @@ def main():
                     wmetrics[sname] = {"error": str(e)}
             stock_out["windows"][wname] = wmetrics
         results[symbol] = stock_out
-
-    bs_logout()
 
     # ── 跨窗口稳定性评分 ──
     print("\n" + "=" * 70)
@@ -297,7 +179,8 @@ def main():
                 pts["dd"].append(m.get("max_drawdown_pct", 0))
                 pts["trades"].append(m.get("trades", 0))
                 pts["cnt"] += 1
-            strat_points[sname] = pts
+
+        strat_points[sname] = pts
 
         # 计算每个策略的稳定性得分
         # 规则:
@@ -475,9 +358,23 @@ def main():
             else:
                 skipped.append((symbol, info.get('name', symbol), old_s, val_s, tune_s, val_score, val_sharpe, val_trades, val_reason))
         
-        with open(mapfile, "w", encoding="utf-8") as f:
-            json.dump(cur, f, ensure_ascii=False, indent=2)
-        print(f"\n✅ 已写回 {mapfile} (变更 {changes} 处)")
+        # 使用 Strategy Registry 版本化写入
+        try:
+            from analysis.strategy_registry import create_version
+            metadata = {
+                "validation_date": datetime.datetime.now().strftime("%Y-%m-%d"),
+                "validation_method": "cross_window_4_windows",
+                "changes": changes,
+                "arbitrated_count": len(arbitrated),
+                "skipped_count": len(skipped),
+            }
+            create_version(cur, source="validate_strategies_arbitrate", metadata=metadata)
+            print(f"\n✅ 已写回 {mapfile} (版本化, 变更 {changes} 处)")
+        except Exception as e:
+            # 回退：直接写文件
+            with open(mapfile, "w", encoding="utf-8") as f:
+                json.dump(cur, f, ensure_ascii=False, indent=2)
+            print(f"\n✅ 已写回 {mapfile} (回退, 变更 {changes} 处)")
         
         if arbitrated:
             print(f"\n⚖️ 仲裁决策 ({len(arbitrated)} 处):")

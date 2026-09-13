@@ -4,6 +4,8 @@
 ===================================================
 核心逻辑已迁移至 analysis/portfolio_core.py，供模拟盘/实盘/回测复用。
 本脚本仅负责：数据获取、调用核心扫描、输出报告。
+
+已统一使用 analysis.data_layer.router.DataRouter (Phase 1 完成)
 """
 
 import os, sys, json, warnings
@@ -15,21 +17,23 @@ if WORKSPACE not in sys.path:
 
 import pandas as pd
 import pandas_ta as ta
-import baostock as bs
 import numpy as np
-import urllib.request
 
 warnings.filterwarnings("ignore")
 
+# 导入统一数据路由器
+from analysis.data_layer.router import get_router
+
 # 导入核心模块
 from analysis.portfolio_core import (
-    run_portfolio_scan,
     generate_human_report,
     fetch_today_realtime,
     STOCKS as CORE_STOCKS,
     STRATEGY_LABELS,
     COMMISSION, SLIPPAGE, INITIAL_CAPITAL, ATR_STOP_MULT,
 )
+# 导入统一执行器（单一事实来源：信号/风控/仓位全部复用 portfolio_core）
+from analysis.executor_bridge import run_portfolio_scan_via_executor
 import time
 from datetime import time as dtime
 
@@ -64,139 +68,34 @@ STOCKS = CORE_STOCKS
 
 
 # ═══════════════════════════════════════════
-# 数据获取（保持原有稳定链路）
+# 数据获取 — 使用 DataRouter (Phase 1)
 # ═══════════════════════════════════════════
 
-def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
-    bs_code = f"sh.{symbol}" if symbol.startswith("6") else f"sz.{symbol}"
-    start_ymd = f"{start[0:4]}-{start[4:6]}-{start[6:8]}"
-    end_ymd = datetime.now().strftime("%Y-%m-%d")
-    today_str = datetime.now().strftime("%Y-%m-%d")
+_router_instance = None
 
-    for attempt in range(max_retry):
-        try:
-            lg = bs.login()
-            if lg.error_code != "0":
-                raise ConnectionError(lg.error_msg)
-            rs = bs.query_history_k_data_plus(
-                bs_code, "date,open,close,high,low,volume",
-                start_date=start_ymd, end_date=end_ymd,
-                frequency="d", adjustflag="2")
-            data = []
-            while rs.next():
-                data.append(rs.get_row_data())
-            bs.logout()
-            if not data:
-                raise ValueError("空数据")
-            df = pd.DataFrame(data, columns=["date","open","close","high","low","volume"])
-            for c in ["open","close","high","low","volume"]:
-                df[c] = pd.to_numeric(df[c], errors="coerce")
-            df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date").reset_index(drop=True).dropna()
-
-            if realtime_fallback:
-                latest_bs_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
-                if latest_bs_date < today_str:
-                    # 仅在交易时段内使用实时行情，避免午休/闭市时抓到 stale price
-                    if is_trading_time():
-                        rt = fetch_today_realtime([symbol])
-                        if symbol in rt:
-                            r = rt[symbol]
-                            df = pd.concat([df, pd.DataFrame([{
-                                "date": pd.Timestamp(r["date"]),
-                                "open": r["open"], "close": r["close"],
-                                "high": r["high"], "low": r["low"], "volume": r["volume"],
-                            }])], ignore_index=True)
-            return df
-        except Exception:
-            time.sleep(1)
-        finally:
-            try:
-                bs.logout()
-            except Exception:
-                pass
-
-    if realtime_fallback:
-        rt = fetch_today_realtime([symbol])
-        if symbol in rt:
-            r = rt[symbol]
-            return pd.DataFrame([{
-                "date": pd.Timestamp(r["date"]),
-                "open": r["open"], "close": r["close"],
-                "high": r["high"], "low": r["low"], "volume": r["volume"],
-            }])
-    return None
-
-
-# ═══════════════════════════════════════════
-# 数据获取（复用单次 baostock 登录，避免连接池耗尽）
-# ═══════════════════════════════════════════
-
-# 全局 bs 会话管理
-_bs_logged_in = False
-
-
-def _ensure_bs_login():
-    global _bs_logged_in
-    if not _bs_logged_in:
-        lg = bs.login()
-        if lg.error_code != "0":
-            raise ConnectionError(f"baostock登录失败: {lg.error_msg}")
-        _bs_logged_in = True
-
-def _ensure_bs_logout():
-    global _bs_logged_in
-    if _bs_logged_in:
-        try:
-            bs.logout()
-        except Exception:
-            pass
-        _bs_logged_in = False
+def get_router_instance():
+    global _router_instance
+    if _router_instance is None:
+        _router_instance = get_router()
+    return _router_instance
 
 
 def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
-    bs_code = f"sh.{symbol}" if symbol.startswith("6") else f"sz.{symbol}"
-    start_ymd = f"{start[0:4]}-{start[4:6]}-{start[6:8]}"
-    end_ymd = datetime.now().strftime("%Y-%m-%d")
-    today_str = datetime.now().strftime("%Y-%m-%d")
-
-    for attempt in range(max_retry):
-        try:
-            _ensure_bs_login()
-            rs = bs.query_history_k_data_plus(
-                bs_code, "date,open,close,high,low,volume",
-                start_date=start_ymd, end_date=end_ymd,
-                frequency="d", adjustflag="2")
-            data = []
-            while rs.next():
-                data.append(rs.get_row_data())
-            if not data:
-                raise ValueError("空数据")
-            df = pd.DataFrame(data, columns=["date","open","close","high","low","volume"])
-            for c in ["open","close","high","low","volume"]:
-                df[c] = pd.to_numeric(df[c], errors="coerce")
-            df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date").reset_index(drop=True).dropna()
-
-            if realtime_fallback:
-                latest_bs_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
-                if latest_bs_date < today_str:
-                    # 仅在交易时段内使用实时行情，避免午休/闭市时抓到 stale price
-                    if is_trading_time():
-                        rt = fetch_today_realtime([symbol])
-                        if symbol in rt:
-                            r = rt[symbol]
-                            df = pd.concat([df, pd.DataFrame([{
-                                "date": pd.Timestamp(r["date"]),
-                                "open": r["open"], "close": r["close"],
-                                "high": r["high"], "low": r["low"], "volume": r["volume"],
-                            }])], ignore_index=True)
-            return df
-        except Exception as e:
-            print(f"  ⚠️ {symbol} 获取失败(尝试{attempt+1}/{max_retry}): {e}")
-            time.sleep(1)
+    """
+    统一历史日K获取 - 走 DataRouter (内含降级链: 新浪日K -> pytdx -> baostock -> akshare)
+    实时行情回补 - 走 DataRouter.get_spot()
+    """
+    router = get_router_instance()
     
-    # 兜底：仅在交易时段使用实时行情
+    # 1. 历史日线
+    try:
+        df = router.get_daily(symbol, "", start_date=start)
+        if df is not None and len(df) >= 2:
+            return df
+    except Exception as e:
+        print(f"  ⚠️ {symbol} DataRouter历史获取失败: {e}")
+    
+    # 2. 兜底：仅在交易时段使用实时行情
     if realtime_fallback and is_trading_time():
         rt = fetch_today_realtime([symbol])
         if symbol in rt:
@@ -219,17 +118,12 @@ def main():
 
     today_str = datetime.now().strftime("%Y-%m-%d")
 
-    # 确保 baostock 登录
-    _ensure_bs_login()
-    try:
-        # 调用核心扫描流程
-        result = run_portfolio_scan(
-            stocks=STOCKS,
-            fetch_data_func=fetch_data,
-            today_str=today_str,
-        )
-    finally:
-        _ensure_bs_logout()
+    # 调用统一执行器（PortfolioExecutor -> portfolio_core.run_portfolio_scan）
+    result = run_portfolio_scan_via_executor(
+        stocks=STOCKS,
+        fetch_data_func=fetch_data,
+        today_str=today_str,
+    )
 
     # 输出 JSON（供 agent 解析）
     output = {

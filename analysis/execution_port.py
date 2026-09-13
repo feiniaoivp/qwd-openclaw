@@ -151,6 +151,15 @@ class ExecutionPort(abc.ABC):
         """获取历史数据"""
         pass
 
+    def record_external_trade(self, message: str) -> None:
+        """记录由外部权威逻辑 (portfolio_core) 产生的成交。
+
+        默认 no-op；LivePort 应覆写此方法把成交同步到券商日账。
+        设计意图：持仓/现金的权威账本只有一份（portfolio_core state），
+        执行端口不得自行重算，避免双账本口径分裂。
+        """
+        return None
+
 
 class SimulationPort(ExecutionPort):
     """模拟盘执行端口 - 复用 portfolio_sim.py 逻辑"""

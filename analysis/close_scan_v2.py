@@ -14,6 +14,8 @@
 
 运行: python3 analysis/close_scan_v2.py [--intraday]
 输出: JSON(stdout) + 可读简报(stderr)
+
+已统一使用 analysis.data_layer.router.DataRouter (Phase 1 完成)
 """
 
 from __future__ import annotations
@@ -58,13 +60,10 @@ try:
 except Exception:
     HAS_PYTDX = False
 
-# Baostock 单例会话
-import sys
-import os
+# 导入统一数据路由器
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
-if WORKSPACE not in sys.path:
-    sys.path.insert(0, WORKSPACE)
-from analysis.bs_session import ensure_login, logout as bs_logout, query_history_k_data_plus_retry
+sys.path.insert(0, WORKSPACE)
+from analysis.data_layer.router import get_router
 
 # ============================================================================
 # 配置常量
@@ -153,258 +152,36 @@ def convert_sina_percent(val: Any) -> Any:
     return f
 
 # ============================================================================
-# 错误处理与重试 / 数据源降级策略
+# 统一数据获取器 - 使用 DataRouter (Phase 1)
 # ============================================================================
 
-def bs_query_with_retry(fn: Callable, max_retries: int = 3, wait_seconds: float = 2.0):
-    for attempt in range(max_retries):
-        try:
-            rs = fn()
-            if rs.error_code == "0": return rs
-            log.warning(f"  [BS] 查询错误: {rs.error_msg}, 重试 {attempt+1}/{max_retries}")
-        except (socket.timeout, TimeoutError, OSError) as e:
-            log.warning(f"  [BS] 网络异常: {e}, 重试 {attempt+1}/{max_retries}")
-        time.sleep(wait_seconds)
-    return None
+_router_instance = None
 
-def ak_safe_call(fn: Callable, *args, default=None, **kwargs):
+def get_router_instance():
+    global _router_instance
+    if _router_instance is None:
+        _router_instance = get_router()
+    return _router_instance
+
+
+def fetch_sina_spot(symbols: list[str]) -> dict[str, dict]:
+    """批量拉取新浪实时行情 - 走 DataRouter"""
+    router = get_router_instance()
+    return router.get_spot(symbols)
+
+
+def get_daily_hist(symbol: str, name: str,
+                   start_date: str = "20250101") -> Optional[pd.DataFrame]:
+    """统一历史日K获取 - 走 DataRouter (内含降级链: 新浪日K -> pytdx -> baostock -> akshare)"""
+    router = get_router_instance()
     try:
-        result = fn(*args, **kwargs)
-        if result is None or (hasattr(result, "empty") and result.empty):
-            return default
-        return result
+        df = router.get_daily(symbol, name, start_date=start_date)
+        if df is not None and len(df) >= 2:
+            log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [DataRouter]")
+            return df
     except Exception as e:
-        log.warning(f"  [AK] 接口异常: {e}")
-        return default
-
-def fetch_with_fallback(primary_fn: Callable, fallback_fn1: Optional[Callable] = None,
-                        fallback_fn2: Optional[Callable] = None) -> Any:
-    result = primary_fn()
-    if result is not None and result != NO_DATA: return result
-    if fallback_fn1:
-        result = fallback_fn1()
-        if result is not None and result != NO_DATA: return result
-    if fallback_fn2:
-        result = fallback_fn2()
-        if result is not None and result != NO_DATA: return result
-    return NO_DATA
-
-# ============================================================================
-# FinancialDataFetcher 类 - 单例缓存 + Baostock 登录管理
-# ============================================================================
-
-class FinancialDataFetcher:
-    """财务/行情数据获取器 - 单例缓存 + 双源模式 + 登录复用"""
-
-    def __init__(self):
-        self._cache: dict[str, Any] = {}
-        self._bs_logged_in = False
-        self._last_login_check = 0.0
-
-    # ---- Baostock 登录管理 (委托给全局单例) ----
-    def _ensure_bs_login(self) -> bool:
-        return ensure_login()
-
-    def bs_logout(self):
-        bs_logout()
-
-    # ---- 通用缓存查询 ----
-    def _cache_get(self, key: str) -> Optional[Any]:
-        return self._cache.get(key)
-
-    def _cache_set(self, key: str, value: Any):
-        self._cache[key] = value
-
-    # ---- 新浪实时行情 (hq.sinajs.cn) ----
-    def fetch_sina_spot(self, symbols: list[str]) -> dict[str, dict]:
-        """批量拉取新浪实时行情，返回 {纯代码: {...}}"""
-        import urllib.request
-        out: dict[str, dict] = {}
-        for i in range(0, len(symbols), 60):
-            batch = symbols[i:i+60]
-            url = "http://hq.sinajs.cn/list=" + ",".join(batch)
-            req = urllib.request.Request(
-                url,
-                headers={"Referer": "https://finance.sina.com.cn",
-                         "User-Agent": "Mozilla/5.0"}
-            )
-            try:
-                raw = urllib.request.urlopen(req, timeout=12).read().decode("gbk")
-            except Exception as e:
-                log.warning(f"[SINA-SPOT] 批次请求失败: {e}")
-                continue
-
-            for line in raw.splitlines():
-                if '="' not in line: continue
-                key = line.split("hq_str_")[1].split("=")[0]
-                val = line.split('"')[1].split(",")
-                if len(val) < 10: continue
-                symbol = key[2:]
-                def f(x):
-                    try: return float(x)
-                    except: return 0.0
-                out[symbol] = {
-                    "name": val[0],
-                    "open": f(val[1]), "pre_close": f(val[2]), "last": f(val[3]),
-                    "high": f(val[4]), "low": f(val[5]),
-                    "volume": int(float(val[8])), "amount": f(val[9]),
-                    "date": val[30] if len(val) > 30 else "",
-                    "time": val[31] if len(val) > 31 else "",
-                }
-        return out
-
-    # ---- 新浪历史日K (jsonp) ----
-    def fetch_sina_daily(self, symbol: str, n: int = 300) -> Optional[pd.DataFrame]:
-        """新浪日K jsonp 接口 (稳定, ~0.1s/只)。返回原始不复权日K。"""
-        import urllib.request
-        cache_key = f"sina_daily_{symbol}_{n}"
-        cached = self._cache_get(cache_key)
-        if cached is not None: return cached
-
-        pref = "sh" if symbol[0] in "69" else "sz"
-        url = (f"https://quotes.sina.cn/cn/api/jsonp_v2.php/var%20_data=/CN_MarketDataService."
-               f"getKLineData?symbol={pref}{symbol}&scale=240&ma=no&datalen={n}")
-        req = urllib.request.Request(
-            url,
-            headers={"Referer": "https://finance.sina.com.cn", "User-Agent": "Mozilla/5.0"}
-        )
-        try:
-            raw = urllib.request.urlopen(req, timeout=15).read().decode("utf-8", "ignore")
-        except Exception as e:
-            log.warning(f"[SINA-DAILY] {symbol} 请求失败: {e}")
-            return None
-
-        m = re.search(r"=\s*\((\[.*\])\)\s*;", raw, re.S)
-        if not m:
-            i, j = raw.find("["), raw.rfind("]")
-            if i < 0 or j <= i: return None
-            arr = json.loads(raw[i:j+1])
-        else:
-            arr = json.loads(m.group(1))
-
-        df = pd.DataFrame(arr)
-        for c in ["open", "high", "low", "close", "volume"]:
-            df[c] = pd.to_numeric(df[c], errors="coerce")
-        df["date"] = pd.to_datetime(df["day"])
-        df = df[["date", "open", "high", "low", "close", "volume"]].dropna()
-        if len(df) >= 2: self._cache_set(cache_key, df)
-        return df
-
-    # ---- pytdx 历史日K (备用) ----
-    def fetch_pytdx_daily(self, symbol: str,
-                          ip: str = "123.125.108.14", port: int = 7709) -> Optional[pd.DataFrame]:
-        if not HAS_PYTDX: return None
-        api = TdxHq_API()
-        try:
-            ok = api.connect(ip, port, time_out=5)
-            if not ok: return None
-            market = 0 if symbol[0] in "69" else 1
-            bars = api.get_security_bars(9, market, symbol, 0, 300)
-            if not bars: return None
-            df = pd.DataFrame(bars)
-            df["date"] = pd.to_datetime(df["datetime"], unit="s")
-            df = df[["date", "open", "high", "low", "close", "vol"]]
-            df.columns = ["date", "open", "high", "low", "close", "volume"]
-            df = df.sort_values("date").reset_index(drop=True).dropna()
-            return df
-        except Exception:
-            return None
-        finally:
-            try: api.disconnect()
-            except Exception: pass
-
-    # ---- akshare 历史日K (最后兜底，单次不 sleep) ----
-    def fetch_akshare_daily(self, symbol: str, start_date: str = "20250101") -> Optional[pd.DataFrame]:
-        if not HAS_AKSHARE: return None
-        try:
-            df = ak.stock_zh_a_hist(symbol=symbol, period="daily",
-                                    start_date=start_date, adjust="qfq")
-            if df is None or df.empty: return None
-            df = df[["日期", "开盘", "收盘", "最高", "最低", "成交量"]]
-            df.columns = ["date", "open", "close", "high", "low", "volume"]
-            df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date").reset_index(drop=True)
-            return df
-        except Exception:
-            return None
-
-    # ---- baostock 历史日K (作为 pytdx 后的备选) ----
-    def fetch_baostock_daily(self, symbol: str, start_date: str = "20250101") -> Optional[pd.DataFrame]:
-        try:
-            code = f"sh.{symbol}" if symbol.startswith("6") or symbol.startswith("9") else f"sz.{symbol}"
-            start_ymd = f"{start_date[0:4]}-{start_date[4:6]}-{start_date[6:8]}"
-            end_ymd = datetime.now().strftime("%Y-%m-%d")
-            rs = query_history_k_data_plus_retry(
-                code, "date,open,high,low,close,volume",
-                start_date=start_ymd, end_date=end_ymd,
-                frequency="d", adjustflag="2")
-            if rs is None:
-                return None
-            rows = []
-            while rs.next():
-                rows.append(rs.get_row_data())
-            if not rows:
-                return None
-            df = pd.DataFrame(rows, columns=["date", "open", "high", "low", "close", "volume"])
-            for c in ["open", "high", "low", "close", "volume"]:
-                df[c] = pd.to_numeric(df[c], errors="coerce")
-            df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date").reset_index(drop=True).dropna()
-            if len(df) >= 2:
-                log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [baostock]")
-                return df
-        except Exception as e:
-            log.warning(f"  ⚠️ {name} baostock历史失败: {e}")
-        return None
-
-    # ---- 统一历史日K 获取 (降级链: 新浪日K -> pytdx -> baostock -> akshare) ----
-    def get_daily_hist(self, symbol: str, name: str,
-                       start_date: str = "20250101") -> Optional[pd.DataFrame]:
-        """按技能文档推荐降级链获取历史日线"""
-        # Level 1: 新浪日K (稳定, 首选)
-        try:
-            df = self.fetch_sina_daily(symbol)
-            if df is not None and len(df) >= 2:
-                if start_date:
-                    cut = pd.to_datetime(start_date)
-                    df = df[df["date"] >= cut]
-                if len(df) >= 2:
-                    log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [新浪日K]")
-                    return df.reset_index(drop=True)
-        except Exception as e:
-            log.warning(f"  ⚠️ {name} 新浪日K失败: {e}")
-
-        # Level 2: pytdx
-        try:
-            df = self.fetch_pytdx_daily(symbol)
-            if df is not None and len(df) >= 2:
-                if start_date:
-                    cut = pd.to_datetime(start_date)
-                    df = df[df["date"] >= cut]
-                if len(df) >= 2:
-                    log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [pytdx]")
-                    return df.reset_index(drop=True)
-        except Exception as e:
-            log.warning(f"  ⚠️ {name} pytdx历史失败: {e}")
-
-        # Level 3: baostock (单例会话，重试机制)
-        try:
-            df = self.fetch_baostock_daily(symbol, start_date)
-            if df is not None and len(df) >= 2:
-                return df.reset_index(drop=True)
-        except Exception as e:
-            log.warning(f"  ⚠️ {name} baostock历史失败: {e}")
-
-        # Level 4: akshare (单次，失败不 sleep)
-        try:
-            df = self.fetch_akshare_daily(symbol, start_date)
-            if df is not None and len(df) >= 2:
-                log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [akshare]")
-                return df.reset_index(drop=True)
-        except Exception as e:
-            log.warning(f"  ⚠️ {name} akshare历史失败: {e}")
-
-        return None
+        log.warning(f"  ⚠️ {name}({symbol}) DataRouter获取失败: {e}")
+    return None
 
 
 # ============================================================================
@@ -418,6 +195,53 @@ def get_fetcher() -> FinancialDataFetcher:
     if _fetcher_instance is None:
         _fetcher_instance = FinancialDataFetcher()
     return _fetcher_instance
+
+
+# ============================================================================
+# 信号计算 — 仅白名单指标
+# ============================================================================
+
+# FinancialDataFetcher 类已废弃，保留接口兼容但内部委托 DataRouter
+class FinancialDataFetcher:
+    """兼容层：内部委托 DataRouter，保持原有接口不变"""
+
+    def __init__(self):
+        self._router = get_router_instance()
+
+    def _ensure_bs_login(self) -> bool:
+        return True  # DataRouter 内部管理
+
+    def bs_logout(self):
+        pass  # DataRouter 内部管理
+
+    def _cache_get(self, key: str) -> Optional[Any]:
+        return self._router.cache.get(key)
+
+    def _cache_set(self, key: str, value: Any):
+        self._router.cache.set(key, value)
+
+    def fetch_sina_spot(self, symbols: list[str]) -> dict[str, dict]:
+        return self._router.get_spot(symbols)
+
+    def fetch_sina_daily(self, symbol: str, n: int = 300) -> Optional[pd.DataFrame]:
+        # 委托 DataRouter (内含新浪日K作为首选)
+        return self._router.sina_daily.get_daily(symbol, n=n)
+
+    def fetch_pytdx_daily(self, symbol: str,
+                          ip: str = "123.125.108.14", port: int = 7709) -> Optional[pd.DataFrame]:
+        # DataRouter 内部已处理 pytdx 降级，不再单独暴露
+        return None
+
+    def fetch_akshare_daily(self, symbol: str, start_date: str = "20250101") -> Optional[pd.DataFrame]:
+        # DataRouter 内部已处理 akshare 降级
+        return None
+
+    def fetch_baostock_daily(self, symbol: str, start_date: str = "20250101") -> Optional[pd.DataFrame]:
+        return self._router.baostock.get_daily(symbol, start_date=start_date)
+
+    def get_daily_hist(self, symbol: str, name: str,
+                       start_date: str = "20250101") -> Optional[pd.DataFrame]:
+        return get_daily_hist(symbol, name, start_date)
 
 
 # ============================================================================
@@ -990,9 +814,9 @@ def run_intraday_alert_mode():
     spot_results = []
     for code, name in WATCHLIST:
         r = hq.get(code)
-        if r is None or r["last"] == 0 or r["pre_close"] == 0: continue
-        chg = (r["last"] / r["pre_close"] - 1) * 100
-        spot_results.append({"symbol": code, "name": name, "price": round(r["last"], 2),
+        if r is None or r.get("close", 0) == 0 or r["pre_close"] == 0: continue
+        chg = (r.get("close", 0) / r["pre_close"] - 1) * 100
+        spot_results.append({"symbol": code, "name": name, "price": round(r.get("close", 0), 2),
                              "change_pct": round(chg, 2)})
     alerts, triggered = evaluate_strategy_alerts(spot_results)
     out = {
@@ -1065,14 +889,14 @@ def main():
 
     for code, name in WATCHLIST:
         r = hq.get(code)
-        if r is None or r["last"] == 0:
+        if r is None or r.get("close", 0) == 0:
             spot_results.append({"symbol": code, "name": name, "error": "无行情"})
             continue
         if not data_date: data_date = r["date"]
-        chg = (r["last"] / r["pre_close"] - 1) * 100 if r["pre_close"] else 0
+        chg = (r.get("close", 0) / r["pre_close"] - 1) * 100 if r["pre_close"] else 0
         spot_results.append({
             "symbol": code, "name": name,
-            "price": round(r["last"], 2), "change_pct": round(chg, 2),
+            "price": round(r.get("close", 0), 2), "change_pct": round(chg, 2),
             "open": round(r["open"], 2), "high": round(r["high"], 2),
             "low": round(r["low"], 2), "pre_close": round(r["pre_close"], 2),
             "volume": r["volume"], "amount": round(r["amount"], 2),
@@ -1193,7 +1017,7 @@ def main():
             log.error(f"中联重科分析失败: {e}")
             output["zhonglian"] = {"error": str(e)}
 
-    bs_logout()
+    # bs_logout() - DataRouter 内部管理会话，无需手动登出
     print(json.dumps(output, ensure_ascii=False, indent=2, default=str))
 
 

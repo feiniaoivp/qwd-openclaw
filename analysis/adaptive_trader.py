@@ -20,6 +20,8 @@
 
 运行: python3 analysis/adaptive_trader.py
 输出: JSON(stdout) + 可读简报(stderr) + 日报保存
+
+已统一使用 analysis.data_layer.router.DataRouter (Phase 1 完成)
 """
 
 from __future__ import annotations
@@ -29,8 +31,6 @@ import sys
 import json
 import time
 import warnings
-import urllib.request
-import re
 from datetime import datetime
 from typing import Optional
 
@@ -45,24 +45,6 @@ try:
     HAS_PANDAS_TA = True
 except Exception:
     HAS_PANDAS_TA = False
-
-try:
-    import akshare as ak
-    HAS_AKSHARE = True
-except Exception:
-    HAS_AKSHARE = False
-
-try:
-    import baostock as bs
-    HAS_BAOSTOCK = True
-except Exception:
-    HAS_BAOSTOCK = False
-
-try:
-    from pytdx.hq import TdxHq_API
-    HAS_PYTDX = True
-except Exception:
-    HAS_PYTDX = False
 
 # ============================================================================
 # 配置常量
@@ -91,15 +73,25 @@ STOCKS = [
     ("600346", "恒力石化"), ("000708", "中信特钢"), ("300748", "金力永磁"),
 ]
 
-# 从 adaptive_strategy_map.json 读取策略映射
+# 从 adaptive_strategy_map.json 读取策略映射 (通过 Strategy Registry)
 def load_strategy_map() -> dict:
+    # 优先使用 strategy_registry 统一加载
+    sys.path.insert(0, WORKSPACE)
+    try:
+        from analysis.strategy_registry import load_current_map
+        cur = load_current_map()
+        if cur:
+            return cur
+    except Exception:
+        pass
+    # 回退：直接读文件
     if os.path.exists(STRATEGY_MAP_FILE):
         try:
             with open(STRATEGY_MAP_FILE) as f:
                 return json.load(f)
         except Exception:
             pass
-    # 兜底硬编码 (与 adaptive_strategy_map.json 保持一致)
+    # 兜底硬编码
     return {
         "600030": "macd", "601066": "macd", "600036": "kdj_cci", "601995": "kdj_cci", "000987": "macd",
         "600584": "macd", "688981": "kdj_cci", "002156": "ema_obv", "002413": "ema_cross",
@@ -143,207 +135,35 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # ============================================================================
-# 统一数据获取器 (复用 close_scan_v2.py 的 FinancialDataFetcher)
+# 统一数据获取器 - 使用 DataRouter (Phase 1)
 # ============================================================================
 
-class FinancialDataFetcher:
-    """财务/行情数据获取器 - 单例缓存 + 多数据源降级"""
+# 导入统一数据路由器
+sys.path.insert(0, WORKSPACE)
+from analysis.data_layer.router import get_router
 
-    def __init__(self):
-        self._cache: dict[str, Any] = {}
-        self._bs_logged_in = False
-        self._last_login_check = 0.0
+_router_instance = None
 
-    def _ensure_bs_login(self) -> bool:
-        if self._bs_logged_in and time.time() - self._last_login_check < 1800:
-            return True
-        if not HAS_BAOSTOCK:
-            return False
-        try:
-            lg = bs.login()
-            if lg.error_code != "0":
-                log.error(f"[BS] 登录失败: {lg.error_msg}")
-                return False
-            self._bs_logged_in = True
-            self._last_login_check = time.time()
-            return True
-        except Exception as e:
-            log.error(f"[BS] 登录异常: {e}")
-            return False
+def get_router_instance():
+    global _router_instance
+    if _router_instance is None:
+        _router_instance = get_router()
+    return _router_instance
 
-    def bs_logout(self):
-        if self._bs_logged_in:
-            try:
-                if HAS_BAOSTOCK:
-                    bs.logout()
-            except Exception:
-                pass
-            self._bs_logged_in = False
 
-    def _cache_get(self, key: str) -> Optional[Any]:
-        return self._cache.get(key)
-
-    def _cache_set(self, key: str, value: Any):
-        self._cache[key] = value
-
-    # 新浪实时行情
-    def fetch_sina_spot(self, symbols: list[str]) -> dict[str, dict]:
-        out: dict[str, dict] = {}
-        for i in range(0, len(symbols), 60):
-            batch = symbols[i:i+60]
-            url = "http://hq.sinajs.cn/list=" + ",".join(batch)
-            req = urllib.request.Request(
-                url,
-                headers={"Referer": "https://finance.sina.com.cn", "User-Agent": "Mozilla/5.0"}
-            )
-            try:
-                raw = urllib.request.urlopen(req, timeout=12).read().decode("gbk")
-            except Exception as e:
-                log.warning(f"[SINA-SPOT] 批次请求失败: {e}")
-                continue
-            for line in raw.splitlines():
-                if '="' not in line: continue
-                key = line.split("hq_str_")[1].split("=")[0]
-                val = line.split('"')[1].split(",")
-                if len(val) < 10: continue
-                symbol = key[2:]
-                def f(x):
-                    try: return float(x)
-                    except: return 0.0
-                out[symbol] = {
-                    "name": val[0],
-                    "open": f(val[1]), "pre_close": f(val[2]), "last": f(val[3]),
-                    "high": f(val[4]), "low": f(val[5]),
-                    "volume": int(float(val[8])), "amount": f(val[9]),
-                    "date": val[30] if len(val) > 30 else "",
-                    "time": val[31] if len(val) > 31 else "",
-                }
-        return out
-
-    # 新浪历史日K (jsonp)
-    def fetch_sina_daily(self, symbol: str, n: int = 300) -> Optional[pd.DataFrame]:
-        cache_key = f"sina_daily_{symbol}_{n}"
-        cached = self._cache_get(cache_key)
-        if cached is not None:
-            return cached
-        pref = "sh" if symbol[0] in "69" else "sz"
-        url = (f"https://quotes.sina.cn/cn/api/jsonp_v2.php/var%20_data=/CN_MarketDataService."
-               f"getKLineData?symbol={pref}{symbol}&scale=240&ma=no&datalen={n}")
-        req = urllib.request.Request(
-            url,
-            headers={"Referer": "https://finance.sina.com.cn", "User-Agent": "Mozilla/5.0"}
-        )
-        try:
-            raw = urllib.request.urlopen(req, timeout=15).read().decode("utf-8", "ignore")
-        except Exception as e:
-            log.warning(f"[SINA-DAILY] {symbol} 请求失败: {e}")
-            return None
-        m = re.search(r"=\s*\((\[.*\])\)\s*;", raw, re.S)
-        if not m:
-            i, j = raw.find("["), raw.rfind("]")
-            if i < 0 or j <= i: return None
-            arr = json.loads(raw[i:j+1])
-        else:
-            arr = json.loads(m.group(1))
-        df = pd.DataFrame(arr)
-        for c in ["open", "high", "low", "close", "volume"]:
-            df[c] = pd.to_numeric(df[c], errors="coerce")
-        df["date"] = pd.to_datetime(df["day"])
-        df = df[["date", "open", "high", "low", "close", "volume"]].dropna()
-        if len(df) >= 2:
-            self._cache_set(cache_key, df)
-        return df
-
-    # pytdx 历史日K (备用)
-    def fetch_pytdx_daily(self, symbol: str,
-                          ip: str = "123.125.108.14", port: int = 7709) -> Optional[pd.DataFrame]:
-        if not HAS_PYTDX:
-            return None
-        api = TdxHq_API()
-        try:
-            ok = api.connect(ip, port, time_out=5)
-            if not ok:
-                return None
-            market = 0 if symbol[0] in "69" else 1
-            bars = api.get_security_bars(9, market, symbol, 0, 300)
-            if not bars:
-                return None
-            df = pd.DataFrame(bars)
-            df["date"] = pd.to_datetime(df["datetime"], unit="s")
-            df = df[["date", "open", "high", "low", "close", "vol"]]
-            df.columns = ["date", "open", "high", "low", "close", "volume"]
-            df = df.sort_values("date").reset_index(drop=True).dropna()
+def get_daily_hist(symbol: str, name: str,
+                   start_date: str = "20250101") -> Optional[pd.DataFrame]:
+    """统一历史日K获取 - 走 DataRouter (内含降级链: 新浪日K -> pytdx -> baostock -> akshare)"""
+    router = get_router_instance()
+    try:
+        df = router.get_daily(symbol, name, start_date=start_date)
+        if df is not None and len(df) >= 2:
+            log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [DataRouter]")
             return df
-        except Exception:
-            return None
-        finally:
-            try:
-                api.disconnect()
-            except Exception:
-                pass
+    except Exception as e:
+        log.warning(f"  ⚠️ {name}({symbol}) DataRouter获取失败: {e}")
+    return None
 
-    # akshare 历史日K (最后兜底)
-    def fetch_akshare_daily(self, symbol: str, start_date: str = "20250101") -> Optional[pd.DataFrame]:
-        if not HAS_AKSHARE:
-            return None
-        try:
-            df = ak.stock_zh_a_hist(symbol=symbol, period="daily",
-                                    start_date=start_date, adjust="qfq")
-            if df is None or df.empty:
-                return None
-            df = df[["日期", "开盘", "收盘", "最高", "最低", "成交量"]]
-            df.columns = ["date", "open", "close", "high", "low", "volume"]
-            df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date").reset_index(drop=True)
-            return df
-        except Exception:
-            return None
-
-    # 统一历史日K 获取 (降级链: 新浪日K -> pytdx -> akshare)
-    def get_daily_hist(self, symbol: str, name: str,
-                       start_date: str = "20250101") -> Optional[pd.DataFrame]:
-        # Level 1: 新浪日K
-        try:
-            df = self.fetch_sina_daily(symbol)
-            if df is not None and len(df) >= 2:
-                if start_date:
-                    cut = pd.to_datetime(start_date)
-                    df = df[df["date"] >= cut]
-                if len(df) >= 2:
-                    log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [新浪日K]")
-                    return df.reset_index(drop=True)
-        except Exception as e:
-            log.warning(f"  ⚠️ {name} 新浪日K失败: {e}")
-        # Level 2: pytdx
-        try:
-            df = self.fetch_pytdx_daily(symbol)
-            if df is not None and len(df) >= 2:
-                if start_date:
-                    cut = pd.to_datetime(start_date)
-                    df = df[df["date"] >= cut]
-                if len(df) >= 2:
-                    log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [pytdx]")
-                    return df.reset_index(drop=True)
-        except Exception as e:
-            log.warning(f"  ⚠️ {name} pytdx历史失败: {e}")
-        # Level 3: akshare
-        try:
-            df = self.fetch_akshare_daily(symbol, start_date)
-            if df is not None and len(df) >= 2:
-                log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [akshare]")
-                return df.reset_index(drop=True)
-        except Exception as e:
-            log.warning(f"  ⚠️ {name} akshare历史失败: {e}")
-        return None
-
-
-_fetcher_instance: Optional[FinancialDataFetcher] = None
-
-def get_fetcher() -> FinancialDataFetcher:
-    global _fetcher_instance
-    if _fetcher_instance is None:
-        _fetcher_instance = FinancialDataFetcher()
-    return _fetcher_instance
 
 
 # ============================================================================
@@ -419,26 +239,40 @@ def calc_volume_analysis(df: pd.DataFrame) -> dict:
 def calc_ema_trend(df: pd.DataFrame) -> dict:
     close = df["close"]
     if HAS_PANDAS_TA:
+        ema10 = ta.ema(close, length=10)
         ema20 = ta.ema(close, length=20)
         ema50 = ta.ema(close, length=50)
+        ema60 = ta.ema(close, length=60)
         ema200 = ta.ema(close, length=200)
     else:
+        ema10 = close.ewm(span=10, adjust=False).mean()
         ema20 = close.ewm(span=20, adjust=False).mean()
         ema50 = close.ewm(span=50, adjust=False).mean()
+        ema60 = close.ewm(span=60, adjust=False).mean()
         ema200 = close.ewm(span=200, adjust=False).mean()
     cur_price = float(close.iloc[-1])
+    e10 = float(ema10.iloc[-1]) if pd.notna(ema10.iloc[-1]) else cur_price
     e20 = float(ema20.iloc[-1]) if pd.notna(ema20.iloc[-1]) else cur_price
     e50 = float(ema50.iloc[-1]) if pd.notna(ema50.iloc[-1]) else cur_price
+    e60 = float(ema60.iloc[-1]) if pd.notna(ema60.iloc[-1]) else cur_price
     e200 = float(ema200.iloc[-1]) if pd.notna(ema200.iloc[-1]) else cur_price
+    
+    # 均线排列
     bull_arrange = e20 > e50 > e200
     bear_arrange = e20 < e50 < e200
+    
+    # 价格相对位置
     above_20 = cur_price > e20
     above_50 = cur_price > e50
     above_200 = cur_price > e200
+    
+    # 斜率 (近5根)
     e20_slope = float(ema20.iloc[-1] - ema20.iloc[-6]) if len(ema20) >= 6 else 0
     e50_slope = float(ema50.iloc[-1] - ema50.iloc[-6]) if len(ema50) >= 6 else 0
+    
     return {
-        "EMA20": round(e20, 2), "EMA50": round(e50, 2), "EMA200": round(e200, 2),
+        "EMA10": round(e10, 2), "EMA20": round(e20, 2), "EMA50": round(e50, 2), 
+        "EMA60": round(e60, 2), "EMA200": round(e200, 2),
         "price": round(cur_price, 2),
         "above_EMA20": above_20, "above_EMA50": above_50, "above_EMA200": above_200,
         "bull_arrange": bull_arrange, "bear_arrange": bear_arrange,
@@ -944,13 +778,11 @@ def scan_all() -> dict:
     error_count = 0
     strategy_actions = {k: {"total": 0, "buy": 0, "sell": 0} for k in STRATEGY_LABELS}
     
-    fetcher = get_fetcher()
-    
     for symbol, name in STOCKS:
         sname = BEST_STRATEGY_MAP.get(symbol, DEFAULT_STRATEGY)
         slabel = STRATEGY_LABELS[sname]
         
-        df = fetcher.get_daily_hist(symbol, name, start_date="20250101")
+        df = get_daily_hist(symbol, name, start_date="20250101")
         if df is None or len(df) < 60:
             results.append({
                 "symbol": symbol, "name": name,
@@ -996,8 +828,6 @@ def scan_all() -> dict:
         elif "卖出" in signal["action"]:
             strategy_actions[sname]["sell"] += 1
             sell_count += 1
-    
-    fetcher.bs_logout()
     
     return {
         "date": today,
@@ -1063,11 +893,18 @@ def format_brief(output: dict) -> str:
 
 
 def main():
-    # ① 保存/加载策略映射
+    # ① 保存策略映射 (通过 Strategy Registry 统一版本化)
     os.makedirs(os.path.dirname(STRATEGY_MAP_FILE), exist_ok=True)
-    with open(STRATEGY_MAP_FILE, "w") as f:
-        json.dump(BEST_STRATEGY_MAP, f, ensure_ascii=False, indent=2)
-    print(f"📁 策略映射已保存: {STRATEGY_MAP_FILE}")
+    try:
+        from analysis.strategy_registry import create_version
+        create_version(BEST_STRATEGY_MAP, source="adaptive_trader_save",
+                       metadata={"timestamp": datetime.now().isoformat()})
+        print(f"📁 策略映射已保存 (版本化): {STRATEGY_MAP_FILE}")
+    except Exception as e:
+        # 回退：直接写文件
+        with open(STRATEGY_MAP_FILE, "w") as f:
+            json.dump(BEST_STRATEGY_MAP, f, ensure_ascii=False, indent=2)
+        print(f"📁 策略映射已保存 (回退): {STRATEGY_MAP_FILE}")
     
     # ② 执行全扫描
     print("📡 开始自适应策略扫描...")

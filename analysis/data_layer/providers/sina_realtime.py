@@ -25,10 +25,22 @@ class SinaRealtimeProvider:
         self._consecutive_failures = 0
     
     def _to_sina_code(self, symbol: str) -> str:
-        """6位代码 -> 新浪代码 (sh600030 / sz000001)"""
-        if symbol.startswith("6") or symbol.startswith("9"):
-            return f"sh{symbol}"
-        return f"sz{symbol}"
+        """6位代码 -> 新浪代码 (sh600030 / sz000001)
+
+        容错：若传入已带 sh/sz 前缀的代码，直接归一化，
+        避免拼成 shsh600030 这种非法代码（历史上曾因调用方传各格式
+        导致整批行情为空）。
+        """
+        s = symbol.strip().lower()
+        if s.startswith(("sh", "sz", "bj")):
+            return s
+        if s.startswith("9"):
+            return f"sh{s}"          # B股
+        if s.startswith(("6", "5")):
+            return f"sh{s}"          # 沪市 / 沪市基金
+        if s.startswith(("0", "3", "1")):
+            return f"sz{s}"          # 深市 / 创业板 / 深市基金
+        return f"sz{s}"
     
     def get_spot(self, symbols: List[str]) -> Dict[str, dict]:
         """
@@ -74,6 +86,10 @@ class SinaRealtimeProvider:
                     "open": f(val[1]),
                     "pre_close": f(val[2]),
                     "last": f(val[3]),
+                    # close 为 last 的稳定别名。新浪 hq 协议里最新价是索引 [3]，
+                    # 历史教训：多处调用方误用 [1]（今开）。统一暴露 close 别名，
+                    # 避免每个下游各自记字段名。
+                    "close": f(val[3]),
                     "high": f(val[4]),
                     "low": f(val[5]),
                     "volume": int(float(val[8])),

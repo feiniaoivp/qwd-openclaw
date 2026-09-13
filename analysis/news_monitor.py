@@ -13,15 +13,17 @@
 - 输出 JSON 供 agent 解析，并生成可读摘要
 
 运行: python3 analysis/news_monitor.py [--mode 盘前|盘后]
+
+已统一使用 analysis.data_layer.router.DataRouter (Phase 1 完成)
 """
 import os, sys, json, hashlib
 from datetime import datetime
-from collections import OrderedDict
 
-import akshare as ak
-import pandas as pd
-
+# 导入统一数据路由器
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
+sys.path.insert(0, WORKSPACE)
+from analysis.data_layer.router import get_router
+
 NEWS_DIR = os.path.join(WORKSPACE, "data", "news")
 RAW_DIR = os.path.join(NEWS_DIR, "raw")
 LAST_RUN_FILE = os.path.join(NEWS_DIR, "last_run.json")
@@ -66,7 +68,8 @@ def fetch_stock_news(symbol, name, seen_titles):
     """抓取单只个股新闻，返回 {name,symbol,news:[{title,time,source,url}]}"""
     result = {"symbol": symbol, "name": name, "news": [], "new_count": 0}
     try:
-        df = ak.stock_news_em(symbol=symbol)
+        router = get_router()
+        df = router.get_stock_news(symbol)
         if df is None or df.empty:
             return result
         for _, row in df.iterrows():
@@ -93,7 +96,8 @@ def fetch_macro_news(seen_titles):
     """抓取宏观/行业政策快讯"""
     result = {"news": [], "new_count": 0}
     try:
-        df = ak.stock_info_global_em()
+        router = get_router()
+        df = router.get_global_news()
         if df is None or df.empty:
             return result
         for _, row in df.iterrows():
@@ -120,8 +124,9 @@ def fetch_notices(seen_titles):
     """抓取全市场公告，过滤出关注股"""
     result = {"notices": [], "new_count": 0}
     try:
+        router = get_router()
         today = datetime.now().strftime("%Y%m%d")
-        df = ak.stock_notice_report(symbol="全部", date=today)
+        df = router.get_notices(today)
         if df is None or df.empty:
             return result
         # 关注股代码集合

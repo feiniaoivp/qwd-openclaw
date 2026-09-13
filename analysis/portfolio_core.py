@@ -33,6 +33,10 @@ TRADES_FILE = os.path.join(WORKSPACE, "data", "portfolio_sim_trades.json")
 STRATEGY_MAP_FILE = os.path.join(WORKSPACE, "data", "adaptive_strategy_map.json")
 EQUITY_FILE = os.path.join(WORKSPACE, "data", "portfolio_equity.csv")
 
+# 回测模式：为 True 时 append_trade / append_equity_snapshot 不落盘，
+# 避免回测污染模拟盘生产状态文件。
+BACKTEST_MODE = False
+
 # ═══════════════════════════════════════════
 # 常量与配置
 # ═══════════════════════════════════════════
@@ -139,6 +143,9 @@ def load_state() -> Dict:
 
 
 def save_state(state: Dict):
+    # 回测模式：不得写入生产 state 文件（避免回测污染模拟盘账本，历史 F-5 问题）
+    if BACKTEST_MODE:
+        return
     os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
     with open(STATE_FILE, "w") as f:
         json.dump(state, f, ensure_ascii=False, indent=2, default=str)
@@ -152,7 +159,9 @@ def load_strategy_map() -> Dict[str, str]:
 
 
 def append_trade(trade: Dict):
-    """追加成交流水"""
+    """追加成交流水（回测模式下跳过，避免污染生产文件）"""
+    if BACKTEST_MODE:
+        return
     log = []
     if os.path.exists(TRADES_FILE):
         try:
@@ -171,6 +180,8 @@ def append_equity_snapshot(date: str, portfolio_summary: Dict, core_value: float
     CSV 列: date, total_value, total_return_pct, core_value, satellite_value, cash_total, positions_held, total_initial
     """
     import csv
+    if BACKTEST_MODE:
+        return
     file_exists = os.path.exists(EQUITY_FILE)
     
     row = {
@@ -459,9 +470,18 @@ class RiskGuard:
                       "total_limit_pct": 0.5, "total_limit_amount": 1_500_000,
                       "direction_allocation": {}}
     _market_context = {"health_score": 5, "market_stage": "震荡筑底", "emotion_cycle": "修复"}
+    _last_refresh_key = None
 
     @classmethod
-    def refresh(cls):
+    def refresh(cls, cache_key: str = None):
+        """刷新 030 风控。
+
+        cache_key 非空时，同一 key 只真正刷新一次（回测逐日循环里避免
+        对每只股票/每一天重复调用 Detector 造成的 O(天×股) 网络开销）。
+        """
+        if cache_key is not None and cache_key == cls._last_refresh_key:
+            return
+        cls._last_refresh_key = cache_key
         if not HAS_030_MODULES:
             return
         try:
@@ -698,6 +718,9 @@ def execute_trade(pos: Dict, signal: Dict, dt: str, strategy: str,
         net = sell_value - fee
         cost_basis = pos["shares"] * pos["entry_price"] * (1 + SLIPPAGE)
         pnl = net - cost_basis
+        # 记录本次平仓明细（供回测单笔盈亏统计使用）
+        pos["_last_sell_shares"] = pos["shares"]
+        pos["_last_sell_entry"] = pos["entry_price"]
         pos["cash"] += net
         pos["total_pl"] += pnl
         pos["shares"] = 0

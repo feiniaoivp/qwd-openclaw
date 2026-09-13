@@ -31,6 +31,9 @@ if WORKSPACE not in sys.path:
     sys.path.insert(0, WORKSPACE)
 from analysis.bs_session import ensure_login, logout as bs_logout, query_history_k_data_plus_retry
 
+# 导入统一数据路由器
+from analysis.data_layer.router import get_router
+
 # 指数代码映射 (baostock)
 INDEX_CODES = {
     "hs300": "sh.000300",      # 沪深300
@@ -751,96 +754,17 @@ ALL_STRATEGIES = [
 
 
 
-def fetch_data_akshare_sina(symbol, name, start=START_DATE, end=END_DATE, max_retry=3):
-    """使用 akshare 新浪接口获取前复权日线数据 (备用)"""
-    for attempt in range(max_retry):
-        try:
-            # akshare 新浪接口: stock_zh_a_hist(symbol=, period="daily", adjust="qfq")
-            df = ak.stock_zh_a_hist(symbol=symbol, period="daily", adjust="qfq",
-                                    start_date=start, end_date=end)
-            if df is None or df.empty:
-                raise ValueError("空数据")
-
-            # 统一列名
-            df = df.rename(columns={
-                '日期': 'date', '开盘': 'open', '收盘': 'close',
-                '最高': 'high', '最低': 'low', '成交量': 'volume'
-            })
-            for col in ['open', 'close', 'high', 'low', 'volume']:
-                df[col] = pd.to_numeric(df[col], errors='coerce')
-            df['date'] = pd.to_datetime(df['date'])
-            df = df.sort_values('date').reset_index(drop=True)
-            df = df.dropna()
-
-            if len(df) < 100:
-                raise ValueError(f"数据不足: {len(df)}条")
-
-            print(f"  ✅ {name}({symbol}): akshare新浪 {len(df)}条日线")
-            return df
-
-        except Exception as e:
-            print(f"  ⚠️ {name} akshare新浪获取失败(尝试{attempt+1}/{max_retry}): {e}")
-            time.sleep(1)
-
-    print(f"  ❌ {name}({symbol}) akshare新浪数据获取彻底失败")
-    return None
-
-
 def fetch_data(symbol, name, start=START_DATE, end=END_DATE, max_retry=3):
-    """获取前复权日线数据：baostock(主) → akshare(备用，加行数保护)
-    使用全局单例会话，自动处理登录"""
-    # 股票代码转换: 6位码 -> baostock格式
-    if symbol.startswith("6"):
-        bs_code = f"sh.{symbol}"
-    elif symbol.startswith("9"):
-        bs_code = f"sh.{symbol}"
-    else:
-        bs_code = f"sz.{symbol}"
-
-    start_ymd = start[0:4] + "-" + start[4:6] + "-" + start[6:8]
-    end_ymd = end[0:4] + "-" + end[4:6] + "-" + end[6:8]
-
-    # ── 尝试 1: baostock (主) ──
-    for attempt in range(max_retry):
-        try:
-            rs = query_history_k_data_plus_retry(
-                bs_code,
-                "date,open,close,high,low,volume",
-                start_date=start_ymd, end_date=end_ymd,
-                frequency="d", adjustflag="2",  # 2=前复权
-                max_retries=1, wait_seconds=1.0
-            )
-            if rs is None:
-                raise ValueError("查询失败")
-            data = []
-            max_rows = 5000
-            while rs.next() and len(data) < max_rows:
-                data.append(rs.get_row_data())
-            if len(data) >= max_rows:
-                print(f"  ⚠️ {name} baostock返回异常行数({len(data)})，疑似死循环，已截断")
-            if len(data) < 100:
-                raise ValueError(f"数据不足: {len(data)}条")
-
-            df = pd.DataFrame(data, columns=["date", "open", "close", "high", "low", "volume"])
-            for col in ["open", "close", "high", "low", "volume"]:
-                df[col] = pd.to_numeric(df[col], errors="coerce")
-            df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date").reset_index(drop=True)
-            df = df.dropna()
-
-            print(f"  ✅ {name}({symbol}): baostock {len(df)}条日线")
+    """获取前复权日线数据 - 走 DataRouter (内含降级链: 新浪日K -> pytdx -> baostock -> akshare)"""
+    router = get_router()
+    try:
+        df = router.get_daily(symbol, name, start_date=start)
+        if df is not None and len(df) >= 100:
+            print(f"  ✅ {name}({symbol}): {len(df)} 条日线 [DataRouter]")
             return df
-
-        except Exception as e:
-            print(f"  ⚠️ {name} baostock获取失败(尝试{attempt+1}/{max_retry}): {e}")
-            time.sleep(3)
-
-    # ── 尝试 2: akshare 新浪接口 (备用) ──
-    print(f"  🔄 {name}({symbol}) 切换备用源: akshare新浪接口...")
-    df = fetch_data_akshare_sina(symbol, name, start, end, max_retry)
-    if df is not None:
-        return df
-
+    except Exception as e:
+        print(f"  ⚠️ {name}({symbol}) DataRouter获取失败: {e}")
+    
     print(f"  ❌ {name}({symbol}) 所有数据源均失败")
     return None
 
@@ -897,8 +821,19 @@ def main():
 
     # ---------- 八个策略性能汇总 (含2个基准) ----------
     lines.append("## 整体概况\n")
-    header = "| 指标 | 布林带+ATR | KDJ+CCI | EMA+OBV | EMA12/26(基准C) | 纯MACD(基准B) | 买入并持有 | 沪深300 | 中证500 |"
-    sep = "|" + "|".join([":-----"] * 9) + "|"
+    # 表头根据 ALL_STRATEGIES 动态生成，避免硬编码漏列（曾漏「牛市趋势跟踪」导致 8 表头 / 9 数据错位）
+    col_names = []
+    for sname, _ in ALL_STRATEGIES:
+        if sname == "买入并持有(个股)":
+            col_names.append("买入并持有")
+        elif sname == "EMA12/26金叉(基准C)":
+            col_names.append("EMA12/26(基准C)")
+        elif sname == "纯MACD(基准B)":
+            col_names.append("纯MACD(基准B)")
+        else:
+            col_names.append(sname)
+    header = "| 指标 | " + " | ".join(col_names) + " |"
+    sep = "|" + "|".join([":-----"] * (len(col_names) + 1)) + "|"
 
     # 收集各策略平均值
     fields = ["total_return_pct", "annualized_return_pct", "annualized_volatility_pct",
