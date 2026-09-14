@@ -245,70 +245,13 @@ def sync_strategy_map(state: Dict, strategy_map: Dict, default_strategy: str = "
 # ═══════════════════════════════════════════
 # 斐波那契扩展止盈计算
 # ═══════════════════════════════════════════
-def compute_fib_targets(df: pd.DataFrame, lookback: int = 150) -> Dict:
-    """计算斐波那契扩展位止盈目标 (1.0/1.272/1.618/2.618)
-    基于最近上升波段: swing_low -> swing_high -> 回调低点
-    返回: {ratio: price, ...} 或 {}"""
-    if df is None or len(df) < 30:
+# 斐波那契扩展位止盈目标：收敛为单一实现（fib_extension_scan.compute_fib_targets）
+# 历史教训：此处与 adaptive_dual.py 曾各存一份重复实现，改一处漏一处。
+try:
+    from analysis.fib_extension_scan import compute_fib_targets  # noqa: F401
+except ImportError:  # 兜底：单文件运行/路径异常时不致命
+    def compute_fib_targets(df, lookback: int = 150) -> Dict:  # type: ignore
         return {}
-    d = df.tail(lookback).reset_index(drop=True)
-    closes = d["close"].values
-    highs = d["high"].values
-    lows = d["low"].values
-    n = len(d)
-    cur = float(closes[-1])
-
-    def is_low(idx):
-        lo, lg = max(0, idx - 4), min(n, idx + 5)
-        return lows[idx] == min(lows[lo:lg]) and lows[idx] <= closes[idx]
-
-    def is_high(idx):
-        lo, lg = max(0, idx - 4), min(n, idx + 5)
-        return highs[idx] == max(highs[lo:lg])
-
-    # 从最近往回找显著 swing 高点
-    candidate_hi = None
-    for i in range(n - 2, max(0, n - 90) - 1, -1):
-        if is_high(i) and highs[i] > cur:
-            candidate_hi = i
-            break
-    if candidate_hi is None:
-        for i in range(n - 2, max(0, n - 90) - 1, -1):
-            if is_high(i):
-                candidate_hi = i
-                break
-    if candidate_hi is None:
-        return {}
-    swing_high = float(highs[candidate_hi])
-
-    # 从该高点往回找波段起点低点
-    swing_low_i, swing_low = None, None
-    for i in range(candidate_hi - 1, max(0, candidate_hi - 70) - 1, -1):
-        if is_low(i):
-            swing_low_i, swing_low = i, lows[i]
-            break
-    if swing_low_i is None:
-        swing_low_i, swing_low = 0, float(min(lows[:candidate_hi]))
-
-    run_pct = swing_high / swing_low - 1 if swing_low > 0 else 0
-    if run_pct < 0.05:  # 波段涨幅<5% 不算有效
-        return {}
-
-    # 当前回调低点（swing_high 之后的盘中最低）
-    after = lows[candidate_hi:]
-    pullback_low = float(min(after))
-
-    # 有效性护栏：当前价不能深度跌破波段起点（>5%）
-    if cur < swing_low * 0.95:
-        return {}
-
-    # 计算扩展位
-    base = pullback_low
-    amp = swing_high - swing_low
-    targets = {}
-    for ratio in (1.0, 1.272, 1.618, 2.618):
-        targets[str(ratio)] = round(base + ratio * amp, 2)
-    return targets
 
 
 def _compute_atr_stop(price: float, atr_val: float) -> float:

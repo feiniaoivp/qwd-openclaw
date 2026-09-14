@@ -448,63 +448,13 @@ def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
 def _compute_atr_stop(price: float, atr_val: float) -> float:
     return price - 2.0 * atr_val if atr_val > 0 else 0.0
 
-def compute_fib_targets(df: pd.DataFrame, lookback: int = 150) -> Dict:
-    """计算斐波那契扩展位止盈目标 (1.0/1.272/1.618/2.618)"""
-    if df is None or len(df) < 30:
-        return {}
-    d = df.tail(lookback).reset_index(drop=True)
-    closes = d["close"].values
-    highs = d["high"].values
-    lows = d["low"].values
-    n = len(d)
-    cur = float(closes[-1])
-
-    def is_low(idx):
-        lo, lg = max(0, idx - 4), min(n, idx + 5)
-        return lows[idx] == min(lows[lo:lg]) and lows[idx] <= closes[idx]
-
-    def is_high(idx):
-        lo, lg = max(0, idx - 4), min(n, idx + 5)
-        return highs[idx] == max(highs[lo:lg])
-
-    candidate_hi = None
-    for i in range(n - 2, max(0, n - 90) - 1, -1):
-        if is_high(i) and highs[i] > cur:
-            candidate_hi = i
-            break
-    if candidate_hi is None:
-        for i in range(n - 2, max(0, n - 90) - 1, -1):
-            if is_high(i):
-                candidate_hi = i
-                break
-    if candidate_hi is None:
-        return {}
-    swing_high = float(highs[candidate_hi])
-
-    swing_low_i, swing_low = None, None
-    for i in range(candidate_hi - 1, max(0, candidate_hi - 70) - 1, -1):
-        if is_low(i):
-            swing_low_i, swing_low = i, lows[i]
-            break
-    if swing_low_i is None:
-        swing_low_i, swing_low = 0, float(min(lows[:candidate_hi]))
-
-    run_pct = swing_high / swing_low - 1 if swing_low > 0 else 0
-    if run_pct < 0.05:
+# 斐波那契扩展位止盈目标：收敛为单一实现（见 fib_extension_scan.compute_fib_targets）
+try:
+    from analysis.fib_extension_scan import compute_fib_targets  # noqa: F401
+except ImportError:
+    def compute_fib_targets(df, lookback: int = 150) -> dict:  # type: ignore
         return {}
 
-    after = lows[candidate_hi:]
-    pullback_low = float(min(after))
-
-    if cur < swing_low * 0.95:
-        return {}
-
-    base = pullback_low
-    amp = swing_high - swing_low
-    targets = {}
-    for ratio in (1.0, 1.272, 1.618, 2.618):
-        targets[str(ratio)] = round(base + ratio * amp, 2)
-    return targets
 
 def signal_bollinger_atr(df, params=None):
     p = dict(DEFAULT_PARAMS["bollinger"]); p.update(params or {})

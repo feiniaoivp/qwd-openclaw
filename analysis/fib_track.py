@@ -27,7 +27,7 @@ WS = "/Users/duguke/.openclaw/workspace"
 sys.path.insert(0, WS)
 from analysis.fib_extension_scan import (  # noqa: E402
     fetch_sina_kline, find_latest_uptrend_swing,
-    compute_fib_levels, WATCHLIST,
+    compute_fib_levels, compute_fib_time_targets, WATCHLIST,
 )
 
 STATE = os.path.join(WS, "data/fib_tracking_state.json")
@@ -48,6 +48,7 @@ def load_state():
     return {
         "active_baseline_date": None,
         "baseline": {},      # {symbol: {levels:{1.0..2.618}, swing_high, swing_low, pullback_low}}
+        "time_baseline": {}, # {symbol: {as_of, next_window, confluence}} —— 与价格基线同时锁定, 不回改
         "touched": {},       # {symbol: {level:{'touch_date','touch_price'}}}
         "outcomes": {},      # {symbol: [(level, touch_date, touch_price, outcome, date, price, note)]}
         "daily": [],         # 日志
@@ -67,6 +68,34 @@ def fetch_retry(symbol, tries=4):
             return df
         time.sleep(6 * (i + 1))  # 退避：6s,12s,18s,24s
     return None
+
+
+def lock_time_baseline(baseline: dict, locked_at: str) -> dict:
+    """为已锁定的价格基线并行锁定【斐波时间线基线】。
+
+    原则与价格基线一致：一旦锁定不再回改（避免"射箭画靶"）。
+    仅记录锚点与未来汇聚窗口，作时点预警参考，不作方向信号。
+
+    返回: {symbol: {"as_of", "as_of_idx", "next_window", "confluence", "locked_at"}}
+    """
+    out = {}
+    for sym, rec in baseline.items():
+        df = fetch_retry(sym)
+        if df is None or len(df) < 60:
+            continue
+        ti = compute_fib_time_targets(df)
+        if not ti:
+            continue
+        out[sym] = {
+            "name": rec.get("name", WATCHLIST.get(sym, sym)),
+            "as_of": ti.get("as_of"),
+            "as_of_idx": ti.get("as_of_idx"),
+            "next_window": ti.get("next_window"),
+            "confluence": ti.get("confluence", []),
+            "note": ti.get("note", ""),
+            "locked_at": locked_at,
+        }
+    return out
 
 
 def lock_baseline(s):
@@ -91,13 +120,19 @@ def lock_baseline(s):
             "levels": {k: v for k, v in levels.items()},
             "locked_at": today,
         }
+    # 并行锁定时间维度基线（与价格基线同原则：锁定后不回改）
+    time_baseline = lock_time_baseline(baseline, today)
     s["active_baseline_date"] = today
     s["baseline"] = baseline
+    s["time_baseline"] = time_baseline
     s["daily"].append({"date": today, "kind": "lock",
-                       "n": len(baseline), "err": errs})
+                       "n": len(baseline), "err": errs,
+                       "time_n": len([v for v in time_baseline.values() if v.get("next_window")])})
     save_state(s)
     print(f"📌 已锁定止盈位基线 {today}：{len(baseline)} 只有效"
           f"{('，shutdown:'+str(errs) if errs else '')}")
+    n_tw = sum(1 for v in time_baseline.values() if v.get("next_window"))
+    print(f"⏱️  已并行锁定斐波时间线基线：{n_tw} 只存在未来汇聚窗口")
 
 
 def verify(s):
@@ -240,7 +275,18 @@ def build_take_profit_section(current_prices: dict = None) -> str:
     for name, sym, price, zone, note in sorted(hits, key=lambda x: -x[2]):
         lines.append(f"• {name}({sym}) 现价{price:.2f}｜{zone}｜{note}")
     lines.append("")
+    # ── 斐波时间线（时点预警·仅辅助，不作方向）──
+    tbase = st.get("time_baseline") or {}
+    tw_hits = [(v.get("name", s), s, v["next_window"])
+               for s, v in tbase.items() if v.get("next_window")]
+    if tw_hits:
+        lines.append("⏱️ 变盘时点预警（斐波时间线·仅辅助）")
+        for name, sym, nw in sorted(tw_hits, key=lambda x: x[2].get("idx", 10**9))[:8]:
+            lines.append(f"• {name}({sym}) 下次汇聚窗口 {nw['window_start']}~{nw['window_end']}"
+                         f"｜{nw['hits']}源/{nw['strength']}｜{', '.join(nw['sources'][:4])}")
+        lines.append("")
     lines.append("注：仅锁定基线的止盈参考；是否兑现需结合030/MACD/CCI共振，不构成独立买卖信号。")
+    lines.append("注：时间线仅为『可能变盘时点』，方向仍须由价格指标决定（时价合一）。")
     return "\n".join(lines)
 
 
@@ -250,6 +296,12 @@ def main():
     if s.get("active_baseline_date") is None:
         lock_baseline(s)
     else:
+        # 兼容升级：旧 state 无 time_baseline 字段时补锁一次（不改动已锁定的价格基线）
+        if not s.get("time_baseline") and s.get("baseline"):
+            s["time_baseline"] = lock_time_baseline(s["baseline"], s["active_baseline_date"])
+            save_state(s)
+            n_tw = sum(1 for v in s["time_baseline"].values() if v.get("next_window"))
+            print(f"⏱️  已补锁斐波时间线基线（{s['active_baseline_date']}）：{n_tw} 只存在未来汇聚窗口")
         # 每个自然日只验证一次(避免重复计数)
         last = s["daily"][-1] if s["daily"] else {}
         if last.get("date") == today and last.get("kind") == "verify":

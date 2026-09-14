@@ -58,18 +58,24 @@ def fetch_sina_kline(symbol, datalen=150):
     except Exception:
         return None
 
-# 30只关注股 (code: 名称)
+# 35只关注股 (code: 名称) —— 2026-09-14 同步关注池
+#   撤除: 601865福莱特 / 002180奔图科技 / 300847中船汉光
+#   新增: 8 只电力设备出海
 WATCHLIST = {
     "600030": "中信证券", "601066": "中信建投", "600036": "招商银行",
     "601995": "中金公司", "000987": "越秀资本", "600584": "长电科技",
     "688981": "中芯国际", "002156": "通富微电", "002413": "雷科防务",
-    "300014": "亿纬锂能", "002466": "天齐锂业", "601865": "福莱特",
+    "300014": "亿纬锂能", "002466": "天齐锂业",
     "300285": "国瓷材料", "603308": "应流股份", "300124": "汇川技术",
     "601100": "恒立液压", "002318": "久立特材", "300719": "安达维尔",
-    "002335": "科华数据", "300748": "金力永磁", "002180": "奔图科技",
-    "300847": "中船汉光", "600160": "巨化股份", "600346": "恒力石化",
+    "002335": "科华数据", "300748": "金力永磁",
+    "600160": "巨化股份", "600346": "恒力石化",
     "000708": "中信特钢", "600660": "福耀玻璃", "600570": "恒生电子",
     "605566": "福莱蒽特", "000157": "中联重科", "601061": "中信金属",
+    # 电力设备/特高压出海 (2026-09-07 新增)
+    "600089": "特变电工", "600406": "国电南瑞", "000400": "许继电气",
+    "601179": "中国西电", "002028": "思源电气", "002270": "华明装备",
+    "002130": "沃尔核材", "600312": "平高电气",
 }
 
 # 自适应策略映射(code: 策略名)
@@ -153,6 +159,73 @@ def find_latest_uptrend_swing(df, lookback=150):
     }
 
 
+def compute_fib_targets(df, lookback: int = 150) -> dict:
+    """【权威实现·单一真相源】斐波那契扩展位止盈目标 (1.0/1.272/1.618/2.618)。
+
+    基于最近上升波段: swing_low -> swing_high -> 回调低点。
+    返回 {ratio_str: price, ...} 或 {}（无有效上升波段时）。
+
+    ⚠️ 本函数为唯一实现；portfolio_core.py / adaptive_dual.py 均从此处导入，
+    勿再各自复制（历史上两份重复实现曾导致改一处漏一处）。
+    """
+    if df is None or len(df) < 30:
+        return {}
+    d = df.tail(lookback).reset_index(drop=True)
+    closes = d["close"].values
+    highs = d["high"].values
+    lows = d["low"].values
+    n = len(d)
+    cur = float(closes[-1])
+
+    def is_low(idx):
+        lo, lg = max(0, idx - 4), min(n, idx + 5)
+        return lows[idx] == min(lows[lo:lg]) and lows[idx] <= closes[idx]
+
+    def is_high(idx):
+        lo, lg = max(0, idx - 4), min(n, idx + 5)
+        return highs[idx] == max(highs[lo:lg])
+
+    candidate_hi = None
+    for i in range(n - 2, max(0, n - 90) - 1, -1):
+        if is_high(i) and highs[i] > cur:
+            candidate_hi = i
+            break
+    if candidate_hi is None:
+        for i in range(n - 2, max(0, n - 90) - 1, -1):
+            if is_high(i):
+                candidate_hi = i
+                break
+    if candidate_hi is None:
+        return {}
+    swing_high = float(highs[candidate_hi])
+
+    swing_low_i, swing_low = None, None
+    for i in range(candidate_hi - 1, max(0, candidate_hi - 70) - 1, -1):
+        if is_low(i):
+            swing_low_i, swing_low = i, lows[i]
+            break
+    if swing_low_i is None:
+        swing_low_i, swing_low = 0, float(min(lows[:candidate_hi]))
+
+    run_pct = swing_high / swing_low - 1 if swing_low > 0 else 0
+    if run_pct < 0.05:  # 波段涨幅<5% 不算有效
+        return {}
+
+    after = lows[candidate_hi:]
+    pullback_low = float(min(after))
+
+    # 有效性护栏：当前价不能深度跌破波段起点（>5%）
+    if cur < swing_low * 0.95:
+        return {}
+
+    base = pullback_low
+    amp = swing_high - swing_low
+    targets = {}
+    for ratio in (1.0, 1.272, 1.618, 2.618):
+        targets[str(ratio)] = round(base + ratio * amp, 2)
+    return targets
+
+
 def compute_fib_levels(sw):
     """基于 回调低点 + (高-低)*fib 算扩展位。"""
     base = sw["pullback_low"]
@@ -181,6 +254,158 @@ def locate_price(price, levels):
     return "超2.618 狂热终点上方", "已突破2.618极端位，警惕见顶回落"
 
 
+# 斐波那契时间序列（交易日）
+FIB_SEQ = (1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144)
+
+
+def _find_swing_points(d, lookback_span=250, max_points=5):
+    """识别显著高低点（±4 邻域极值），返回按索引升序的 [{'kind','idx','price'}]。
+    仅用过去数据，不含未来函数。"""
+    n = len(d)
+    highs = d["high"].values
+    lows = d["low"].values
+    closes = d["close"].values
+    lo_start = max(5, n - lookback_span)  # 留出 ±4 邻域
+
+    def is_low(idx):
+        lo, lg = max(0, idx - 4), min(n, idx + 5)
+        return lows[idx] == min(lows[lo:lg]) and lows[idx] <= closes[idx]
+
+    def is_high(idx):
+        lo, lg = max(0, idx - 4), min(n, idx + 5)
+        return highs[idx] == max(highs[lo:lg])
+
+    pts = []
+    for i in range(lo_start, n - 4):
+        if is_low(i):
+            pts.append({"kind": "swing_low", "idx": int(i), "price": float(lows[i])})
+        elif is_high(i):
+            pts.append({"kind": "swing_high", "idx": int(i), "price": float(highs[i])})
+    # 去重相邻同类点、保留最近 max_points 个显著点
+    dedup = []
+    for p in pts:
+        if dedup and dedup[-1]["kind"] == p["kind"]:
+            # 同类相邻：低点取更低、高点取更高
+            better = (p["price"] < dedup[-1]["price"]) if p["kind"] == "swing_low" \
+                else (p["price"] > dedup[-1]["price"])
+            if better:
+                dedup[-1] = p
+        else:
+            dedup.append(p)
+    return dedup[-max_points:] if len(dedup) > max_points else dedup
+
+
+def compute_fib_time_targets(df, lookback=250, fib_seq=None, window=2, max_fib=144):
+    """斐波那契时间线：从显著高低点向后投射交易日序列，找未来变盘时点/汇聚窗口。
+
+    ⚠️ 仅作【时点预警辅助】，不可作方向信号；须配合价格维度"时价合一"再作决策。
+
+    参数:
+        df: 日线 DataFrame（含 date/open/high/low/close），按日期升序
+        lookback: 回看窗口行数（默认 250 ≈ 一年交易日）
+        fib_seq: 时间序列，默认 FIB_SEQ
+        window: 汇聚聚类窗口宽度（交易日，默认 ±2）
+        max_fib: 最大投射步长（截断远未来噪音，默认 144）
+
+    返回:
+        {
+          "as_of": 基准日, "as_of_idx": 基准行索引,
+          "anchors": [{anchor, anchor_date, anchor_idx, targets:[{fib,date,idx,passed}]}],
+          "confluence": [{window_start, window_end, hits, sources, strength}],
+          "next_window": 最近的未来汇聚窗口 or None,
+          "note": 免责说明
+        }
+    无有效数据时返回 {}。
+    """
+    if df is None or len(df) < 60:
+        return {}
+    d = df.tail(lookback).reset_index(drop=True)
+    n = len(d)
+    as_of_idx = n - 1
+    as_of = str(pd.Timestamp(d["date"].iloc[-1]).date())
+    seq = tuple(fib_seq) if fib_seq else FIB_SEQ
+    seq = tuple(k for k in seq if k <= max_fib)
+
+    def idx_to_date(t):
+        """索引 → 日期；超出序列尾部时按交易日外推（跳过周末，不去猜节假日）。"""
+        if t <= n - 1:
+            return str(pd.Timestamp(d["date"].iloc[t]).date())
+        last = pd.Timestamp(d["date"].iloc[-1])
+        extra = t - (n - 1)
+        cur = last
+        added = 0
+        while added < extra:
+            cur = cur + pd.Timedelta(days=1)
+            if cur.weekday() < 5:  # 周一~周五计为交易日
+                added += 1
+        return str(cur.date())
+
+    anchors_pts = _find_swing_points(d, lookback_span=lookback)
+    if not anchors_pts:
+        return {"as_of": as_of, "as_of_idx": as_of_idx, "anchors": [],
+                "confluence": [], "next_window": None,
+                "note": "未识别到显著高低点；仅时点预警，方向需配合价格指标（时价合一）"}
+
+    # ── 用法① 时间区间：每个锚点向后投射 FIB_SEQ ──
+    source_lines = []  # (idx, label)
+    anchors_out = []
+    for a in anchors_pts:
+        targets = []
+        for k in seq:
+            t = a["idx"] + k
+            targets.append({"fib": k, "idx": int(t), "date": idx_to_date(t),
+                            "passed": t <= as_of_idx})
+        anchors_out.append({
+            "anchor": a["kind"], "anchor_date": str(pd.Timestamp(d["date"].iloc[a["idx"]]).date()),
+            "anchor_idx": a["idx"], "targets": targets,
+        })
+        for k in seq:
+            t = a["idx"] + k
+            if t > as_of_idx:
+                source_lines.append((t, f"{a['kind']}@{k}"))
+
+    # ── 用法② 时间扩展：最近 3 点 A→B→C ──
+    if len(anchors_pts) >= 3:
+        A, B, C = anchors_pts[-3], anchors_pts[-2], anchors_pts[-1]
+        span = B["idx"] - A["idx"]
+        if span > 0:
+            for r in (1.272, 1.618, 2.618):
+                t = C["idx"] + round(span * r)
+                if t > as_of_idx:
+                    source_lines.append((t, f"ext({r})"))
+
+    # ── 用法③ 汇聚：按索引聚类（±window 交易日合并）──
+    source_lines.sort()
+    clusters = []
+    for t, label in source_lines:
+        if clusters and t - clusters[-1]["max"] <= window:
+            clusters[-1]["srcs"].append(label)
+            clusters[-1]["max"] = t
+        else:
+            clusters.append({"start": t, "max": t, "srcs": [label]})
+
+    confluence = []
+    for c in clusters:
+        if len(c["srcs"]) >= 2:
+            confluence.append({
+                "window_start": idx_to_date(c["start"]),
+                "window_end": idx_to_date(c["max"]),
+                "idx": c["start"],
+                "hits": len(c["srcs"]),
+                "sources": c["srcs"],
+                "strength": "high" if len(c["srcs"]) >= 3 else "medium",
+            })
+    next_window = confluence[0] if confluence else None
+
+    return {
+        "as_of": as_of, "as_of_idx": as_of_idx,
+        "anchors": anchors_out,
+        "confluence": confluence,
+        "next_window": next_window,
+        "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+    }
+
+
 def scan(symbol, name=None):
     name = name or WATCHLIST.get(symbol, symbol)
     df = fetch_sina_kline(symbol)  # 新浪日K（快、含当日），无 baostock 回退
@@ -205,6 +430,7 @@ def scan(symbol, name=None):
     zone, hint = locate_price(price, levels)
     strat = STRAT_MAP.get(symbol, "?")
 
+    time_info = compute_fib_time_targets(df)
     return {
         "symbol": symbol, "name": name, "date": dt, "price": price,
         "strategy": strat,
@@ -212,6 +438,8 @@ def scan(symbol, name=None):
         "pullback_low": sw["pullback_low"],
         "levels": levels,
         "zone": zone, "hint": hint,
+        "time_windows": (time_info or {}).get("next_window"),
+        "fib_time": time_info,
     }
 
 
