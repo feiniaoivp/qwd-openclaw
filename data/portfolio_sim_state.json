@@ -1,5 +1,5 @@
 {
-  "last_signal_date": "2026-09-11",
+  "last_signal_date": "2026-09-14",
   "positions": {
     "002318": {
       "name": "久立特材",
@@ -19,7 +19,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "特钢管"
     },
     "300014": {
       "name": "亿纬锂能",
@@ -39,7 +40,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "锂电池"
     },
     "601066": {
       "name": "中信建投",
@@ -59,7 +61,8 @@
         "max_position_pct": 0.15
       },
       "atr_stop": null,
-      "_buy_streak": 0
+      "_buy_streak": 0,
+      "direction": "券商"
     },
     "600030": {
       "name": "中信证券",
@@ -87,7 +90,8 @@
         "1.272": 29.0,
         "1.618": 29.5,
         "2.618": 30.94
-      }
+      },
+      "direction": "券商"
     },
     "300124": {
       "name": "汇川技术",
@@ -107,7 +111,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "工业自动化"
     },
     "601995": {
       "name": "中金公司",
@@ -127,7 +132,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite"
+      "bucket": "satellite",
+      "direction": "券商"
     },
     "600584": {
       "name": "长电科技",
@@ -147,7 +153,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "半导体封测"
     },
     "002156": {
       "name": "通富微电",
@@ -167,7 +174,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite"
+      "bucket": "satellite",
+      "direction": "半导体封测"
     },
     "002466": {
       "name": "天齐锂业",
@@ -187,7 +195,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "锂资源"
     },
     "600036": {
       "name": "招商银行",
@@ -207,7 +216,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite"
+      "bucket": "satellite",
+      "direction": "银行"
     },
     "600570": {
       "name": "恒生电子",
@@ -227,7 +237,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "金融IT"
     },
     "605566": {
       "name": "福莱蒽特",
@@ -247,11 +258,12 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite"
+      "bucket": "satellite",
+      "direction": "消费电子"
     },
     "000987": {
       "name": "越秀资本",
-      "strategy": "macd",
+      "strategy": "bollinger",
       "position": false,
       "entry_price": 7.71,
       "entry_date": "2026-08-26",
@@ -267,7 +279,8 @@
         "max_position_pct": 0.15
       },
       "atr_stop": null,
-      "_buy_streak": 0
+      "_buy_streak": 0,
+      "direction": "基建金融"
     },
     "603308": {
       "name": "应流股份",
@@ -287,7 +300,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "特材管材"
     },
     "300285": {
       "name": "国瓷材料",
@@ -308,7 +322,8 @@
       "atr_stop": null,
       "_buy_streak": 0,
       "_stop_cooldown_days": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "特种陶瓷"
     },
     "002413": {
       "name": "雷科防务",
@@ -336,11 +351,12 @@
         "1.272": 9.17,
         "1.618": 9.48,
         "2.618": 10.39
-      }
+      },
+      "direction": "军工电子"
     },
     "688981": {
       "name": "中芯国际",
-      "strategy": "ema_cross",
+      "strategy": "kdj_cci",
       "position": false,
       "entry_price": 0,
       "entry_date": null,
@@ -356,7 +372,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "半导体晶圆"
     },
     "000157": {
       "name": "中联重科",
@@ -376,7 +393,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite"
+      "bucket": "satellite",
+      "direction": "工程机械"
     },
     "300719": {
       "name": "安达维尔",
@@ -396,7 +414,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite"
+      "bucket": "satellite",
+      "direction": "连接器"
     },
     "601061": {
       "name": "中信金属",
@@ -416,7 +435,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite"
+      "bucket": "satellite",
+      "direction": "有色贸易"
     },
     "600660": {
       "name": "福耀玻璃",
@@ -436,7 +456,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "汽车玻璃"
     },
     "002335": {
       "name": "科华数据",
@@ -456,7 +477,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "数据中心"
     },
     "601100": {
       "name": "恒立液压",
@@ -476,7 +498,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "高端液压"
     },
     "600160": {
       "name": "巨化股份",
@@ -496,7 +519,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "氟化工"
     },
     "600346": {
       "name": "恒力石化",
@@ -516,7 +540,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "炼化一体化"
     },
     "000708": {
       "name": "中信特钢",
@@ -536,7 +561,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite"
+      "bucket": "satellite",
+      "direction": "特钢"
     },
     "300748": {
       "name": "金力永磁",
@@ -556,7 +582,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "稀土永磁"
     },
     "000400": {
       "name": "许继电气",
@@ -576,7 +603,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "电力设备出海"
     },
     "002130": {
       "name": "沃尔核材",
@@ -596,11 +624,12 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "电力设备出海"
     },
     "002270": {
       "name": "华明装备",
-      "strategy": "ema_cross",
+      "strategy": "ema_obv",
       "position": false,
       "entry_price": 0,
       "entry_date": null,
@@ -616,7 +645,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "电力设备出海"
     },
     "600089": {
       "name": "特变电工",
@@ -636,7 +666,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "电力设备出海"
     },
     "600312": {
       "name": "平高电气",
@@ -656,7 +687,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "电力设备出海"
     },
     "600406": {
       "name": "国电南瑞",
@@ -676,7 +708,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "电力设备出海"
     },
     "601179": {
       "name": "中国西电",
@@ -696,7 +729,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "电力设备出海"
     },
     "002028": {
       "name": "思源电气",
@@ -716,7 +750,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core"
+      "bucket": "core",
+      "direction": "电力设备出海"
     }
   }
 }

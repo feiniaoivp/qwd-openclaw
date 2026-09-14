@@ -156,6 +156,13 @@ ADJUSTMENT_GUIDE = """
    }
 """
 
+# 方向级显式额度（金额硬顶, 覆盖公式推导值）
+# 用途: 对指定方向设定独立资金上限, 该方向分配额 = min(公式值, 此上限)
+# 维护: 2026-09-14 用户指定 电力设备出海 = ¥200,000
+DIRECTION_EXPLICIT_CAP = {
+    "电力设备出海": 200_000,
+}
+
 # 方向分类映射（监控池股票 -> 方向）
 STOCK_DIRECTION_MAP = {
     # 半导体/硬科技
@@ -435,6 +442,10 @@ class PositionSizer:
         for direction, count in dir_counts.items():
             share = count / total_stocks if total_stocks > 0 else 0
             dir_limit = min(total_limit * DIRECTION_MAX_RATIO, available * share)
+            # 显式方向硬顶: 该方向分配额不超过 DIRECTION_EXPLICIT_CAP 指定金额
+            cap = DIRECTION_EXPLICIT_CAP.get(direction)
+            if cap is not None:
+                dir_limit = min(dir_limit, cap)
             alloc[direction] = round(max(0, dir_limit - used_by_dir.get(direction, 0)), 2)
 
         return alloc

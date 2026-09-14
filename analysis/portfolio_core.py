@@ -82,7 +82,7 @@ STOCKS = [
 # 030 模块（可选导入）
 try:
     from analysis.fatal_risk_detector import FatalRiskDetector
-    from analysis.position_sizer import PositionSizer, load_market_context as load_position_context
+    from analysis.position_sizer import PositionSizer, load_market_context as load_position_context, STOCK_DIRECTION_MAP
     from analysis.signal_arbitrator import SignalArbitrator, RawSignal, SignalAction
     from analysis.moat_factor import calc_moat_score, is_core_moat_stock
     HAS_030_MODULES = True
@@ -224,6 +224,7 @@ def init_position(symbol: str, name: str, strategy: str) -> Dict:
         "_new_strategy": None,
         "fib_targets": {},
         "bucket": "unknown",
+        "direction": STOCK_DIRECTION_MAP.get(symbol, "其他") if HAS_030_MODULES else "其他",
         "atr_params": {"stop_mult": ATR_STOP_MULT, "risk_per_trade": 0.01, "max_position_pct": 0.15},
     }
 
