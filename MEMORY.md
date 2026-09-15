@@ -72,6 +72,7 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **注意:** 机电B股(900925)在baostock上无数据，已知待处理。
 
 ### Lessons Learned
+*   **[2026-09-16]:** 批量代码审计的高效组合 = **AST 未定义名扫描**（零依赖轻量 pyflakes 替代） + **逐文件 import 冒烟测试**。本次一轮即抓出 4 处真实缺陷：`backtest_power_overseas.py` 模块级 NameError（WORKSPACE/log 在使用后才定义 + `Falsee` 拼写错误 → 该脚本 **import 即崩、从未成功运行过**）、`challenge_review.py` except 分支调用未定义的 `log`（错误路径本身也是坏的，掩盖真实原因）、`backtest_strategies.py` 护栏口径错误（`int(avg_wr*n)/n` 小样本取整把 58.9% 压成 40%，全策略误判未过）、`validate_strategies.py` 日期口径不一致 + `main()` 传参遗漏。**通用规则：模块级代码引用的名字必须在其上方定义（配置/logger 提到最前）；比率统计不要 int 取整后再除回去；`main()` 参数化重构必须同步 `__main__` 传参。** 提交 57ace23。
 *   **[2026-09-15]:** 回测判定必须在**判定器自身的自然命中率**之上做**随机基准对照** —— 单一绝对阈值（如"命中率≥40%通过"）在「宽窗口 + 宽松判定器」组合下必然失效。实例：斐波那契时间线自称 62.84% 命中通过，实测随机窗口也是 63.34%（超额 -0.35pct，95%CI 含0）；根因是 `detect_reversal` 的「结构破坏/趋势加速」判据在 20+ 交易日窗口上本身就有 ~63% 自然命中率。**这是"射箭画靶"的另一种形态：不是改靶，而是选了个必中的判定器。**
 *   **[2026-09-15]:** 回测脚本"为避免导入依赖"而**本地复刻生产函数**是危险反模式 —— 回测验的 ≠ 生产跑的（fib_time_backtest 复刻 compute_fib_time_targets，而 P1.5 刚消除该重复）。回测必须 import 生产实现。
 *   **[2026-09-15]:** 写回测报告时，判定段必须显式列出**随机基准命中率 + 超额 + 95%CI + 是否显著**，"命中率 X%" 单独一个数字不构成证据。
@@ -732,25 +733,19 @@ This file serves as your curated long-term memory, storing significant events, d
 *   逐日窗口重算的性能向量化（需重写全部 `SIGNAL_FUNCS`）暂不做。
 *   09-13 工作区大量 M/??（后经 git 提交收口，见上 Git 提交链）。
 
-## Promoted From Short-Term Memory (2026-09-15)
+## Promoted From Short-Term Memory (2026-09-16)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-09-10-weekly-review.md:11:12 -->
-- 周六复盘 2026-09-10: 📊 本周成交: 买入 1 笔 | 卖出 1 笔 卖出盈亏: ¥+11,714 | 胜率 1/1 (100%) [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-10-weekly-review.md:11-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-10-weekly-review.md:14:17 -->
-- 周六复盘 2026-09-10: 📋 近期日报文件: overseas_dual_factor_2026-09-02.md 2026-09-09_signal_audit.md 2026-09-09_premarket_report.md [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-10-weekly-review.md:14-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-10-weekly-review.md:19:22 -->
-- 周六复盘 2026-09-10: 🔔 盘中预警记录: 29 条 break_below:600584: 68.64 break_below:605566: 25.1 break_below:002180: 16.75 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-10-weekly-review.md:19-22]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-10-weekly-review.md:6:6 -->
-- 周六复盘 2026-09-10: 💼 模拟盘持仓: 1/35 只 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-10-weekly-review.md:6-6]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-10-weekly-review.md:8:9 -->
-- 周六复盘 2026-09-10: 📈 持仓明细 (按收益率): 雷科防务(002413): 盈亏 ¥+0 (+0.00%) 策略:ema_cross [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-10-weekly-review.md:8-9]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-10.md:11:14 -->
-- 06:01 — Heartbeat 检查（盘前，静默）: 周四交易日盘前。当前时段 cron 健康：06:00 每日盘前深度分析报告 ok、06:00 记忆维护-周四 ok、06:01 记忆维护-完整蒸馏 in 58m、技能版本监控 in 1h。昨日下午 18:30 收盘 pipeline 全 ok（含 zhonglian-monitor-close 恢复后正常）。; 唯一已知 error 仍是周末 weekly 两项（weekly-review-trading 4x / weekly-backtest-pipeline 3x，last 09-05），下次触发本周六 06:00，非今日关注。; DeepSeek 余额 **¥3.70**（较 09-09 ¥5.85 再降），预算吃紧，避免大重跑，观察后续充值。; HEARTBEAT.md 仅注释 → 保持静默不打扰。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-10.md:11-14]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-10.md:17:19 -->
-- 07:00 — 记忆系统完整维护 (cron memory-maintenance-check) ✅: **蒸馏更新**：MEMORY.md 待办看板(至09-10)保持当前；新增「2026-09-10 完整维护补充记录」区块——①F-2 residual 澄清(日期格式已修但真实双指数沪深300==中证500==个股buy&hold仍走兜底)；②LLM 余额下降趋势(09-09 ¥5.85→09-10 ¥3.70)；③dreaming 晋升连续3日回捞旧物未promote当日高价值事件的行为规律；④weekly-review-2026-09-10 归档链接。; **ontology error-inject --min-count 2**：无输出 exit=0，无 ≥2 次高频错误模式需注入（健康）。; **推 Telegram 626141741**：维护摘要（cron isolated 会话无 message 工具，规范要求仅输出摘要、注明应投递处，不私自外发）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-10.md:17-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-10.md:22:23 -->
-- 08:30 — Heartbeat 检查（盘前，静默）: 08:30 盘前，距开盘 1h。07:00 记忆维护已完成、06:01 已做盘前核查，HEARTBEAT.md 注释态配置。; DeepSeek 余额 ¥3.56（预算吃紧，避免大重跑）。无新增事项需打扰 → HEARTBEAT_OK。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-10.md:22-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-10.md:4:7 -->
-- 04:00 — Dreaming Daily Report（cron a8c18aed，第十期）: 03:00 dreaming 正常（**连续第 26 期无回归**）。deep 本夜 rewrote recall store（09-03 后再次）+ ranked 10 / **promoted 10** 到 MEMORY.md（新区块 **line 628** `## Promoted From Short-Term Memory (2026-09-10)`，写入已核对落盘：10 条实存——来源 09-06-weekly-review 5 / 09-05 4 / 07-20 1，deep 回捞旧物再固化，未 promote 09-09 当日高价值事件）/ REM 1 主题（`heartbeat`，conf 0.91）——安静巩固夜。; **§6.0 基建批量闭环（09-09 晚头条）**：F-1 portfolio_sim crash 修复（signal_bull_trend 改 ema10/20/60），09-09 连续第 2 天产出；F-2 backtest 日期格式修复，买入并持有回到真实 -1.07%；param_tune 超时解决（FAST_GRIDS+缓存+bs 复用 ~3min），log 完整落地；weekly_full_pipeline 09-09 晚 8 步 250s 全跑通。; ⚠️ 仍半闭环：F-2... [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-10.md:4-7]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-10.md:8:8 -->
-- 04:00 — Dreaming Daily Report（cron a8c18aed，第十期）: 产出 `memory/dreaming/daily-report-2026-09-10.md`（文件归档，无投递）。已在 DREAMS.md 追加 09-10 04:00 条目。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-10.md:8-8]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-10-weekly-review.md:3:4 -->
+- 周六复盘 2026-09-10: 📅 周六复盘 2026-09-10 周期: 2026-09-04 ~ 2026-09-10 [score=0.809 recalls=0 avg=0.620 source=memory/2026-09-10-weekly-review.md:3-4]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-11.md:11:13 -->
+- [cron] 每日Obsidian→投资理念归纳 (19:30): 24h真实增量3篇: MACD进阶 / RSI压缩剥头皮 / 斐波那契时间预测; 无head级新增规则、无规则级冲突; 新增修正候选⑫(MACD多周期+动能分离+裸K) ⑬(斐波时间线作变盘时点预警); RSI定位⑧连续第5日强化(与09-10回测实证张力持续); 归档: wiki/sources/investment-philosophy-2026-09-11.md; MEMORY.md「投资理念归纳」区块已更新(最新2026-09-11); Telegram已推送(chat_id 626141741, ok=True) [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-11.md:11-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-11.md:16:19 -->
+- 20:23–20:40 — 🔴 U+FFFD 编码污染根因修复（source-level，非渲染问题）: **用户反馈**：挑战质疑报告里信号标签出现乱码（`���🟡 关注`、`�招商银行`）。 **根因**：不是编码转换 bug，是**源码字面量被写坏**——`analysis/service.py` 中直接硬编码 `level = "���🟢 � 强烈�买入"`。约 08-04 起某次批量"美化"编辑（加 emoji/装饰空格）导致字节损坏， 污染固化进源码，此后每日产出均继承。波及 **199 个文件**、**199 处**。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-11.md:16-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-11.md:20:20 -->
+- 20:23–20:40 — 🔴 U+FFFD 编码污染根因修复（source-level，非渲染问题）: **修复 1+2+3+4**： [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-11.md:20-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-11.md:21:22 -->
+- 20:23–20:40 — 🔴 U+FFFD 编码污染根因修复（source-level，非渲染问题）: 定位：`service.py` 为信号标签源头；`prompts/risk_instruction.txt` 是喂给 LLM 的风险规则（本身乱码）; 清源 7 个核心文件：service.py(142→0) / agent/nodes.py(101→0) / risk_instruction.txt(41→0) / [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-11.md:21-22]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-11.md:4:7 -->
+- 04:00 — Dreaming Daily Report（cron a8c18aed，第十一期）: 03:00 dreaming 正常（**连续第 27 期无回归**）。deep 本夜 rewrote recall store（**连续第 2 夜**）+ ranked 3 / **promoted 3** 到 MEMORY.md（新区块 **line 662** `## Promoted From Short-Term Memory (2026-09-11)`，已核对落盘 3 条实存——来源 09-06-weekly-review 1 / 09-06 2，**连续第 3 夜回捞 09-06 旧物，未 promote 09-10 当日高价值事件**）/ REM 4 主题（weekly-review 同源分词噪声，conf 0.95 但非真实真理）——安静巩固夜。; 📌 **头条：09-10 用户侧基建变更提交 guard 快照**——09-10 14:52 git 提交 `019b40f`（「op CLI登录、guard快照补全、F-2双指数真实数据、F-5资金口径复核」）+ guard tag `guard/20260910-145303-...`。guard 快照断档待办**部分处理**（近 30 天首次）。; ⚠️ **「变更已提交」≠「产物已生效」**：①F-2 声称修双指数，但 09-10 回测沪深300==中证500==61.65%... [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-11.md:4-7]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-11.md:8:8 -->
+- 04:00 — Dreaming Daily Report（cron a8c18aed，第十一期）: 产出 `memory/dreaming/daily-report-2026-09-11.md`（文件归档，无投递）。已在 DREAMS.md 追加 09-11 04:00 条目。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-11.md:8-8]
