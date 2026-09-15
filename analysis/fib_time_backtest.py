@@ -16,8 +16,11 @@
   1. 删除本地复刻 compute_fib_time_targets_local —— 回测必须调用生产实现
      (analysis.fib_extension_scan.compute_fib_time_targets)，否则验证与生产漂移。
   2. 原「命中率 ≥ 40% → ✅通过」判定被证伪：detect_reversal 判定器本身在
-     20+ 交易日窗口上就有 ~63% 自然命中率，与随机窗口无差异（实测 -0.06pct）。
+     20+ 交易日窗口上就有 ~63% 自然命中率，与随机窗口无差异（实测 -0.35pct）。
      现改为以「超额 = Fib − 随机」为判定核心。
+  3. 生产侧新增窗口过滤（MIN_FIB_FOR_WINDOW / MIN_WINDOW_HITS /
+     MIN_WINDOW_LEAD_DAYS，详见 fib_extension_scan.py）与 hits 去重，
+     本回测因 import 生产实现而自动沿用；随机对照同步使用相同窗口长度。
 
 输出：JSON 结果 + Markdown 报告
 """
@@ -502,7 +505,7 @@ def run_backtest():
         f.write(f"| 是否显著高于随机 | {'✅ 是' if significant else '❌ 否'} |\n\n")
 
         warn_note = ("命中率数值本身不是有效性证据：判定器 detect_reversal 结构破坏/趋势加速"
-                     "判据在 20+ 交易日窗口上本就有约 63% 的自然命中率。"
+                     "判据在 20+ 交易日窗口上本就有约 60-63% 的自然命中率（见下方随机基准行）。"
                      "有效性只能由「超额 = Fib − 随机」判断。")
         f.write(f"> ⚠️ {warn_note}\n\n")
         
@@ -539,10 +542,11 @@ def run_backtest():
                     f"虽显著但 <15pct，仅作报告辅助，不进决策\n")
         else:
             f.write(f"❌ **弃用**：Fib 命中率 {hit_rate:.2%} 与随机基准 {rnd_rate:.2%} "
-                    f"无显著差异（超额 {excess_pct:+.2f} pct，95%CI [{ci_lo*100:+.2f}, {ci_hi*100:+.2f}] 含 0）。\n")
+                    f"无显著差异或更差（超额 {excess_pct:+.2f} pct，"
+                    f"95%CI [{ci_lo*100:+.2f}, {ci_hi*100:+.2f}]）。\n")
             f.write(f"   该工具不提供超出随机选日的预测信息量，归档为无效工具，不得进入决策链。\n")
         f.write(f"\n> 判定口径已于 2026-09-15 修订：原「命中率 ≥ 40% → 通过」标准无效，"
-                f"因判定器本身自然命中率约 63%。现以「显著高于随机基准」为准。\n")
+                f"因判定器本身自然命中率约 60-63%。现以「显著高于随机基准」为准。\n")
 
         f.write(f"\n## 随机基准对照（同股票/同基准日/同窗口长度，随机偏移 1~40 交易日）\n\n")
         f.write(f"| 组别 | 窗口数 | 命中数 | 命中率 |\n|------|--------|--------|--------|\n")

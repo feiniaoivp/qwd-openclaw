@@ -257,6 +257,55 @@ def locate_price(price, levels):
 # 斐波那契时间序列（交易日）
 FIB_SEQ = (1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144)
 
+# ── 2026-09-15 修复参数 ──
+# 背景：原实现下 `next_window` 几乎永远 = 基准日+1 ——
+#   fib=1/2/3 这类最短时间线语义上近乎无信息，却因"最近"总排第一，
+#   成为 17/27 只股票的"第一汇聚窗口"，污染了整个展示排序。
+MIN_FIB_FOR_WINDOW = 5      # 汇聚窗口至少含一条 fib>=5 的来源，剔除纯 fib1/2/3 伪窗口
+MIN_WINDOW_HITS = 2         # 至少 2 条来源才算汇聚
+MIN_WINDOW_LEAD_DAYS = 3    # 窗口起点须距基准日 >=3 个交易日（避免"明天就变盘"）
+
+
+def _next_trade_dates_after(last_date, k):
+    """返回 last_date 之后的第 1..k 个推算交易日（单次生成，供外推用）。
+    仅工作日，不避节假日（A股节假日需外部日历；此处为近似，已在输出标注 approximate）。
+    """
+    out, cur = [], pd.Timestamp(last_date)
+    while len(out) < k:
+        cur = cur + pd.Timedelta(days=1)
+        if cur.weekday() < 5:
+            out.append(cur)
+    return out
+
+
+# 简易 A股节假日表（元旦/春节/清明/劳动/端午/中秋/国庆长假；尽量覆盖回测与近期）
+# 用途：避免把 10-01 之类休市日当作交易日。不追求全量精确，宁保守（多休少开）。
+_CN_HOLIDAYS = {
+    # 2026
+    "2026-01-01", "2026-01-02",
+    "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20",
+    "2026-04-06", "2026-04-07",
+    "2026-05-01", "2026-05-04", "2026-05-05",
+    "2026-06-19",
+    "2026-09-25",
+    "2026-10-01", "2026-10-02", "2026-10-05", "2026-10-06", "2026-10-07", "2026-10-08",
+    # 2025
+    "2025-01-01", "2025-01-28", "2025-01-29", "2025-01-30", "2025-01-31",
+    "2025-02-03", "2025-02-04", "2025-04-04", "2025-05-01", "2025-05-02", "2025-05-05",
+    "2025-06-02", "2025-10-01", "2025-10-02", "2025-10-03", "2025-10-06", "2025-10-07", "2025-10-08",
+    # 2024
+    "2024-01-01", "2024-02-12", "2024-02-13", "2024-02-14", "2024-02-15", "2024-02-16",
+    "2024-04-04", "2024-04-05", "2024-05-01", "2024-05-02", "2024-05-03", "2024-06-10",
+    "2024-09-16", "2024-09-17", "2024-10-01", "2024-10-02", "2024-10-03", "2024-10-04", "2024-10-07",
+}
+
+
+def _is_trade_day(ts):
+    ts = pd.Timestamp(ts)
+    if ts.weekday() >= 5:
+        return False
+    return str(ts.date()) not in _CN_HOLIDAYS
+
 
 def _find_swing_points(d, lookback_span=250, max_points=5):
     """识别显著高低点（±4 邻域极值），返回按索引升序的 [{'kind','idx','price'}]。
@@ -311,11 +360,19 @@ def compute_fib_time_targets(df, lookback=250, fib_seq=None, window=2, max_fib=1
         {
           "as_of": 基准日, "as_of_idx": 基准行索引,
           "anchors": [{anchor, anchor_date, anchor_idx, targets:[{fib,date,idx,passed}]}],
-          "confluence": [{window_start, window_end, hits, sources, strength}],
-          "next_window": 最近的未来汇聚窗口 or None,
+          "confluence": [{window_start, window_end, hits, raw_hits, sources, strength}],
+          "next_window": hits 最大的未来汇聚窗口 or None,
+          "calendar_approximate": True,  # 未来日期按粗粒度节假日表外推，非交易所日历
+          "filters": {min_fib_for_window, min_window_hits, min_window_lead_days},
           "note": 免责说明
         }
     无有效数据时返回 {}。
+
+    过滤规则（2026-09-15 新增，修复「next_window 永远=明天」伪窗口）:
+      - 汇聚至少 MIN_WINDOW_HITS 条【去重后】来源（同锚点多条 fib 只算 1 个来源）
+      - 窗口须含至少一条 fib >= MIN_FIB_FOR_WINDOW（排除纯 fib1/2/3 伪汇聚）
+      - 窗口起点距基准日 >= MIN_WINDOW_LEAD_DAYS 个交易日
+      - confluence 按 hits 降序（信息量优先），不再按日期/宽度
     """
     if df is None or len(df) < 60:
         return {}
@@ -327,16 +384,15 @@ def compute_fib_time_targets(df, lookback=250, fib_seq=None, window=2, max_fib=1
     seq = tuple(k for k in seq if k <= max_fib)
 
     def idx_to_date(t):
-        """索引 → 日期；超出序列尾部时按交易日外推（跳过周末，不去猜节假日）。"""
+        """索引 → 日期；超出序列尾部时按交易日外推（跳周末 + 粗粒度节假日表）。"""
         if t <= n - 1:
             return str(pd.Timestamp(d["date"].iloc[t]).date())
         last = pd.Timestamp(d["date"].iloc[-1])
         extra = t - (n - 1)
-        cur = last
-        added = 0
+        cur, added = last, 0
         while added < extra:
             cur = cur + pd.Timedelta(days=1)
-            if cur.weekday() < 5:  # 周一~周五计为交易日
+            if _is_trade_day(cur):
                 added += 1
         return str(cur.date())
 
@@ -375,6 +431,8 @@ def compute_fib_time_targets(df, lookback=250, fib_seq=None, window=2, max_fib=1
                     source_lines.append((t, f"ext({r})"))
 
     # ── 用法③ 汇聚：按索引聚类（±window 交易日合并）──
+    # hits 去重：同一锚点（同 kind 同 anchor_idx）的多个邻近 fib 投射算 1 个来源，
+    # 否则 swing_high@8 与 swing_high@34 同源却被算作 2 条独立线，系统性高估强度。
     source_lines.sort()
     clusters = []
     for t, label in source_lines:
@@ -384,17 +442,47 @@ def compute_fib_time_targets(df, lookback=250, fib_seq=None, window=2, max_fib=1
         else:
             clusters.append({"start": t, "max": t, "srcs": [label]})
 
+    def _src_key(label):
+        """来源去重键：ext(1.272) → 比值本身；swing_high@21 → 锚点种类（不含 fib）"""
+        if label.startswith("ext("):
+            return label
+        return label.split("@")[0]
+
+    def _fib_of(label):
+        if "@" in label:
+            try:
+                return int(label.split("@")[1])
+            except ValueError:
+                return 0
+        return 0
+
     confluence = []
     for c in clusters:
-        if len(c["srcs"]) >= 2:
-            confluence.append({
-                "window_start": idx_to_date(c["start"]),
-                "window_end": idx_to_date(c["max"]),
-                "idx": c["start"],
-                "hits": len(c["srcs"]),
-                "sources": c["srcs"],
-                "strength": "high" if len(c["srcs"]) >= 3 else "medium",
-            })
+        uniq = []
+        for lb in c["srcs"]:
+            if _src_key(lb) not in [ _src_key(u) for u in uniq ]:
+                uniq.append(lb)
+        hits = len(uniq)
+        if hits < MIN_WINDOW_HITS:
+            continue
+        # 伪窗口过滤：整个汇聚必须含至少一条 fib >= MIN_FIB_FOR_WINDOW 的来源
+        max_fib_in = max((_fib_of(lb) for lb in c["srcs"]), default=0)
+        if max_fib_in < MIN_FIB_FOR_WINDOW:
+            continue
+        # 起跑过滤：窗口起点须距基准日 >=MIN_WINDOW_LEAD_DAYS 个交易日
+        if c["start"] - as_of_idx < MIN_WINDOW_LEAD_DAYS:
+            continue
+        confluence.append({
+            "window_start": idx_to_date(c["start"]),
+            "window_end": idx_to_date(c["max"]),
+            "idx": c["start"],
+            "hits": hits,
+            "raw_hits": len(c["srcs"]),
+            "sources": uniq,
+            "strength": "high" if hits >= 3 else "medium",
+        })
+    # 排序：先按 hits（信息量）降序，再按日期升序 —— 不再让"最宽最无效"的窗口霸榜
+    confluence.sort(key=lambda x: (-x["hits"], x["idx"]))
     next_window = confluence[0] if confluence else None
 
     return {
@@ -402,6 +490,12 @@ def compute_fib_time_targets(df, lookback=250, fib_seq=None, window=2, max_fib=1
         "anchors": anchors_out,
         "confluence": confluence,
         "next_window": next_window,
+        "calendar_approximate": True,   # 未来日期按粗粒度节假日表外推，非交易所日历
+        "filters": {
+            "min_fib_for_window": MIN_FIB_FOR_WINDOW,
+            "min_window_hits": MIN_WINDOW_HITS,
+            "min_window_lead_days": MIN_WINDOW_LEAD_DAYS,
+        },
         "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
     }
 

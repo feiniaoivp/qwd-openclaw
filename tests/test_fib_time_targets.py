@@ -76,22 +76,52 @@ def test_no_lookahead():
 
 
 def test_confluence_has_sources():
-    """汇聚窗口须含 >=2 个来源，且 strength 与 hits 一致。"""
+    """汇聚窗口须含 >=2 个来源，且 strength 与 hits 一致；hits 已去重（hits<=raw_hits）。"""
     out = compute_fib_time_targets(_mk_df())
     for c in out["confluence"]:
         assert c["hits"] >= 2
         assert len(c["sources"]) == c["hits"]
+        # 去重：同锚点的多条 fib 只能算 1 个来源
+        assert c["hits"] <= c.get("raw_hits", c["hits"])
+        keys = [s.split("@")[0] if "@" in s else s for s in c["sources"]]
+        assert len(keys) == len(set(keys)), f"来源未去重: {c['sources']}"
         assert c["strength"] == ("high" if c["hits"] >= 3 else "medium")
 
 
-def test_next_window_nearest_monotonic():
-    """next_window 应是最靠前的未来窗口。"""
+def test_next_window_hits_priority():
+    """next_window 应按 hits 降序（信息量优先），不再让最宽的窗口霸榜。"""
     out = compute_fib_time_targets(_mk_df())
     if out["confluence"] and out["next_window"]:
         assert out["next_window"] is out["confluence"][0]
-        first_idx = out["next_window"]["idx"]
+        max_hits = out["next_window"]["hits"]
         for c in out["confluence"]:
-            assert c["idx"] >= first_idx, "next_window 必须是索引最小的窗口"
+            assert c["hits"] <= max_hits, "next_window 必须是 hits 最大的窗口"
+
+
+def test_window_filters():
+    """新增过滤：① 至少含一条 fib>=MIN_FIB_FOR_WINDOW；② 起点距基准日 >=MIN_WINDOW_LEAD_DAYS。"""
+    from analysis.fib_extension_scan import (
+        MIN_FIB_FOR_WINDOW, MIN_WINDOW_LEAD_DAYS, MIN_WINDOW_HITS)
+    out = compute_fib_time_targets(_mk_df())
+    for c in out["confluence"]:
+        assert c["hits"] >= MIN_WINDOW_HITS
+        assert c["idx"] - out["as_of_idx"] >= MIN_WINDOW_LEAD_DAYS, \
+            "窗口起点太近（“明天就变盘”伪窗口未被过滤）"
+        fibs = [int(s.split("@")[1]) for s in c["sources"] if "@" in s]
+        assert not fibs or max(fibs) >= MIN_FIB_FOR_WINDOW, \
+            "不得只由 fib1/2/3 构成汇聚窗口"
+    assert out.get("filters"), "返回体应含 filters 声明"
+
+
+def test_no_holiday_dates():
+    """交易日外推不得落在已知节假日（如国庆 10-01）。"""
+    from analysis.fib_extension_scan import _CN_HOLIDAYS
+    out = compute_fib_time_targets(_mk_df())
+    for a in out["anchors"]:
+        for tgt in a["targets"]:
+            if tgt["idx"] > out["as_of_idx"]:
+                assert tgt["date"] not in _CN_HOLIDAYS, \
+                    f"外推日期 {tgt['date']} 落在休市日"
 
 
 def test_defensive_empty():

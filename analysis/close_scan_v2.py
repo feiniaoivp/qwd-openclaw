@@ -64,6 +64,7 @@ except Exception:
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 sys.path.insert(0, WORKSPACE)
 from analysis.data_layer.router import get_router
+from analysis.fib_extension_scan import compute_fib_time_targets
 
 # ============================================================================
 # 配置常量
@@ -875,6 +876,7 @@ def main():
         "zhonglian_messages": [],
         "summary": {"strong_buy": 0, "watch": 0, "neutral": 0, "caution": 0, "strong_sell": 0, "fail_count": 0},
         "market_overview": {},
+        "fib_time_windows": [],
     }
 
     if not is_trading_day():
@@ -922,9 +924,28 @@ def main():
             if df is not None and len(df) >= 60:
                 try:
                     sig = calc_full_signal_whitelist(df)
+                    # 斐波那契时间线预警 (⚠️ 2026-09-15 经随机基准对照回测判定【与随机无差异/无效】，
+                    # 仅供观察性展示，严禁进入决策链。详见 analysis/fib_time_random_benchmark_2026-09-15.md)
+                    fib_time = compute_fib_time_targets(df)
+                    # 字段层级修正：history 文档称在 signal 内新增 fib_time，
+                    # 实际原代码挂在 watchlist_scan 条目顶层。此处两处都写，保证向后兼容。
+                    sig["fib_time"] = fib_time
+                    sig.setdefault("signal", {})["fib_time"] = fib_time
                     sig["symbol"] = sym
                     sig["name"] = item["name"]
                     output["watchlist_scan"].append(sig)
+                    # 收集时间线汇聚窗口用于汇总输出
+                    if fib_time and fib_time.get("next_window"):
+                        nw = fib_time["next_window"]
+                        output["fib_time_windows"].append({
+                            "symbol": sym,
+                            "name": item["name"],
+                            "window_start": nw["window_start"],
+                            "window_end": nw["window_end"],
+                            "hits": nw["hits"],
+                            "strength": nw["strength"],
+                            "sources": nw["sources"][:4],  # 只取前4个源
+                        })
                     lv = sig["signal"]["level"]
                     if "强烈买入" in lv: output["summary"]["strong_buy"] += 1
                     elif "关注" in lv: output["summary"]["watch"] += 1
@@ -1016,6 +1037,11 @@ def main():
         except Exception as e:
             log.error(f"中联重科分析失败: {e}")
             output["zhonglian"] = {"error": str(e)}
+
+    # 排序时间线窗口：优先 hits（去重后信息量），其次日期近远。
+    # ⚠️ 原按 (strength, window_start) 排序会把起点=基准日+1、宽度可达 15 自然日的
+    # 窗口排最前 —— 展示的恰是最宽最无效的那批。现改为 hits 优先。
+    output["fib_time_windows"].sort(key=lambda x: (-x["hits"], x["window_start"]))
 
     # bs_logout() - DataRouter 内部管理会话，无需手动登出
     print(json.dumps(output, ensure_ascii=False, indent=2, default=str))
