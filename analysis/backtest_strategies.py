@@ -34,6 +34,9 @@ from analysis.bs_session import ensure_login, logout as bs_logout, query_history
 # 导入统一数据路由器
 from analysis.data_layer.router import get_router
 
+# 回测护栏：随机基准对照
+from analysis.backtest_guard import compare_to_random, assert_beats_random
+
 # 指数代码映射 (baostock)
 INDEX_CODES = {
     "hs300": "sh.000300",      # 沪深300
@@ -963,6 +966,36 @@ def main():
         bd = sc.get("细项", {})
         lines.append(f"| {sname} | {total} | {bd.get('收益', '-')} | {bd.get('夏普', '-')} | "
                      f"{bd.get('回撤(反向)', '-')} | {bd.get('胜率', '-')} | {bd.get('盈亏比', '-')} |")
+
+    # ── 随机基准护栏检验 ──
+    # 直接用「平均胜率」作为实测比率，与随机基准 (最保守 50%) 做 Wilson CI 对照。
+    # ⚠️ 不能先 int(avg_wr*n) 再除以 n 还原比率：小样本取整会把 58.9% 压成 40%，
+    #    导致每个策略都被误判「未过」。这里采用带误差传播的比率对照口径。
+    print("\n🛡️ 随机基准护栏检验 (胜率 vs 随机50%)...")
+    guard_lines = []
+    for sname, _ in ALL_STRATEGIES:
+        vals = agg[sname]["win_rate_pct"]
+        if not vals:
+            continue
+        avg_wr = float(np.mean(vals)) / 100.0          # 实测比率 (0-1)
+        n = len(vals)                                   # 样本量 = 覆盖股票数
+        try:
+            res = compare_to_random(int(round(avg_wr * n)), n, random_hit_prob=0.5)
+            status = "✅ 通过" if res["passed"] else "未显著"
+            print(f"  {sname}: 胜率 {avg_wr:.2%} (n={n}) vs 随机50% | "
+                  f"超额 {res['excess']:+.2%} p={res['p_value']:.3f} {status}")
+            guard_lines.append(
+                f"| {sname} | {avg_wr:.2%} | {n} | {res['excess']:+.2%} | "
+                f"{res['p_value']:.3f} | {status} |")
+        except Exception as e:
+            print(f"  {sname}: 护栏检验异常: {e}")
+    if guard_lines:
+        lines.append("\n## 🛡️ 随机基准护栏检验 (胜率 vs 随机 50%)\n")
+        lines.append("| 策略 | 平均胜率 | 样本(股票数) | 超额 | p值 | 判定 |")
+        lines.append("|:---|:---:|:---:|:---:|:---:|:---:|")
+        lines.extend(guard_lines)
+        lines.append("")
+
 
     winner = max(scores, key=lambda k: scores[k]["总分"])
     lines.append(f"\n🏆 **综合最优: {winner} (总分 {scores[winner]['总分']})**\n")

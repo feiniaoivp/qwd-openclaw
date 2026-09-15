@@ -10,12 +10,15 @@
 """
 
 import os, sys, json, re, glob
+import logging
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
 AGENT_RUNS_DIR = os.path.join(WORKSPACE, "data", "agent_runs")
 DAILY_DIR = os.path.join(WORKSPACE, "analysis", "daily")
+
+log = logging.getLogger(__name__)
 
 # 编码污染护栏 (2026-09-11): 历史 run json 里可能固化了 U+FFFD 污染的信号标签,
 # 若不清洗会导致「专注」等关键词匹配静默失配、审核报告漏报矛盾。

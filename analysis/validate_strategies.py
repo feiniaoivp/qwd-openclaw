@@ -33,10 +33,13 @@ sys.path.insert(0, WORKSPACE)
 from analysis.data_layer.router import get_router
 
 # ── 复用主回测脚本的策略与模拟函数 ──
-from backtest_strategies import (
+from analysis.backtest_strategies import (
     INITIAL_CAPITAL, COMMISSION, SLIPPAGE,
     run_simulation, ALL_STRATEGIES,
 )
+
+# ── 回测护栏：随机基准对照 ──
+from analysis.backtest_guard import compare_to_random, assert_beats_random
 
 # ════════════════════════════════════════
 # MACD参数联动EMA12/26最优参数
@@ -97,51 +100,57 @@ def fetch_long_history(symbol: str, name: str, start: str, end: str) -> pd.DataF
     try:
         df = router.get_daily(symbol, name, start_date=start.replace("-", ""))
         if df is not None and len(df) >= 150:
-            # 截取日期范围
-            start_dt = pd.to_datetime(start)
-            end_dt = pd.to_datetime(end)
-            df = df[(df["date"] >= start_dt) & (df["date"] <= end_dt)]
+            # 截取日期范围（用 pd.to_datetime 保持与 router 一致的 datetime 口径，
+            # 避免依赖 pandas 对 str/str 比较的隐式行为）
+            df = df[(df["date"] >= pd.to_datetime(start)) &
+                    (df["date"] <= pd.to_datetime(end))].copy()
             if len(df) >= 150:
-                print(f"    ✅ {name}({symbol}): {len(df)} 条日线 [DataRouter]")
                 return df
     except Exception as e:
-        print(f"    ⚠️ {name}({symbol}) DataRouter获取失败: {e}")
+        print(f"  {symbol} DataRouter获取失败: {e}")
     return None
 
-def main():
-    write_map = "--write-map" in sys.argv
-    arbitrate = "--arbitrate" in sys.argv
-    stock_arg = None
-    if "--stocks" in sys.argv:
-        i = sys.argv.index("--stocks")
-        stock_arg = sys.argv[i+1].split(",")
 
+def main(stocks=None, write_map=False, arbitrate=False):
     today = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    # 预加载指数基准（用于回测基准对比）
-    router = get_router()
-    router.preload_index_benchmarks(WIN_START)
-
-    # 股票清单 (默认全量30只)
-    from backtest_strategies import STOCKS
-    stocks = [s for s in STOCKS if stock_arg is None or s[0] in stock_arg]
-
-    end = datetime.datetime.now().strftime("%Y-%m-%d")
-    print(f"🔍 跨周期多窗口验证开始 | {WIN_START} ~ {end} | {len(stocks)} 只股票")
+    if stocks is None:
+        # 从 WATCHLIST 获取 (35只)
+        from analysis.fib_extension_scan import WATCHLIST
+        stocks = list(WATCHLIST.keys())
+    
+    print(f"🔍 跨周期稳健验证开始 | {WIN_START} ~ {today} | {len(stocks)} 只股票 x 4窗口 x 6策略")
     print("=" * 70)
 
+    # ── 拉取长历史数据 (每只跑4窗口 x 6策略) ──
     results = {}
-    for sidx, (symbol, name) in enumerate(stocks):
-        print(f"\n[{sidx+1}/{len(stocks)}] {name}({symbol}) — 拉取长历史...")
-        df = fetch_long_history(symbol, name, WIN_START, end)
+    for symbol in stocks:
+        name = "未知"
+        try:
+            from analysis.fib_extension_scan import WATCHLIST
+            name = WATCHLIST.get(symbol, "未知")
+        except Exception:
+            pass
+        
+        print(f"\n[{symbol}] {name} — 拉取长历史...")
+        df = fetch_long_history(symbol, name, WIN_START, today)
         if df is None or len(df) < 150:
-            print(f"  ❌ 数据不足，跳过")
-            results[symbol] = {"error": "数据不足"}
+            print(f"  ❌ 数据不足 ({len(df) if df is not None else 0} 条)，跳过")
+            results[symbol] = {"symbol": symbol, "name": name, "error": "数据不足"}
             continue
-
-        stock_out = {"name": name, "windows": {}, "best_strategy": None}
+        
+        print(f"  ✅ {len(df)} 条日线 ({str(df['date'].min().date())} ~ {str(df['date'].max().date())})")
+        
+        stock_out = {"symbol": symbol, "name": name, "windows": {}}
+        
         for wname, years_back, _ in WINDOWS:
             wdf = slice_window(df, years_back, 0)
+            if len(wdf) < 60:
+                print(f"    {wname}: 数据不足 ({len(wdf)} 条)，跳过")
+                stock_out["windows"][wname] = {"error": "数据不足"}
+                continue
+            
+            print(f"    {wname}: {len(wdf)} 条 ({str(wdf['date'].min().date())} ~ {str(wdf['date'].max().date())})")
             wmetrics = {}
             for sname, sfunc in ALL_STRATEGIES:
                 try:
@@ -180,7 +189,7 @@ def main():
                 pts["trades"].append(m.get("trades", 0))
                 pts["cnt"] += 1
 
-        strat_points[sname] = pts
+            strat_points[sname] = pts
 
         # 计算每个策略的稳定性得分
         # 规则:
@@ -275,13 +284,19 @@ def main():
             print(f"  ⚠️ 读取 param_tune 结果失败: {e}")
 
     # ── 置信度仲裁：验证结果(跨窗口稳健) vs 调优结果(近期最优参数) ──
-    def confidence_guard(score, sharpe, trades):
+    def confidence_guard(score, sharpe, trades, hit_rate=None, total_windows=None):
         """统一的置信度护栏"""
         if score < 25:
             return False, f"得分{score}<25"
         thr = 0.4 if trades < 6 else 0.25
         if sharpe < thr:
             return False, f"夏普{sharpe}<{thr}(低笔数{int(trades)}笔需更严)"
+        # 随机基准护栏：命中率必须显著超越随机基准
+        if hit_rate is not None and total_windows is not None:
+            try:
+                assert_beats_random("命中率", int(hit_rate * total_windows), total_windows, random_hit_prob=0.63)
+            except AssertionError as e:
+                return False, f"随机基准未过: {e}"
         return True, ""
 
     if write_map or arbitrate:
@@ -390,4 +405,12 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--stocks", help="股票代码逗号分隔")
+    parser.add_argument("--write-map", action="store_true")
+    parser.add_argument("--arbitrate", action="store_true")
+    args = parser.parse_args()
+    
+    stocks = args.stocks.split(",") if args.stocks else None
+    main(stocks=stocks, write_map=args.write_map, arbitrate=args.arbitrate)

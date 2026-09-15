@@ -36,23 +36,8 @@ try:
 except Exception:
     HAS_PANDAS_TA = False
 
-# 导入真实事件数据源
-sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
-try:
-    from power_overseas_events import get_events_for_backtest
-    HAS_REAL_EVENTS = True
-except Exception as e:
-    log.warning(f"真实事件数据源不可用: {e}")
-    HAS_REAL_EVENTS = Falsee
-
-try:
-    import baostock as bs
-    HAS_BAOSTOCK = True
-except Exception:
-    HAS_BAOSTOCK = False
-
 # ============================================================================
-# 配置
+# 配置（必须在使用前定义：下方事件源导入与日志都会引用 WORKSPACE / log）
 # ============================================================================
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
@@ -65,6 +50,21 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 log = logging.getLogger(__name__)
+
+# 导入真实事件数据源
+sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
+try:
+    from power_overseas_events import get_events_for_backtest
+    HAS_REAL_EVENTS = True
+except Exception as e:
+    log.warning(f"真实事件数据源不可用: {e}")
+    HAS_REAL_EVENTS = False
+
+try:
+    import baostock as bs
+    HAS_BAOSTOCK = True
+except Exception:
+    HAS_BAOSTOCK = False
 
 # ============================================================================
 # 数据获取
