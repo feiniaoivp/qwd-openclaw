@@ -72,6 +72,11 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **注意:** 机电B股(900925)在baostock上无数据，已知待处理。
 
 ### Lessons Learned
+*   **[2026-09-15]:** 回测判定必须在**判定器自身的自然命中率**之上做**随机基准对照** —— 单一绝对阈值（如"命中率≥40%通过"）在「宽窗口 + 宽松判定器」组合下必然失效。实例：斐波那契时间线自称 62.84% 命中通过，实测随机窗口也是 63.34%（超额 -0.35pct，95%CI 含0）；根因是 `detect_reversal` 的「结构破坏/趋势加速」判据在 20+ 交易日窗口上本身就有 ~63% 自然命中率。**这是"射箭画靶"的另一种形态：不是改靶，而是选了个必中的判定器。**
+*   **[2026-09-15]:** 回测脚本"为避免导入依赖"而**本地复刻生产函数**是危险反模式 —— 回测验的 ≠ 生产跑的（fib_time_backtest 复刻 compute_fib_time_targets，而 P1.5 刚消除该重复）。回测必须 import 生产实现。
+*   **[2026-09-15]:** 写回测报告时，判定段必须显式列出**随机基准命中率 + 超额 + 95%CI + 是否显著**，"命中率 X%" 单独一个数字不构成证据。
+
+
 *   **(This section is dedicated to documenting specific lessons learned from experiences, mistakes, or observations. These are crucial for self-improvement and avoiding repetition of errors. Each entry should be clear, concise, and actionable.)*
 *   **[2026-06-29]:** When web_search is unavailable, akshare provides robust financial data capabilities for Chinese stocks, including historical prices and limited company news via stock_news_em. For parallel tasks, use sessions_spawn with isolated context and explicit model specification to avoid failover errors.
 *   **[2026-07-26]:** akshare 接口 (新浪/东方财富) 在国内网络环境可能被拦截，baostock 是稳定的备选数据源。
