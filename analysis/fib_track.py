@@ -276,17 +276,22 @@ def build_take_profit_section(current_prices: dict = None) -> str:
         lines.append(f"• {name}({sym}) 现价{price:.2f}｜{zone}｜{note}")
     lines.append("")
     # ── 斐波时间线（时点预警·仅辅助，不作方向）──
+    # ⚠️ 2026-09-15 口径修正：回测（含随机基准对照）显示该工具命中率与随机窗口
+    # 无显著差异（超额 -0.35pct，95%CI 含0）→ 已判「弃用」，此处仅保留为观察性
+    # 展示，不得作为买卖/加减仓依据。
     tbase = st.get("time_baseline") or {}
     tw_hits = [(v.get("name", s), s, v["next_window"])
                for s, v in tbase.items() if v.get("next_window")]
     if tw_hits:
-        lines.append("⏱️ 变盘时点预警（斐波时间线·仅辅助）")
+        lines.append("⏱️ 变盘时点预警（斐波时间线·⚠️已回测判定【与随机无差异/无效】，仅观察性展示）")
         for name, sym, nw in sorted(tw_hits, key=lambda x: x[2].get("idx", 10**9))[:8]:
             lines.append(f"• {name}({sym}) 下次汇聚窗口 {nw['window_start']}~{nw['window_end']}"
                          f"｜{nw['hits']}源/{nw['strength']}｜{', '.join(nw['sources'][:4])}")
         lines.append("")
     lines.append("注：仅锁定基线的止盈参考；是否兑现需结合030/MACD/CCI共振，不构成独立买卖信号。")
     lines.append("注：时间线仅为『可能变盘时点』，方向仍须由价格指标决定（时价合一）。")
+    lines.append("注：⚠️ 时间线工具经随机基准对照回测（2026-09-15）判定【无有效信息量，已弃用】，"
+                 "上述窗口仅供观察，严禁进入决策链。详见 analysis/fib_time_backtest_2026-09-15.md。")
     return "\n".join(lines)
 
 
