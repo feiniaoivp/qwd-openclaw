@@ -1,9 +1,9 @@
 {
-  "last_signal_date": "2026-09-14",
+  "last_signal_date": "2026-09-16",
   "positions": {
     "002318": {
       "name": "久立特材",
-      "strategy": "bollinger",
+      "strategy": "ema_cross",
       "position": false,
       "entry_price": 0,
       "entry_date": null,
@@ -19,7 +19,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier2",
       "direction": "特钢管"
     },
     "300014": {
@@ -40,7 +40,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier2",
       "direction": "锂电池"
     },
     "601066": {
@@ -54,7 +54,7 @@
       "total_pl": -119.52615999999944,
       "trade_count": 2,
       "_symbol": "601066",
-      "bucket": "core",
+      "bucket": "tier2",
       "atr_params": {
         "stop_mult": 2.0,
         "risk_per_trade": 0.01,
@@ -82,7 +82,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite",
+      "bucket": "tier3",
       "_last_action": "卖出",
       "_last_action_date": "2026-09-11",
       "fib_targets": {
@@ -111,7 +111,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier2",
       "direction": "工业自动化"
     },
     "601995": {
@@ -132,7 +132,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite",
+      "bucket": "tier3",
       "direction": "券商"
     },
     "600584": {
@@ -153,7 +153,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier1",
       "direction": "半导体封测"
     },
     "002156": {
@@ -174,7 +174,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite",
+      "bucket": "tier1",
       "direction": "半导体封测"
     },
     "002466": {
@@ -195,7 +195,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier1",
       "direction": "锂资源"
     },
     "600036": {
@@ -216,7 +216,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite",
+      "bucket": "tier1",
       "direction": "银行"
     },
     "600570": {
@@ -237,7 +237,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier2",
       "direction": "金融IT"
     },
     "605566": {
@@ -258,7 +258,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite",
+      "bucket": "tier2",
       "direction": "消费电子"
     },
     "000987": {
@@ -272,7 +272,7 @@
       "total_pl": -128.56483379999736,
       "trade_count": 2,
       "_symbol": "000987",
-      "bucket": "core",
+      "bucket": "tier1",
       "atr_params": {
         "stop_mult": 2.0,
         "risk_per_trade": 0.01,
@@ -300,7 +300,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier1",
       "direction": "特材管材"
     },
     "300285": {
@@ -322,7 +322,7 @@
       "atr_stop": null,
       "_buy_streak": 0,
       "_stop_cooldown_days": 0,
-      "bucket": "core",
+      "bucket": "tier1",
       "direction": "特种陶瓷"
     },
     "002413": {
@@ -343,7 +343,7 @@
       },
       "atr_stop": 7.59,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier1",
       "_last_action": "买入",
       "_last_action_date": "2026-09-08",
       "fib_targets": {
@@ -372,7 +372,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier1",
       "direction": "半导体晶圆"
     },
     "000157": {
@@ -393,7 +393,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite",
+      "bucket": "tier2",
       "direction": "工程机械"
     },
     "300719": {
@@ -414,7 +414,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite",
+      "bucket": "tier2",
       "direction": "连接器"
     },
     "601061": {
@@ -435,7 +435,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite",
+      "bucket": "tier1",
       "direction": "有色贸易"
     },
     "600660": {
@@ -456,7 +456,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier1",
       "direction": "汽车玻璃"
     },
     "002335": {
@@ -477,7 +477,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier1",
       "direction": "数据中心"
     },
     "601100": {
@@ -498,7 +498,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier1",
       "direction": "高端液压"
     },
     "600160": {
@@ -519,7 +519,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier1",
       "direction": "氟化工"
     },
     "600346": {
@@ -540,7 +540,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier1",
       "direction": "炼化一体化"
     },
     "000708": {
@@ -561,7 +561,7 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "satellite",
+      "bucket": "tier1",
       "direction": "特钢"
     },
     "300748": {
@@ -582,176 +582,8 @@
       },
       "atr_stop": null,
       "_buy_streak": 0,
-      "bucket": "core",
+      "bucket": "tier1",
       "direction": "稀土永磁"
-    },
-    "000400": {
-      "name": "许继电气",
-      "strategy": "ema_cross",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "000400",
-      "atr_params": {
-        "stop_mult": 2.0,
-        "risk_per_trade": 0.01,
-        "max_position_pct": 0.15
-      },
-      "atr_stop": null,
-      "_buy_streak": 0,
-      "bucket": "core",
-      "direction": "电力设备出海"
-    },
-    "002130": {
-      "name": "沃尔核材",
-      "strategy": "kdj_cci",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "002130",
-      "atr_params": {
-        "stop_mult": 2.0,
-        "risk_per_trade": 0.01,
-        "max_position_pct": 0.15
-      },
-      "atr_stop": null,
-      "_buy_streak": 0,
-      "bucket": "core",
-      "direction": "电力设备出海"
-    },
-    "002270": {
-      "name": "华明装备",
-      "strategy": "ema_obv",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "002270",
-      "atr_params": {
-        "stop_mult": 2.0,
-        "risk_per_trade": 0.01,
-        "max_position_pct": 0.15
-      },
-      "atr_stop": null,
-      "_buy_streak": 0,
-      "bucket": "core",
-      "direction": "电力设备出海"
-    },
-    "600089": {
-      "name": "特变电工",
-      "strategy": "ema_cross",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "600089",
-      "atr_params": {
-        "stop_mult": 2.0,
-        "risk_per_trade": 0.01,
-        "max_position_pct": 0.15
-      },
-      "atr_stop": null,
-      "_buy_streak": 0,
-      "bucket": "core",
-      "direction": "电力设备出海"
-    },
-    "600312": {
-      "name": "平高电气",
-      "strategy": "macd",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "600312",
-      "atr_params": {
-        "stop_mult": 2.0,
-        "risk_per_trade": 0.01,
-        "max_position_pct": 0.15
-      },
-      "atr_stop": null,
-      "_buy_streak": 0,
-      "bucket": "core",
-      "direction": "电力设备出海"
-    },
-    "600406": {
-      "name": "国电南瑞",
-      "strategy": "macd",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "600406",
-      "atr_params": {
-        "stop_mult": 2.0,
-        "risk_per_trade": 0.01,
-        "max_position_pct": 0.15
-      },
-      "atr_stop": null,
-      "_buy_streak": 0,
-      "bucket": "core",
-      "direction": "电力设备出海"
-    },
-    "601179": {
-      "name": "中国西电",
-      "strategy": "bollinger",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "601179",
-      "atr_params": {
-        "stop_mult": 2.0,
-        "risk_per_trade": 0.01,
-        "max_position_pct": 0.15
-      },
-      "atr_stop": null,
-      "_buy_streak": 0,
-      "bucket": "core",
-      "direction": "电力设备出海"
-    },
-    "002028": {
-      "name": "思源电气",
-      "strategy": "ema_cross",
-      "position": false,
-      "entry_price": 0,
-      "entry_date": null,
-      "shares": 0,
-      "cash": 100000,
-      "total_pl": 0.0,
-      "trade_count": 0,
-      "_symbol": "002028",
-      "atr_params": {
-        "stop_mult": 2.0,
-        "risk_per_trade": 0.01,
-        "max_position_pct": 0.15
-      },
-      "atr_stop": null,
-      "_buy_streak": 0,
-      "bucket": "core",
-      "direction": "电力设备出海"
     }
   }
 }

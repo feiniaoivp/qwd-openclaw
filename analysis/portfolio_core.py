@@ -64,7 +64,7 @@ STRATEGY_LABELS = {
     "bull_trend": "🐂 牛市趋势跟踪",
 }
 
-# ── 39只关注股（同步 memory/watchlist.md + backtest_strategies.py + 电力设备出海观察池）──
+# ── 27只关注股（权威同步 memory/watchlist.md，2026-09-17 撤除电网装备出海8只未入池标的）──
 STOCKS = [
     # 证券/金融 (5)
     ("600030","中信证券"), ("601066","中信建投"), ("600036","招商银行"),
@@ -82,12 +82,9 @@ STOCKS = [
     ("000708","中信特钢"),
     # 消费/其他 (5)
     ("600660","福耀玻璃"), ("600570","恒生电子"), ("605566","福莱蒽特"), ("000157","中联重科"), ("601061","中信金属"),
-    # 电网装备/特高压 (8) —— 2026-08-29 新增
-    ("600089","特变电工"), ("600406","国电南瑞"), ("000400","许继电气"), ("601179","中国西电"),
-    ("002028","思源电气"), ("002270","华明装备"), ("002130","沃尔核材"), ("600312","平高电气"),
-    # 电力设备/特高压出海 (8) —— 2026-09-07 新增观察池优先 (与上同组但标记独立方向)
-    # 已包含在电网装备中，此处不重复，方向在 classify_bucket/STOCK_DIRECTION_MAP 区分
 ]
+# 注：电网装备/特高压出海8只（600089/600406/000400/601179/002028/002270/002130/600312）
+#     已撤出关注池，需要时用 analysis/fib_extension_scan.py 的独立观察清单。
 
 # 030 模块（可选导入）
 try:
@@ -161,11 +158,27 @@ def save_state(state: Dict):
         json.dump(state, f, ensure_ascii=False, indent=2, default=str)
 
 
-def load_strategy_map() -> Dict[str, str]:
+def load_strategy_map() -> Dict:
     if os.path.exists(STRATEGY_MAP_FILE):
         with open(STRATEGY_MAP_FILE) as f:
             return json.load(f)
     return {}
+
+
+def get_bucket(symbol: str, strategy_map: Dict) -> str:
+    """从策略映射获取分层 bucket，兼容旧格式（仅字符串）和新格式（对象）"""
+    info = strategy_map.get(symbol)
+    if isinstance(info, dict):
+        return info.get("bucket", "tier1")
+    # 旧格式兼容：推断 bucket
+    # Tier3 股票
+    if symbol in ["600030", "601995"]:
+        return "tier3"
+    # Tier2 股票
+    if symbol in ["600570", "000400", "300124", "002318", "300719",
+                   "605566", "000157", "601066", "600312", "002130", "600406"]:
+        return "tier2"
+    return "tier1"
 
 
 def append_trade(trade: Dict):
@@ -212,7 +225,7 @@ def append_equity_snapshot(date: str, portfolio_summary: Dict, core_value: float
         writer.writerow(row)
 
 
-def init_position(symbol: str, name: str, strategy: str) -> Dict:
+def init_position(symbol: str, name: str, strategy: str, bucket: str = "tier1") -> Dict:
     """初始化单只股票持仓结构"""
     return {
         "name": name,
@@ -233,26 +246,85 @@ def init_position(symbol: str, name: str, strategy: str) -> Dict:
         "_old_strategy": None,
         "_new_strategy": None,
         "fib_targets": {},
-        "bucket": "unknown",
+        "bucket": bucket,
         "direction": STOCK_DIRECTION_MAP.get(symbol, "其他") if HAS_030_MODULES else "其他",
         "atr_params": {"stop_mult": ATR_STOP_MULT, "risk_per_trade": 0.01, "max_position_pct": 0.15},
     }
 
 
 def sync_strategy_map(state: Dict, strategy_map: Dict, default_strategy: str = "ema_cross"):
-    """同步策略映射到持仓，检测切换 → 标记强平"""
+    """同步策略映射到持仓，检测切换 → 标记强平；同时同步 bucket"""
     for sym, pos in state["positions"].items():
-        new_strat = strategy_map.get(sym, default_strategy)
+        info = strategy_map.get(sym, default_strategy)
+        if isinstance(info, dict):
+            new_strat = info.get("strategy", default_strategy)
+            new_bucket = info.get("bucket", "tier1")
+        else:
+            new_strat = info
+            new_bucket = get_bucket(sym, strategy_map)
+        
         old_strat = pos.get("strategy", new_strat)
+        old_bucket = pos.get("bucket", "tier1")
         pos["strategy"] = new_strat
+        pos["bucket"] = new_bucket
+        
         if pos.get("position") and old_strat != new_strat:
             pos["_strategy_switch_pending"] = True
             pos["_old_strategy"] = old_strat
             pos["_new_strategy"] = new_strat
             print(f"⚠️ 策略切换检测: {sym} {old_strat} -> {new_strat}，持仓中，标记强制平仓")
+        
+        # 如果 bucket 变更，记录日志
+        if pos.get("position") and old_bucket != new_bucket:
+            print(f"ℹ️ 分层变更: {sym} {old_bucket} -> {new_bucket}")
 
 
-# ═══════════════════════════════════════════
+def _force_liquidate_tier3(state: Dict, strategy_map: Dict):
+    """Tier3 股票：启动时强制清仓（仅执行一次）"""
+    tier3_symbols = [sym for sym, info in strategy_map.items() 
+                     if isinstance(info, dict) and info.get("bucket") == "tier3"]
+    for sym in tier3_symbols:
+        pos = state["positions"].get(sym)
+        if pos and pos.get("position") and not pos.get("_tier3_liquidated", False):
+            print(f"🔴 Tier3 强制清仓: {pos['name']}({sym})")
+            pos["_tier3_liquidated"] = True
+            pos["_force_sell_tier3"] = True
+
+
+def _apply_tier_filter(signal: Dict, pos: Dict, bucket: str) -> Dict:
+    """三层分层过滤：
+    - Tier1 (tier1): 禁用择时卖出，仅基本面/止盈/风控卖出
+    - Tier2 (tier2): 禁用买入信号，仅保留卖出/止损
+    - Tier3 (tier3): 强制卖出，禁用买入
+    """
+    action = signal.get("action", "持有")
+    
+    if bucket == "tier3":
+        if pos.get("_force_sell_tier3") or pos.get("position"):
+            if action == "买入":
+                signal["action"] = "持有"
+                signal["reason"] = f"🔴 Tier3禁止买入 | 原理由: {signal.get('reason', '')}"
+            elif action in ["持有", "卖出"]:
+                signal["action"] = "卖出"
+                signal["reason"] = f"🔴 Tier3强制清仓 | 原理由: {signal.get('reason', '')}"
+            pos["_force_sell_tier3"] = False
+    elif bucket == "tier2":
+        if action == "买入":
+            signal["action"] = "持有"
+            signal["reason"] = f"🟡 Tier2屏蔽买入 | 原理由: {signal.get('reason', '')}"
+    elif bucket == "tier1":
+        if action == "卖出":
+            reason = signal.get("reason", "")
+            allowed_sell_keywords = ["ATR止损", "止损", "☠️", "🟡", "🔄", "致命风险", "高风险", "策略切换", "基本面", "估值"]
+            is_allowed = any(kw in reason for kw in allowed_sell_keywords)
+            if not is_allowed:
+                signal["action"] = "持有"
+                signal["reason"] = f"🟢 Tier1禁用择时卖出 | 原理由: {reason}"
+    
+    return signal
+
+
+# ══════════════════════════════════════════
 # 斐波那契扩展止盈计算
 # ═══════════════════════════════════════════
 # 斐波那契扩展位止盈目标：收敛为单一实现（fib_extension_scan.compute_fib_targets）
@@ -784,6 +856,28 @@ def run_portfolio_scan(
     default_strategy: str = "ema_cross",
 ) -> Dict:
     """
+    统一的组合扫描入口（含三层分层逻辑）。
+    返回: {portfolio_summary, details, messages, state}
+    """
+    if today_str is None:
+        today_str = datetime.now().strftime("%Y-%m-%d")
+
+    if state is None:
+        state = load_state()
+    if strategy_map is None:
+        strategy_map = load_strategy_map()
+
+    # 刷新 030 风控
+    RiskGuard.refresh()
+    fatal_risk = RiskGuard.get_fatal_risk()
+    position_plan = RiskGuard.get_position_plan()
+
+    # 同步策略映射（含 bucket）
+    sync_strategy_map(state, strategy_map, default_strategy)
+
+    # Tier3：启动时强制清仓（仅首次）
+    _force_liquidate_tier3(state, strategy_map)
+    """
     统一的组合扫描入口。
     返回: {portfolio_summary, details, messages, state}
     """
@@ -812,12 +906,21 @@ def run_portfolio_scan(
     for sym, name in stocks:
         pos = state["positions"].get(sym)
         if pos is None:
-            pos = init_position(sym, name, strategy_map.get(sym, default_strategy))
+            # 初始化时读取 bucket
+            info = strategy_map.get(sym, default_strategy)
+            if isinstance(info, dict):
+                strat = info.get("strategy", default_strategy)
+                bucket = info.get("bucket", "tier1")
+            else:
+                strat = info
+                bucket = get_bucket(sym, strategy_map)
+            pos = init_position(sym, name, strat, bucket)
             state["positions"][sym] = pos
         pos["_symbol"] = sym
         # 每日递减止损冷却期
         RiskGuard.decay_stop_cooldown(pos)
         strat = pos["strategy"]
+        bucket = pos.get("bucket", "tier1")
         slabel = STRATEGY_LABELS.get(strat, strat)
 
         df = fetch_data_func(sym)
@@ -836,6 +939,9 @@ def run_portfolio_scan(
                             "position": pos["position"], "strategy": slabel})
             continue
 
+        # 三层分层过滤（核心逻辑）
+        signal = _apply_tier_filter(signal, pos, bucket)
+        
         # 030 风控覆盖
         signal = RiskGuard.override_signal(signal, pos)
         # 策略切换强平

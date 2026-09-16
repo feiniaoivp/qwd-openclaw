@@ -1,37 +1,110 @@
 {
-  "000157": "ema_cross",
-  "000400": "ema_cross",
-  "000708": "ema_cross",
-  "000987": "bollinger",
-  "002028": "ema_cross",
-  "002130": "kdj_cci",
-  "002156": "ema_obv",
-  "002270": "ema_obv",
-  "002318": "bollinger",
-  "002335": "macd",
-  "002413": "ema_cross",
-  "002466": "ema_obv",
-  "300014": "bull_trend",
-  "300124": "bollinger",
-  "300285": "macd",
-  "300719": "ema_cross",
-  "300748": "kdj_cci",
-  "600030": "macd",
-  "600036": "macd",
-  "600089": "ema_cross",
-  "600160": "ema_cross",
-  "600312": "macd",
-  "600346": "macd",
-  "600406": "macd",
-  "600570": "ema_cross",
-  "600584": "macd",
-  "600660": "macd",
-  "601061": "ema_obv",
-  "601066": "macd",
-  "601100": "ema_cross",
-  "601179": "bollinger",
-  "601995": "macd",
-  "603308": "ema_cross",
-  "605566": "macd",
-  "688981": "kdj_cci"
+  "000157": {
+    "strategy": "ema_cross",
+    "bucket": "tier2"
+  },
+  "000708": {
+    "strategy": "ema_cross",
+    "bucket": "tier1"
+  },
+  "000987": {
+    "strategy": "bollinger",
+    "bucket": "tier1"
+  },
+  "002156": {
+    "strategy": "ema_obv",
+    "bucket": "tier1"
+  },
+  "002318": {
+    "strategy": "ema_cross",
+    "bucket": "tier2"
+  },
+  "002335": {
+    "strategy": "macd",
+    "bucket": "tier1"
+  },
+  "002413": {
+    "strategy": "ema_cross",
+    "bucket": "tier1"
+  },
+  "002466": {
+    "strategy": "ema_obv",
+    "bucket": "tier1"
+  },
+  "300014": {
+    "strategy": "bull_trend",
+    "bucket": "tier1"
+  },
+  "300124": {
+    "strategy": "bollinger",
+    "bucket": "tier2"
+  },
+  "300285": {
+    "strategy": "macd",
+    "bucket": "tier1"
+  },
+  "300719": {
+    "strategy": "ema_cross",
+    "bucket": "tier2"
+  },
+  "300748": {
+    "strategy": "kdj_cci",
+    "bucket": "tier1"
+  },
+  "600030": {
+    "strategy": "macd",
+    "bucket": "tier3"
+  },
+  "600036": {
+    "strategy": "macd",
+    "bucket": "tier1"
+  },
+  "600160": {
+    "strategy": "ema_cross",
+    "bucket": "tier1"
+  },
+  "600346": {
+    "strategy": "macd",
+    "bucket": "tier1"
+  },
+  "600570": {
+    "strategy": "ema_cross",
+    "bucket": "tier2"
+  },
+  "600584": {
+    "strategy": "macd",
+    "bucket": "tier1"
+  },
+  "600660": {
+    "strategy": "macd",
+    "bucket": "tier1"
+  },
+  "601061": {
+    "strategy": "ema_obv",
+    "bucket": "tier1"
+  },
+  "601066": {
+    "strategy": "macd",
+    "bucket": "tier2"
+  },
+  "601100": {
+    "strategy": "ema_cross",
+    "bucket": "tier1"
+  },
+  "601995": {
+    "strategy": "macd",
+    "bucket": "tier3"
+  },
+  "603308": {
+    "strategy": "ema_cross",
+    "bucket": "tier1"
+  },
+  "605566": {
+    "strategy": "macd",
+    "bucket": "tier1"
+  },
+  "688981": {
+    "strategy": "kdj_cci",
+    "bucket": "tier1"
+  }
 }
