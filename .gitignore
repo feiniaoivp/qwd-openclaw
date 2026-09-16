@@ -2,7 +2,8 @@
 credentials/
 *.token
 scripts/secrets_to_1p.sh
-send_telegram.py
+# send_telegram.py 已纳入版本管理 (2026-09-17)
+# 安全性: 令牌存于 credentials/*.token (仍被忽略), 脚本仅含路径引用, 无硬编码密钥
 *.env
 .env.*
 *.pem
