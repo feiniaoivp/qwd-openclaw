@@ -3,6 +3,16 @@
 运行: python3 analysis/review_030_snapshot.py   (非交易日手动跑, 取上一交易日收盘)
 """
 import os, sys, json
+
+# 网络兜底：进程级 socket 默认超时（防数据源挂起导致永久阻塞）
+try:
+    from analysis.net_guard import install_default_timeout as _install_net_timeout
+    _install_net_timeout()
+except ImportError:
+    import os as _os, sys as _sys
+    _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    from analysis.net_guard import install_default_timeout as _install_net_timeout
+    _install_net_timeout()
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 import pandas as pd

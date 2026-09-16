@@ -30,6 +30,16 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
 
+# 网络兜底：进程级 socket 默认超时（防数据源挂起导致永久阻塞）
+try:
+    from analysis.net_guard import install_default_timeout as _install_net_timeout
+    _install_net_timeout()
+except ImportError:
+    import os as _os, sys as _sys
+    _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    from analysis.net_guard import install_default_timeout as _install_net_timeout
+    _install_net_timeout()
+
 warnings.filterwarnings("ignore")
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")

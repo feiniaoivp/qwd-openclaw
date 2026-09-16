@@ -22,6 +22,16 @@
 import os, sys, json, time
 from datetime import datetime
 import logging
+
+# 网络兜底：进程级 socket 默认超时（防数据源挂起导致永久阻塞）
+try:
+    from analysis.net_guard import install_default_timeout as _install_net_timeout
+    _install_net_timeout()
+except ImportError:
+    import os as _os, sys as _sys
+    _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    from analysis.net_guard import install_default_timeout as _install_net_timeout
+    _install_net_timeout()
 logging.basicConfig(level=logging.CRITICAL)
 import pandas as pd
 

@@ -43,6 +43,24 @@ TARGETS = [
     "scripts/fetch_commodity_fx.py",
     "scripts/monitor_overseas_tenders.py",
     "scripts/update_overseas_revenue.py",
+    # ── 第二批：直连 bs.login()/akshare（库内部 socket 无 timeout）的入口 ──
+    "analysis/adaptive_dual.py",
+    "analysis/backtest_power_overseas.py",
+    "analysis/deep_gh_600312.py",
+    "analysis/eval_candidates_uhv.py",
+    "analysis/factor_engine.py",
+    "analysis/fatal_risk_detector.py",
+    "analysis/build_breadth_hq.py",
+    "analysis/auction_scan.py",
+    "analysis/market_health_score.py",
+    "analysis/regime_detector.py",
+    "analysis/portfolio_core.py",
+    "analysis/premarket_report.py",
+    "analysis/power_equipment_overseas_monitor.py",
+    "analysis/power_overseas_events.py",
+    "analysis/fib_extension_scan.py",
+    "analysis/fib_time_backtest.py",
+    "analysis/compare_enhanced_strategy.py",
 ]
 
 SNIPPET = (

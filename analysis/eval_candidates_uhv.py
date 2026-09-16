@@ -13,6 +13,16 @@ fetch_long/slice_window + backtest_strategies 的 run_simulation/ALL_STRATEGIES�
 import os, sys, json, warnings, datetime
 import numpy as np
 
+# 网络兜底：进程级 socket 默认超时（防数据源挂起导致永久阻塞）
+try:
+    from analysis.net_guard import install_default_timeout as _install_net_timeout
+    _install_net_timeout()
+except ImportError:
+    import os as _os, sys as _sys
+    _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    from analysis.net_guard import install_default_timeout as _install_net_timeout
+    _install_net_timeout()
+
 warnings.filterwarnings("ignore")
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
 sys.path.insert(0, WORKSPACE)
@@ -20,7 +30,7 @@ sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
 
 import baostock as bs
 from validate_strategies import (
-    WIN_START, WINDOWS, baostock_code, slice_window,
+    WIN_START, WINDOWS, slice_window,
 )
 from backtest_strategies import run_simulation, ALL_STRATEGIES
 

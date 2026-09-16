@@ -3,6 +3,16 @@
 """国产打印机/复印机核心标的：实时行情 + 技术面 + 资金异动检测"""
 import json, urllib.request, datetime, sys
 
+# 网络兜底：进程级 socket 默认超时（防数据源挂起导致永久阻塞）
+try:
+    from analysis.net_guard import install_default_timeout as _install_net_timeout
+    _install_net_timeout()
+except ImportError:
+    import os as _os, sys as _sys
+    _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    from analysis.net_guard import install_default_timeout as _install_net_timeout
+    _install_net_timeout()
+
 # 核心标的
 STOCKS = {
     "sz002180": ("纳思达", "002180"),      # 奔图母公司
