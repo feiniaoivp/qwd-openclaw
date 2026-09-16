@@ -832,6 +832,92 @@ def run_intraday_alert_mode():
 
 
 # ============================================================================
+# 资金流采集（东财，curl_cffi Chrome TLS 指纹）
+# ============================================================================
+
+def collect_moneyflow(codes: list[str], name_map: dict[str, str], days: int = 3) -> dict:
+    """
+    采集个股 + 行业 + 北向资金流。
+
+    设计原则：**失败不阻断主流程**，任一子项异常只记录到 error 字段。
+    返回：{
+      "stocks": {code: {main, xlarge, large, main_pct, cum3, name}},
+      "industry_inflow": [...], "industry_outflow": [...],
+      "market_net_total": float,
+      "northbound": {...}, "errors": [...]
+    }
+    """
+    out: dict[str, Any] = {"stocks": {}, "errors": []}
+    try:
+        from analysis.moneyflow_em import (
+            stock_flow, industry_flow_rank, market_main_flow, northbound_summary,
+        )
+    except Exception as e:  # noqa: BLE001
+        out["errors"].append(f"moneyflow_em import: {e}")
+        return out
+
+    # ── 1) 个股主力资金流 ──
+    for code in codes:
+        try:
+            d = stock_flow(code, lmt=days)
+            if not d or not d.get("days"):
+                # 东财对少数标的（如 601995 中金公司）返回 rc=100/data=null，
+                # 属**上游数据本身缺失**，非网络/代码问题。
+                out["errors"].append(f"{code}: 上游无资金流数据(rc=100/data=null)")
+                continue
+            last = d["days"][-1]
+            cum = sum(x.get("main") or 0 for x in d["days"])
+            out["stocks"][code] = {
+                "name": name_map.get(code, d.get("name") or ""),
+                "date": last["date"],
+                "main": round((last.get("main") or 0) / 1e8, 4),
+                "xlarge": round((last.get("xlarge") or 0) / 1e8, 4),
+                "large": round((last.get("large") or 0) / 1e8, 4),
+                "main_pct": last.get("main_pct"),
+                "cum": round(cum / 1e8, 4),
+            }
+        except Exception as e:  # noqa: BLE001
+            out["errors"].append(f"{code}: {e}")
+        time.sleep(0.2)  # 东财限流保护
+
+    # ── 2) 行业板块（全市场口径首选）──
+    try:
+        mk = market_main_flow(6)
+        out["industry_inflow"] = [
+            {"name": r["name"], "main": round((r["main_net"] or 0) / 1e8, 2),
+             "pct": r.get("main_pct")} for r in mk.get("inflow_top", [])[:10]
+        ]
+        out["industry_outflow"] = [
+            {"name": r["name"], "main": round((r["main_net"] or 0) / 1e8, 2),
+             "pct": r.get("main_pct")} for r in mk.get("outflow_top", [])
+        ]
+        out["market_net_total"] = round((mk.get("net_total") or 0) / 1e8, 2)
+    except Exception as e:  # noqa: BLE001
+        out["errors"].append(f"industry: {e}")
+
+    # ── 3) 北向（注：净买入已停披，仅成交额）──
+    try:
+        nb = northbound_summary(3)
+        out["northbound"] = {
+            "available": nb.get("available", False),
+            "net_flow_discontinued": nb.get("net_flow_discontinued", False),
+            "note": nb.get("note", ""),
+            "days": [{"date": r["date"], "deal_amt": r["deal_amt"]}
+                     for r in nb.get("days", [])],
+        }
+    except Exception as e:  # noqa: BLE001
+        out["errors"].append(f"northbound: {e}")
+
+    # ── 4) 关注池资金流汇总（排序后取 TOP）──
+    if out["stocks"]:
+        ranked = sorted(out["stocks"].items(), key=lambda kv: -(kv[1].get("main") or 0))
+        out["top_inflow"] = [{"code": k, **v} for k, v in ranked[:5]]
+        out["top_outflow"] = [{"code": k, **v} for k, v in ranked[-5:]][::-1]
+
+    return out
+
+
+# ============================================================================
 # 交易日判断
 # ============================================================================
 
@@ -1042,6 +1128,17 @@ def main():
     # ⚠️ 原按 (strength, window_start) 排序会把起点=基准日+1、宽度可达 15 自然日的
     # 窗口排最前 —— 展示的恰是最宽最无效的那批。现改为 hits 优先。
     output["fib_time_windows"].sort(key=lambda x: (-x["hits"], x["window_start"]))
+
+    # ── 资金流（东财，失败不影响主流程）──
+    log.info("💰 获取主力资金流...")
+    try:
+        output["moneyflow"] = collect_moneyflow(
+            [c for c, _ in WATCHLIST],
+            {c: n for c, n in WATCHLIST},
+        )
+    except Exception as e:
+        log.warning(f"资金流获取失败: {e}")
+        output["moneyflow"] = {"error": str(e)}
 
     # bs_logout() - DataRouter 内部管理会话，无需手动登出
     print(json.dumps(output, ensure_ascii=False, indent=2, default=str))

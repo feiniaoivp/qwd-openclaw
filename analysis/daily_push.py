@@ -135,10 +135,30 @@ def format_summary(data: dict) -> str:
         for a in triggered[:5]:
             lines.append(f"  {a.get('name')}({a.get('symbol')}) {a.get('level_name')}: {a.get('msg')}")
         lines.append("")
-    
+
+    # 资金流（东财）
+    mf = data.get('moneyflow')
+    if mf and not mf.get('error'):
+        try:
+            _adir = os.path.join(WORKSPACE, 'analysis')
+            if _adir not in sys.path:
+                sys.path.insert(0, _adir)
+            from moneyflow_report import render_moneyflow, moneyflow_highlights
+            lines.append(render_moneyflow(mf).rstrip())
+            hl = moneyflow_highlights(mf)
+            if hl:
+                lines.append("")
+                lines.append("💡 资金面要点:")
+                for h in hl[:8]:
+                    lines.append(f"  {h}")
+            lines.append("")
+        except Exception as e:  # noqa: BLE001
+            lines.append(f"💰 资金流渲染失败: {e}")
+            lines.append("")
+
     lines.append("---")
     lines.append("完整 JSON 见控制台输出或日志")
-    
+
     return "\n".join(lines)
 
 

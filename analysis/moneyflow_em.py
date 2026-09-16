@@ -34,6 +34,19 @@ _IMPERSONATE = "chrome"
 _TIMEOUT = 15
 _RETRY = 4
 
+# 🔑 主机回退链（2026-09-17 实测）
+#   push2his / push2 在密集请求后会进入限流冷却（curl 56 Connection closed abruptly），
+#   而 push2delay.eastmoney.com 返回**完全相同的数据**且不易被限流。
+#   故：优先 push2delay，失败再回退 push2his。
+_FFLOW_HOSTS = [
+    "push2delay.eastmoney.com",
+    "push2his.eastmoney.com",
+]
+_CLIST_HOSTS = [
+    "push2delay.eastmoney.com",
+    "push2.eastmoney.com",
+]
+
 # 统一 UA/Referer（配合 TLS 指纹伪装）
 _HEADERS = {
     "User-Agent": ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -46,17 +59,41 @@ _UT = "b2884a393a59ad64002292a3e90d46a5"
 
 
 def _get(url: str, tries: int = _RETRY) -> Optional[dict]:
-    """带指数退避重试的 GET（curl_cffi + Chrome TLS 指纹）"""
+    """带指数退避重试的 GET（curl_cffi + Chrome TLS 指纹）
+
+    自动在 _FFLOW_HOSTS / _CLIST_HOSTS 之间回退：把 URL 里的主机名替换后重试。
+    """
+    # 构造主机候选列表（保持相对路径与查询串不变）
+    hosts: list[str] = []
+    for h in (_FFLOW_HOSTS + _CLIST_HOSTS):
+        if h not in hosts:
+            hosts.append(h)
+    # 用第一个主机作为基准模板
+    import re as _re
+    m = _re.match(r"https?://([^/]+)(/.*)$", url)
+    base_path = m.group(2) if m else url
+
     last = None
-    for i in range(tries):
+    for attempt in range(tries):
+        host = hosts[attempt % len(hosts)]
+        cand = f"https://{host}{base_path}"
         try:
-            r = _cr.get(url, headers=_HEADERS, impersonate=_IMPERSONATE, timeout=_TIMEOUT)
+            r = _cr.get(cand, headers=_HEADERS, impersonate=_IMPERSONATE, timeout=_TIMEOUT)
             if r.status_code == 200 and r.content:
-                return r.json()
-            last = f"HTTP {r.status_code}"
+                try:
+                    j = r.json()
+                except Exception:  # noqa: BLE001
+                    last = "non-JSON response"
+                    continue
+                # 东财用 {"_error":...} 标记失败；也可能返回 data=null
+                if isinstance(j, dict) and "_error" not in j:
+                    return j
+                last = str(j.get("_error")) if isinstance(j, dict) else "bad payload"
+            else:
+                last = f"HTTP {r.status_code}"
         except Exception as e:  # noqa: BLE001
             last = f"{type(e).__name__}: {e}"
-        time.sleep(0.7 * (i + 1))
+        time.sleep(0.6 * (attempt + 1))
     return {"_error": str(last)}
 
 
