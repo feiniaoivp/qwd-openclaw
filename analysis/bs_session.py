@@ -12,6 +12,12 @@ import threading
 import time
 import logging
 
+# 网络兜底：baostock 内部 socket 多数不传 timeout，默认永久等待
+# （2026-09-16 事故：拉取时阻塞在 sock_recv 导致进程永久挂起）
+from analysis.net_guard import install_default_timeout
+
+install_default_timeout()
+
 log = logging.getLogger(__name__)
 
 _bs_lock = threading.Lock()

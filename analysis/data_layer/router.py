@@ -15,6 +15,12 @@ from datetime import datetime
 
 import pandas as pd
 
+# 网络兜底：本模块是全部数据源的统一入口，在此设进程级 socket 超时，
+# 可覆盖后续所有（含第三方库内部新建的）连接。
+from analysis.net_guard import install_default_timeout
+
+install_default_timeout()
+
 from analysis.data_layer.providers.sina_realtime import get_provider as get_sina_realtime
 from analysis.data_layer.providers.sina_daily import get_provider as get_sina_daily
 from analysis.data_layer.providers.baostock import get_provider as get_baostock
