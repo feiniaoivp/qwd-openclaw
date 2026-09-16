@@ -302,7 +302,11 @@ def main(stocks=None, write_map=False, arbitrate=False):
     if write_map or arbitrate:
         mapfile = os.path.join(WORKSPACE, "data", "adaptive_strategy_map.json")
         with open(mapfile, "r", encoding="utf-8") as f:
-            cur = json.load(f)
+            _raw = json.load(f)
+        # 保留原格式（含 bucket 等字段），仅归一化取 strategy 用于比对
+        cur_raw = _raw
+        cur = {k: (v.get("strategy") if isinstance(v, dict) else v)
+               for k, v in cur_raw.items()}
         
         changes = 0
         skipped = []
@@ -366,7 +370,11 @@ def main(stocks=None, write_map=False, arbitrate=False):
             
             if final_s != old_s:
                 print(f"  📝 {info.get('name', symbol)}: {old_s} -> {final_s} ({reason})")
-                cur[symbol] = final_s
+                if isinstance(cur_raw.get(symbol), dict):
+                    cur_raw[symbol]["strategy"] = final_s
+                    cur[symbol] = final_s
+                else:
+                    cur[symbol] = final_s
                 changes += 1
                 if val_s != tune_s:
                     arbitrated.append((symbol, info.get('name', symbol), val_s, tune_s, final_s, reason))
@@ -388,7 +396,7 @@ def main(stocks=None, write_map=False, arbitrate=False):
         except Exception as e:
             # 回退：直接写文件
             with open(mapfile, "w", encoding="utf-8") as f:
-                json.dump(cur, f, ensure_ascii=False, indent=2)
+                json.dump(cur_raw if cur_raw else cur, f, ensure_ascii=False, indent=2)
             print(f"\n✅ 已写回 {mapfile} (回退, 变更 {changes} 处)")
         
         if arbitrated:

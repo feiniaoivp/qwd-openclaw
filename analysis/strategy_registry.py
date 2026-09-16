@@ -54,7 +54,21 @@ def get_git_status() -> str:
 
 
 def load_current_map() -> Dict:
-    """加载当前生效的策略映射"""
+    """加载当前生效的策略映射
+
+    返回统一归一化格式：{code: strategy_name}
+    兼容新格式（{strategy, bucket} 对象）与旧格式（纯字符串）。
+    需要 bucket 的下游请用 load_current_map_raw()。
+    """
+    raw = load_current_map_raw()
+    return {
+        k: (v.get("strategy") if isinstance(v, dict) else v)
+        for k, v in raw.items()
+    }
+
+
+def load_current_map_raw() -> Dict:
+    """加载原始策略映射（保留 bucket 等完整字段）"""
     if os.path.exists(MAP_FILE):
         with open(MAP_FILE, "r", encoding="utf-8") as f:
             return json.load(f)

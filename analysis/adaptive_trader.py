@@ -88,7 +88,12 @@ def load_strategy_map() -> dict:
     if os.path.exists(STRATEGY_MAP_FILE):
         try:
             with open(STRATEGY_MAP_FILE) as f:
-                return json.load(f)
+                raw = json.load(f)
+            # 兼容新格式 {strategy, bucket} 与旧格式 纯字符串
+            return {
+                k: (v.get("strategy") if isinstance(v, dict) else v)
+                for k, v in raw.items()
+            }
         except Exception:
             pass
     # 兜底硬编码
@@ -894,11 +899,28 @@ def format_brief(output: dict) -> str:
 
 def main():
     # ① 保存策略映射 (通过 Strategy Registry 统一版本化)
+    #    ⚠️ 必须保留原始格式（含 bucket 分层字段），否则会破坏分层过滤逻辑。
+    #    BEST_STRATEGY_MAP 是归一化后的 {code: strategy}，不能直接回写。
     os.makedirs(os.path.dirname(STRATEGY_MAP_FILE), exist_ok=True)
     try:
-        from analysis.strategy_registry import create_version
-        create_version(BEST_STRATEGY_MAP, source="adaptive_trader_save",
-                       metadata={"timestamp": datetime.now().isoformat()})
+        from analysis.strategy_registry import create_version, load_current_map_raw
+        raw = load_current_map_raw()
+        if raw:
+            # 用扫描期间可能变更的策略名回填，保留 bucket 等字段
+            merged = {}
+            for sym, val in raw.items():
+                new_s = BEST_STRATEGY_MAP.get(sym)
+                if isinstance(val, dict):
+                    if new_s and val.get("strategy") != new_s:
+                        val = {**val, "strategy": new_s}
+                    merged[sym] = val
+                else:
+                    merged[sym] = new_s or val
+            create_version(merged, source="adaptive_trader_save",
+                           metadata={"timestamp": datetime.now().isoformat()})
+        else:
+            create_version(BEST_STRATEGY_MAP, source="adaptive_trader_save",
+                           metadata={"timestamp": datetime.now().isoformat()})
         print(f"📁 策略映射已保存 (版本化): {STRATEGY_MAP_FILE}")
     except Exception as e:
         # 回退：直接写文件

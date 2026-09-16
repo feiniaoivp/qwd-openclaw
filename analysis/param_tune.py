@@ -42,6 +42,14 @@ PARAMS_FILE = os.path.join(WORKSPACE, "data", "adaptive_params.json")
 STRATEGY_MAP_FILE = os.path.join(WORKSPACE, "data", "adaptive_strategy_map.json")
 CACHE_DIR = os.path.join(WORKSPACE, "data", "param_tune_cache")
 
+
+def _norm_map(raw: dict) -> dict:
+    """归一化策略映射：兼容 {strategy, bucket} 对象格式与纯字符串格式"""
+    return {
+        k: (v.get("strategy") if isinstance(v, dict) else v)
+        for k, v in raw.items()
+    }
+
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 # ════════════════════════════════════════
@@ -425,12 +433,12 @@ def load_incremental_candidates() -> List[str]:
     if os.path.exists(STRATEGY_MAP_FILE):
         try:
             with open(STRATEGY_MAP_FILE) as f:
-                cur_map = json.load(f)
+                cur_map = _norm_map(json.load(f))
             # 读取上一版本 (param_tune_cache 里的 prev 备份)
             prev_map_file = os.path.join(CACHE_DIR, "adaptive_strategy_map_prev.json")
             if os.path.exists(prev_map_file):
                 with open(prev_map_file) as f:
-                    prev_map = json.load(f)
+                    prev_map = _norm_map(json.load(f))
                 for sym, new_s in cur_map.items():
                     old_s = prev_map.get(sym)
                     if old_s != new_s:
@@ -561,7 +569,7 @@ def main():
         # 策略映射
         if os.path.exists(STRATEGY_MAP_FILE):
             with open(STRATEGY_MAP_FILE) as f:
-                cur_map = json.load(f)
+                cur_map = _norm_map(json.load(f))
         else:
             cur_map = {}
         

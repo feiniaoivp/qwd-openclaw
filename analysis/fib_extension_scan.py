@@ -91,7 +91,9 @@ WATCHLIST = {
 # 自适应策略映射(code: 策略名)
 try:
     with open("/Users/duguke/.openclaw/workspace/data/adaptive_strategy_map.json") as f:
-        STRAT_MAP = json.load(f)
+        _raw_strat = json.load(f)
+    # 兼容 {strategy, bucket} 对象格式与纯字符串格式
+    STRAT_MAP = {k: (v.get("strategy") if isinstance(v, dict) else v) for k, v in _raw_strat.items()}
 except Exception:
     STRAT_MAP = {}
 

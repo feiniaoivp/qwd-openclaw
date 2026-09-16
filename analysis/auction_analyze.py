@@ -84,10 +84,17 @@ def load_market_context(date_str: str) -> Dict:
 
 
 def load_adaptive_strategy_map() -> Dict:
-    """加载自适应策略映射"""
+    """加载自适应策略映射（归一化为 {code: strategy_name}）
+
+    兼容 {strategy, bucket} 对象格式与纯字符串格式。
+    """
     if ADAPTIVE_MAP_FILE.exists():
         with open(ADAPTIVE_MAP_FILE, encoding="utf-8") as f:
-            return json.load(f)
+            raw = json.load(f)
+        return {
+            k: (v.get("strategy") if isinstance(v, dict) else v)
+            for k, v in raw.items()
+        }
     return {}
 
 
