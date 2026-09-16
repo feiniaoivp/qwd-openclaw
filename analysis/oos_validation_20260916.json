@@ -1,0 +1,5433 @@
+{
+  "results": {
+    "601066": {
+      "symbol": "601066",
+      "name": "中信建投",
+      "category": "券商周期",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": -2.0,
+        "max_drawdown_pct": -25.62
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": -10.47,
+          "is_params": {
+            "fast": 10,
+            "slow": 21
+          },
+          "is_metrics": {
+            "total_return_pct": -4.22,
+            "sharpe_ratio": 0.093,
+            "max_drawdown_pct": -51.02,
+            "total_trades": 22,
+            "win_rate_pct": 22.7,
+            "final_equity": 95777.34
+          },
+          "oos_metrics": {
+            "total_return_pct": 7.82,
+            "sharpe_ratio": 0.326,
+            "max_drawdown_pct": -16.34,
+            "total_trades": 9,
+            "win_rate_pct": 22.2,
+            "final_equity": 107816.32
+          },
+          "oos_guard": {
+            "observed_rate": 0.2222222222222222,
+            "observed_ci": [
+              0.06322510711784671,
+              0.5474110308930111
+            ],
+            "random_rate": 0.4991666666666666,
+            "random_ci": [
+              0.2222222222222222,
+              0.7777777777777778
+            ],
+            "excess": -0.2769444444444444,
+            "excess_ci": [
+              -0.5555555555555556,
+              0.0
+            ],
+            "p_value": 0.9818,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -2.0,
+            "max_drawdown_pct": -25.62
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.98)"
+          ]
+        },
+        "macd": {
+          "is_best_score": 16.78,
+          "is_params": {
+            "fast": 12,
+            "slow": 30,
+            "signal": 11
+          },
+          "is_metrics": {
+            "total_return_pct": 24.28,
+            "sharpe_ratio": 0.3,
+            "max_drawdown_pct": -45.72,
+            "total_trades": 36,
+            "win_rate_pct": 36.1,
+            "final_equity": 124276.87
+          },
+          "oos_metrics": {
+            "total_return_pct": -9.37,
+            "sharpe_ratio": -0.213,
+            "max_drawdown_pct": -19.88,
+            "total_trades": 15,
+            "win_rate_pct": 26.7,
+            "final_equity": 90632.18
+          },
+          "oos_guard": {
+            "observed_rate": 0.26666666666666666,
+            "observed_ci": [
+              0.10897453325692374,
+              0.5195043405598057
+            ],
+            "random_rate": 0.49910666666666664,
+            "random_ci": [
+              0.26666666666666666,
+              0.7333333333333333
+            ],
+            "excess": -0.23243999999999998,
+            "excess_ci": [
+              -0.4666666666666666,
+              0.0
+            ],
+            "p_value": 0.9836,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -2.0,
+            "max_drawdown_pct": -25.62
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-9.37%)",
+            "OOS夏普非正(-0.213)",
+            "胜率未超越随机(p=0.98)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 9.72,
+          "is_params": {
+            "length": 15,
+            "std": 1.5,
+            "exit_on_mid": true
+          },
+          "is_metrics": {
+            "total_return_pct": 9.79,
+            "sharpe_ratio": 0.197,
+            "max_drawdown_pct": -35.05,
+            "total_trades": 23,
+            "win_rate_pct": 30.4,
+            "final_equity": 109792.85
+          },
+          "oos_metrics": {
+            "total_return_pct": 1.02,
+            "sharpe_ratio": 0.116,
+            "max_drawdown_pct": -10.2,
+            "total_trades": 9,
+            "win_rate_pct": 44.4,
+            "final_equity": 101021.46
+          },
+          "oos_guard": {
+            "observed_rate": 0.4444444444444444,
+            "observed_ci": [
+              0.18877852109766452,
+              0.733348706504507
+            ],
+            "random_rate": 0.4991666666666666,
+            "random_ci": [
+              0.2222222222222222,
+              0.7777777777777778
+            ],
+            "excess": -0.05472222222222217,
+            "excess_ci": [
+              -0.33333333333333337,
+              0.2222222222222222
+            ],
+            "p_value": 0.7421,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -2.0,
+            "max_drawdown_pct": -25.62
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.74)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": 25.52,
+          "is_params": {
+            "ema_len": 20,
+            "obv_ma": 10
+          },
+          "is_metrics": {
+            "total_return_pct": 22.3,
+            "sharpe_ratio": 0.304,
+            "max_drawdown_pct": -26.65,
+            "total_trades": 64,
+            "win_rate_pct": 20.3,
+            "final_equity": 122298.75
+          },
+          "oos_metrics": {
+            "total_return_pct": -15.65,
+            "sharpe_ratio": -0.76,
+            "max_drawdown_pct": -19.7,
+            "total_trades": 21,
+            "win_rate_pct": 19.0,
+            "final_equity": 84348.59
+          },
+          "oos_guard": {
+            "observed_rate": 0.19047619047619047,
+            "observed_ci": [
+              0.07667565052761793,
+              0.40000564690204926
+            ],
+            "random_rate": 0.4992523809523809,
+            "random_ci": [
+              0.2857142857142857,
+              0.7142857142857143
+            ],
+            "excess": -0.3087761904761904,
+            "excess_ci": [
+              -0.5238095238095238,
+              -0.09523809523809523
+            ],
+            "p_value": 0.9994,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -2.0,
+            "max_drawdown_pct": -25.62
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-15.65%)",
+            "OOS夏普非正(-0.76)",
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 31.48,
+          "is_params": {
+            "kdj_len": 9,
+            "kdj_signal": 3,
+            "rsi_len": 14,
+            "rsi_buy": 35
+          },
+          "is_metrics": {
+            "total_return_pct": 23.47,
+            "sharpe_ratio": 0.506,
+            "max_drawdown_pct": -10.1,
+            "total_trades": 12,
+            "win_rate_pct": 50.0,
+            "final_equity": 123470.08
+          },
+          "oos_metrics": {
+            "total_return_pct": -5.85,
+            "sharpe_ratio": -1.196,
+            "max_drawdown_pct": -6.32,
+            "total_trades": 3,
+            "win_rate_pct": 0.0,
+            "final_equity": 94149.14
+          },
+          "oos_guard": {
+            "observed_rate": 0.0,
+            "observed_ci": [
+              5.551115123125783e-17,
+              0.5614970317550454
+            ],
+            "random_rate": 0.49903333333333333,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": -0.49903333333333333,
+            "excess_ci": [
+              -1.0,
+              0.0
+            ],
+            "p_value": 1.0,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -2.0,
+            "max_drawdown_pct": -25.62
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-5.85%)",
+            "OOS夏普非正(-1.196)",
+            "胜率未超越随机(p=1.00)"
+          ]
+        }
+      },
+      "pick_strategy": "kdj_cci",
+      "pick_detail": {
+        "is_best_score": 31.48,
+        "is_params": {
+          "kdj_len": 9,
+          "kdj_signal": 3,
+          "rsi_len": 14,
+          "rsi_buy": 35
+        },
+        "is_metrics": {
+          "total_return_pct": 23.47,
+          "sharpe_ratio": 0.506,
+          "max_drawdown_pct": -10.1,
+          "total_trades": 12,
+          "win_rate_pct": 50.0,
+          "final_equity": 123470.08
+        },
+        "oos_metrics": {
+          "total_return_pct": -5.85,
+          "sharpe_ratio": -1.196,
+          "max_drawdown_pct": -6.32,
+          "total_trades": 3,
+          "win_rate_pct": 0.0,
+          "final_equity": 94149.14
+        },
+        "oos_guard": {
+          "observed_rate": 0.0,
+          "observed_ci": [
+            5.551115123125783e-17,
+            0.5614970317550454
+          ],
+          "random_rate": 0.49903333333333333,
+          "random_ci": [
+            0.0,
+            1.0
+          ],
+          "excess": -0.49903333333333333,
+          "excess_ci": [
+            -1.0,
+            0.0
+          ],
+          "p_value": 1.0,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": -2.0,
+          "max_drawdown_pct": -25.62
+        },
+        "verdict": "❌ 否决",
+        "reasons": [
+          "OOS收益非正(-5.85%)",
+          "OOS夏普非正(-1.196)",
+          "胜率未超越随机(p=1.00)"
+        ]
+      },
+      "pick_verdict": "❌ 否决"
+    },
+    "601995": {
+      "symbol": "601995",
+      "name": "中金公司",
+      "category": "券商周期",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": -0.91,
+        "max_drawdown_pct": -19.04
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": -15.82,
+          "is_params": {
+            "fast": 8,
+            "slow": 40
+          },
+          "is_metrics": {
+            "total_return_pct": -15.97,
+            "sharpe_ratio": -0.06,
+            "max_drawdown_pct": -40.25,
+            "total_trades": 14,
+            "win_rate_pct": 28.6,
+            "final_equity": 84028.41
+          },
+          "oos_metrics": {
+            "total_return_pct": -10.27,
+            "sharpe_ratio": -0.38,
+            "max_drawdown_pct": -17.37,
+            "total_trades": 8,
+            "win_rate_pct": 12.5,
+            "final_equity": 89730.64
+          },
+          "oos_guard": {
+            "observed_rate": 0.125,
+            "observed_ci": [
+              0.02241749145005667,
+              0.4708881822128535
+            ],
+            "random_rate": 0.4989,
+            "random_ci": [
+              0.125,
+              0.875
+            ],
+            "excess": -0.3739,
+            "excess_ci": [
+              -0.75,
+              0.0
+            ],
+            "p_value": 0.9961,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -0.91,
+            "max_drawdown_pct": -19.04
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-10.27%)",
+            "OOS夏普非正(-0.38)",
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "macd": {
+          "is_best_score": 8.18,
+          "is_params": {
+            "fast": 15,
+            "slow": 35,
+            "signal": 11
+          },
+          "is_metrics": {
+            "total_return_pct": 2.91,
+            "sharpe_ratio": 0.155,
+            "max_drawdown_pct": -27.04,
+            "total_trades": 25,
+            "win_rate_pct": 44.0,
+            "final_equity": 102913.92
+          },
+          "oos_metrics": {
+            "total_return_pct": -16.71,
+            "sharpe_ratio": -0.747,
+            "max_drawdown_pct": -21.15,
+            "total_trades": 12,
+            "win_rate_pct": 25.0,
+            "final_equity": 83289.13
+          },
+          "oos_guard": {
+            "observed_rate": 0.25,
+            "observed_ci": [
+              0.08894166839405471,
+              0.5323053349335657
+            ],
+            "random_rate": 0.4988583333333333,
+            "random_ci": [
+              0.25,
+              0.75
+            ],
+            "excess": -0.2488583333333333,
+            "excess_ci": [
+              -0.5,
+              0.0
+            ],
+            "p_value": 0.9821,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -0.91,
+            "max_drawdown_pct": -19.04
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-16.71%)",
+            "OOS夏普非正(-0.747)",
+            "胜率未超越随机(p=0.98)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": -9.32,
+          "is_params": {
+            "length": 20,
+            "std": 1.5,
+            "exit_on_mid": true
+          },
+          "is_metrics": {
+            "total_return_pct": -13.73,
+            "sharpe_ratio": -0.082,
+            "max_drawdown_pct": -24.51,
+            "total_trades": 17,
+            "win_rate_pct": 41.2,
+            "final_equity": 86272.41
+          },
+          "oos_metrics": {
+            "total_return_pct": -4.76,
+            "sharpe_ratio": -0.105,
+            "max_drawdown_pct": -19.66,
+            "total_trades": 6,
+            "win_rate_pct": 33.3,
+            "final_equity": 95238.03
+          },
+          "oos_guard": {
+            "observed_rate": 0.3333333333333333,
+            "observed_ci": [
+              0.09677141110578041,
+              0.700006684861608
+            ],
+            "random_rate": 0.4981666666666667,
+            "random_ci": [
+              0.16666666666666666,
+              0.8333333333333334
+            ],
+            "excess": -0.1648333333333334,
+            "excess_ci": [
+              -0.5,
+              0.16666666666666666
+            ],
+            "p_value": 0.8917,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -0.91,
+            "max_drawdown_pct": -19.04
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-4.76%)",
+            "OOS夏普非正(-0.105)",
+            "胜率未超越随机(p=0.89)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": 0.17,
+          "is_params": {
+            "ema_len": 25,
+            "obv_ma": 10
+          },
+          "is_metrics": {
+            "total_return_pct": -1.11,
+            "sharpe_ratio": 0.087,
+            "max_drawdown_pct": -32.24,
+            "total_trades": 44,
+            "win_rate_pct": 22.7,
+            "final_equity": 98893.33
+          },
+          "oos_metrics": {
+            "total_return_pct": -19.3,
+            "sharpe_ratio": -1.232,
+            "max_drawdown_pct": -21.04,
+            "total_trades": 17,
+            "win_rate_pct": 17.6,
+            "final_equity": 80696.88
+          },
+          "oos_guard": {
+            "observed_rate": 0.17647058823529413,
+            "observed_ci": [
+              0.06191126637620997,
+              0.41029458568834126
+            ],
+            "random_rate": 0.49905294117647053,
+            "random_ci": [
+              0.29411764705882354,
+              0.7647058823529411
+            ],
+            "excess": -0.32258235294117643,
+            "excess_ci": [
+              -0.588235294117647,
+              -0.11764705882352941
+            ],
+            "p_value": 0.9986,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -0.91,
+            "max_drawdown_pct": -19.04
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-19.3%)",
+            "OOS夏普非正(-1.232)",
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 34.16,
+          "is_params": {
+            "kdj_len": 12,
+            "kdj_signal": 5,
+            "rsi_len": 14,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 27.98,
+            "sharpe_ratio": 0.524,
+            "max_drawdown_pct": -17.59,
+            "total_trades": 12,
+            "win_rate_pct": 41.7,
+            "final_equity": 127978.03
+          },
+          "oos_metrics": {
+            "total_return_pct": -2.6,
+            "sharpe_ratio": -0.611,
+            "max_drawdown_pct": -5.34,
+            "total_trades": 3,
+            "win_rate_pct": 33.3,
+            "final_equity": 97396.79
+          },
+          "oos_guard": {
+            "observed_rate": 0.3333333333333333,
+            "observed_ci": [
+              0.06149194472039621,
+              0.7923403991979522
+            ],
+            "random_rate": 0.49903333333333333,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": -0.16570000000000001,
+            "excess_ci": [
+              -0.6666666666666667,
+              0.3333333333333333
+            ],
+            "p_value": 0.8759,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -0.91,
+            "max_drawdown_pct": -19.04
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-2.6%)",
+            "OOS夏普非正(-0.611)",
+            "胜率未超越随机(p=0.88)"
+          ]
+        }
+      },
+      "pick_strategy": "kdj_cci",
+      "pick_detail": {
+        "is_best_score": 34.16,
+        "is_params": {
+          "kdj_len": 12,
+          "kdj_signal": 5,
+          "rsi_len": 14,
+          "rsi_buy": 40
+        },
+        "is_metrics": {
+          "total_return_pct": 27.98,
+          "sharpe_ratio": 0.524,
+          "max_drawdown_pct": -17.59,
+          "total_trades": 12,
+          "win_rate_pct": 41.7,
+          "final_equity": 127978.03
+        },
+        "oos_metrics": {
+          "total_return_pct": -2.6,
+          "sharpe_ratio": -0.611,
+          "max_drawdown_pct": -5.34,
+          "total_trades": 3,
+          "win_rate_pct": 33.3,
+          "final_equity": 97396.79
+        },
+        "oos_guard": {
+          "observed_rate": 0.3333333333333333,
+          "observed_ci": [
+            0.06149194472039621,
+            0.7923403991979522
+          ],
+          "random_rate": 0.49903333333333333,
+          "random_ci": [
+            0.0,
+            1.0
+          ],
+          "excess": -0.16570000000000001,
+          "excess_ci": [
+            -0.6666666666666667,
+            0.3333333333333333
+          ],
+          "p_value": 0.8759,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": -0.91,
+          "max_drawdown_pct": -19.04
+        },
+        "verdict": "❌ 否决",
+        "reasons": [
+          "OOS收益非正(-2.6%)",
+          "OOS夏普非正(-0.611)",
+          "胜率未超越随机(p=0.88)"
+        ]
+      },
+      "pick_verdict": "❌ 否决"
+    },
+    "000708": {
+      "symbol": "000708",
+      "name": "中信特钢",
+      "category": "钢铁周期",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": 28.68,
+        "max_drawdown_pct": -27.78
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 11.58,
+          "is_params": {
+            "fast": 5,
+            "slow": 35
+          },
+          "is_metrics": {
+            "total_return_pct": 19.85,
+            "sharpe_ratio": 0.274,
+            "max_drawdown_pct": -49.09,
+            "total_trades": 21,
+            "win_rate_pct": 28.6,
+            "final_equity": 119848.44
+          },
+          "oos_metrics": {
+            "total_return_pct": -1.55,
+            "sharpe_ratio": 0.052,
+            "max_drawdown_pct": -23.18,
+            "total_trades": 10,
+            "win_rate_pct": 20.0,
+            "final_equity": 98449.66
+          },
+          "oos_guard": {
+            "observed_rate": 0.2,
+            "observed_ci": [
+              0.05668215145437519,
+              0.5098375284633583
+            ],
+            "random_rate": 0.49856999999999996,
+            "random_ci": [
+              0.2,
+              0.8
+            ],
+            "excess": -0.29856999999999995,
+            "excess_ci": [
+              -0.6000000000000001,
+              0.0
+            ],
+            "p_value": 0.989,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 28.68,
+            "max_drawdown_pct": -27.78
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-1.55%)",
+            "胜率未超越随机(p=0.99)",
+            "大幅跑输持有(-1.55% vs 28.68%)"
+          ]
+        },
+        "macd": {
+          "is_best_score": -14.98,
+          "is_params": {
+            "fast": 12,
+            "slow": 21,
+            "signal": 11
+          },
+          "is_metrics": {
+            "total_return_pct": -11.14,
+            "sharpe_ratio": 0.029,
+            "max_drawdown_pct": -46.73,
+            "total_trades": 49,
+            "win_rate_pct": 34.7,
+            "final_equity": 88858.66
+          },
+          "oos_metrics": {
+            "total_return_pct": -15.99,
+            "sharpe_ratio": -0.469,
+            "max_drawdown_pct": -31.39,
+            "total_trades": 17,
+            "win_rate_pct": 29.4,
+            "final_equity": 84014.67
+          },
+          "oos_guard": {
+            "observed_rate": 0.29411764705882354,
+            "observed_ci": [
+              0.1327998961029523,
+              0.5313311006653985
+            ],
+            "random_rate": 0.49905294117647053,
+            "random_ci": [
+              0.29411764705882354,
+              0.7647058823529411
+            ],
+            "excess": -0.204935294117647,
+            "excess_ci": [
+              -0.4705882352941176,
+              0.0
+            ],
+            "p_value": 0.9764,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 28.68,
+            "max_drawdown_pct": -27.78
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-15.99%)",
+            "OOS夏普非正(-0.469)",
+            "胜率未超越随机(p=0.98)",
+            "大幅跑输持有(-15.99% vs 28.68%)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 14.64,
+          "is_params": {
+            "length": 15,
+            "std": 1.5,
+            "exit_on_mid": true
+          },
+          "is_metrics": {
+            "total_return_pct": 13.2,
+            "sharpe_ratio": 0.228,
+            "max_drawdown_pct": -31.73,
+            "total_trades": 23,
+            "win_rate_pct": 39.1,
+            "final_equity": 113201.59
+          },
+          "oos_metrics": {
+            "total_return_pct": -10.21,
+            "sharpe_ratio": -0.329,
+            "max_drawdown_pct": -25.16,
+            "total_trades": 11,
+            "win_rate_pct": 36.4,
+            "final_equity": 89789.18
+          },
+          "oos_guard": {
+            "observed_rate": 0.36363636363636365,
+            "observed_ci": [
+              0.15166471095367573,
+              0.6461988254921511
+            ],
+            "random_rate": 0.4987363636363636,
+            "random_ci": [
+              0.18181818181818182,
+              0.8181818181818182
+            ],
+            "excess": -0.13509999999999994,
+            "excess_ci": [
+              -0.4545454545454546,
+              0.18181818181818182
+            ],
+            "p_value": 0.8877,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 28.68,
+            "max_drawdown_pct": -27.78
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-10.21%)",
+            "OOS夏普非正(-0.329)",
+            "胜率未超越随机(p=0.89)",
+            "大幅跑输持有(-10.21% vs 28.68%)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": 11.01,
+          "is_params": {
+            "ema_len": 30,
+            "obv_ma": 20
+          },
+          "is_metrics": {
+            "total_return_pct": 8.17,
+            "sharpe_ratio": 0.182,
+            "max_drawdown_pct": -29.35,
+            "total_trades": 43,
+            "win_rate_pct": 23.3,
+            "final_equity": 108170.71
+          },
+          "oos_metrics": {
+            "total_return_pct": 11.09,
+            "sharpe_ratio": 0.525,
+            "max_drawdown_pct": -13.87,
+            "total_trades": 24,
+            "win_rate_pct": 25.0,
+            "final_equity": 111093.81
+          },
+          "oos_guard": {
+            "observed_rate": 0.25,
+            "observed_ci": [
+              0.11999366228595004,
+              0.44899444005154004
+            ],
+            "random_rate": 0.4992416666666666,
+            "random_ci": [
+              0.2916666666666667,
+              0.7083333333333334
+            ],
+            "excess": -0.24924166666666658,
+            "excess_ci": [
+              -0.45833333333333337,
+              -0.041666666666666685
+            ],
+            "p_value": 0.9967,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 28.68,
+            "max_drawdown_pct": -27.78
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=1.00)",
+            "大幅跑输持有(11.09% vs 28.68%)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 66.08,
+          "is_params": {
+            "kdj_len": 9,
+            "kdj_signal": 3,
+            "rsi_len": 10,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 58.83,
+            "sharpe_ratio": 0.74,
+            "max_drawdown_pct": -25.66,
+            "total_trades": 32,
+            "win_rate_pct": 31.2,
+            "final_equity": 158828.43
+          },
+          "oos_metrics": {
+            "total_return_pct": 0.99,
+            "sharpe_ratio": 0.165,
+            "max_drawdown_pct": -3.79,
+            "total_trades": 2,
+            "win_rate_pct": 50.0,
+            "final_equity": 100990.36
+          },
+          "oos_guard": {
+            "observed_rate": 0.5,
+            "observed_ci": [
+              0.09453120573423074,
+              0.9054687942657693
+            ],
+            "random_rate": 0.49485,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": 0.005149999999999988,
+            "excess_ci": [
+              -0.5,
+              0.5
+            ],
+            "p_value": 0.7455,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 28.68,
+            "max_drawdown_pct": -27.78
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "OOS交易过少(2)",
+            "胜率未超越随机(p=0.75)",
+            "大幅跑输持有(0.99% vs 28.68%)"
+          ]
+        }
+      },
+      "pick_strategy": "kdj_cci",
+      "pick_detail": {
+        "is_best_score": 66.08,
+        "is_params": {
+          "kdj_len": 9,
+          "kdj_signal": 3,
+          "rsi_len": 10,
+          "rsi_buy": 40
+        },
+        "is_metrics": {
+          "total_return_pct": 58.83,
+          "sharpe_ratio": 0.74,
+          "max_drawdown_pct": -25.66,
+          "total_trades": 32,
+          "win_rate_pct": 31.2,
+          "final_equity": 158828.43
+        },
+        "oos_metrics": {
+          "total_return_pct": 0.99,
+          "sharpe_ratio": 0.165,
+          "max_drawdown_pct": -3.79,
+          "total_trades": 2,
+          "win_rate_pct": 50.0,
+          "final_equity": 100990.36
+        },
+        "oos_guard": {
+          "observed_rate": 0.5,
+          "observed_ci": [
+            0.09453120573423074,
+            0.9054687942657693
+          ],
+          "random_rate": 0.49485,
+          "random_ci": [
+            0.0,
+            1.0
+          ],
+          "excess": 0.005149999999999988,
+          "excess_ci": [
+            -0.5,
+            0.5
+          ],
+          "p_value": 0.7455,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": 28.68,
+          "max_drawdown_pct": -27.78
+        },
+        "verdict": "⚠️ 观望",
+        "reasons": [
+          "OOS交易过少(2)",
+          "胜率未超越随机(p=0.75)",
+          "大幅跑输持有(0.99% vs 28.68%)"
+        ]
+      },
+      "pick_verdict": "⚠️ 观望"
+    },
+    "000157": {
+      "symbol": "000157",
+      "name": "中联重科",
+      "category": "工程机械周期",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": -2.87,
+        "max_drawdown_pct": -36.09
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 21.93,
+          "is_params": {
+            "fast": 12,
+            "slow": 21
+          },
+          "is_metrics": {
+            "total_return_pct": 30.17,
+            "sharpe_ratio": 0.344,
+            "max_drawdown_pct": -45.71,
+            "total_trades": 23,
+            "win_rate_pct": 34.8,
+            "final_equity": 130166.05
+          },
+          "oos_metrics": {
+            "total_return_pct": 3.61,
+            "sharpe_ratio": 0.209,
+            "max_drawdown_pct": -17.17,
+            "total_trades": 6,
+            "win_rate_pct": 50.0,
+            "final_equity": 103606.29
+          },
+          "oos_guard": {
+            "observed_rate": 0.5,
+            "observed_ci": [
+              0.1876163064826506,
+              0.8123836935173494
+            ],
+            "random_rate": 0.4981666666666667,
+            "random_ci": [
+              0.16666666666666666,
+              0.8333333333333334
+            ],
+            "excess": 0.001833333333333298,
+            "excess_ci": [
+              -0.33333333333333337,
+              0.33333333333333337
+            ],
+            "p_value": 0.6521,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -2.87,
+            "max_drawdown_pct": -36.09
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.65)"
+          ]
+        },
+        "macd": {
+          "is_best_score": -3.77,
+          "is_params": {
+            "fast": 15,
+            "slow": 35,
+            "signal": 9
+          },
+          "is_metrics": {
+            "total_return_pct": 6.06,
+            "sharpe_ratio": 0.172,
+            "max_drawdown_pct": -55.8,
+            "total_trades": 38,
+            "win_rate_pct": 39.5,
+            "final_equity": 106059.35
+          },
+          "oos_metrics": {
+            "total_return_pct": -13.44,
+            "sharpe_ratio": -0.403,
+            "max_drawdown_pct": -25.23,
+            "total_trades": 13,
+            "win_rate_pct": 30.8,
+            "final_equity": 86562.97
+          },
+          "oos_guard": {
+            "observed_rate": 0.3076923076923077,
+            "observed_ci": [
+              0.12680703655710515,
+              0.5763065681945096
+            ],
+            "random_rate": 0.49891538461538465,
+            "random_ci": [
+              0.23076923076923078,
+              0.7692307692307693
+            ],
+            "excess": -0.19122307692307694,
+            "excess_ci": [
+              -0.46153846153846156,
+              0.07692307692307693
+            ],
+            "p_value": 0.9531,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -2.87,
+            "max_drawdown_pct": -36.09
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-13.44%)",
+            "OOS夏普非正(-0.403)",
+            "胜率未超越随机(p=0.95)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 49.18,
+          "is_params": {
+            "length": 15,
+            "std": 2.5,
+            "exit_on_mid": true
+          },
+          "is_metrics": {
+            "total_return_pct": 49.87,
+            "sharpe_ratio": 0.514,
+            "max_drawdown_pct": -27.9,
+            "total_trades": 25,
+            "win_rate_pct": 44.0,
+            "final_equity": 149871.16
+          },
+          "oos_metrics": {
+            "total_return_pct": -0.34,
+            "sharpe_ratio": 0.064,
+            "max_drawdown_pct": -15.04,
+            "total_trades": 11,
+            "win_rate_pct": 45.5,
+            "final_equity": 99659.5
+          },
+          "oos_guard": {
+            "observed_rate": 0.45454545454545453,
+            "observed_ci": [
+              0.21271271622459764,
+              0.719908462590678
+            ],
+            "random_rate": 0.4987363636363636,
+            "random_ci": [
+              0.18181818181818182,
+              0.8181818181818182
+            ],
+            "excess": -0.04419090909090906,
+            "excess_ci": [
+              -0.3636363636363637,
+              0.2727272727272727
+            ],
+            "p_value": 0.7209,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -2.87,
+            "max_drawdown_pct": -36.09
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-0.34%)",
+            "胜率未超越随机(p=0.72)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": 25.92,
+          "is_params": {
+            "ema_len": 15,
+            "obv_ma": 20
+          },
+          "is_metrics": {
+            "total_return_pct": 20.84,
+            "sharpe_ratio": 0.31,
+            "max_drawdown_pct": -21.06,
+            "total_trades": 60,
+            "win_rate_pct": 36.7,
+            "final_equity": 120839.52
+          },
+          "oos_metrics": {
+            "total_return_pct": -3.84,
+            "sharpe_ratio": -0.041,
+            "max_drawdown_pct": -23.24,
+            "total_trades": 24,
+            "win_rate_pct": 33.3,
+            "final_equity": 96164.6
+          },
+          "oos_guard": {
+            "observed_rate": 0.3333333333333333,
+            "observed_ci": [
+              0.1797219032729775,
+              0.5329368316186824
+            ],
+            "random_rate": 0.4992416666666666,
+            "random_ci": [
+              0.2916666666666667,
+              0.7083333333333334
+            ],
+            "excess": -0.16590833333333327,
+            "excess_ci": [
+              -0.37500000000000006,
+              0.04166666666666663
+            ],
+            "p_value": 0.9683,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -2.87,
+            "max_drawdown_pct": -36.09
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-3.84%)",
+            "OOS夏普非正(-0.041)",
+            "胜率未超越随机(p=0.97)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 62.72,
+          "is_params": {
+            "kdj_len": 9,
+            "kdj_signal": 3,
+            "rsi_len": 10,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 54.13,
+            "sharpe_ratio": 0.713,
+            "max_drawdown_pct": -20.12,
+            "total_trades": 22,
+            "win_rate_pct": 36.4,
+            "final_equity": 154129.77
+          },
+          "oos_metrics": {
+            "total_return_pct": -12.92,
+            "sharpe_ratio": -0.749,
+            "max_drawdown_pct": -12.92,
+            "total_trades": 7,
+            "win_rate_pct": 28.6,
+            "final_equity": 87078.79
+          },
+          "oos_guard": {
+            "observed_rate": 0.2857142857142857,
+            "observed_ci": [
+              0.08221892400405678,
+              0.6410655481673808
+            ],
+            "random_rate": 0.49824285714285704,
+            "random_ci": [
+              0.14285714285714285,
+              0.8571428571428571
+            ],
+            "excess": -0.21252857142857134,
+            "excess_ci": [
+              -0.5714285714285714,
+              0.14285714285714285
+            ],
+            "p_value": 0.9362,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -2.87,
+            "max_drawdown_pct": -36.09
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-12.92%)",
+            "OOS夏普非正(-0.749)",
+            "胜率未超越随机(p=0.94)"
+          ]
+        }
+      },
+      "pick_strategy": "kdj_cci",
+      "pick_detail": {
+        "is_best_score": 62.72,
+        "is_params": {
+          "kdj_len": 9,
+          "kdj_signal": 3,
+          "rsi_len": 10,
+          "rsi_buy": 40
+        },
+        "is_metrics": {
+          "total_return_pct": 54.13,
+          "sharpe_ratio": 0.713,
+          "max_drawdown_pct": -20.12,
+          "total_trades": 22,
+          "win_rate_pct": 36.4,
+          "final_equity": 154129.77
+        },
+        "oos_metrics": {
+          "total_return_pct": -12.92,
+          "sharpe_ratio": -0.749,
+          "max_drawdown_pct": -12.92,
+          "total_trades": 7,
+          "win_rate_pct": 28.6,
+          "final_equity": 87078.79
+        },
+        "oos_guard": {
+          "observed_rate": 0.2857142857142857,
+          "observed_ci": [
+            0.08221892400405678,
+            0.6410655481673808
+          ],
+          "random_rate": 0.49824285714285704,
+          "random_ci": [
+            0.14285714285714285,
+            0.8571428571428571
+          ],
+          "excess": -0.21252857142857134,
+          "excess_ci": [
+            -0.5714285714285714,
+            0.14285714285714285
+          ],
+          "p_value": 0.9362,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": -2.87,
+          "max_drawdown_pct": -36.09
+        },
+        "verdict": "❌ 否决",
+        "reasons": [
+          "OOS收益非正(-12.92%)",
+          "OOS夏普非正(-0.749)",
+          "胜率未超越随机(p=0.94)"
+        ]
+      },
+      "pick_verdict": "❌ 否决"
+    },
+    "601100": {
+      "symbol": "601100",
+      "name": "恒立液压",
+      "category": "高端液压周期",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": 82.94,
+        "max_drawdown_pct": -29.79
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 93.02,
+          "is_params": {
+            "fast": 5,
+            "slow": 35
+          },
+          "is_metrics": {
+            "total_return_pct": 127.39,
+            "sharpe_ratio": 0.728,
+            "max_drawdown_pct": -39.15,
+            "total_trades": 21,
+            "win_rate_pct": 28.6,
+            "final_equity": 227393.48
+          },
+          "oos_metrics": {
+            "total_return_pct": 1.23,
+            "sharpe_ratio": 0.167,
+            "max_drawdown_pct": -21.59,
+            "total_trades": 9,
+            "win_rate_pct": 33.3,
+            "final_equity": 101225.66
+          },
+          "oos_guard": {
+            "observed_rate": 0.3333333333333333,
+            "observed_ci": [
+              0.1205838183869109,
+              0.6457978644196036
+            ],
+            "random_rate": 0.4991666666666666,
+            "random_ci": [
+              0.2222222222222222,
+              0.7777777777777778
+            ],
+            "excess": -0.16583333333333328,
+            "excess_ci": [
+              -0.4444444444444445,
+              0.1111111111111111
+            ],
+            "p_value": 0.9118,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 82.94,
+            "max_drawdown_pct": -29.79
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.91)",
+            "大幅跑输持有(1.23% vs 82.94%)"
+          ]
+        },
+        "macd": {
+          "is_best_score": -10.98,
+          "is_params": {
+            "fast": 15,
+            "slow": 35,
+            "signal": 11
+          },
+          "is_metrics": {
+            "total_return_pct": -6.27,
+            "sharpe_ratio": 0.099,
+            "max_drawdown_pct": -50.59,
+            "total_trades": 40,
+            "win_rate_pct": 32.5,
+            "final_equity": 93731.03
+          },
+          "oos_metrics": {
+            "total_return_pct": -27.93,
+            "sharpe_ratio": -0.695,
+            "max_drawdown_pct": -30.39,
+            "total_trades": 17,
+            "win_rate_pct": 23.5,
+            "final_equity": 72072.68
+          },
+          "oos_guard": {
+            "observed_rate": 0.23529411764705882,
+            "observed_ci": [
+              0.09555044322080117,
+              0.4726179811956498
+            ],
+            "random_rate": 0.49905294117647053,
+            "random_ci": [
+              0.29411764705882354,
+              0.7647058823529411
+            ],
+            "excess": -0.2637588235294117,
+            "excess_ci": [
+              -0.5294117647058822,
+              -0.05882352941176472
+            ],
+            "p_value": 0.9927,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 82.94,
+            "max_drawdown_pct": -29.79
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-27.93%)",
+            "OOS夏普非正(-0.695)",
+            "胜率未超越随机(p=0.99)",
+            "大幅跑输持有(-27.93% vs 82.94%)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 55.08,
+          "is_params": {
+            "length": 20,
+            "std": 1.5,
+            "exit_on_mid": true
+          },
+          "is_metrics": {
+            "total_return_pct": 71.36,
+            "sharpe_ratio": 0.597,
+            "max_drawdown_pct": -26.46,
+            "total_trades": 16,
+            "win_rate_pct": 56.2,
+            "final_equity": 171356.02
+          },
+          "oos_metrics": {
+            "total_return_pct": -27.67,
+            "sharpe_ratio": -0.769,
+            "max_drawdown_pct": -39.34,
+            "total_trades": 11,
+            "win_rate_pct": 27.3,
+            "final_equity": 72334.27
+          },
+          "oos_guard": {
+            "observed_rate": 0.2727272727272727,
+            "observed_ci": [
+              0.09746059290024889,
+              0.5656453011761291
+            ],
+            "random_rate": 0.4987363636363636,
+            "random_ci": [
+              0.18181818181818182,
+              0.8181818181818182
+            ],
+            "excess": -0.22600909090909088,
+            "excess_ci": [
+              -0.5454545454545455,
+              0.09090909090909088
+            ],
+            "p_value": 0.9677,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 82.94,
+            "max_drawdown_pct": -29.79
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-27.67%)",
+            "OOS夏普非正(-0.769)",
+            "胜率未超越随机(p=0.97)",
+            "大幅跑输持有(-27.67% vs 82.94%)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": -9.65,
+          "is_params": {
+            "ema_len": 30,
+            "obv_ma": 10
+          },
+          "is_metrics": {
+            "total_return_pct": -4.49,
+            "sharpe_ratio": 0.017,
+            "max_drawdown_pct": -41.51,
+            "total_trades": 45,
+            "win_rate_pct": 24.4,
+            "final_equity": 95508.1
+          },
+          "oos_metrics": {
+            "total_return_pct": -5.88,
+            "sharpe_ratio": -0.145,
+            "max_drawdown_pct": -21.54,
+            "total_trades": 11,
+            "win_rate_pct": 27.3,
+            "final_equity": 94116.6
+          },
+          "oos_guard": {
+            "observed_rate": 0.2727272727272727,
+            "observed_ci": [
+              0.09746059290024889,
+              0.5656453011761291
+            ],
+            "random_rate": 0.4987363636363636,
+            "random_ci": [
+              0.18181818181818182,
+              0.8181818181818182
+            ],
+            "excess": -0.22600909090909088,
+            "excess_ci": [
+              -0.5454545454545455,
+              0.09090909090909088
+            ],
+            "p_value": 0.9677,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 82.94,
+            "max_drawdown_pct": -29.79
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-5.88%)",
+            "OOS夏普非正(-0.145)",
+            "胜率未超越随机(p=0.97)",
+            "大幅跑输持有(-5.88% vs 82.94%)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 11.45,
+          "is_params": {
+            "kdj_len": 9,
+            "kdj_signal": 4,
+            "rsi_len": 10,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 7.95,
+            "sharpe_ratio": 0.19,
+            "max_drawdown_pct": -17.41,
+            "total_trades": 13,
+            "win_rate_pct": 46.2,
+            "final_equity": 107950.58
+          },
+          "oos_metrics": {
+            "total_return_pct": 2.29,
+            "sharpe_ratio": 0.194,
+            "max_drawdown_pct": -9.15,
+            "total_trades": 2,
+            "win_rate_pct": 50.0,
+            "final_equity": 102294.09
+          },
+          "oos_guard": {
+            "observed_rate": 0.5,
+            "observed_ci": [
+              0.09453120573423074,
+              0.9054687942657693
+            ],
+            "random_rate": 0.49485,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": 0.005149999999999988,
+            "excess_ci": [
+              -0.5,
+              0.5
+            ],
+            "p_value": 0.7455,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 82.94,
+            "max_drawdown_pct": -29.79
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "OOS交易过少(2)",
+            "胜率未超越随机(p=0.75)",
+            "大幅跑输持有(2.29% vs 82.94%)"
+          ]
+        }
+      },
+      "pick_strategy": "ema_cross",
+      "pick_detail": {
+        "is_best_score": 93.02,
+        "is_params": {
+          "fast": 5,
+          "slow": 35
+        },
+        "is_metrics": {
+          "total_return_pct": 127.39,
+          "sharpe_ratio": 0.728,
+          "max_drawdown_pct": -39.15,
+          "total_trades": 21,
+          "win_rate_pct": 28.6,
+          "final_equity": 227393.48
+        },
+        "oos_metrics": {
+          "total_return_pct": 1.23,
+          "sharpe_ratio": 0.167,
+          "max_drawdown_pct": -21.59,
+          "total_trades": 9,
+          "win_rate_pct": 33.3,
+          "final_equity": 101225.66
+        },
+        "oos_guard": {
+          "observed_rate": 0.3333333333333333,
+          "observed_ci": [
+            0.1205838183869109,
+            0.6457978644196036
+          ],
+          "random_rate": 0.4991666666666666,
+          "random_ci": [
+            0.2222222222222222,
+            0.7777777777777778
+          ],
+          "excess": -0.16583333333333328,
+          "excess_ci": [
+            -0.4444444444444445,
+            0.1111111111111111
+          ],
+          "p_value": 0.9118,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": 82.94,
+          "max_drawdown_pct": -29.79
+        },
+        "verdict": "⚠️ 观望",
+        "reasons": [
+          "胜率未超越随机(p=0.91)",
+          "大幅跑输持有(1.23% vs 82.94%)"
+        ]
+      },
+      "pick_verdict": "⚠️ 观望"
+    },
+    "600570": {
+      "symbol": "600570",
+      "name": "恒生电子",
+      "category": "金融IT",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": -22.61,
+        "max_drawdown_pct": -48.15
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 1.79,
+          "is_params": {
+            "fast": 15,
+            "slow": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 12.55,
+            "sharpe_ratio": 0.229,
+            "max_drawdown_pct": -56.24,
+            "total_trades": 16,
+            "win_rate_pct": 31.2,
+            "final_equity": 112549.13
+          },
+          "oos_metrics": {
+            "total_return_pct": 9.23,
+            "sharpe_ratio": 0.363,
+            "max_drawdown_pct": -20.8,
+            "total_trades": 3,
+            "win_rate_pct": 33.3,
+            "final_equity": 109231.23
+          },
+          "oos_guard": {
+            "observed_rate": 0.3333333333333333,
+            "observed_ci": [
+              0.06149194472039621,
+              0.7923403991979522
+            ],
+            "random_rate": 0.49903333333333333,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": -0.16570000000000001,
+            "excess_ci": [
+              -0.6666666666666667,
+              0.3333333333333333
+            ],
+            "p_value": 0.8759,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -22.61,
+            "max_drawdown_pct": -48.15
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.88)"
+          ]
+        },
+        "macd": {
+          "is_best_score": 26.55,
+          "is_params": {
+            "fast": 10,
+            "slow": 35,
+            "signal": 7
+          },
+          "is_metrics": {
+            "total_return_pct": 39.34,
+            "sharpe_ratio": 0.38,
+            "max_drawdown_pct": -49.24,
+            "total_trades": 44,
+            "win_rate_pct": 43.2,
+            "final_equity": 139335.46
+          },
+          "oos_metrics": {
+            "total_return_pct": 0.9,
+            "sharpe_ratio": 0.137,
+            "max_drawdown_pct": -25.29,
+            "total_trades": 14,
+            "win_rate_pct": 35.7,
+            "final_equity": 100897.0
+          },
+          "oos_guard": {
+            "observed_rate": 0.35714285714285715,
+            "observed_ci": [
+              0.1634473175355414,
+              0.612355768960926
+            ],
+            "random_rate": 0.49885,
+            "random_ci": [
+              0.21428571428571427,
+              0.7857142857142857
+            ],
+            "excess": -0.14170714285714286,
+            "excess_ci": [
+              -0.42857142857142855,
+              0.14285714285714288
+            ],
+            "p_value": 0.9118,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -22.61,
+            "max_drawdown_pct": -48.15
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.91)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 10.9,
+          "is_params": {
+            "length": 15,
+            "std": 2.5,
+            "exit_on_mid": true
+          },
+          "is_metrics": {
+            "total_return_pct": 18.27,
+            "sharpe_ratio": 0.266,
+            "max_drawdown_pct": -48.07,
+            "total_trades": 25,
+            "win_rate_pct": 36.0,
+            "final_equity": 118272.62
+          },
+          "oos_metrics": {
+            "total_return_pct": 16.53,
+            "sharpe_ratio": 0.546,
+            "max_drawdown_pct": -15.5,
+            "total_trades": 8,
+            "win_rate_pct": 50.0,
+            "final_equity": 116529.36
+          },
+          "oos_guard": {
+            "observed_rate": 0.5,
+            "observed_ci": [
+              0.21521606221387757,
+              0.7847839377861224
+            ],
+            "random_rate": 0.4989,
+            "random_ci": [
+              0.125,
+              0.875
+            ],
+            "excess": 0.0010999999999999899,
+            "excess_ci": [
+              -0.375,
+              0.375
+            ],
+            "p_value": 0.6338,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -22.61,
+            "max_drawdown_pct": -48.15
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.63)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": 28.1,
+          "is_params": {
+            "ema_len": 25,
+            "obv_ma": 10
+          },
+          "is_metrics": {
+            "total_return_pct": 30.08,
+            "sharpe_ratio": 0.373,
+            "max_drawdown_pct": -36.18,
+            "total_trades": 44,
+            "win_rate_pct": 25.0,
+            "final_equity": 130075.28
+          },
+          "oos_metrics": {
+            "total_return_pct": 3.51,
+            "sharpe_ratio": 0.204,
+            "max_drawdown_pct": -15.46,
+            "total_trades": 20,
+            "win_rate_pct": 20.0,
+            "final_equity": 103511.58
+          },
+          "oos_guard": {
+            "observed_rate": 0.2,
+            "observed_ci": [
+              0.08065766257979806,
+              0.41601743225189364
+            ],
+            "random_rate": 0.4991900000000001,
+            "random_ci": [
+              0.3,
+              0.7
+            ],
+            "excess": -0.29919000000000007,
+            "excess_ci": [
+              -0.49999999999999994,
+              -0.09999999999999998
+            ],
+            "p_value": 0.9985,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -22.61,
+            "max_drawdown_pct": -48.15
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 28.44,
+          "is_params": {
+            "kdj_len": 14,
+            "kdj_signal": 4,
+            "rsi_len": 10,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 24.29,
+            "sharpe_ratio": 0.349,
+            "max_drawdown_pct": -27.31,
+            "total_trades": 20,
+            "win_rate_pct": 30.0,
+            "final_equity": 124288.35
+          },
+          "oos_metrics": {
+            "total_return_pct": -3.95,
+            "sharpe_ratio": -0.312,
+            "max_drawdown_pct": -10.61,
+            "total_trades": 5,
+            "win_rate_pct": 40.0,
+            "final_equity": 96054.93
+          },
+          "oos_guard": {
+            "observed_rate": 0.4,
+            "observed_ci": [
+              0.11762077423264783,
+              0.769275718723987
+            ],
+            "random_rate": 0.49872,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": -0.09871999999999997,
+            "excess_ci": [
+              -0.6,
+              0.4
+            ],
+            "p_value": 0.8098,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -22.61,
+            "max_drawdown_pct": -48.15
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-3.95%)",
+            "OOS夏普非正(-0.312)",
+            "胜率未超越随机(p=0.81)"
+          ]
+        }
+      },
+      "pick_strategy": "kdj_cci",
+      "pick_detail": {
+        "is_best_score": 28.44,
+        "is_params": {
+          "kdj_len": 14,
+          "kdj_signal": 4,
+          "rsi_len": 10,
+          "rsi_buy": 40
+        },
+        "is_metrics": {
+          "total_return_pct": 24.29,
+          "sharpe_ratio": 0.349,
+          "max_drawdown_pct": -27.31,
+          "total_trades": 20,
+          "win_rate_pct": 30.0,
+          "final_equity": 124288.35
+        },
+        "oos_metrics": {
+          "total_return_pct": -3.95,
+          "sharpe_ratio": -0.312,
+          "max_drawdown_pct": -10.61,
+          "total_trades": 5,
+          "win_rate_pct": 40.0,
+          "final_equity": 96054.93
+        },
+        "oos_guard": {
+          "observed_rate": 0.4,
+          "observed_ci": [
+            0.11762077423264783,
+            0.769275718723987
+          ],
+          "random_rate": 0.49872,
+          "random_ci": [
+            0.0,
+            1.0
+          ],
+          "excess": -0.09871999999999997,
+          "excess_ci": [
+            -0.6,
+            0.4
+          ],
+          "p_value": 0.8098,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": -22.61,
+          "max_drawdown_pct": -48.15
+        },
+        "verdict": "❌ 否决",
+        "reasons": [
+          "OOS收益非正(-3.95%)",
+          "OOS夏普非正(-0.312)",
+          "胜率未超越随机(p=0.81)"
+        ]
+      },
+      "pick_verdict": "❌ 否决"
+    },
+    "002335": {
+      "symbol": "002335",
+      "name": "科华数据",
+      "category": "数据中心",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": 59.15,
+        "max_drawdown_pct": -47.38
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 159.01,
+          "is_params": {
+            "fast": 10,
+            "slow": 35
+          },
+          "is_metrics": {
+            "total_return_pct": 306.62,
+            "sharpe_ratio": 0.901,
+            "max_drawdown_pct": -47.58,
+            "total_trades": 15,
+            "win_rate_pct": 46.7,
+            "final_equity": 406623.76
+          },
+          "oos_metrics": {
+            "total_return_pct": -28.42,
+            "sharpe_ratio": -0.369,
+            "max_drawdown_pct": -45.33,
+            "total_trades": 9,
+            "win_rate_pct": 22.2,
+            "final_equity": 71578.61
+          },
+          "oos_guard": {
+            "observed_rate": 0.2222222222222222,
+            "observed_ci": [
+              0.06322510711784671,
+              0.5474110308930111
+            ],
+            "random_rate": 0.4991666666666666,
+            "random_ci": [
+              0.2222222222222222,
+              0.7777777777777778
+            ],
+            "excess": -0.2769444444444444,
+            "excess_ci": [
+              -0.5555555555555556,
+              0.0
+            ],
+            "p_value": 0.9818,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 59.15,
+            "max_drawdown_pct": -47.38
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-28.42%)",
+            "OOS夏普非正(-0.369)",
+            "胜率未超越随机(p=0.98)",
+            "大幅跑输持有(-28.42% vs 59.15%)"
+          ]
+        },
+        "macd": {
+          "is_best_score": 33.12,
+          "is_params": {
+            "fast": 12,
+            "slow": 30,
+            "signal": 9
+          },
+          "is_metrics": {
+            "total_return_pct": 58.87,
+            "sharpe_ratio": 0.441,
+            "max_drawdown_pct": -61.72,
+            "total_trades": 45,
+            "win_rate_pct": 26.7,
+            "final_equity": 158867.41
+          },
+          "oos_metrics": {
+            "total_return_pct": -18.83,
+            "sharpe_ratio": -0.201,
+            "max_drawdown_pct": -35.4,
+            "total_trades": 16,
+            "win_rate_pct": 37.5,
+            "final_equity": 81174.9
+          },
+          "oos_guard": {
+            "observed_rate": 0.375,
+            "observed_ci": [
+              0.18481232558863633,
+              0.6135895945449727
+            ],
+            "random_rate": 0.4990875,
+            "random_ci": [
+              0.25,
+              0.75
+            ],
+            "excess": -0.12408750000000002,
+            "excess_ci": [
+              -0.375,
+              0.125
+            ],
+            "p_value": 0.897,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 59.15,
+            "max_drawdown_pct": -47.38
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-18.83%)",
+            "OOS夏普非正(-0.201)",
+            "胜率未超越随机(p=0.90)",
+            "大幅跑输持有(-18.83% vs 59.15%)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 125.56,
+          "is_params": {
+            "length": 20,
+            "std": 1.5,
+            "exit_on_mid": false
+          },
+          "is_metrics": {
+            "total_return_pct": 249.17,
+            "sharpe_ratio": 0.794,
+            "max_drawdown_pct": -58.14,
+            "total_trades": 11,
+            "win_rate_pct": 54.5,
+            "final_equity": 349168.41
+          },
+          "oos_metrics": {
+            "total_return_pct": 14.52,
+            "sharpe_ratio": 0.411,
+            "max_drawdown_pct": -48.22,
+            "total_trades": 4,
+            "win_rate_pct": 50.0,
+            "final_equity": 114519.06
+          },
+          "oos_guard": {
+            "observed_rate": 0.5,
+            "observed_ci": [
+              0.15003898915214947,
+              0.8499610108478506
+            ],
+            "random_rate": 0.497225,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": 0.0027750000000000274,
+            "excess_ci": [
+              -0.5,
+              0.5
+            ],
+            "p_value": 0.6842,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 59.15,
+            "max_drawdown_pct": -47.38
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.68)",
+            "大幅跑输持有(14.52% vs 59.15%)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": 164.5,
+          "is_params": {
+            "ema_len": 30,
+            "obv_ma": 30
+          },
+          "is_metrics": {
+            "total_return_pct": 253.51,
+            "sharpe_ratio": 0.867,
+            "max_drawdown_pct": -36.22,
+            "total_trades": 42,
+            "win_rate_pct": 31.0,
+            "final_equity": 353506.81
+          },
+          "oos_metrics": {
+            "total_return_pct": 10.68,
+            "sharpe_ratio": 0.35,
+            "max_drawdown_pct": -24.37,
+            "total_trades": 17,
+            "win_rate_pct": 17.6,
+            "final_equity": 110683.05
+          },
+          "oos_guard": {
+            "observed_rate": 0.17647058823529413,
+            "observed_ci": [
+              0.06191126637620997,
+              0.41029458568834126
+            ],
+            "random_rate": 0.49905294117647053,
+            "random_ci": [
+              0.29411764705882354,
+              0.7647058823529411
+            ],
+            "excess": -0.32258235294117643,
+            "excess_ci": [
+              -0.588235294117647,
+              -0.11764705882352941
+            ],
+            "p_value": 0.9986,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 59.15,
+            "max_drawdown_pct": -47.38
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=1.00)",
+            "大幅跑输持有(10.68% vs 59.15%)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 71.38,
+          "is_params": {
+            "kdj_len": 9,
+            "kdj_signal": 4,
+            "rsi_len": 20,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 73.15,
+            "sharpe_ratio": 0.948,
+            "max_drawdown_pct": -15.46,
+            "total_trades": 12,
+            "win_rate_pct": 41.7,
+            "final_equity": 173148.26
+          },
+          "oos_metrics": {
+            "total_return_pct": 7.24,
+            "sharpe_ratio": 0.399,
+            "max_drawdown_pct": -13.39,
+            "total_trades": 3,
+            "win_rate_pct": 66.7,
+            "final_equity": 107235.58
+          },
+          "oos_guard": {
+            "observed_rate": 0.6666666666666666,
+            "observed_ci": [
+              0.2076596008020477,
+              0.9385080552796037
+            ],
+            "random_rate": 0.49903333333333333,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": 0.1676333333333333,
+            "excess_ci": [
+              -0.33333333333333337,
+              0.6666666666666666
+            ],
+            "p_value": 0.4985,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 59.15,
+            "max_drawdown_pct": -47.38
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.50)",
+            "大幅跑输持有(7.24% vs 59.15%)"
+          ]
+        }
+      },
+      "pick_strategy": "ema_obv",
+      "pick_detail": {
+        "is_best_score": 164.5,
+        "is_params": {
+          "ema_len": 30,
+          "obv_ma": 30
+        },
+        "is_metrics": {
+          "total_return_pct": 253.51,
+          "sharpe_ratio": 0.867,
+          "max_drawdown_pct": -36.22,
+          "total_trades": 42,
+          "win_rate_pct": 31.0,
+          "final_equity": 353506.81
+        },
+        "oos_metrics": {
+          "total_return_pct": 10.68,
+          "sharpe_ratio": 0.35,
+          "max_drawdown_pct": -24.37,
+          "total_trades": 17,
+          "win_rate_pct": 17.6,
+          "final_equity": 110683.05
+        },
+        "oos_guard": {
+          "observed_rate": 0.17647058823529413,
+          "observed_ci": [
+            0.06191126637620997,
+            0.41029458568834126
+          ],
+          "random_rate": 0.49905294117647053,
+          "random_ci": [
+            0.29411764705882354,
+            0.7647058823529411
+          ],
+          "excess": -0.32258235294117643,
+          "excess_ci": [
+            -0.588235294117647,
+            -0.11764705882352941
+          ],
+          "p_value": 0.9986,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": 59.15,
+          "max_drawdown_pct": -47.38
+        },
+        "verdict": "⚠️ 观望",
+        "reasons": [
+          "胜率未超越随机(p=1.00)",
+          "大幅跑输持有(10.68% vs 59.15%)"
+        ]
+      },
+      "pick_verdict": "⚠️ 观望"
+    },
+    "600660": {
+      "symbol": "600660",
+      "name": "福耀玻璃",
+      "category": "汽车玻璃",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": -4.33,
+        "max_drawdown_pct": -33.11
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 145.83,
+          "is_params": {
+            "fast": 15,
+            "slow": 35
+          },
+          "is_metrics": {
+            "total_return_pct": 237.11,
+            "sharpe_ratio": 1.12,
+            "max_drawdown_pct": -30.99,
+            "total_trades": 12,
+            "win_rate_pct": 50.0,
+            "final_equity": 337107.87
+          },
+          "oos_metrics": {
+            "total_return_pct": -6.93,
+            "sharpe_ratio": -0.229,
+            "max_drawdown_pct": -15.3,
+            "total_trades": 6,
+            "win_rate_pct": 33.3,
+            "final_equity": 93068.09
+          },
+          "oos_guard": {
+            "observed_rate": 0.3333333333333333,
+            "observed_ci": [
+              0.09677141110578041,
+              0.700006684861608
+            ],
+            "random_rate": 0.4981666666666667,
+            "random_ci": [
+              0.16666666666666666,
+              0.8333333333333334
+            ],
+            "excess": -0.1648333333333334,
+            "excess_ci": [
+              -0.5,
+              0.16666666666666666
+            ],
+            "p_value": 0.8917,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -4.33,
+            "max_drawdown_pct": -33.11
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-6.93%)",
+            "OOS夏普非正(-0.229)",
+            "胜率未超越随机(p=0.89)"
+          ]
+        },
+        "macd": {
+          "is_best_score": 152.93,
+          "is_params": {
+            "fast": 15,
+            "slow": 30,
+            "signal": 11
+          },
+          "is_metrics": {
+            "total_return_pct": 203.68,
+            "sharpe_ratio": 1.104,
+            "max_drawdown_pct": -33.22,
+            "total_trades": 36,
+            "win_rate_pct": 41.7,
+            "final_equity": 303678.66
+          },
+          "oos_metrics": {
+            "total_return_pct": 18.88,
+            "sharpe_ratio": 0.765,
+            "max_drawdown_pct": -19.26,
+            "total_trades": 10,
+            "win_rate_pct": 30.0,
+            "final_equity": 118876.6
+          },
+          "oos_guard": {
+            "observed_rate": 0.3,
+            "observed_ci": [
+              0.10779126740630099,
+              0.6032218525388546
+            ],
+            "random_rate": 0.49856999999999996,
+            "random_ci": [
+              0.2,
+              0.8
+            ],
+            "excess": -0.19856999999999997,
+            "excess_ci": [
+              -0.5,
+              0.09999999999999998
+            ],
+            "p_value": 0.944,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -4.33,
+            "max_drawdown_pct": -33.11
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.94)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 129.32,
+          "is_params": {
+            "length": 15,
+            "std": 1.5,
+            "exit_on_mid": true
+          },
+          "is_metrics": {
+            "total_return_pct": 149.74,
+            "sharpe_ratio": 1.089,
+            "max_drawdown_pct": -20.45,
+            "total_trades": 21,
+            "win_rate_pct": 57.1,
+            "final_equity": 249737.49
+          },
+          "oos_metrics": {
+            "total_return_pct": 6.15,
+            "sharpe_ratio": 0.355,
+            "max_drawdown_pct": -12.32,
+            "total_trades": 6,
+            "win_rate_pct": 16.7,
+            "final_equity": 106153.67
+          },
+          "oos_guard": {
+            "observed_rate": 0.16666666666666666,
+            "observed_ci": [
+              0.030053369748306635,
+              0.5635028221864702
+            ],
+            "random_rate": 0.4981666666666667,
+            "random_ci": [
+              0.16666666666666666,
+              0.8333333333333334
+            ],
+            "excess": -0.3315,
+            "excess_ci": [
+              -0.6666666666666667,
+              0.0
+            ],
+            "p_value": 0.9849,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -4.33,
+            "max_drawdown_pct": -33.11
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.98)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": 82.14,
+          "is_params": {
+            "ema_len": 30,
+            "obv_ma": 30
+          },
+          "is_metrics": {
+            "total_return_pct": 86.21,
+            "sharpe_ratio": 0.782,
+            "max_drawdown_pct": -25.13,
+            "total_trades": 39,
+            "win_rate_pct": 23.1,
+            "final_equity": 186205.23
+          },
+          "oos_metrics": {
+            "total_return_pct": -7.78,
+            "sharpe_ratio": -0.368,
+            "max_drawdown_pct": -18.8,
+            "total_trades": 16,
+            "win_rate_pct": 12.5,
+            "final_equity": 92222.36
+          },
+          "oos_guard": {
+            "observed_rate": 0.125,
+            "observed_ci": [
+              0.03497748774324047,
+              0.36022827265758695
+            ],
+            "random_rate": 0.4990875,
+            "random_ci": [
+              0.25,
+              0.75
+            ],
+            "excess": -0.3740875,
+            "excess_ci": [
+              -0.625,
+              -0.125
+            ],
+            "p_value": 1.0,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -4.33,
+            "max_drawdown_pct": -33.11
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-7.78%)",
+            "OOS夏普非正(-0.368)",
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 17.4,
+          "is_params": {
+            "kdj_len": 9,
+            "kdj_signal": 4,
+            "rsi_len": 10,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 17.91,
+            "sharpe_ratio": 0.401,
+            "max_drawdown_pct": -17.27,
+            "total_trades": 9,
+            "win_rate_pct": 22.2,
+            "final_equity": 117914.07
+          },
+          "oos_metrics": {
+            "total_return_pct": 5.23,
+            "sharpe_ratio": 0.452,
+            "max_drawdown_pct": -8.27,
+            "total_trades": 5,
+            "win_rate_pct": 60.0,
+            "final_equity": 105226.7
+          },
+          "oos_guard": {
+            "observed_rate": 0.6,
+            "observed_ci": [
+              0.2307242812760128,
+              0.882379225767352
+            ],
+            "random_rate": 0.49872,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": 0.10127999999999998,
+            "excess_ci": [
+              -0.4,
+              0.6
+            ],
+            "p_value": 0.4985,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -4.33,
+            "max_drawdown_pct": -33.11
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.50)"
+          ]
+        }
+      },
+      "pick_strategy": "macd",
+      "pick_detail": {
+        "is_best_score": 152.93,
+        "is_params": {
+          "fast": 15,
+          "slow": 30,
+          "signal": 11
+        },
+        "is_metrics": {
+          "total_return_pct": 203.68,
+          "sharpe_ratio": 1.104,
+          "max_drawdown_pct": -33.22,
+          "total_trades": 36,
+          "win_rate_pct": 41.7,
+          "final_equity": 303678.66
+        },
+        "oos_metrics": {
+          "total_return_pct": 18.88,
+          "sharpe_ratio": 0.765,
+          "max_drawdown_pct": -19.26,
+          "total_trades": 10,
+          "win_rate_pct": 30.0,
+          "final_equity": 118876.6
+        },
+        "oos_guard": {
+          "observed_rate": 0.3,
+          "observed_ci": [
+            0.10779126740630099,
+            0.6032218525388546
+          ],
+          "random_rate": 0.49856999999999996,
+          "random_ci": [
+            0.2,
+            0.8
+          ],
+          "excess": -0.19856999999999997,
+          "excess_ci": [
+            -0.5,
+            0.09999999999999998
+          ],
+          "p_value": 0.944,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": -4.33,
+          "max_drawdown_pct": -33.11
+        },
+        "verdict": "⚠️ 观望",
+        "reasons": [
+          "胜率未超越随机(p=0.94)"
+        ]
+      },
+      "pick_verdict": "⚠️ 观望"
+    },
+    "600089": {
+      "symbol": "600089",
+      "name": "特变电工",
+      "category": "电网装备",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": 52.09,
+        "max_drawdown_pct": -43.83
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 103.32,
+          "is_params": {
+            "fast": 8,
+            "slow": 21
+          },
+          "is_metrics": {
+            "total_return_pct": 147.28,
+            "sharpe_ratio": 0.75,
+            "max_drawdown_pct": -40.65,
+            "total_trades": 25,
+            "win_rate_pct": 48.0,
+            "final_equity": 247279.19
+          },
+          "oos_metrics": {
+            "total_return_pct": 68.47,
+            "sharpe_ratio": 1.128,
+            "max_drawdown_pct": -26.12,
+            "total_trades": 9,
+            "win_rate_pct": 22.2,
+            "final_equity": 168469.58
+          },
+          "oos_guard": {
+            "observed_rate": 0.2222222222222222,
+            "observed_ci": [
+              0.06322510711784671,
+              0.5474110308930111
+            ],
+            "random_rate": 0.4991666666666666,
+            "random_ci": [
+              0.2222222222222222,
+              0.7777777777777778
+            ],
+            "excess": -0.2769444444444444,
+            "excess_ci": [
+              -0.5555555555555556,
+              0.0
+            ],
+            "p_value": 0.9818,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 52.09,
+            "max_drawdown_pct": -43.83
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.98)"
+          ]
+        },
+        "macd": {
+          "is_best_score": 75.0,
+          "is_params": {
+            "fast": 10,
+            "slow": 21,
+            "signal": 7
+          },
+          "is_metrics": {
+            "total_return_pct": 91.72,
+            "sharpe_ratio": 0.644,
+            "max_drawdown_pct": -31.13,
+            "total_trades": 53,
+            "win_rate_pct": 35.8,
+            "final_equity": 191718.82
+          },
+          "oos_metrics": {
+            "total_return_pct": 39.28,
+            "sharpe_ratio": 0.84,
+            "max_drawdown_pct": -19.33,
+            "total_trades": 20,
+            "win_rate_pct": 40.0,
+            "final_equity": 139280.02
+          },
+          "oos_guard": {
+            "observed_rate": 0.4,
+            "observed_ci": [
+              0.21880653237281705,
+              0.6134184992377469
+            ],
+            "random_rate": 0.4991900000000001,
+            "random_ci": [
+              0.3,
+              0.7
+            ],
+            "excess": -0.09919000000000006,
+            "excess_ci": [
+              -0.29999999999999993,
+              0.10000000000000003
+            ],
+            "p_value": 0.8688,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 52.09,
+            "max_drawdown_pct": -43.83
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.87)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 81.67,
+          "is_params": {
+            "length": 25,
+            "std": 1.5,
+            "exit_on_mid": true
+          },
+          "is_metrics": {
+            "total_return_pct": 125.08,
+            "sharpe_ratio": 0.752,
+            "max_drawdown_pct": -33.12,
+            "total_trades": 18,
+            "win_rate_pct": 27.8,
+            "final_equity": 225079.35
+          },
+          "oos_metrics": {
+            "total_return_pct": 52.09,
+            "sharpe_ratio": 0.995,
+            "max_drawdown_pct": -21.37,
+            "total_trades": 7,
+            "win_rate_pct": 42.9,
+            "final_equity": 152093.14
+          },
+          "oos_guard": {
+            "observed_rate": 0.42857142857142855,
+            "observed_ci": [
+              0.15821985525146975,
+              0.7495416354723428
+            ],
+            "random_rate": 0.49824285714285704,
+            "random_ci": [
+              0.14285714285714285,
+              0.8571428571428571
+            ],
+            "excess": -0.0696714285714285,
+            "excess_ci": [
+              -0.42857142857142855,
+              0.2857142857142857
+            ],
+            "p_value": 0.7692,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 52.09,
+            "max_drawdown_pct": -43.83
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.77)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": 37.35,
+          "is_params": {
+            "ema_len": 30,
+            "obv_ma": 20
+          },
+          "is_metrics": {
+            "total_return_pct": 45.62,
+            "sharpe_ratio": 0.432,
+            "max_drawdown_pct": -39.11,
+            "total_trades": 57,
+            "win_rate_pct": 26.3,
+            "final_equity": 145623.07
+          },
+          "oos_metrics": {
+            "total_return_pct": 4.0,
+            "sharpe_ratio": 0.228,
+            "max_drawdown_pct": -16.44,
+            "total_trades": 12,
+            "win_rate_pct": 16.7,
+            "final_equity": 103999.35
+          },
+          "oos_guard": {
+            "observed_rate": 0.16666666666666666,
+            "observed_ci": [
+              0.04696514218385378,
+              0.4480308622529734
+            ],
+            "random_rate": 0.4988583333333333,
+            "random_ci": [
+              0.25,
+              0.75
+            ],
+            "excess": -0.33219166666666666,
+            "excess_ci": [
+              -0.5833333333333334,
+              -0.08333333333333334
+            ],
+            "p_value": 0.9968,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 52.09,
+            "max_drawdown_pct": -43.83
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=1.00)",
+            "大幅跑输持有(4.0% vs 52.09%)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 36.01,
+          "is_params": {
+            "kdj_len": 9,
+            "kdj_signal": 4,
+            "rsi_len": 14,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 25.04,
+            "sharpe_ratio": 0.597,
+            "max_drawdown_pct": -12.05,
+            "total_trades": 11,
+            "win_rate_pct": 45.5,
+            "final_equity": 125044.46
+          },
+          "oos_metrics": {
+            "total_return_pct": 1.14,
+            "sharpe_ratio": 0.119,
+            "max_drawdown_pct": -6.44,
+            "total_trades": 4,
+            "win_rate_pct": 25.0,
+            "final_equity": 101142.0
+          },
+          "oos_guard": {
+            "observed_rate": 0.25,
+            "observed_ci": [
+              0.04558726080970055,
+              0.6993581574175981
+            ],
+            "random_rate": 0.497225,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": -0.24722499999999997,
+            "excess_ci": [
+              -0.75,
+              0.25
+            ],
+            "p_value": 0.9362,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 52.09,
+            "max_drawdown_pct": -43.83
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.94)",
+            "大幅跑输持有(1.14% vs 52.09%)"
+          ]
+        }
+      },
+      "pick_strategy": "ema_cross",
+      "pick_detail": {
+        "is_best_score": 103.32,
+        "is_params": {
+          "fast": 8,
+          "slow": 21
+        },
+        "is_metrics": {
+          "total_return_pct": 147.28,
+          "sharpe_ratio": 0.75,
+          "max_drawdown_pct": -40.65,
+          "total_trades": 25,
+          "win_rate_pct": 48.0,
+          "final_equity": 247279.19
+        },
+        "oos_metrics": {
+          "total_return_pct": 68.47,
+          "sharpe_ratio": 1.128,
+          "max_drawdown_pct": -26.12,
+          "total_trades": 9,
+          "win_rate_pct": 22.2,
+          "final_equity": 168469.58
+        },
+        "oos_guard": {
+          "observed_rate": 0.2222222222222222,
+          "observed_ci": [
+            0.06322510711784671,
+            0.5474110308930111
+          ],
+          "random_rate": 0.4991666666666666,
+          "random_ci": [
+            0.2222222222222222,
+            0.7777777777777778
+          ],
+          "excess": -0.2769444444444444,
+          "excess_ci": [
+            -0.5555555555555556,
+            0.0
+          ],
+          "p_value": 0.9818,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": 52.09,
+          "max_drawdown_pct": -43.83
+        },
+        "verdict": "⚠️ 观望",
+        "reasons": [
+          "胜率未超越随机(p=0.98)"
+        ]
+      },
+      "pick_verdict": "⚠️ 观望"
+    },
+    "600406": {
+      "symbol": "600406",
+      "name": "国电南瑞",
+      "category": "电网装备",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": -4.8,
+        "max_drawdown_pct": -29.81
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 31.14,
+          "is_params": {
+            "fast": 8,
+            "slow": 30
+          },
+          "is_metrics": {
+            "total_return_pct": 34.46,
+            "sharpe_ratio": 0.36,
+            "max_drawdown_pct": -33.19,
+            "total_trades": 24,
+            "win_rate_pct": 41.7,
+            "final_equity": 134462.17
+          },
+          "oos_metrics": {
+            "total_return_pct": -19.86,
+            "sharpe_ratio": -0.708,
+            "max_drawdown_pct": -22.82,
+            "total_trades": 13,
+            "win_rate_pct": 15.4,
+            "final_equity": 80142.98
+          },
+          "oos_guard": {
+            "observed_rate": 0.15384615384615385,
+            "observed_ci": [
+              0.043258178358081184,
+              0.4223463101948254
+            ],
+            "random_rate": 0.49891538461538465,
+            "random_ci": [
+              0.23076923076923078,
+              0.7692307692307693
+            ],
+            "excess": -0.3450692307692308,
+            "excess_ci": [
+              -0.6153846153846154,
+              -0.07692307692307693
+            ],
+            "p_value": 0.9982,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -4.8,
+            "max_drawdown_pct": -29.81
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-19.86%)",
+            "OOS夏普非正(-0.708)",
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "macd": {
+          "is_best_score": -31.08,
+          "is_params": {
+            "fast": 15,
+            "slow": 35,
+            "signal": 11
+          },
+          "is_metrics": {
+            "total_return_pct": -23.96,
+            "sharpe_ratio": -0.121,
+            "max_drawdown_pct": -51.09,
+            "total_trades": 40,
+            "win_rate_pct": 32.5,
+            "final_equity": 76038.31
+          },
+          "oos_metrics": {
+            "total_return_pct": -9.31,
+            "sharpe_ratio": -0.244,
+            "max_drawdown_pct": -21.36,
+            "total_trades": 15,
+            "win_rate_pct": 33.3,
+            "final_equity": 90692.24
+          },
+          "oos_guard": {
+            "observed_rate": 0.3333333333333333,
+            "observed_ci": [
+              0.1517632443971473,
+              0.5828645226148023
+            ],
+            "random_rate": 0.49910666666666664,
+            "random_ci": [
+              0.26666666666666666,
+              0.7333333333333333
+            ],
+            "excess": -0.16577333333333333,
+            "excess_ci": [
+              -0.39999999999999997,
+              0.06666666666666665
+            ],
+            "p_value": 0.939,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -4.8,
+            "max_drawdown_pct": -29.81
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-9.31%)",
+            "OOS夏普非正(-0.244)",
+            "胜率未超越随机(p=0.94)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 49.15,
+          "is_params": {
+            "length": 15,
+            "std": 1.5,
+            "exit_on_mid": false
+          },
+          "is_metrics": {
+            "total_return_pct": 71.19,
+            "sharpe_ratio": 0.519,
+            "max_drawdown_pct": -32.45,
+            "total_trades": 11,
+            "win_rate_pct": 54.5,
+            "final_equity": 171188.78
+          },
+          "oos_metrics": {
+            "total_return_pct": -17.25,
+            "sharpe_ratio": -0.457,
+            "max_drawdown_pct": -31.28,
+            "total_trades": 5,
+            "win_rate_pct": 0.0,
+            "final_equity": 82754.94
+          },
+          "oos_guard": {
+            "observed_rate": 0.0,
+            "observed_ci": [
+              0.0,
+              0.43448246478317476
+            ],
+            "random_rate": 0.49872,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": -0.49872,
+            "excess_ci": [
+              -1.0,
+              0.0
+            ],
+            "p_value": 1.0,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -4.8,
+            "max_drawdown_pct": -29.81
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-17.25%)",
+            "OOS夏普非正(-0.457)",
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": -28.01,
+          "is_params": {
+            "ema_len": 30,
+            "obv_ma": 20
+          },
+          "is_metrics": {
+            "total_return_pct": -22.85,
+            "sharpe_ratio": -0.23,
+            "max_drawdown_pct": -35.17,
+            "total_trades": 52,
+            "win_rate_pct": 19.2,
+            "final_equity": 77146.37
+          },
+          "oos_metrics": {
+            "total_return_pct": -22.74,
+            "sharpe_ratio": -1.582,
+            "max_drawdown_pct": -24.07,
+            "total_trades": 21,
+            "win_rate_pct": 9.5,
+            "final_equity": 77262.59
+          },
+          "oos_guard": {
+            "observed_rate": 0.09523809523809523,
+            "observed_ci": [
+              0.02651876743807452,
+              0.2891413907391826
+            ],
+            "random_rate": 0.4992523809523809,
+            "random_ci": [
+              0.2857142857142857,
+              0.7142857142857143
+            ],
+            "excess": -0.40401428571428566,
+            "excess_ci": [
+              -0.6190476190476191,
+              -0.19047619047619047
+            ],
+            "p_value": 1.0,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -4.8,
+            "max_drawdown_pct": -29.81
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-22.74%)",
+            "OOS夏普非正(-1.582)",
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 14.09,
+          "is_params": {
+            "kdj_len": 14,
+            "kdj_signal": 5,
+            "rsi_len": 10,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 26.52,
+            "sharpe_ratio": 0.674,
+            "max_drawdown_pct": -7.43,
+            "total_trades": 4,
+            "win_rate_pct": 75.0,
+            "final_equity": 126517.65
+          },
+          "oos_metrics": {
+            "total_return_pct": -1.16,
+            "sharpe_ratio": -0.046,
+            "max_drawdown_pct": -9.48,
+            "total_trades": 2,
+            "win_rate_pct": 50.0,
+            "final_equity": 98842.93
+          },
+          "oos_guard": {
+            "observed_rate": 0.5,
+            "observed_ci": [
+              0.09453120573423074,
+              0.9054687942657693
+            ],
+            "random_rate": 0.49485,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": 0.005149999999999988,
+            "excess_ci": [
+              -0.5,
+              0.5
+            ],
+            "p_value": 0.7455,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -4.8,
+            "max_drawdown_pct": -29.81
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-1.16%)",
+            "OOS夏普非正(-0.046)",
+            "OOS交易过少(2)",
+            "胜率未超越随机(p=0.75)"
+          ]
+        }
+      },
+      "pick_strategy": "bollinger",
+      "pick_detail": {
+        "is_best_score": 49.15,
+        "is_params": {
+          "length": 15,
+          "std": 1.5,
+          "exit_on_mid": false
+        },
+        "is_metrics": {
+          "total_return_pct": 71.19,
+          "sharpe_ratio": 0.519,
+          "max_drawdown_pct": -32.45,
+          "total_trades": 11,
+          "win_rate_pct": 54.5,
+          "final_equity": 171188.78
+        },
+        "oos_metrics": {
+          "total_return_pct": -17.25,
+          "sharpe_ratio": -0.457,
+          "max_drawdown_pct": -31.28,
+          "total_trades": 5,
+          "win_rate_pct": 0.0,
+          "final_equity": 82754.94
+        },
+        "oos_guard": {
+          "observed_rate": 0.0,
+          "observed_ci": [
+            0.0,
+            0.43448246478317476
+          ],
+          "random_rate": 0.49872,
+          "random_ci": [
+            0.0,
+            1.0
+          ],
+          "excess": -0.49872,
+          "excess_ci": [
+            -1.0,
+            0.0
+          ],
+          "p_value": 1.0,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": -4.8,
+          "max_drawdown_pct": -29.81
+        },
+        "verdict": "❌ 否决",
+        "reasons": [
+          "OOS收益非正(-17.25%)",
+          "OOS夏普非正(-0.457)",
+          "胜率未超越随机(p=1.00)"
+        ]
+      },
+      "pick_verdict": "❌ 否决"
+    },
+    "000400": {
+      "symbol": "000400",
+      "name": "许继电气",
+      "category": "电网装备",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": -18.65,
+        "max_drawdown_pct": -41.48
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 87.58,
+          "is_params": {
+            "fast": 5,
+            "slow": 21
+          },
+          "is_metrics": {
+            "total_return_pct": 120.63,
+            "sharpe_ratio": 0.653,
+            "max_drawdown_pct": -35.77,
+            "total_trades": 30,
+            "win_rate_pct": 43.3,
+            "final_equity": 220628.74
+          },
+          "oos_metrics": {
+            "total_return_pct": 8.78,
+            "sharpe_ratio": 0.33,
+            "max_drawdown_pct": -19.48,
+            "total_trades": 9,
+            "win_rate_pct": 44.4,
+            "final_equity": 108781.74
+          },
+          "oos_guard": {
+            "observed_rate": 0.4444444444444444,
+            "observed_ci": [
+              0.18877852109766452,
+              0.733348706504507
+            ],
+            "random_rate": 0.4991666666666666,
+            "random_ci": [
+              0.2222222222222222,
+              0.7777777777777778
+            ],
+            "excess": -0.05472222222222217,
+            "excess_ci": [
+              -0.33333333333333337,
+              0.2222222222222222
+            ],
+            "p_value": 0.7421,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -18.65,
+            "max_drawdown_pct": -41.48
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.74)"
+          ]
+        },
+        "macd": {
+          "is_best_score": 102.32,
+          "is_params": {
+            "fast": 15,
+            "slow": 35,
+            "signal": 11
+          },
+          "is_metrics": {
+            "total_return_pct": 131.26,
+            "sharpe_ratio": 0.74,
+            "max_drawdown_pct": -25.63,
+            "total_trades": 32,
+            "win_rate_pct": 46.9,
+            "final_equity": 231262.3
+          },
+          "oos_metrics": {
+            "total_return_pct": -3.19,
+            "sharpe_ratio": 0.031,
+            "max_drawdown_pct": -26.74,
+            "total_trades": 12,
+            "win_rate_pct": 41.7,
+            "final_equity": 96807.78
+          },
+          "oos_guard": {
+            "observed_rate": 0.4166666666666667,
+            "observed_ci": [
+              0.19326031365875665,
+              0.6804886874504503
+            ],
+            "random_rate": 0.4988583333333333,
+            "random_ci": [
+              0.25,
+              0.75
+            ],
+            "excess": -0.08219166666666661,
+            "excess_ci": [
+              -0.3333333333333333,
+              0.16666666666666669
+            ],
+            "p_value": 0.8033,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -18.65,
+            "max_drawdown_pct": -41.48
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-3.19%)",
+            "胜率未超越随机(p=0.80)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 20.52,
+          "is_params": {
+            "length": 30,
+            "std": 2.5,
+            "exit_on_mid": false
+          },
+          "is_metrics": {
+            "total_return_pct": 31.34,
+            "sharpe_ratio": 0.336,
+            "max_drawdown_pct": -41.65,
+            "total_trades": 12,
+            "win_rate_pct": 50.0,
+            "final_equity": 131342.0
+          },
+          "oos_metrics": {
+            "total_return_pct": -2.04,
+            "sharpe_ratio": 0.091,
+            "max_drawdown_pct": -35.3,
+            "total_trades": 2,
+            "win_rate_pct": 50.0,
+            "final_equity": 97962.48
+          },
+          "oos_guard": {
+            "observed_rate": 0.5,
+            "observed_ci": [
+              0.09453120573423074,
+              0.9054687942657693
+            ],
+            "random_rate": 0.49485,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": 0.005149999999999988,
+            "excess_ci": [
+              -0.5,
+              0.5
+            ],
+            "p_value": 0.7455,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -18.65,
+            "max_drawdown_pct": -41.48
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-2.04%)",
+            "OOS交易过少(2)",
+            "胜率未超越随机(p=0.75)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": 120.49,
+          "is_params": {
+            "ema_len": 25,
+            "obv_ma": 20
+          },
+          "is_metrics": {
+            "total_return_pct": 167.84,
+            "sharpe_ratio": 0.85,
+            "max_drawdown_pct": -36.86,
+            "total_trades": 51,
+            "win_rate_pct": 37.3,
+            "final_equity": 267841.27
+          },
+          "oos_metrics": {
+            "total_return_pct": -4.99,
+            "sharpe_ratio": -0.045,
+            "max_drawdown_pct": -19.1,
+            "total_trades": 18,
+            "win_rate_pct": 22.2,
+            "final_equity": 95005.82
+          },
+          "oos_guard": {
+            "observed_rate": 0.2222222222222222,
+            "observed_ci": [
+              0.09000928108601694,
+              0.45214584316212625
+            ],
+            "random_rate": 0.4992277777777777,
+            "random_ci": [
+              0.2777777777777778,
+              0.7222222222222222
+            ],
+            "excess": -0.2770055555555555,
+            "excess_ci": [
+              -0.5,
+              -0.05555555555555558
+            ],
+            "p_value": 0.9963,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -18.65,
+            "max_drawdown_pct": -41.48
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-4.99%)",
+            "OOS夏普非正(-0.045)",
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 79.5,
+          "is_params": {
+            "kdj_len": 9,
+            "kdj_signal": 3,
+            "rsi_len": 20,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 76.86,
+            "sharpe_ratio": 1.102,
+            "max_drawdown_pct": -12.27,
+            "total_trades": 12,
+            "win_rate_pct": 66.7,
+            "final_equity": 176859.9
+          },
+          "oos_metrics": {
+            "total_return_pct": 3.94,
+            "sharpe_ratio": 0.282,
+            "max_drawdown_pct": -8.82,
+            "total_trades": 6,
+            "win_rate_pct": 50.0,
+            "final_equity": 103938.33
+          },
+          "oos_guard": {
+            "observed_rate": 0.5,
+            "observed_ci": [
+              0.1876163064826506,
+              0.8123836935173494
+            ],
+            "random_rate": 0.4981666666666667,
+            "random_ci": [
+              0.16666666666666666,
+              0.8333333333333334
+            ],
+            "excess": 0.001833333333333298,
+            "excess_ci": [
+              -0.33333333333333337,
+              0.33333333333333337
+            ],
+            "p_value": 0.6521,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -18.65,
+            "max_drawdown_pct": -41.48
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.65)"
+          ]
+        }
+      },
+      "pick_strategy": "ema_obv",
+      "pick_detail": {
+        "is_best_score": 120.49,
+        "is_params": {
+          "ema_len": 25,
+          "obv_ma": 20
+        },
+        "is_metrics": {
+          "total_return_pct": 167.84,
+          "sharpe_ratio": 0.85,
+          "max_drawdown_pct": -36.86,
+          "total_trades": 51,
+          "win_rate_pct": 37.3,
+          "final_equity": 267841.27
+        },
+        "oos_metrics": {
+          "total_return_pct": -4.99,
+          "sharpe_ratio": -0.045,
+          "max_drawdown_pct": -19.1,
+          "total_trades": 18,
+          "win_rate_pct": 22.2,
+          "final_equity": 95005.82
+        },
+        "oos_guard": {
+          "observed_rate": 0.2222222222222222,
+          "observed_ci": [
+            0.09000928108601694,
+            0.45214584316212625
+          ],
+          "random_rate": 0.4992277777777777,
+          "random_ci": [
+            0.2777777777777778,
+            0.7222222222222222
+          ],
+          "excess": -0.2770055555555555,
+          "excess_ci": [
+            -0.5,
+            -0.05555555555555558
+          ],
+          "p_value": 0.9963,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": -18.65,
+          "max_drawdown_pct": -41.48
+        },
+        "verdict": "❌ 否决",
+        "reasons": [
+          "OOS收益非正(-4.99%)",
+          "OOS夏普非正(-0.045)",
+          "胜率未超越随机(p=1.00)"
+        ]
+      },
+      "pick_verdict": "❌ 否决"
+    },
+    "002028": {
+      "symbol": "002028",
+      "name": "思源电气",
+      "category": "电网装备",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": 87.63,
+        "max_drawdown_pct": -42.46
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 116.66,
+          "is_params": {
+            "fast": 8,
+            "slow": 26
+          },
+          "is_metrics": {
+            "total_return_pct": 165.64,
+            "sharpe_ratio": 0.767,
+            "max_drawdown_pct": -34.02,
+            "total_trades": 27,
+            "win_rate_pct": 44.4,
+            "final_equity": 265643.58
+          },
+          "oos_metrics": {
+            "total_return_pct": 48.94,
+            "sharpe_ratio": 0.866,
+            "max_drawdown_pct": -37.54,
+            "total_trades": 9,
+            "win_rate_pct": 11.1,
+            "final_equity": 148942.4
+          },
+          "oos_guard": {
+            "observed_rate": 0.1111111111111111,
+            "observed_ci": [
+              0.019890887638544907,
+              0.434999705576656
+            ],
+            "random_rate": 0.4991666666666666,
+            "random_ci": [
+              0.2222222222222222,
+              0.7777777777777778
+            ],
+            "excess": -0.3880555555555555,
+            "excess_ci": [
+              -0.6666666666666667,
+              -0.1111111111111111
+            ],
+            "p_value": 0.9979,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 87.63,
+            "max_drawdown_pct": -42.46
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "macd": {
+          "is_best_score": 16.86,
+          "is_params": {
+            "fast": 15,
+            "slow": 35,
+            "signal": 11
+          },
+          "is_metrics": {
+            "total_return_pct": 16.43,
+            "sharpe_ratio": 0.252,
+            "max_drawdown_pct": -32.9,
+            "total_trades": 42,
+            "win_rate_pct": 33.3,
+            "final_equity": 116426.26
+          },
+          "oos_metrics": {
+            "total_return_pct": -7.22,
+            "sharpe_ratio": 0.025,
+            "max_drawdown_pct": -41.23,
+            "total_trades": 16,
+            "win_rate_pct": 25.0,
+            "final_equity": 92777.64
+          },
+          "oos_guard": {
+            "observed_rate": 0.25,
+            "observed_ci": [
+              0.10182067491213048,
+              0.49498316535508774
+            ],
+            "random_rate": 0.4990875,
+            "random_ci": [
+              0.25,
+              0.75
+            ],
+            "excess": -0.24908750000000002,
+            "excess_ci": [
+              -0.5,
+              0.0
+            ],
+            "p_value": 0.9891,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 87.63,
+            "max_drawdown_pct": -42.46
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-7.22%)",
+            "胜率未超越随机(p=0.99)",
+            "大幅跑输持有(-7.22% vs 87.63%)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 107.16,
+          "is_params": {
+            "length": 25,
+            "std": 1.5,
+            "exit_on_mid": false
+          },
+          "is_metrics": {
+            "total_return_pct": 186.61,
+            "sharpe_ratio": 0.804,
+            "max_drawdown_pct": -39.87,
+            "total_trades": 10,
+            "win_rate_pct": 70.0,
+            "final_equity": 286614.82
+          },
+          "oos_metrics": {
+            "total_return_pct": 61.52,
+            "sharpe_ratio": 1.012,
+            "max_drawdown_pct": -32.77,
+            "total_trades": 4,
+            "win_rate_pct": 25.0,
+            "final_equity": 161519.15
+          },
+          "oos_guard": {
+            "observed_rate": 0.25,
+            "observed_ci": [
+              0.04558726080970055,
+              0.6993581574175981
+            ],
+            "random_rate": 0.497225,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": -0.24722499999999997,
+            "excess_ci": [
+              -0.75,
+              0.25
+            ],
+            "p_value": 0.9362,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 87.63,
+            "max_drawdown_pct": -42.46
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.94)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": 55.57,
+          "is_params": {
+            "ema_len": 25,
+            "obv_ma": 20
+          },
+          "is_metrics": {
+            "total_return_pct": 64.51,
+            "sharpe_ratio": 0.539,
+            "max_drawdown_pct": -32.27,
+            "total_trades": 55,
+            "win_rate_pct": 27.3,
+            "final_equity": 164513.77
+          },
+          "oos_metrics": {
+            "total_return_pct": -29.15,
+            "sharpe_ratio": -1.115,
+            "max_drawdown_pct": -31.51,
+            "total_trades": 20,
+            "win_rate_pct": 15.0,
+            "final_equity": 70850.49
+          },
+          "oos_guard": {
+            "observed_rate": 0.15,
+            "observed_ci": [
+              0.052368745896216595,
+              0.36041886474075696
+            ],
+            "random_rate": 0.4991900000000001,
+            "random_ci": [
+              0.3,
+              0.7
+            ],
+            "excess": -0.3491900000000001,
+            "excess_ci": [
+              -0.5499999999999999,
+              -0.15
+            ],
+            "p_value": 1.0,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 87.63,
+            "max_drawdown_pct": -42.46
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-29.15%)",
+            "OOS夏普非正(-1.115)",
+            "胜率未超越随机(p=1.00)",
+            "大幅跑输持有(-29.15% vs 87.63%)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 20.92,
+          "is_params": {
+            "kdj_len": 9,
+            "kdj_signal": 3,
+            "rsi_len": 14,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 20.24,
+            "sharpe_ratio": 0.495,
+            "max_drawdown_pct": -9.43,
+            "total_trades": 7,
+            "win_rate_pct": 28.6,
+            "final_equity": 120242.52
+          },
+          "oos_metrics": {
+            "total_return_pct": -2.9,
+            "sharpe_ratio": -0.545,
+            "max_drawdown_pct": -3.9,
+            "total_trades": 3,
+            "win_rate_pct": 33.3,
+            "final_equity": 97095.9
+          },
+          "oos_guard": {
+            "observed_rate": 0.3333333333333333,
+            "observed_ci": [
+              0.06149194472039621,
+              0.7923403991979522
+            ],
+            "random_rate": 0.49903333333333333,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": -0.16570000000000001,
+            "excess_ci": [
+              -0.6666666666666667,
+              0.3333333333333333
+            ],
+            "p_value": 0.8759,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 87.63,
+            "max_drawdown_pct": -42.46
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-2.9%)",
+            "OOS夏普非正(-0.545)",
+            "胜率未超越随机(p=0.88)",
+            "大幅跑输持有(-2.9% vs 87.63%)"
+          ]
+        }
+      },
+      "pick_strategy": "ema_cross",
+      "pick_detail": {
+        "is_best_score": 116.66,
+        "is_params": {
+          "fast": 8,
+          "slow": 26
+        },
+        "is_metrics": {
+          "total_return_pct": 165.64,
+          "sharpe_ratio": 0.767,
+          "max_drawdown_pct": -34.02,
+          "total_trades": 27,
+          "win_rate_pct": 44.4,
+          "final_equity": 265643.58
+        },
+        "oos_metrics": {
+          "total_return_pct": 48.94,
+          "sharpe_ratio": 0.866,
+          "max_drawdown_pct": -37.54,
+          "total_trades": 9,
+          "win_rate_pct": 11.1,
+          "final_equity": 148942.4
+        },
+        "oos_guard": {
+          "observed_rate": 0.1111111111111111,
+          "observed_ci": [
+            0.019890887638544907,
+            0.434999705576656
+          ],
+          "random_rate": 0.4991666666666666,
+          "random_ci": [
+            0.2222222222222222,
+            0.7777777777777778
+          ],
+          "excess": -0.3880555555555555,
+          "excess_ci": [
+            -0.6666666666666667,
+            -0.1111111111111111
+          ],
+          "p_value": 0.9979,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": 87.63,
+          "max_drawdown_pct": -42.46
+        },
+        "verdict": "⚠️ 观望",
+        "reasons": [
+          "胜率未超越随机(p=1.00)"
+        ]
+      },
+      "pick_verdict": "⚠️ 观望"
+    },
+    "600312": {
+      "symbol": "600312",
+      "name": "平高电气",
+      "category": "电网装备",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": 7.83,
+        "max_drawdown_pct": -33.88
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 60.85,
+          "is_params": {
+            "fast": 15,
+            "slow": 30
+          },
+          "is_metrics": {
+            "total_return_pct": 93.04,
+            "sharpe_ratio": 0.578,
+            "max_drawdown_pct": -32.67,
+            "total_trades": 16,
+            "win_rate_pct": 56.2,
+            "final_equity": 193035.58
+          },
+          "oos_metrics": {
+            "total_return_pct": -6.12,
+            "sharpe_ratio": -0.016,
+            "max_drawdown_pct": -22.87,
+            "total_trades": 6,
+            "win_rate_pct": 33.3,
+            "final_equity": 93879.75
+          },
+          "oos_guard": {
+            "observed_rate": 0.3333333333333333,
+            "observed_ci": [
+              0.09677141110578041,
+              0.700006684861608
+            ],
+            "random_rate": 0.4981666666666667,
+            "random_ci": [
+              0.16666666666666666,
+              0.8333333333333334
+            ],
+            "excess": -0.1648333333333334,
+            "excess_ci": [
+              -0.5,
+              0.16666666666666666
+            ],
+            "p_value": 0.8917,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 7.83,
+            "max_drawdown_pct": -33.88
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-6.12%)",
+            "OOS夏普非正(-0.016)",
+            "胜率未超越随机(p=0.89)",
+            "大幅跑输持有(-6.12% vs 7.83%)"
+          ]
+        },
+        "macd": {
+          "is_best_score": 42.22,
+          "is_params": {
+            "fast": 15,
+            "slow": 21,
+            "signal": 11
+          },
+          "is_metrics": {
+            "total_return_pct": 46.41,
+            "sharpe_ratio": 0.429,
+            "max_drawdown_pct": -29.88,
+            "total_trades": 38,
+            "win_rate_pct": 44.7,
+            "final_equity": 146410.59
+          },
+          "oos_metrics": {
+            "total_return_pct": 23.99,
+            "sharpe_ratio": 0.644,
+            "max_drawdown_pct": -23.72,
+            "total_trades": 12,
+            "win_rate_pct": 50.0,
+            "final_equity": 123991.62
+          },
+          "oos_guard": {
+            "observed_rate": 0.5,
+            "observed_ci": [
+              0.2537815976337061,
+              0.7462184023662939
+            ],
+            "random_rate": 0.4988583333333333,
+            "random_ci": [
+              0.25,
+              0.75
+            ],
+            "excess": 0.0011416666666667075,
+            "excess_ci": [
+              -0.25,
+              0.25
+            ],
+            "p_value": 0.6104,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 7.83,
+            "max_drawdown_pct": -33.88
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.61)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 33.33,
+          "is_params": {
+            "length": 30,
+            "std": 1.5,
+            "exit_on_mid": true
+          },
+          "is_metrics": {
+            "total_return_pct": 42.68,
+            "sharpe_ratio": 0.411,
+            "max_drawdown_pct": -30.36,
+            "total_trades": 17,
+            "win_rate_pct": 47.1,
+            "final_equity": 142679.62
+          },
+          "oos_metrics": {
+            "total_return_pct": -8.38,
+            "sharpe_ratio": -0.103,
+            "max_drawdown_pct": -24.98,
+            "total_trades": 6,
+            "win_rate_pct": 33.3,
+            "final_equity": 91616.51
+          },
+          "oos_guard": {
+            "observed_rate": 0.3333333333333333,
+            "observed_ci": [
+              0.09677141110578041,
+              0.700006684861608
+            ],
+            "random_rate": 0.4981666666666667,
+            "random_ci": [
+              0.16666666666666666,
+              0.8333333333333334
+            ],
+            "excess": -0.1648333333333334,
+            "excess_ci": [
+              -0.5,
+              0.16666666666666666
+            ],
+            "p_value": 0.8917,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 7.83,
+            "max_drawdown_pct": -33.88
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-8.38%)",
+            "OOS夏普非正(-0.103)",
+            "胜率未超越随机(p=0.89)",
+            "大幅跑输持有(-8.38% vs 7.83%)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": 98.94,
+          "is_params": {
+            "ema_len": 15,
+            "obv_ma": 20
+          },
+          "is_metrics": {
+            "total_return_pct": 129.56,
+            "sharpe_ratio": 0.766,
+            "max_drawdown_pct": -33.27,
+            "total_trades": 63,
+            "win_rate_pct": 34.9,
+            "final_equity": 229561.46
+          },
+          "oos_metrics": {
+            "total_return_pct": 21.24,
+            "sharpe_ratio": 0.636,
+            "max_drawdown_pct": -17.98,
+            "total_trades": 16,
+            "win_rate_pct": 37.5,
+            "final_equity": 121244.74
+          },
+          "oos_guard": {
+            "observed_rate": 0.375,
+            "observed_ci": [
+              0.18481232558863633,
+              0.6135895945449727
+            ],
+            "random_rate": 0.4990875,
+            "random_ci": [
+              0.25,
+              0.75
+            ],
+            "excess": -0.12408750000000002,
+            "excess_ci": [
+              -0.375,
+              0.125
+            ],
+            "p_value": 0.897,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 7.83,
+            "max_drawdown_pct": -33.88
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.90)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 26.88,
+          "is_params": {
+            "kdj_len": 12,
+            "kdj_signal": 3,
+            "rsi_len": 20,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 20.85,
+            "sharpe_ratio": 0.424,
+            "max_drawdown_pct": -11.08,
+            "total_trades": 11,
+            "win_rate_pct": 54.5,
+            "final_equity": 120846.73
+          },
+          "oos_metrics": {
+            "total_return_pct": 17.37,
+            "sharpe_ratio": 0.814,
+            "max_drawdown_pct": -9.21,
+            "total_trades": 8,
+            "win_rate_pct": 37.5,
+            "final_equity": 117366.39
+          },
+          "oos_guard": {
+            "observed_rate": 0.375,
+            "observed_ci": [
+              0.13684428582359742,
+              0.6942576053973727
+            ],
+            "random_rate": 0.4989,
+            "random_ci": [
+              0.125,
+              0.875
+            ],
+            "excess": -0.12390000000000001,
+            "excess_ci": [
+              -0.5,
+              0.25
+            ],
+            "p_value": 0.8551,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": 7.83,
+            "max_drawdown_pct": -33.88
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.86)"
+          ]
+        }
+      },
+      "pick_strategy": "ema_obv",
+      "pick_detail": {
+        "is_best_score": 98.94,
+        "is_params": {
+          "ema_len": 15,
+          "obv_ma": 20
+        },
+        "is_metrics": {
+          "total_return_pct": 129.56,
+          "sharpe_ratio": 0.766,
+          "max_drawdown_pct": -33.27,
+          "total_trades": 63,
+          "win_rate_pct": 34.9,
+          "final_equity": 229561.46
+        },
+        "oos_metrics": {
+          "total_return_pct": 21.24,
+          "sharpe_ratio": 0.636,
+          "max_drawdown_pct": -17.98,
+          "total_trades": 16,
+          "win_rate_pct": 37.5,
+          "final_equity": 121244.74
+        },
+        "oos_guard": {
+          "observed_rate": 0.375,
+          "observed_ci": [
+            0.18481232558863633,
+            0.6135895945449727
+          ],
+          "random_rate": 0.4990875,
+          "random_ci": [
+            0.25,
+            0.75
+          ],
+          "excess": -0.12408750000000002,
+          "excess_ci": [
+            -0.375,
+            0.125
+          ],
+          "p_value": 0.897,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": 7.83,
+          "max_drawdown_pct": -33.88
+        },
+        "verdict": "⚠️ 观望",
+        "reasons": [
+          "胜率未超越随机(p=0.90)"
+        ]
+      },
+      "pick_verdict": "⚠️ 观望"
+    },
+    "300124": {
+      "symbol": "300124",
+      "name": "汇川技术",
+      "category": "工业自动化",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": -7.44,
+        "max_drawdown_pct": -41.76
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 129.85,
+          "is_params": {
+            "fast": 5,
+            "slow": 30
+          },
+          "is_metrics": {
+            "total_return_pct": 189.1,
+            "sharpe_ratio": 0.84,
+            "max_drawdown_pct": -38.41,
+            "total_trades": 22,
+            "win_rate_pct": 40.9,
+            "final_equity": 289097.02
+          },
+          "oos_metrics": {
+            "total_return_pct": -1.72,
+            "sharpe_ratio": 0.043,
+            "max_drawdown_pct": -18.4,
+            "total_trades": 8,
+            "win_rate_pct": 25.0,
+            "final_equity": 98277.26
+          },
+          "oos_guard": {
+            "observed_rate": 0.25,
+            "observed_ci": [
+              0.071479212752109,
+              0.5907245696898311
+            ],
+            "random_rate": 0.4989,
+            "random_ci": [
+              0.125,
+              0.875
+            ],
+            "excess": -0.2489,
+            "excess_ci": [
+              -0.625,
+              0.125
+            ],
+            "p_value": 0.9654,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -7.44,
+            "max_drawdown_pct": -41.76
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-1.72%)",
+            "胜率未超越随机(p=0.97)"
+          ]
+        },
+        "macd": {
+          "is_best_score": 21.0,
+          "is_params": {
+            "fast": 15,
+            "slow": 30,
+            "signal": 11
+          },
+          "is_metrics": {
+            "total_return_pct": 35.89,
+            "sharpe_ratio": 0.363,
+            "max_drawdown_pct": -55.19,
+            "total_trades": 40,
+            "win_rate_pct": 27.5,
+            "final_equity": 135888.93
+          },
+          "oos_metrics": {
+            "total_return_pct": 10.79,
+            "sharpe_ratio": 0.401,
+            "max_drawdown_pct": -18.17,
+            "total_trades": 10,
+            "win_rate_pct": 40.0,
+            "final_equity": 110787.81
+          },
+          "oos_guard": {
+            "observed_rate": 0.4,
+            "observed_ci": [
+              0.16818032970623614,
+              0.6873262302663417
+            ],
+            "random_rate": 0.49856999999999996,
+            "random_ci": [
+              0.2,
+              0.8
+            ],
+            "excess": -0.09856999999999994,
+            "excess_ci": [
+              -0.4,
+              0.2
+            ],
+            "p_value": 0.8256,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -7.44,
+            "max_drawdown_pct": -41.76
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "胜率未超越随机(p=0.83)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 94.75,
+          "is_params": {
+            "length": 15,
+            "std": 1.5,
+            "exit_on_mid": false
+          },
+          "is_metrics": {
+            "total_return_pct": 162.82,
+            "sharpe_ratio": 0.745,
+            "max_drawdown_pct": -39.38,
+            "total_trades": 11,
+            "win_rate_pct": 54.5,
+            "final_equity": 262818.72
+          },
+          "oos_metrics": {
+            "total_return_pct": -9.18,
+            "sharpe_ratio": -0.11,
+            "max_drawdown_pct": -23.95,
+            "total_trades": 5,
+            "win_rate_pct": 40.0,
+            "final_equity": 90822.12
+          },
+          "oos_guard": {
+            "observed_rate": 0.4,
+            "observed_ci": [
+              0.11762077423264783,
+              0.769275718723987
+            ],
+            "random_rate": 0.49872,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": -0.09871999999999997,
+            "excess_ci": [
+              -0.6,
+              0.4
+            ],
+            "p_value": 0.8098,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -7.44,
+            "max_drawdown_pct": -41.76
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-9.18%)",
+            "OOS夏普非正(-0.11)",
+            "胜率未超越随机(p=0.81)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": 86.01,
+          "is_params": {
+            "ema_len": 25,
+            "obv_ma": 30
+          },
+          "is_metrics": {
+            "total_return_pct": 98.64,
+            "sharpe_ratio": 0.736,
+            "max_drawdown_pct": -25.23,
+            "total_trades": 33,
+            "win_rate_pct": 36.4,
+            "final_equity": 198640.56
+          },
+          "oos_metrics": {
+            "total_return_pct": -13.98,
+            "sharpe_ratio": -0.4,
+            "max_drawdown_pct": -31.31,
+            "total_trades": 20,
+            "win_rate_pct": 15.0,
+            "final_equity": 86020.91
+          },
+          "oos_guard": {
+            "observed_rate": 0.15,
+            "observed_ci": [
+              0.052368745896216595,
+              0.36041886474075696
+            ],
+            "random_rate": 0.4991900000000001,
+            "random_ci": [
+              0.3,
+              0.7
+            ],
+            "excess": -0.3491900000000001,
+            "excess_ci": [
+              -0.5499999999999999,
+              -0.15
+            ],
+            "p_value": 1.0,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -7.44,
+            "max_drawdown_pct": -41.76
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-13.98%)",
+            "OOS夏普非正(-0.4)",
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 59.23,
+          "is_params": {
+            "kdj_len": 12,
+            "kdj_signal": 3,
+            "rsi_len": 20,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 65.37,
+            "sharpe_ratio": 0.74,
+            "max_drawdown_pct": -19.99,
+            "total_trades": 13,
+            "win_rate_pct": 30.8,
+            "final_equity": 165366.94
+          },
+          "oos_metrics": {
+            "total_return_pct": 5.31,
+            "sharpe_ratio": 0.757,
+            "max_drawdown_pct": -2.16,
+            "total_trades": 1,
+            "win_rate_pct": 100.0,
+            "final_equity": 105312.24
+          },
+          "oos_guard": {
+            "observed_rate": 1.0,
+            "observed_ci": [
+              0.20654931437723745,
+              1.0
+            ],
+            "random_rate": 0.4985,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": 0.5015000000000001,
+            "excess_ci": [
+              0.0,
+              1.0
+            ],
+            "p_value": 0.4985,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -7.44,
+            "max_drawdown_pct": -41.76
+          },
+          "verdict": "⚠️ 观望",
+          "reasons": [
+            "OOS交易过少(1)",
+            "胜率未超越随机(p=0.50)"
+          ]
+        }
+      },
+      "pick_strategy": "ema_cross",
+      "pick_detail": {
+        "is_best_score": 129.85,
+        "is_params": {
+          "fast": 5,
+          "slow": 30
+        },
+        "is_metrics": {
+          "total_return_pct": 189.1,
+          "sharpe_ratio": 0.84,
+          "max_drawdown_pct": -38.41,
+          "total_trades": 22,
+          "win_rate_pct": 40.9,
+          "final_equity": 289097.02
+        },
+        "oos_metrics": {
+          "total_return_pct": -1.72,
+          "sharpe_ratio": 0.043,
+          "max_drawdown_pct": -18.4,
+          "total_trades": 8,
+          "win_rate_pct": 25.0,
+          "final_equity": 98277.26
+        },
+        "oos_guard": {
+          "observed_rate": 0.25,
+          "observed_ci": [
+            0.071479212752109,
+            0.5907245696898311
+          ],
+          "random_rate": 0.4989,
+          "random_ci": [
+            0.125,
+            0.875
+          ],
+          "excess": -0.2489,
+          "excess_ci": [
+            -0.625,
+            0.125
+          ],
+          "p_value": 0.9654,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": -7.44,
+          "max_drawdown_pct": -41.76
+        },
+        "verdict": "❌ 否决",
+        "reasons": [
+          "OOS收益非正(-1.72%)",
+          "胜率未超越随机(p=0.97)"
+        ]
+      },
+      "pick_verdict": "❌ 否决"
+    },
+    "300719": {
+      "symbol": "300719",
+      "name": "安达维尔",
+      "category": "连接器",
+      "is_window": "2020-01-01~2024-12-31",
+      "oos_window": "2025-01-01~2026-09-16",
+      "oos_buy_hold": {
+        "total_return_pct": -29.69,
+        "max_drawdown_pct": -50.55
+      },
+      "strategies": {
+        "ema_cross": {
+          "is_best_score": 58.52,
+          "is_params": {
+            "fast": 12,
+            "slow": 21
+          },
+          "is_metrics": {
+            "total_return_pct": 94.52,
+            "sharpe_ratio": 0.522,
+            "max_drawdown_pct": -54.67,
+            "total_trades": 23,
+            "win_rate_pct": 39.1,
+            "final_equity": 194520.84
+          },
+          "oos_metrics": {
+            "total_return_pct": -18.02,
+            "sharpe_ratio": -0.283,
+            "max_drawdown_pct": -26.53,
+            "total_trades": 7,
+            "win_rate_pct": 28.6,
+            "final_equity": 81983.42
+          },
+          "oos_guard": {
+            "observed_rate": 0.2857142857142857,
+            "observed_ci": [
+              0.08221892400405678,
+              0.6410655481673808
+            ],
+            "random_rate": 0.49824285714285704,
+            "random_ci": [
+              0.14285714285714285,
+              0.8571428571428571
+            ],
+            "excess": -0.21252857142857134,
+            "excess_ci": [
+              -0.5714285714285714,
+              0.14285714285714285
+            ],
+            "p_value": 0.9362,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -29.69,
+            "max_drawdown_pct": -50.55
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-18.02%)",
+            "OOS夏普非正(-0.283)",
+            "胜率未超越随机(p=0.94)"
+          ]
+        },
+        "macd": {
+          "is_best_score": 20.56,
+          "is_params": {
+            "fast": 15,
+            "slow": 30,
+            "signal": 9
+          },
+          "is_metrics": {
+            "total_return_pct": 35.25,
+            "sharpe_ratio": 0.354,
+            "max_drawdown_pct": -54.53,
+            "total_trades": 38,
+            "win_rate_pct": 36.8,
+            "final_equity": 135254.37
+          },
+          "oos_metrics": {
+            "total_return_pct": -39.02,
+            "sharpe_ratio": -1.143,
+            "max_drawdown_pct": -54.44,
+            "total_trades": 16,
+            "win_rate_pct": 31.2,
+            "final_equity": 60975.64
+          },
+          "oos_guard": {
+            "observed_rate": 0.3125,
+            "observed_ci": [
+              0.14164643854782039,
+              0.5559564416525933
+            ],
+            "random_rate": 0.4990875,
+            "random_ci": [
+              0.25,
+              0.75
+            ],
+            "excess": -0.18658750000000002,
+            "excess_ci": [
+              -0.4375,
+              0.0625
+            ],
+            "p_value": 0.9617,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -29.69,
+            "max_drawdown_pct": -50.55
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-39.02%)",
+            "OOS夏普非正(-1.143)",
+            "胜率未超越随机(p=0.96)"
+          ]
+        },
+        "bollinger": {
+          "is_best_score": 22.64,
+          "is_params": {
+            "length": 30,
+            "std": 2.5,
+            "exit_on_mid": false
+          },
+          "is_metrics": {
+            "total_return_pct": 65.31,
+            "sharpe_ratio": 0.45,
+            "max_drawdown_pct": -59.84,
+            "total_trades": 8,
+            "win_rate_pct": 50.0,
+            "final_equity": 165308.65
+          },
+          "oos_metrics": {
+            "total_return_pct": -30.81,
+            "sharpe_ratio": -0.739,
+            "max_drawdown_pct": -38.07,
+            "total_trades": 4,
+            "win_rate_pct": 0.0,
+            "final_equity": 69190.21
+          },
+          "oos_guard": {
+            "observed_rate": 0.0,
+            "observed_ci": [
+              0.0,
+              0.4898908364545973
+            ],
+            "random_rate": 0.497225,
+            "random_ci": [
+              0.0,
+              1.0
+            ],
+            "excess": -0.497225,
+            "excess_ci": [
+              -1.0,
+              0.0
+            ],
+            "p_value": 1.0,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -29.69,
+            "max_drawdown_pct": -50.55
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-30.81%)",
+            "OOS夏普非正(-0.739)",
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "ema_obv": {
+          "is_best_score": -10.89,
+          "is_params": {
+            "ema_len": 20,
+            "obv_ma": 30
+          },
+          "is_metrics": {
+            "total_return_pct": -2.1,
+            "sharpe_ratio": 0.197,
+            "max_drawdown_pct": -64.38,
+            "total_trades": 71,
+            "win_rate_pct": 23.9,
+            "final_equity": 97897.54
+          },
+          "oos_metrics": {
+            "total_return_pct": -32.0,
+            "sharpe_ratio": -1.143,
+            "max_drawdown_pct": -42.64,
+            "total_trades": 28,
+            "win_rate_pct": 17.9,
+            "final_equity": 67998.96
+          },
+          "oos_guard": {
+            "observed_rate": 0.17857142857142858,
+            "observed_ci": [
+              0.07878501945604277,
+              0.35591424789342946
+            ],
+            "random_rate": 0.49924642857142865,
+            "random_ci": [
+              0.32142857142857145,
+              0.6785714285714286
+            ],
+            "excess": -0.32067500000000004,
+            "excess_ci": [
+              -0.5,
+              -0.14285714285714288
+            ],
+            "p_value": 1.0,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -29.69,
+            "max_drawdown_pct": -50.55
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-32.0%)",
+            "OOS夏普非正(-1.143)",
+            "胜率未超越随机(p=1.00)"
+          ]
+        },
+        "kdj_cci": {
+          "is_best_score": 69.78,
+          "is_params": {
+            "kdj_len": 14,
+            "kdj_signal": 3,
+            "rsi_len": 20,
+            "rsi_buy": 40
+          },
+          "is_metrics": {
+            "total_return_pct": 81.19,
+            "sharpe_ratio": 0.83,
+            "max_drawdown_pct": -16.15,
+            "total_trades": 11,
+            "win_rate_pct": 72.7,
+            "final_equity": 181187.71
+          },
+          "oos_metrics": {
+            "total_return_pct": -11.85,
+            "sharpe_ratio": -0.452,
+            "max_drawdown_pct": -18.72,
+            "total_trades": 9,
+            "win_rate_pct": 22.2,
+            "final_equity": 88151.38
+          },
+          "oos_guard": {
+            "observed_rate": 0.2222222222222222,
+            "observed_ci": [
+              0.06322510711784671,
+              0.5474110308930111
+            ],
+            "random_rate": 0.4991666666666666,
+            "random_ci": [
+              0.2222222222222222,
+              0.7777777777777778
+            ],
+            "excess": -0.2769444444444444,
+            "excess_ci": [
+              -0.5555555555555556,
+              0.0
+            ],
+            "p_value": 0.9818,
+            "passed": false,
+            "n_trials": 10000
+          },
+          "oos_bh": {
+            "total_return_pct": -29.69,
+            "max_drawdown_pct": -50.55
+          },
+          "verdict": "❌ 否决",
+          "reasons": [
+            "OOS收益非正(-11.85%)",
+            "OOS夏普非正(-0.452)",
+            "胜率未超越随机(p=0.98)"
+          ]
+        }
+      },
+      "pick_strategy": "kdj_cci",
+      "pick_detail": {
+        "is_best_score": 69.78,
+        "is_params": {
+          "kdj_len": 14,
+          "kdj_signal": 3,
+          "rsi_len": 20,
+          "rsi_buy": 40
+        },
+        "is_metrics": {
+          "total_return_pct": 81.19,
+          "sharpe_ratio": 0.83,
+          "max_drawdown_pct": -16.15,
+          "total_trades": 11,
+          "win_rate_pct": 72.7,
+          "final_equity": 181187.71
+        },
+        "oos_metrics": {
+          "total_return_pct": -11.85,
+          "sharpe_ratio": -0.452,
+          "max_drawdown_pct": -18.72,
+          "total_trades": 9,
+          "win_rate_pct": 22.2,
+          "final_equity": 88151.38
+        },
+        "oos_guard": {
+          "observed_rate": 0.2222222222222222,
+          "observed_ci": [
+            0.06322510711784671,
+            0.5474110308930111
+          ],
+          "random_rate": 0.4991666666666666,
+          "random_ci": [
+            0.2222222222222222,
+            0.7777777777777778
+          ],
+          "excess": -0.2769444444444444,
+          "excess_ci": [
+            -0.5555555555555556,
+            0.0
+          ],
+          "p_value": 0.9818,
+          "passed": false,
+          "n_trials": 10000
+        },
+        "oos_bh": {
+          "total_return_pct": -29.69,
+          "max_drawdown_pct": -50.55
+        },
+        "verdict": "❌ 否决",
+        "reasons": [
+          "OOS收益非正(-11.85%)",
+          "OOS夏普非正(-0.452)",
+          "胜率未超越随机(p=0.98)"
+        ]
+      },
+      "pick_verdict": "❌ 否决"
+    }
+  },
+  "summary": [
+    {
+      "symbol": "002335",
+      "name": "科华数据",
+      "category": "数据中心",
+      "strategy": "ema_obv",
+      "params": {
+        "ema_len": 30,
+        "obv_ma": 30
+      },
+      "is_score": 164.5,
+      "is_ret": 253.51,
+      "oos_ret": 10.68,
+      "oos_sharpe": 0.35,
+      "oos_dd": -24.37,
+      "oos_wr": 17.6,
+      "oos_trades": 17,
+      "oos_bh_ret": 59.15,
+      "guard_passed": false,
+      "guard_p": 0.9986,
+      "excess": -0.32258235294117643,
+      "verdict": "⚠️ 观望",
+      "reasons": [
+        "胜率未超越随机(p=1.00)",
+        "大幅跑输持有(10.68% vs 59.15%)"
+      ]
+    },
+    {
+      "symbol": "600660",
+      "name": "福耀玻璃",
+      "category": "汽车玻璃",
+      "strategy": "macd",
+      "params": {
+        "fast": 15,
+        "slow": 30,
+        "signal": 11
+      },
+      "is_score": 152.93,
+      "is_ret": 203.68,
+      "oos_ret": 18.88,
+      "oos_sharpe": 0.765,
+      "oos_dd": -19.26,
+      "oos_wr": 30.0,
+      "oos_trades": 10,
+      "oos_bh_ret": -4.33,
+      "guard_passed": false,
+      "guard_p": 0.944,
+      "excess": -0.19856999999999997,
+      "verdict": "⚠️ 观望",
+      "reasons": [
+        "胜率未超越随机(p=0.94)"
+      ]
+    },
+    {
+      "symbol": "300124",
+      "name": "汇川技术",
+      "category": "工业自动化",
+      "strategy": "ema_cross",
+      "params": {
+        "fast": 5,
+        "slow": 30
+      },
+      "is_score": 129.85,
+      "is_ret": 189.1,
+      "oos_ret": -1.72,
+      "oos_sharpe": 0.043,
+      "oos_dd": -18.4,
+      "oos_wr": 25.0,
+      "oos_trades": 8,
+      "oos_bh_ret": -7.44,
+      "guard_passed": false,
+      "guard_p": 0.9654,
+      "excess": -0.2489,
+      "verdict": "❌ 否决",
+      "reasons": [
+        "OOS收益非正(-1.72%)",
+        "胜率未超越随机(p=0.97)"
+      ]
+    },
+    {
+      "symbol": "000400",
+      "name": "许继电气",
+      "category": "电网装备",
+      "strategy": "ema_obv",
+      "params": {
+        "ema_len": 25,
+        "obv_ma": 20
+      },
+      "is_score": 120.49,
+      "is_ret": 167.84,
+      "oos_ret": -4.99,
+      "oos_sharpe": -0.045,
+      "oos_dd": -19.1,
+      "oos_wr": 22.2,
+      "oos_trades": 18,
+      "oos_bh_ret": -18.65,
+      "guard_passed": false,
+      "guard_p": 0.9963,
+      "excess": -0.2770055555555555,
+      "verdict": "❌ 否决",
+      "reasons": [
+        "OOS收益非正(-4.99%)",
+        "OOS夏普非正(-0.045)",
+        "胜率未超越随机(p=1.00)"
+      ]
+    },
+    {
+      "symbol": "002028",
+      "name": "思源电气",
+      "category": "电网装备",
+      "strategy": "ema_cross",
+      "params": {
+        "fast": 8,
+        "slow": 26
+      },
+      "is_score": 116.66,
+      "is_ret": 165.64,
+      "oos_ret": 48.94,
+      "oos_sharpe": 0.866,
+      "oos_dd": -37.54,
+      "oos_wr": 11.1,
+      "oos_trades": 9,
+      "oos_bh_ret": 87.63,
+      "guard_passed": false,
+      "guard_p": 0.9979,
+      "excess": -0.3880555555555555,
+      "verdict": "⚠️ 观望",
+      "reasons": [
+        "胜率未超越随机(p=1.00)"
+      ]
+    },
+    {
+      "symbol": "600089",
+      "name": "特变电工",
+      "category": "电网装备",
+      "strategy": "ema_cross",
+      "params": {
+        "fast": 8,
+        "slow": 21
+      },
+      "is_score": 103.32,
+      "is_ret": 147.28,
+      "oos_ret": 68.47,
+      "oos_sharpe": 1.128,
+      "oos_dd": -26.12,
+      "oos_wr": 22.2,
+      "oos_trades": 9,
+      "oos_bh_ret": 52.09,
+      "guard_passed": false,
+      "guard_p": 0.9818,
+      "excess": -0.2769444444444444,
+      "verdict": "⚠️ 观望",
+      "reasons": [
+        "胜率未超越随机(p=0.98)"
+      ]
+    },
+    {
+      "symbol": "600312",
+      "name": "平高电气",
+      "category": "电网装备",
+      "strategy": "ema_obv",
+      "params": {
+        "ema_len": 15,
+        "obv_ma": 20
+      },
+      "is_score": 98.94,
+      "is_ret": 129.56,
+      "oos_ret": 21.24,
+      "oos_sharpe": 0.636,
+      "oos_dd": -17.98,
+      "oos_wr": 37.5,
+      "oos_trades": 16,
+      "oos_bh_ret": 7.83,
+      "guard_passed": false,
+      "guard_p": 0.897,
+      "excess": -0.12408750000000002,
+      "verdict": "⚠️ 观望",
+      "reasons": [
+        "胜率未超越随机(p=0.90)"
+      ]
+    },
+    {
+      "symbol": "601100",
+      "name": "恒立液压",
+      "category": "高端液压周期",
+      "strategy": "ema_cross",
+      "params": {
+        "fast": 5,
+        "slow": 35
+      },
+      "is_score": 93.02,
+      "is_ret": 127.39,
+      "oos_ret": 1.23,
+      "oos_sharpe": 0.167,
+      "oos_dd": -21.59,
+      "oos_wr": 33.3,
+      "oos_trades": 9,
+      "oos_bh_ret": 82.94,
+      "guard_passed": false,
+      "guard_p": 0.9118,
+      "excess": -0.16583333333333328,
+      "verdict": "⚠️ 观望",
+      "reasons": [
+        "胜率未超越随机(p=0.91)",
+        "大幅跑输持有(1.23% vs 82.94%)"
+      ]
+    },
+    {
+      "symbol": "300719",
+      "name": "安达维尔",
+      "category": "连接器",
+      "strategy": "kdj_cci",
+      "params": {
+        "kdj_len": 14,
+        "kdj_signal": 3,
+        "rsi_len": 20,
+        "rsi_buy": 40
+      },
+      "is_score": 69.78,
+      "is_ret": 81.19,
+      "oos_ret": -11.85,
+      "oos_sharpe": -0.452,
+      "oos_dd": -18.72,
+      "oos_wr": 22.2,
+      "oos_trades": 9,
+      "oos_bh_ret": -29.69,
+      "guard_passed": false,
+      "guard_p": 0.9818,
+      "excess": -0.2769444444444444,
+      "verdict": "❌ 否决",
+      "reasons": [
+        "OOS收益非正(-11.85%)",
+        "OOS夏普非正(-0.452)",
+        "胜率未超越随机(p=0.98)"
+      ]
+    },
+    {
+      "symbol": "000708",
+      "name": "中信特钢",
+      "category": "钢铁周期",
+      "strategy": "kdj_cci",
+      "params": {
+        "kdj_len": 9,
+        "kdj_signal": 3,
+        "rsi_len": 10,
+        "rsi_buy": 40
+      },
+      "is_score": 66.08,
+      "is_ret": 58.83,
+      "oos_ret": 0.99,
+      "oos_sharpe": 0.165,
+      "oos_dd": -3.79,
+      "oos_wr": 50.0,
+      "oos_trades": 2,
+      "oos_bh_ret": 28.68,
+      "guard_passed": false,
+      "guard_p": 0.7455,
+      "excess": 0.005149999999999988,
+      "verdict": "⚠️ 观望",
+      "reasons": [
+        "OOS交易过少(2)",
+        "胜率未超越随机(p=0.75)",
+        "大幅跑输持有(0.99% vs 28.68%)"
+      ]
+    },
+    {
+      "symbol": "000157",
+      "name": "中联重科",
+      "category": "工程机械周期",
+      "strategy": "kdj_cci",
+      "params": {
+        "kdj_len": 9,
+        "kdj_signal": 3,
+        "rsi_len": 10,
+        "rsi_buy": 40
+      },
+      "is_score": 62.72,
+      "is_ret": 54.13,
+      "oos_ret": -12.92,
+      "oos_sharpe": -0.749,
+      "oos_dd": -12.92,
+      "oos_wr": 28.6,
+      "oos_trades": 7,
+      "oos_bh_ret": -2.87,
+      "guard_passed": false,
+      "guard_p": 0.9362,
+      "excess": -0.21252857142857134,
+      "verdict": "❌ 否决",
+      "reasons": [
+        "OOS收益非正(-12.92%)",
+        "OOS夏普非正(-0.749)",
+        "胜率未超越随机(p=0.94)"
+      ]
+    },
+    {
+      "symbol": "600406",
+      "name": "国电南瑞",
+      "category": "电网装备",
+      "strategy": "bollinger",
+      "params": {
+        "length": 15,
+        "std": 1.5,
+        "exit_on_mid": false
+      },
+      "is_score": 49.15,
+      "is_ret": 71.19,
+      "oos_ret": -17.25,
+      "oos_sharpe": -0.457,
+      "oos_dd": -31.28,
+      "oos_wr": 0.0,
+      "oos_trades": 5,
+      "oos_bh_ret": -4.8,
+      "guard_passed": false,
+      "guard_p": 1.0,
+      "excess": -0.49872,
+      "verdict": "❌ 否决",
+      "reasons": [
+        "OOS收益非正(-17.25%)",
+        "OOS夏普非正(-0.457)",
+        "胜率未超越随机(p=1.00)"
+      ]
+    },
+    {
+      "symbol": "601995",
+      "name": "中金公司",
+      "category": "券商周期",
+      "strategy": "kdj_cci",
+      "params": {
+        "kdj_len": 12,
+        "kdj_signal": 5,
+        "rsi_len": 14,
+        "rsi_buy": 40
+      },
+      "is_score": 34.16,
+      "is_ret": 27.98,
+      "oos_ret": -2.6,
+      "oos_sharpe": -0.611,
+      "oos_dd": -5.34,
+      "oos_wr": 33.3,
+      "oos_trades": 3,
+      "oos_bh_ret": -0.91,
+      "guard_passed": false,
+      "guard_p": 0.8759,
+      "excess": -0.16570000000000001,
+      "verdict": "❌ 否决",
+      "reasons": [
+        "OOS收益非正(-2.6%)",
+        "OOS夏普非正(-0.611)",
+        "胜率未超越随机(p=0.88)"
+      ]
+    },
+    {
+      "symbol": "601066",
+      "name": "中信建投",
+      "category": "券商周期",
+      "strategy": "kdj_cci",
+      "params": {
+        "kdj_len": 9,
+        "kdj_signal": 3,
+        "rsi_len": 14,
+        "rsi_buy": 35
+      },
+      "is_score": 31.48,
+      "is_ret": 23.47,
+      "oos_ret": -5.85,
+      "oos_sharpe": -1.196,
+      "oos_dd": -6.32,
+      "oos_wr": 0.0,
+      "oos_trades": 3,
+      "oos_bh_ret": -2.0,
+      "guard_passed": false,
+      "guard_p": 1.0,
+      "excess": -0.49903333333333333,
+      "verdict": "❌ 否决",
+      "reasons": [
+        "OOS收益非正(-5.85%)",
+        "OOS夏普非正(-1.196)",
+        "胜率未超越随机(p=1.00)"
+      ]
+    },
+    {
+      "symbol": "600570",
+      "name": "恒生电子",
+      "category": "金融IT",
+      "strategy": "kdj_cci",
+      "params": {
+        "kdj_len": 14,
+        "kdj_signal": 4,
+        "rsi_len": 10,
+        "rsi_buy": 40
+      },
+      "is_score": 28.44,
+      "is_ret": 24.29,
+      "oos_ret": -3.95,
+      "oos_sharpe": -0.312,
+      "oos_dd": -10.61,
+      "oos_wr": 40.0,
+      "oos_trades": 5,
+      "oos_bh_ret": -22.61,
+      "guard_passed": false,
+      "guard_p": 0.8098,
+      "excess": -0.09871999999999997,
+      "verdict": "❌ 否决",
+      "reasons": [
+        "OOS收益非正(-3.95%)",
+        "OOS夏普非正(-0.312)",
+        "胜率未超越随机(p=0.81)"
+      ]
+    }
+  ],
+  "is_window": "2020-01-01~2024-12-31",
+  "oos_window": "2025-01-01~2026-09-16"
+}
