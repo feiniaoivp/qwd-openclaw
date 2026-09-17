@@ -279,9 +279,19 @@ def send_telegram(markdown_text):
         "parse_mode": "Markdown",
         "disable_web_page_preview": True
     }
+    # ⚠️ 2026-09-17 修复：本网络对 requests/urllib 做 TLS 指纹识别 → ConnectionReset(54)。
+    # 统一走 send_telegram 的传输层（curl_cffi 优先，回退 requests）。
+    try:
+        sys.path.insert(0, "/Users/duguke/.openclaw/workspace")
+        from send_telegram import _post
+    except Exception:
+        _post = None
     for attempt in range(3):
         try:
-            resp = requests.post(url, json=payload, timeout=10)
+            if _post is not None:
+                resp = _post(url, json=payload, timeout=10)
+            else:
+                resp = requests.post(url, json=payload, timeout=10)
             if resp.status_code == 200:
                 return True
             else:

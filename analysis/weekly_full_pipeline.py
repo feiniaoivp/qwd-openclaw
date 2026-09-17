@@ -288,17 +288,19 @@ def build_brief(results=None):
 
 
 def push_brief(brief_text):
-    """用 send_telegram.py 纯文本推送到 Telegram；失败返回错误信息。"""
+    """用 send_telegram.py 纯文本推送到 Telegram；失败返回错误信息。
+
+    ⚠️ 2026-09-17 修复：原先在此内联 `requests.post`，而本网络对 requests/urllib
+    做 TLS 指纹识别 → ConnectionReset(54)，推送长期静默失败。
+    现统一走 send_telegram 的传输层（curl_cffi 优先，自动回退 requests）。
+    """
     try:
-        import subprocess
-        send_script = os.path.join(WORKSPACE, "send_telegram.py")
-        # send_telegram 默认 Markdown；含 () / 冒号易触发实体错误，改内联 requests 纯文本
         import sys
         sys.path.insert(0, WORKSPACE)
-        import send_telegram as st
-        import requests
-        payload = {"chat_id": st.CHAT_ID, "text": brief_text, "parse_mode": ""}
-        resp = requests.post(f"{st.API_URL}/sendMessage", json=payload, timeout=30)
+        from send_telegram import _post, API_URL, CHAT_ID
+        # parse_mode="" 纯文本：含 () / 冒号易触发 Markdown 实体错误
+        payload = {"chat_id": CHAT_ID, "text": brief_text, "parse_mode": ""}
+        resp = _post(f"{API_URL}/sendMessage", json=payload, timeout=30)
         data = resp.json()
         if data.get("ok"):
             return {"success": True, "message_id": data.get("result", {}).get("message_id")}

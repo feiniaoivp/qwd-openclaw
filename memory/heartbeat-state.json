@@ -1,7 +1,8 @@
 {
   "lastChecks": {
-    "heartbeat": 1789000209,
+    "heartbeat": 1789614041,
     "security_audit": 1788732716,
-    "cron_pipeline_audit": 1788040800
+    "cron_pipeline_audit": 1788040800,
+    "tg_transport_audit": 1789614041
   }
 }
