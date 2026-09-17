@@ -35,8 +35,9 @@
     "bucket": "tier1"
   },
   "300014": {
-    "strategy": "bull_trend",
-    "bucket": "tier1"
+    "strategy": "ema_cross",
+    "bucket": "tier1",
+    "note": "auto-fallback: kdj_cci/bull_trend removed from whitelist (2026-09-17 backtest)"
   },
   "300124": {
     "strategy": "bollinger",
@@ -51,8 +52,9 @@
     "bucket": "tier2"
   },
   "300748": {
-    "strategy": "kdj_cci",
-    "bucket": "tier1"
+    "strategy": "ema_cross",
+    "bucket": "tier1",
+    "note": "auto-fallback: kdj_cci/bull_trend removed from whitelist (2026-09-17 backtest)"
   },
   "600030": {
     "strategy": "macd",
@@ -107,7 +109,8 @@
     "bucket": "tier1"
   },
   "688981": {
-    "strategy": "kdj_cci",
-    "bucket": "tier1"
+    "strategy": "ema_cross",
+    "bucket": "tier1",
+    "note": "auto-fallback: kdj_cci/bull_trend removed from whitelist (2026-09-17 backtest)"
   }
 }
