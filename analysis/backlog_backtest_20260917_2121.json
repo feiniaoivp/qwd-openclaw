@@ -1,0 +1,108 @@
+{
+  "strategies": {
+    "macd": {
+      "success": 27,
+      "avg_return_pct": 44.57,
+      "avg_sharpe": 0.29,
+      "avg_max_dd_pct": -34.13,
+      "avg_trades": 23.5,
+      "avg_win_rate_pct": 35.9
+    },
+    "ema_cross": {
+      "success": 27,
+      "avg_return_pct": 50.37,
+      "avg_sharpe": 0.297,
+      "avg_max_dd_pct": -31.9,
+      "avg_trades": 9.5,
+      "avg_win_rate_pct": 41.0
+    },
+    "bollinger_atr": {
+      "success": 27,
+      "avg_return_pct": 36.49,
+      "avg_sharpe": 0.246,
+      "avg_max_dd_pct": -29.13,
+      "avg_trades": 11.9,
+      "avg_win_rate_pct": 41.5
+    },
+    "kdj_cci": {
+      "success": 27,
+      "avg_return_pct": 5.65,
+      "avg_sharpe": -0.082,
+      "avg_max_dd_pct": -17.41,
+      "avg_trades": 9.9,
+      "avg_win_rate_pct": 37.1
+    },
+    "ema_obv": {
+      "success": 27,
+      "avg_return_pct": 18.43,
+      "avg_sharpe": 0.004,
+      "avg_max_dd_pct": -28.81,
+      "avg_trades": 27.1,
+      "avg_win_rate_pct": 24.4
+    },
+    "bull_trend": {
+      "success": 27,
+      "avg_return_pct": -0.15,
+      "avg_sharpe": -0.462,
+      "avg_max_dd_pct": -15.69,
+      "avg_trades": 15.1,
+      "avg_win_rate_pct": 35.1
+    }
+  },
+  "summary": [
+    {
+      "strategy": "macd",
+      "success": 27,
+      "avg_return": 44.57,
+      "sharpe": 0.29,
+      "max_dd": -34.13,
+      "trades": 23.5,
+      "win_rate": 35.9
+    },
+    {
+      "strategy": "ema_cross",
+      "success": 27,
+      "avg_return": 50.37,
+      "sharpe": 0.297,
+      "max_dd": -31.9,
+      "trades": 9.5,
+      "win_rate": 41.0
+    },
+    {
+      "strategy": "bollinger_atr",
+      "success": 27,
+      "avg_return": 36.49,
+      "sharpe": 0.246,
+      "max_dd": -29.13,
+      "trades": 11.9,
+      "win_rate": 41.5
+    },
+    {
+      "strategy": "kdj_cci",
+      "success": 27,
+      "avg_return": 5.65,
+      "sharpe": -0.082,
+      "max_dd": -17.41,
+      "trades": 9.9,
+      "win_rate": 37.1
+    },
+    {
+      "strategy": "ema_obv",
+      "success": 27,
+      "avg_return": 18.43,
+      "sharpe": 0.004,
+      "max_dd": -28.81,
+      "trades": 27.1,
+      "win_rate": 24.4
+    },
+    {
+      "strategy": "bull_trend",
+      "success": 27,
+      "avg_return": -0.15,
+      "sharpe": -0.462,
+      "max_dd": -15.69,
+      "trades": 15.1,
+      "win_rate": 35.1
+    }
+  ]
+}

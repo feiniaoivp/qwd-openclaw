@@ -9,7 +9,10 @@
   },
   "000987": {
     "strategy": "bollinger",
-    "bucket": "tier1"
+    "bucket": "tier1",
+    "stop_loss_pct": -8,
+    "take_profit_pct": 25,
+    "position_limit_pct": 5
   },
   "002156": {
     "strategy": "ema_obv",
