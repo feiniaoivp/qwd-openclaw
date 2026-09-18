@@ -20,6 +20,92 @@ DAILY_DIR = os.path.join(WORKSPACE, "analysis", "daily")
 
 log = logging.getLogger(__name__)
 
+# ══════════════════════════════════════════
+# 价格查询助手（2026-09-19 新增）
+# ══════════════════════════════════════════
+# 目的：让 historical_judgment_review 从"复述历史 BUY"变为"真复盘"——
+# 接上 DataRouter 取真实后续收益，回答"上次同类判断后来怎样了"。
+# 设计：
+#   - 可选依赖，取不到数据时优雅退化（绝不因拉网失败而让审查崩掉）
+#   - 进程级缓存，避免同一次运行内重复拉同一只票
+#   - 落盘缓存 data/_price_cache_challenge.json，跨次复用（当日 15:30 后数据稳定）
+_PRICE_CACHE: Dict[str, Dict[str, float]] = {}
+_PRICE_CACHE_PATH = os.path.join(WORKSPACE, "data", "_price_cache_challenge.json")
+_PRICE_CACHE_LOADED = False
+
+
+def _load_price_cache():
+    global _PRICE_CACHE_LOADED
+    if _PRICE_CACHE_LOADED:
+        return
+    try:
+        with open(_PRICE_CACHE_PATH, encoding="utf-8") as f:
+            _PRICE_CACHE.update(json.load(f))
+    except Exception:
+        pass
+    _PRICE_CACHE_LOADED = True
+
+
+def _get_close_series(symbol: str) -> Dict[str, float]:
+    """返回 {date_str: close} 映射；失败返回空 dict（调用方必须处理空）"""
+    _load_price_cache()
+    if symbol in _PRICE_CACHE:
+        return _PRICE_CACHE[symbol]
+    series: Dict[str, float] = {}
+    try:
+        sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
+        from data_layer.router import get_router
+        df = get_router().get_daily(symbol, "", start_date="20260101")
+        if df is not None and len(df) > 0:
+            for _, row in df.iterrows():
+                try:
+                    d = row["date"]
+                    ds = d.strftime("%Y-%m-%d") if hasattr(d, "strftime") else str(d)[:10]
+                    series[ds] = float(row["close"])
+                except Exception:
+                    continue
+    except Exception as e:
+        log.debug("价格获取失败 %s: %s", symbol, e)
+    _PRICE_CACHE[symbol] = series
+    return series
+
+
+def _forward_return(symbol: str, from_date: str, hold_days: int = 5):
+    """
+    计算 from_date 之后的 N 个交易日收益。
+    返回 (ret_pct, base_date, end_date) 或 None。
+    基准价 = from_date 当日收盘（若缺失则取之后首个可用日）。
+    """
+    series = _get_close_series(symbol)
+    if not series:
+        return None
+    dates = sorted(series.keys())
+    # 找 from_date 之后第一个可用日作为基准
+    idx = None
+    for i, d in enumerate(dates):
+        if d >= from_date:
+            idx = i
+            break
+    if idx is None:
+        return None
+    # 需要足够的后续交易日
+    if idx + hold_days >= len(dates):
+        return None
+    base_d, end_d = dates[idx], dates[idx + hold_days]
+    base, end = series[base_d], series[end_d]
+    if base <= 0:
+        return None
+    return (round((end / base - 1) * 100, 2), base_d, end_d)
+
+
+def _save_price_cache():
+    try:
+        os.makedirs(os.path.dirname(_PRICE_CACHE_PATH), exist_ok=True)
+        with open(_PRICE_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(_PRICE_CACHE, f, ensure_ascii=False)
+    except Exception as e:
+        log.debug("价格缓存落盘失败: %s", e)
+
 # 编码污染护栏 (2026-09-11): 历史 run json 里可能固化了 U+FFFD 污染的信号标签,
 # 若不清洗会导致「专注」等关键词匹配静默失配、审核报告漏报矛盾。
 sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
@@ -511,6 +597,12 @@ def check_historical_judgment_review(state):
 
     # 去重集合：(symbol, hist_date) -> 避免同一天多个 run 产生重复
     seen_keys = set()
+    # 每股只保留一条最相关追遡（2026-09-19）：
+    # 同一只票连续多日给同类 BUY 会产生 N 条同质质疑（如 600036 一次出 6 条），
+    # 淹没了真正有效的那个信号。策略：每股只报一条——“最近一次已有 T+5 结果的”
+    # （最能回答"是否打脸"），若都没有则退而报最近一次历史 BUY。
+    best_by_sym: Dict[str, Dict] = {}
+    fwd_ready: Dict[str, bool] = {}
 
     # 读取历史 runs(最近 20 个)
     run_files = sorted(glob.glob(os.path.join(AGENT_RUNS_DIR, "run_*.json")), reverse=True)[:20]
@@ -518,8 +610,6 @@ def check_historical_judgment_review(state):
     for sym, cur in current_buy_signals.items():
         cur_level = cur["level"]
         cur_reason = cur["reason"]
-        # 简化匹配：同级别 或 理由高度相似(关键词重叠)
-        level_key = "强烈买入" if "强烈买入" in cur_level else ("关注" if "关注" in cur_level else "其他")
 
         for rf in run_files:
             try:
@@ -543,15 +633,27 @@ def check_historical_judgment_review(state):
                 if ha.get("symbol") != sym:
                     continue
                 if ha.get("action") == "BUY":
-                    # 找到历史同股票 BUY，看后续几天表现(这里只能做标记，无法自动获取后续收益)
-                    # 实务上需要对接行情数据，这里只给出复盘提示
+                    # 找到历史同股票 BUY（2026-09-19：从"仅标记"升级为"接真实行情复盘"）
                     hist_reason = ha.get("reason", "")
                     # 去重：同一历史日期同股票只记录一次
                     key = (sym, hist_date)
                     if key in seen_keys:
                         continue
                     seen_keys.add(key)
-                    findings.append({
+
+                    # ── 真实后续收益对照（T+5）──
+                    fwd = _forward_return(sym, hist_date, hold_days=5)
+                    if fwd:
+                        ret_pct, base_d, end_d = fwd
+                        verdict = ("❌打脸" if ret_pct < -1.0
+                                   else "✅兑现" if ret_pct > 1.0
+                                   else "➖持平")
+                        fwd_txt = f"T+5 实际: {ret_pct:+.2f}% ({base_d}→{end_d}) {verdict}"
+                    else:
+                        ret_pct = None
+                        fwd_txt = "T+5 实际: 数据不足/待观察"
+
+                    cand = {
                         "type": "historical_judgment_review",
                         "symbol": sym,
                         "name": signals.get(sym, {}).get("name", ""),
@@ -560,14 +662,37 @@ def check_historical_judgment_review(state):
                         "hist_reason": hist_reason,
                         "curr_reason": cur_reason,
                         "curr_level": cur_level,
-                        "msg": f"历史 {hist_date} 同股票也曾 BUY(理由: {hist_reason[:50]}...)，需复盘后续表现是否打脸",
-                    })
+                        "forward_return_pct": ret_pct,
+                        "forward_note": fwd_txt,
+                        "msg": f"历史 {hist_date} 同股票也曾 BUY，{fwd_txt}；当前又给同类 BUY",
+                    }
+                    # 每股只留一条：优先“已有 T+5 结果”的（最能说明是否打脸），
+                    # 否则保最新一次历史 BUY 作为占位。
+                    _ready = ret_pct is not None
+                    if sym not in best_by_sym:
+                        best_by_sym[sym] = cand
+                        fwd_ready[sym] = _ready
+                    elif _ready and not fwd_ready[sym]:
+                        best_by_sym[sym] = cand
+                        fwd_ready[sym] = True
                     break  # 只取最近一次历史 BUY
+
+    findings.extend(best_by_sym.values())
     return findings
 def describe_historical(f):
-    return (f"为什么 {f['name']}({f['symbol']}) 现在给 BUY(级别:{f['curr_level']}, 理由:{f['curr_reason'][:50]}...)，"
-            f"而在 {f['hist_date']} 也曾因类似理由 BUY({f['hist_reason'][:50]}...)？"
-            f"历史同类判断后续走势如何？是否重蹈覆辙？需人工复盘。")
+    base = (f"为什么 {f['name']}({f['symbol']}) 现在给 BUY(级别:{f['curr_level']}，"
+            f"理由:{f['curr_reason'][:50]}...)？该股在 {f['hist_date']} 也曾因类似理由 BUY。")
+    rp = f.get("forward_return_pct")
+    note = f.get("forward_note") or ""
+    if rp is None:
+        verdict_txt = "历史同类判断尚无足够后续数据，标记待观察。"
+    elif rp < -1.0:
+        verdict_txt = f"【{note}】历史同类判断已被打脸——需质问为何重复签发同类信号？"
+    elif rp > 1.0:
+        verdict_txt = f"【{note}】历史同类判断已兑现，可参考其有效边界。"
+    else:
+        verdict_txt = f"【{note}】历史同类判断基本持平，信号偏中性。"
+    return base + verdict_txt + "需人工复盘。"
 
 
 # ──────────────────────────────────────────
@@ -673,7 +798,8 @@ def main():
     # 跑所有质疑规则
     findings = run_all_challenges(state)
 
-    # 可读报告
+    # 价格缓存落盘（供下次运行复用，避免重复拉网）
+    _save_price_cache()
     report = format_report(findings, run_id, args.date)
     print(report)
 

@@ -37,3 +37,4 @@ data_cache/
 *.cache
 *.cache.lock
 *.tmp.*
+data/_price_cache_challenge.json
