@@ -73,9 +73,18 @@ def run_script(script: str, args: List[str] = None, timeout: int = 600) -> Dict[
 def main():
     today = datetime.now().strftime("%Y-%m-%d")
     print(f"\n📅 周回测全流水线启动 ({today})")
-    
+
     results = {}
-    
+
+    # 步骤 0: sys.path 样板门禁（2026-09-19 新增）
+    # 先用最快最便宜的方式抓“脚本模式会崩”的文件，避免白跑后面的长任务。
+    # 背景：同类坑已踩 2 次（08-23、09-19），故固化为机器门禁。
+    print("\n🚦 步骤 0/8: sys.path 样板门禁 (script_path_guard.py)")
+    r = run_script("../scripts/script_path_guard.py", timeout=120)
+    results["path_guard"] = r
+    if not r["success"]:
+        print("⚠️ sys.path 样板门禁未通过（详见上方违规清单），本次运行可能受影响...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = run_script("backtest_strategies.py", timeout=600)  # 10分钟上限，当前约3.5分钟跑完，留足缓冲
