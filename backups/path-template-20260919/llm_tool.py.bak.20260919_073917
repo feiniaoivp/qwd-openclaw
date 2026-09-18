@@ -4,16 +4,6 @@ LLM + Tool 层：封装对外部知识的获取（新闻、030健康度）以及
 所有函数仅返回数据，不做打印或文件写入。
 """
 
-
-# ── sys.path 样板（TOOLS.md 强制；2026-09-19）──
-# 脚本模式下 sys.path[0] 是脚本所在目录而非工作区根，
-# 必须显式插入工作区根（供 `from analysis.xxx`）+ analysis/（供子包引用）。
-import os as _os, sys as _sys
-_WORKSPACE = _os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
-for _p in (_WORKSPACE, _os.path.join(_WORKSPACE, "analysis")):
-    if _p not in _sys.path:
-        _sys.path.insert(0, _p)
-
 import os, json, requests
 from typing import List, Dict, Any, Optional
 from analysis.service import get_spot_scan  # 只为复用，实际不需要，但可保留

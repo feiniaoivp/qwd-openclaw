@@ -105,6 +105,61 @@ openclaw mcp status --verbose
 
 ---
 
+## 🔴 强制代码模板：Python 脚本的 sys.path 样板（必须照抄）
+
+> **为什么强制**：2026-09-19 踩坑（本项目**第二次**踩同类坑，上次 08-23）。
+> 脚本模式下 `sys.path[0]` 是脚本所在目录而非工作区根，导致
+> `from analysis.xxx import ...` 抛 `ModuleNotFoundError`；若该异常又被
+> `except Exception` 吞掉，会表现为"数据全空/功能静默失效"，**极难排查**
+> （`python3 -c` 导入方式因为 cwd 在 sys.path 里，表现完全不同）。
+
+### ✅ 每个可直接执行的脚本（`analysis/*.py`、`scripts/*.py`）顶部必须有：
+
+```python
+#!/usr/bin/env python3
+import os
+import sys
+
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+# 必须同时插入：工作区根 + analysis/。
+# - 工作区根：让 `from analysis.xxx import ...` 在**脚本模式**下可解析
+# - analysis/：让 `from data_layer.xxx import ...` 等子包内引用可解析
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+```
+
+### ❌ 禁止写法
+
+```python
+# ❌ 只插 analysis/ -> `from analysis.xxx` 在脚本模式下崩
+sys.path.insert(0, "/Users/duguke/.openclaw/workspace/analysis")
+
+# ❌ 依赖 PYTHONPATH -> 只在交互 shell 生效，cron/子进程不继承
+
+# ❌ 依赖 cwd -> `python3 -c` 能跑、`python3 script.py` 崩，行为不一致
+```
+
+### 🧩 自检命令（新建/改完脚本后必跑）
+
+```bash
+# 1) 脚本模式导入自检（最接近 cron 的真实执行方式）
+cd /Users/duguke/.openclaw/workspace/scripts && python3 -c "import importlib,sys; sys.path.insert(0,'.'); importlib.import_module('myscript')"
+
+# 2) 批量扫描缺样板的脚本
+cd /Users/duguke/.openclaw/workspace && for f in analysis/*.py scripts/*.py; do \
+  grep -q "from analysis\.\|import analysis\." "$f" 2>/dev/null && ! grep -q "sys.path" "$f" && echo "缺样板: $f"; done
+```
+
+### ⚠️ 配套铁律
+
+*   **`except Exception` 里不要静默**。至少要 `log.warning`；关键数据获取路径的
+    异常必须可见（本次 bug 就是因为只走 `log.debug` 而隐身 4 天+）。
+*   **不要缓存空值**。拉网失败返回的空序列若落盘，会把瞬时故障永久固化成
+    "数据不足"（本次 T+5 连续返回 None 的直接原因）。
+
+---
+
 Add whatever helps you do your job. This is your cheat sheet.
 
 ## Related
