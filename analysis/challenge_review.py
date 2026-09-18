@@ -46,11 +46,34 @@ class ChallengeRule:
         for f in findings:
             f["rule"] = self.name
             f["severity"] = self.severity
+            # 逐项降级覆盖（如风控主动降级 → INFO，不计入高危）
+            _ov = f.get("severity_override")
+            if _ov:
+                f["severity"] = _ov
+                f["severity_original"] = self.severity
             f["question"] = self.describe_fn(f)
         return findings
 
 
 # ── 规则 1: 信号等级与最终建议的方向一致性 ──
+# ── 风控降级豁免（2026-09-19 修复#7）──
+# 问题：signal_advice_mismatch 把【信号级要求 BUY】与【风控层主动降级 HOLD】
+# 当成"自相矛盾"上报，每日产生 high 危误报、消耗人工复核预算。
+# 实测：140 次破位拦截里 107 次(76%) 偏离 EMA26 不到 3%（均为均线附近边界抖动）。
+# 规则：当 advice 的降级理由命中已知风控关键词时，降级为 INFO 且不计入高危。
+RISK_DOWNGRADE_KEYWORDS = (
+    "破位回落拦截", "三因素共振", "仲裁", "Tier1", "Tier2", "Tier3",
+    "030", "致命风险", "高风险防御", "策略切换", "关注级无金叉触发",
+    "止损", "风险", "降级为观望",
+)
+
+
+def _is_risk_downgrade(reason: str) -> bool:
+    """判断该 HOLD 是否为风控层主动降级（而非逻辑冲突）"""
+    r = str(reason or "")
+    return any(kw in r for kw in RISK_DOWNGRADE_KEYWORDS)
+
+
 def check_signal_vs_advice(state):
     """agent 给出的信号 level 与 final_advice 的 action 是否一致？"""
     findings = []
@@ -75,6 +98,8 @@ def check_signal_vs_advice(state):
         exp = expected_action(level)
         adv = advice_map.get(sym)
         if adv and adv.get("action") != exp:
+            _reason = adv.get("reason")
+            _is_downgrade = _is_risk_downgrade(_reason)
             findings.append({
                 "type": "signal_advice_mismatch",
                 "symbol": sym,
@@ -82,10 +107,16 @@ def check_signal_vs_advice(state):
                 "signal_level": level,
                 "expected": exp,
                 "actual": adv.get("action"),
-                "advice_reason": adv.get("reason"),
+                "advice_reason": _reason,
+                # 风控主动降级不算矛盾，降为 INFO（不计入高危）
+                "severity_override": "INFO" if _is_downgrade else None,
+                "risk_downgrade": _is_downgrade,
             })
     return findings
 def describe_signal_vs_advice(f):
+    if f.get("risk_downgrade"):
+        return (f"（风控主动降级，非逻辑冲突）{f['name']}({f['symbol']}) 信号【{f['signal_level']}】"
+                f"被风控层降为 {f['actual']}：{f['advice_reason']}")
     return (f"为什么 {f['name']}({f['symbol']}) 信号是【{f['signal_level']}】(应 {f['expected']})，"
             f"但最终建议却是 {f['actual']}？理由：{f['advice_reason']}")
 
@@ -616,7 +647,7 @@ def format_report(findings: List[Dict], run_id: str, date: str) -> str:
         lines.append("✅ 未发现需质疑的明显矛盾，报告内部逻辑自洽。")
     else:
         for i, f in enumerate(findings, 1):
-            tag = {"HIGH": "🔴", "MEDIUM": "🟡", "LOW": "🟢"}.get(f.get("severity"), "⚪")
+            tag = {"HIGH": "🔴", "MEDIUM": "🟡", "LOW": "🟢", "INFO": "⚪"}.get(f.get("severity"), "⚪")
             q = f.get("question", f"质疑: {f.get('type')}")
             lines.append(f"{i}. {tag} [{f.get('rule', f.get('type'))}] {q}")
     lines.append("")

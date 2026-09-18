@@ -1,0 +1,2474 @@
+{
+  "date": "2026-09-19",
+  "summary": {
+    "A 基准(现状)": {
+      "stocks": 27,
+      "avg_return_pct": 14.06,
+      "avg_max_dd_pct": -16.96,
+      "avg_sharpe": 0.401,
+      "total_round_trips": 107,
+      "total_suppressed_buys": 0
+    },
+    "B 卖出冷却 5d": {
+      "stocks": 27,
+      "avg_return_pct": 13.48,
+      "avg_max_dd_pct": -16.93,
+      "avg_sharpe": 0.341,
+      "total_round_trips": 90,
+      "total_suppressed_buys": 17
+    },
+    "B 卖出冷却 10d": {
+      "stocks": 27,
+      "avg_return_pct": 15.35,
+      "avg_max_dd_pct": -15.73,
+      "avg_sharpe": 0.386,
+      "total_round_trips": 82,
+      "total_suppressed_buys": 25
+    },
+    "B 卖出冷却 15d": {
+      "stocks": 27,
+      "avg_return_pct": 12.32,
+      "avg_max_dd_pct": -14.5,
+      "avg_sharpe": 0.367,
+      "total_round_trips": 74,
+      "total_suppressed_buys": 35
+    },
+    "C 信号间隔 3d": {
+      "stocks": 27,
+      "avg_return_pct": 14.45,
+      "avg_max_dd_pct": -17.01,
+      "avg_sharpe": 0.405,
+      "total_round_trips": 105,
+      "total_suppressed_buys": 2
+    },
+    "C 信号间隔 5d": {
+      "stocks": 27,
+      "avg_return_pct": 14.34,
+      "avg_max_dd_pct": -16.83,
+      "avg_sharpe": 0.392,
+      "total_round_trips": 103,
+      "total_suppressed_buys": 4
+    },
+    "C 信号间隔 10d": {
+      "stocks": 27,
+      "avg_return_pct": 14.52,
+      "avg_max_dd_pct": -16.58,
+      "avg_sharpe": 0.392,
+      "total_round_trips": 97,
+      "total_suppressed_buys": 10
+    },
+    "D 组合(卖15+间5)": {
+      "stocks": 27,
+      "avg_return_pct": 12.32,
+      "avg_max_dd_pct": -14.5,
+      "avg_sharpe": 0.367,
+      "total_round_trips": 74,
+      "total_suppressed_buys": 35
+    }
+  },
+  "per_stock": {
+    "600030": {
+      "name": "中信证券",
+      "strategy": "macd",
+      "bars": 256,
+      "buy_signals": 5,
+      "sell_signals": 6,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": -21.12,
+          "max_dd_pct": -24.32,
+          "sharpe": -2.132,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 20.0,
+          "total_pnl": -20987.64,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": -21.12,
+          "max_dd_pct": -24.32,
+          "sharpe": -2.132,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 20.0,
+          "total_pnl": -20987.64,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": -21.12,
+          "max_dd_pct": -24.32,
+          "sharpe": -2.132,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 20.0,
+          "total_pnl": -20987.64,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": -21.12,
+          "max_dd_pct": -24.32,
+          "sharpe": -2.132,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 20.0,
+          "total_pnl": -20987.64,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 3d": {
+          "return_pct": -21.12,
+          "max_dd_pct": -24.32,
+          "sharpe": -2.132,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 20.0,
+          "total_pnl": -20987.64,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": -21.12,
+          "max_dd_pct": -24.32,
+          "sharpe": -2.132,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 20.0,
+          "total_pnl": -20987.64,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": -21.12,
+          "max_dd_pct": -24.32,
+          "sharpe": -2.132,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 20.0,
+          "total_pnl": -20987.64,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": -21.12,
+          "max_dd_pct": -24.32,
+          "sharpe": -2.132,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 20.0,
+          "total_pnl": -20987.64,
+          "suppressed_buys": 0
+        }
+      }
+    },
+    "601066": {
+      "name": "中信建投",
+      "strategy": "macd",
+      "bars": 256,
+      "buy_signals": 8,
+      "sell_signals": 8,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": -15.27,
+          "max_dd_pct": -20.57,
+          "sharpe": -1.263,
+          "trades": 16,
+          "round_trips": 8,
+          "win_rate": 50.0,
+          "total_pnl": -15057.63,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": -15.72,
+          "max_dd_pct": -21.02,
+          "sharpe": -1.3,
+          "trades": 14,
+          "round_trips": 7,
+          "win_rate": 42.9,
+          "total_pnl": -15533.6,
+          "suppressed_buys": 1
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": -17.85,
+          "max_dd_pct": -18.97,
+          "sharpe": -1.872,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 40.0,
+          "total_pnl": -17712.25,
+          "suppressed_buys": 3
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": -17.85,
+          "max_dd_pct": -18.97,
+          "sharpe": -1.872,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 40.0,
+          "total_pnl": -17712.25,
+          "suppressed_buys": 3
+        },
+        "C 信号间隔 3d": {
+          "return_pct": -15.27,
+          "max_dd_pct": -20.57,
+          "sharpe": -1.263,
+          "trades": 16,
+          "round_trips": 8,
+          "win_rate": 50.0,
+          "total_pnl": -15057.63,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": -15.27,
+          "max_dd_pct": -20.57,
+          "sharpe": -1.263,
+          "trades": 16,
+          "round_trips": 8,
+          "win_rate": 50.0,
+          "total_pnl": -15057.63,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": -15.27,
+          "max_dd_pct": -20.57,
+          "sharpe": -1.263,
+          "trades": 16,
+          "round_trips": 8,
+          "win_rate": 50.0,
+          "total_pnl": -15057.63,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": -17.85,
+          "max_dd_pct": -18.97,
+          "sharpe": -1.872,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 40.0,
+          "total_pnl": -17712.25,
+          "suppressed_buys": 3
+        }
+      }
+    },
+    "600036": {
+      "name": "招商银行",
+      "strategy": "macd",
+      "bars": 256,
+      "buy_signals": 10,
+      "sell_signals": 11,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": -4.93,
+          "max_dd_pct": -12.46,
+          "sharpe": -0.378,
+          "trades": 20,
+          "round_trips": 10,
+          "win_rate": 40.0,
+          "total_pnl": -4657.68,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": -5.82,
+          "max_dd_pct": -13.07,
+          "sharpe": -0.474,
+          "trades": 16,
+          "round_trips": 8,
+          "win_rate": 37.5,
+          "total_pnl": -5593.56,
+          "suppressed_buys": 2
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": -4.51,
+          "max_dd_pct": -12.05,
+          "sharpe": -0.348,
+          "trades": 14,
+          "round_trips": 7,
+          "win_rate": 42.9,
+          "total_pnl": -4316.17,
+          "suppressed_buys": 3
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": -4.95,
+          "max_dd_pct": -12.48,
+          "sharpe": -0.446,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 33.3,
+          "total_pnl": -4781.04,
+          "suppressed_buys": 4
+        },
+        "C 信号间隔 3d": {
+          "return_pct": -6.5,
+          "max_dd_pct": -13.75,
+          "sharpe": -0.535,
+          "trades": 18,
+          "round_trips": 9,
+          "win_rate": 33.3,
+          "total_pnl": -6257.36,
+          "suppressed_buys": 1
+        },
+        "C 信号间隔 5d": {
+          "return_pct": -5.46,
+          "max_dd_pct": -12.72,
+          "sharpe": -0.442,
+          "trades": 16,
+          "round_trips": 8,
+          "win_rate": 37.5,
+          "total_pnl": -5243.51,
+          "suppressed_buys": 2
+        },
+        "C 信号间隔 10d": {
+          "return_pct": -5.46,
+          "max_dd_pct": -12.72,
+          "sharpe": -0.442,
+          "trades": 16,
+          "round_trips": 8,
+          "win_rate": 37.5,
+          "total_pnl": -5243.51,
+          "suppressed_buys": 2
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": -4.95,
+          "max_dd_pct": -12.48,
+          "sharpe": -0.446,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 33.3,
+          "total_pnl": -4781.04,
+          "suppressed_buys": 4
+        }
+      }
+    },
+    "601995": {
+      "name": "中金公司",
+      "strategy": "macd",
+      "bars": 232,
+      "buy_signals": 7,
+      "sell_signals": 8,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": -6.6,
+          "max_dd_pct": -12.83,
+          "sharpe": -0.439,
+          "trades": 14,
+          "round_trips": 7,
+          "win_rate": 42.9,
+          "total_pnl": -6399.8,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": -4.55,
+          "max_dd_pct": -9.1,
+          "sharpe": -0.315,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 40.0,
+          "total_pnl": -4406.47,
+          "suppressed_buys": 2
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": -4.55,
+          "max_dd_pct": -9.1,
+          "sharpe": -0.315,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 40.0,
+          "total_pnl": -4406.47,
+          "suppressed_buys": 2
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": -4.55,
+          "max_dd_pct": -9.1,
+          "sharpe": -0.315,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 40.0,
+          "total_pnl": -4406.47,
+          "suppressed_buys": 2
+        },
+        "C 信号间隔 3d": {
+          "return_pct": -6.6,
+          "max_dd_pct": -12.83,
+          "sharpe": -0.439,
+          "trades": 14,
+          "round_trips": 7,
+          "win_rate": 42.9,
+          "total_pnl": -6399.8,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": -6.6,
+          "max_dd_pct": -12.83,
+          "sharpe": -0.439,
+          "trades": 14,
+          "round_trips": 7,
+          "win_rate": 42.9,
+          "total_pnl": -6399.8,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": -6.64,
+          "max_dd_pct": -10.25,
+          "sharpe": -0.494,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 33.3,
+          "total_pnl": -6464.38,
+          "suppressed_buys": 1
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": -4.55,
+          "max_dd_pct": -9.1,
+          "sharpe": -0.315,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 40.0,
+          "total_pnl": -4406.47,
+          "suppressed_buys": 2
+        }
+      }
+    },
+    "000987": {
+      "name": "越秀资本",
+      "strategy": "bollinger",
+      "bars": 256,
+      "buy_signals": 5,
+      "sell_signals": 13,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 22.75,
+          "max_dd_pct": -6.4,
+          "sharpe": 1.285,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 22810.88,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 22.75,
+          "max_dd_pct": -6.4,
+          "sharpe": 1.285,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 22810.88,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 22.75,
+          "max_dd_pct": -6.4,
+          "sharpe": 1.285,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 22810.88,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 22.75,
+          "max_dd_pct": -6.4,
+          "sharpe": 1.285,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 22810.88,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 22.75,
+          "max_dd_pct": -6.4,
+          "sharpe": 1.285,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 22810.88,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 22.75,
+          "max_dd_pct": -6.4,
+          "sharpe": 1.285,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 22810.88,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 22.75,
+          "max_dd_pct": -6.4,
+          "sharpe": 1.285,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 22810.88,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 22.75,
+          "max_dd_pct": -6.4,
+          "sharpe": 1.285,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 22810.88,
+          "suppressed_buys": 0
+        }
+      }
+    },
+    "600584": {
+      "name": "长电科技",
+      "strategy": "macd",
+      "bars": 256,
+      "buy_signals": 7,
+      "sell_signals": 6,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 18.27,
+          "max_dd_pct": -28.28,
+          "sharpe": 0.61,
+          "trades": 14,
+          "round_trips": 7,
+          "win_rate": 57.1,
+          "total_pnl": 18479.9,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 26.66,
+          "max_dd_pct": -28.28,
+          "sharpe": 0.786,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 60.0,
+          "total_pnl": 26804.38,
+          "suppressed_buys": 2
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 26.66,
+          "max_dd_pct": -28.28,
+          "sharpe": 0.786,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 60.0,
+          "total_pnl": 26804.38,
+          "suppressed_buys": 2
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": -3.84,
+          "max_dd_pct": -28.28,
+          "sharpe": 0.079,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 50.0,
+          "total_pnl": -3735.86,
+          "suppressed_buys": 3
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 30.39,
+          "max_dd_pct": -28.28,
+          "sharpe": 0.86,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 66.7,
+          "total_pnl": 30563.6,
+          "suppressed_buys": 1
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 30.39,
+          "max_dd_pct": -28.28,
+          "sharpe": 0.86,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 66.7,
+          "total_pnl": 30563.6,
+          "suppressed_buys": 1
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 30.39,
+          "max_dd_pct": -28.28,
+          "sharpe": 0.86,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 66.7,
+          "total_pnl": 30563.6,
+          "suppressed_buys": 1
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": -3.84,
+          "max_dd_pct": -28.28,
+          "sharpe": 0.079,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 50.0,
+          "total_pnl": -3735.86,
+          "suppressed_buys": 3
+        }
+      }
+    },
+    "688981": {
+      "name": "中芯国际",
+      "strategy": "kdj_cci",
+      "bars": 250,
+      "buy_signals": 1,
+      "sell_signals": 100,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 7.12,
+          "max_dd_pct": -0.7,
+          "sharpe": 1.741,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 7144.2,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 7.12,
+          "max_dd_pct": -0.7,
+          "sharpe": 1.741,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 7144.2,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 7.12,
+          "max_dd_pct": -0.7,
+          "sharpe": 1.741,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 7144.2,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 7.12,
+          "max_dd_pct": -0.7,
+          "sharpe": 1.741,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 7144.2,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 7.12,
+          "max_dd_pct": -0.7,
+          "sharpe": 1.741,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 7144.2,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 7.12,
+          "max_dd_pct": -0.7,
+          "sharpe": 1.741,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 7144.2,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 7.12,
+          "max_dd_pct": -0.7,
+          "sharpe": 1.741,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 7144.2,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 7.12,
+          "max_dd_pct": -0.7,
+          "sharpe": 1.741,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 7144.2,
+          "suppressed_buys": 0
+        }
+      }
+    },
+    "002156": {
+      "name": "通富微电",
+      "strategy": "ema_obv",
+      "bars": 256,
+      "buy_signals": 4,
+      "sell_signals": 107,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 29.6,
+          "max_dd_pct": -18.32,
+          "sharpe": 1.002,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 29735.15,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 24.22,
+          "max_dd_pct": -18.07,
+          "sharpe": 0.895,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 24316.81,
+          "suppressed_buys": 1
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 24.22,
+          "max_dd_pct": -18.07,
+          "sharpe": 0.895,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 24316.81,
+          "suppressed_buys": 1
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 9.53,
+          "max_dd_pct": -14.58,
+          "sharpe": 0.538,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 9586.08,
+          "suppressed_buys": 2
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 29.6,
+          "max_dd_pct": -18.32,
+          "sharpe": 1.002,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 29735.15,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 29.6,
+          "max_dd_pct": -18.32,
+          "sharpe": 1.002,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 29735.15,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 29.6,
+          "max_dd_pct": -18.32,
+          "sharpe": 1.002,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 29735.15,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 9.53,
+          "max_dd_pct": -14.58,
+          "sharpe": 0.538,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 9586.08,
+          "suppressed_buys": 2
+        }
+      }
+    },
+    "002413": {
+      "name": "雷科防务",
+      "strategy": "ema_cross",
+      "bars": 256,
+      "buy_signals": 2,
+      "sell_signals": 3,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 139.87,
+          "max_dd_pct": -37.19,
+          "sharpe": 1.927,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 139971.31,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 139.87,
+          "max_dd_pct": -37.19,
+          "sharpe": 1.927,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 139971.31,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 139.87,
+          "max_dd_pct": -37.19,
+          "sharpe": 1.927,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 139971.31,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 139.87,
+          "max_dd_pct": -37.19,
+          "sharpe": 1.927,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 139971.31,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 139.87,
+          "max_dd_pct": -37.19,
+          "sharpe": 1.927,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 139971.31,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 139.87,
+          "max_dd_pct": -37.19,
+          "sharpe": 1.927,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 139971.31,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 139.87,
+          "max_dd_pct": -37.19,
+          "sharpe": 1.927,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 139971.31,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 139.87,
+          "max_dd_pct": -37.19,
+          "sharpe": 1.927,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 139971.31,
+          "suppressed_buys": 0
+        }
+      }
+    },
+    "300014": {
+      "name": "亿纬锂能",
+      "strategy": "bull_trend",
+      "bars": 256,
+      "buy_signals": 2,
+      "sell_signals": 157,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": -0.62,
+          "max_dd_pct": -11.23,
+          "sharpe": -0.021,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": -565.88,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": -0.62,
+          "max_dd_pct": -11.23,
+          "sharpe": -0.021,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": -565.88,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": -0.62,
+          "max_dd_pct": -11.23,
+          "sharpe": -0.021,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": -565.88,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 3.65,
+          "max_dd_pct": -0.35,
+          "sharpe": 1.271,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 3678.74,
+          "suppressed_buys": 1
+        },
+        "C 信号间隔 3d": {
+          "return_pct": -0.62,
+          "max_dd_pct": -11.23,
+          "sharpe": -0.021,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": -565.88,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": -0.62,
+          "max_dd_pct": -11.23,
+          "sharpe": -0.021,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": -565.88,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": -0.62,
+          "max_dd_pct": -11.23,
+          "sharpe": -0.021,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": -565.88,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 3.65,
+          "max_dd_pct": -0.35,
+          "sharpe": 1.271,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 3678.74,
+          "suppressed_buys": 1
+        }
+      }
+    },
+    "002466": {
+      "name": "天齐锂业",
+      "strategy": "ema_obv",
+      "bars": 256,
+      "buy_signals": 2,
+      "sell_signals": 121,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 6.56,
+          "max_dd_pct": -8.75,
+          "sharpe": 0.518,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 6625.36,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 6.56,
+          "max_dd_pct": -8.75,
+          "sharpe": 0.518,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 6625.36,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 6.56,
+          "max_dd_pct": -8.75,
+          "sharpe": 0.518,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 6625.36,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 6.56,
+          "max_dd_pct": -8.75,
+          "sharpe": 0.518,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 6625.36,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 6.56,
+          "max_dd_pct": -8.75,
+          "sharpe": 0.518,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 6625.36,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 6.56,
+          "max_dd_pct": -8.75,
+          "sharpe": 0.518,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 6625.36,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 6.56,
+          "max_dd_pct": -8.75,
+          "sharpe": 0.518,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 6625.36,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 6.56,
+          "max_dd_pct": -8.75,
+          "sharpe": 0.518,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 6625.36,
+          "suppressed_buys": 0
+        }
+      }
+    },
+    "300285": {
+      "name": "国瓷材料",
+      "strategy": "macd",
+      "bars": 256,
+      "buy_signals": 7,
+      "sell_signals": 6,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 53.16,
+          "max_dd_pct": -28.83,
+          "sharpe": 1.072,
+          "trades": 14,
+          "round_trips": 7,
+          "win_rate": 71.4,
+          "total_pnl": 53425.01,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 53.16,
+          "max_dd_pct": -28.83,
+          "sharpe": 1.072,
+          "trades": 14,
+          "round_trips": 7,
+          "win_rate": 71.4,
+          "total_pnl": 53425.01,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 70.02,
+          "max_dd_pct": -24.07,
+          "sharpe": 1.273,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 83.3,
+          "total_pnl": 70241.46,
+          "suppressed_buys": 1
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 61.74,
+          "max_dd_pct": -24.09,
+          "sharpe": 1.2,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 80.0,
+          "total_pnl": 61918.91,
+          "suppressed_buys": 2
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 53.16,
+          "max_dd_pct": -28.83,
+          "sharpe": 1.072,
+          "trades": 14,
+          "round_trips": 7,
+          "win_rate": 71.4,
+          "total_pnl": 53425.01,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 53.16,
+          "max_dd_pct": -28.83,
+          "sharpe": 1.072,
+          "trades": 14,
+          "round_trips": 7,
+          "win_rate": 71.4,
+          "total_pnl": 53425.01,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 53.16,
+          "max_dd_pct": -28.83,
+          "sharpe": 1.072,
+          "trades": 14,
+          "round_trips": 7,
+          "win_rate": 71.4,
+          "total_pnl": 53425.01,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 61.74,
+          "max_dd_pct": -24.09,
+          "sharpe": 1.2,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 80.0,
+          "total_pnl": 61918.91,
+          "suppressed_buys": 2
+        }
+      }
+    },
+    "603308": {
+      "name": "应流股份",
+      "strategy": "ema_cross",
+      "bars": 256,
+      "buy_signals": 1,
+      "sell_signals": 2,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 77.56,
+          "max_dd_pct": -21.07,
+          "sharpe": 1.636,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 77594.15,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 77.56,
+          "max_dd_pct": -21.07,
+          "sharpe": 1.636,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 77594.15,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 77.56,
+          "max_dd_pct": -21.07,
+          "sharpe": 1.636,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 77594.15,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 77.56,
+          "max_dd_pct": -21.07,
+          "sharpe": 1.636,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 77594.15,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 77.56,
+          "max_dd_pct": -21.07,
+          "sharpe": 1.636,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 77594.15,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 77.56,
+          "max_dd_pct": -21.07,
+          "sharpe": 1.636,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 77594.15,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 77.56,
+          "max_dd_pct": -21.07,
+          "sharpe": 1.636,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 77594.15,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 77.56,
+          "max_dd_pct": -21.07,
+          "sharpe": 1.636,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 77594.15,
+          "suppressed_buys": 0
+        }
+      }
+    },
+    "300124": {
+      "name": "汇川技术",
+      "strategy": "bollinger",
+      "bars": 256,
+      "buy_signals": 6,
+      "sell_signals": 12,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 4.02,
+          "max_dd_pct": -10.92,
+          "sharpe": 0.326,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 4105.21,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 4.02,
+          "max_dd_pct": -10.92,
+          "sharpe": 0.326,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 4105.21,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 4.02,
+          "max_dd_pct": -10.92,
+          "sharpe": 0.326,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 4105.21,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": -0.84,
+          "max_dd_pct": -10.7,
+          "sharpe": 0.014,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 33.3,
+          "total_pnl": -756.12,
+          "suppressed_buys": 2
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 4.02,
+          "max_dd_pct": -10.92,
+          "sharpe": 0.326,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 4105.21,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 4.02,
+          "max_dd_pct": -10.92,
+          "sharpe": 0.326,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 4105.21,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 4.02,
+          "max_dd_pct": -10.92,
+          "sharpe": 0.326,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 4105.21,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": -0.84,
+          "max_dd_pct": -10.7,
+          "sharpe": 0.014,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 33.3,
+          "total_pnl": -756.12,
+          "suppressed_buys": 2
+        }
+      }
+    },
+    "601100": {
+      "name": "恒立液压",
+      "strategy": "ema_cross",
+      "bars": 256,
+      "buy_signals": 4,
+      "sell_signals": 5,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 47.11,
+          "max_dd_pct": -12.14,
+          "sharpe": 1.521,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 47237.94,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 47.11,
+          "max_dd_pct": -12.14,
+          "sharpe": 1.521,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 47237.94,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 44.55,
+          "max_dd_pct": -12.14,
+          "sharpe": 1.461,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 44642.94,
+          "suppressed_buys": 1
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 13.94,
+          "max_dd_pct": -9.48,
+          "sharpe": 0.799,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 13995.91,
+          "suppressed_buys": 2
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 47.11,
+          "max_dd_pct": -12.14,
+          "sharpe": 1.521,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 47237.94,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 47.11,
+          "max_dd_pct": -12.14,
+          "sharpe": 1.521,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 47237.94,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 47.11,
+          "max_dd_pct": -12.14,
+          "sharpe": 1.521,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 47237.94,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 13.94,
+          "max_dd_pct": -9.48,
+          "sharpe": 0.799,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 13995.91,
+          "suppressed_buys": 2
+        }
+      }
+    },
+    "002318": {
+      "name": "久立特材",
+      "strategy": "ema_cross",
+      "bars": 256,
+      "buy_signals": 1,
+      "sell_signals": 2,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 26.76,
+          "max_dd_pct": -10.46,
+          "sharpe": 1.32,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 26785.77,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 26.76,
+          "max_dd_pct": -10.46,
+          "sharpe": 1.32,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 26785.77,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 26.76,
+          "max_dd_pct": -10.46,
+          "sharpe": 1.32,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 26785.77,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 26.76,
+          "max_dd_pct": -10.46,
+          "sharpe": 1.32,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 26785.77,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 26.76,
+          "max_dd_pct": -10.46,
+          "sharpe": 1.32,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 26785.77,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 26.76,
+          "max_dd_pct": -10.46,
+          "sharpe": 1.32,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 26785.77,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 26.76,
+          "max_dd_pct": -10.46,
+          "sharpe": 1.32,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 26785.77,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 26.76,
+          "max_dd_pct": -10.46,
+          "sharpe": 1.32,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 26785.77,
+          "suppressed_buys": 0
+        }
+      }
+    },
+    "300719": {
+      "name": "安达维尔",
+      "strategy": "ema_cross",
+      "bars": 256,
+      "buy_signals": 5,
+      "sell_signals": 4,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 9.96,
+          "max_dd_pct": -14.25,
+          "sharpe": 0.513,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 60.0,
+          "total_pnl": 10108.14,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": -2.57,
+          "max_dd_pct": -19.36,
+          "sharpe": -0.021,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 33.3,
+          "total_pnl": -2482.7,
+          "suppressed_buys": 2
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": -2.57,
+          "max_dd_pct": -19.36,
+          "sharpe": -0.021,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 33.3,
+          "total_pnl": -2482.7,
+          "suppressed_buys": 2
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 10.23,
+          "max_dd_pct": -14.22,
+          "sharpe": 0.56,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 10319.66,
+          "suppressed_buys": 2
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 9.96,
+          "max_dd_pct": -14.25,
+          "sharpe": 0.513,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 60.0,
+          "total_pnl": 10108.14,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 9.96,
+          "max_dd_pct": -14.25,
+          "sharpe": 0.513,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 60.0,
+          "total_pnl": 10108.14,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 12.58,
+          "max_dd_pct": -14.22,
+          "sharpe": 0.651,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 12702.49,
+          "suppressed_buys": 1
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 10.23,
+          "max_dd_pct": -14.22,
+          "sharpe": 0.56,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 10319.66,
+          "suppressed_buys": 2
+        }
+      }
+    },
+    "002335": {
+      "name": "科华数据",
+      "strategy": "macd",
+      "bars": 256,
+      "buy_signals": 11,
+      "sell_signals": 10,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": -42.12,
+          "max_dd_pct": -44.3,
+          "sharpe": -0.995,
+          "trades": 22,
+          "round_trips": 11,
+          "win_rate": 27.3,
+          "total_pnl": -41861.29,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": -37.32,
+          "max_dd_pct": -39.71,
+          "sharpe": -0.956,
+          "trades": 16,
+          "round_trips": 8,
+          "win_rate": 25.0,
+          "total_pnl": -37118.76,
+          "suppressed_buys": 3
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": -3.43,
+          "max_dd_pct": -20.7,
+          "sharpe": 0.043,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 33.3,
+          "total_pnl": -3263.69,
+          "suppressed_buys": 5
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": -3.43,
+          "max_dd_pct": -20.7,
+          "sharpe": 0.043,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 33.3,
+          "total_pnl": -3263.69,
+          "suppressed_buys": 5
+        },
+        "C 信号间隔 3d": {
+          "return_pct": -42.12,
+          "max_dd_pct": -44.3,
+          "sharpe": -0.995,
+          "trades": 22,
+          "round_trips": 11,
+          "win_rate": 27.3,
+          "total_pnl": -41861.29,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": -42.12,
+          "max_dd_pct": -44.3,
+          "sharpe": -0.995,
+          "trades": 22,
+          "round_trips": 11,
+          "win_rate": 27.3,
+          "total_pnl": -41861.29,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": -35.82,
+          "max_dd_pct": -39.64,
+          "sharpe": -0.904,
+          "trades": 18,
+          "round_trips": 9,
+          "win_rate": 22.2,
+          "total_pnl": -35586.48,
+          "suppressed_buys": 2
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": -3.43,
+          "max_dd_pct": -20.7,
+          "sharpe": 0.043,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 33.3,
+          "total_pnl": -3263.69,
+          "suppressed_buys": 5
+        }
+      }
+    },
+    "300748": {
+      "name": "金力永磁",
+      "strategy": "kdj_cci",
+      "bars": 256,
+      "buy_signals": 1,
+      "sell_signals": 90,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 6.17,
+          "max_dd_pct": -0.13,
+          "sharpe": 0.975,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 6203.04,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 6.17,
+          "max_dd_pct": -0.13,
+          "sharpe": 0.975,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 6203.04,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 6.17,
+          "max_dd_pct": -0.13,
+          "sharpe": 0.975,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 6203.04,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 6.17,
+          "max_dd_pct": -0.13,
+          "sharpe": 0.975,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 6203.04,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 6.17,
+          "max_dd_pct": -0.13,
+          "sharpe": 0.975,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 6203.04,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 6.17,
+          "max_dd_pct": -0.13,
+          "sharpe": 0.975,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 6203.04,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 6.17,
+          "max_dd_pct": -0.13,
+          "sharpe": 0.975,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 6203.04,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 6.17,
+          "max_dd_pct": -0.13,
+          "sharpe": 0.975,
+          "trades": 2,
+          "round_trips": 1,
+          "win_rate": 100.0,
+          "total_pnl": 6203.04,
+          "suppressed_buys": 0
+        }
+      }
+    },
+    "600160": {
+      "name": "巨化股份",
+      "strategy": "ema_cross",
+      "bars": 256,
+      "buy_signals": 3,
+      "sell_signals": 4,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 29.09,
+          "max_dd_pct": -14.73,
+          "sharpe": 1.095,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 29180.75,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 29.09,
+          "max_dd_pct": -14.73,
+          "sharpe": 1.095,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 29180.75,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 29.09,
+          "max_dd_pct": -14.73,
+          "sharpe": 1.095,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 29180.75,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 7.7,
+          "max_dd_pct": -11.6,
+          "sharpe": 0.542,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 7760.29,
+          "suppressed_buys": 1
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 29.09,
+          "max_dd_pct": -14.73,
+          "sharpe": 1.095,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 29180.75,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 29.09,
+          "max_dd_pct": -14.73,
+          "sharpe": 1.095,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 29180.75,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 29.09,
+          "max_dd_pct": -14.73,
+          "sharpe": 1.095,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 66.7,
+          "total_pnl": 29180.75,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 7.7,
+          "max_dd_pct": -11.6,
+          "sharpe": 0.542,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 7760.29,
+          "suppressed_buys": 1
+        }
+      }
+    },
+    "600346": {
+      "name": "恒力石化",
+      "strategy": "macd",
+      "bars": 256,
+      "buy_signals": 4,
+      "sell_signals": 5,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": -27.82,
+          "max_dd_pct": -40.03,
+          "sharpe": -0.815,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 25.0,
+          "total_pnl": -27706.26,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": -27.82,
+          "max_dd_pct": -40.03,
+          "sharpe": -0.815,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 25.0,
+          "total_pnl": -27706.26,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": -27.82,
+          "max_dd_pct": -40.03,
+          "sharpe": -0.815,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 25.0,
+          "total_pnl": -27706.26,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": -19.02,
+          "max_dd_pct": -29.95,
+          "sharpe": -0.723,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 33.3,
+          "total_pnl": -18930.21,
+          "suppressed_buys": 1
+        },
+        "C 信号间隔 3d": {
+          "return_pct": -27.82,
+          "max_dd_pct": -40.03,
+          "sharpe": -0.815,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 25.0,
+          "total_pnl": -27706.26,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": -27.82,
+          "max_dd_pct": -40.03,
+          "sharpe": -0.815,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 25.0,
+          "total_pnl": -27706.26,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": -27.82,
+          "max_dd_pct": -40.03,
+          "sharpe": -0.815,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 25.0,
+          "total_pnl": -27706.26,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": -19.02,
+          "max_dd_pct": -29.95,
+          "sharpe": -0.723,
+          "trades": 6,
+          "round_trips": 3,
+          "win_rate": 33.3,
+          "total_pnl": -18930.21,
+          "suppressed_buys": 1
+        }
+      }
+    },
+    "000708": {
+      "name": "中信特钢",
+      "strategy": "ema_adaptive_vol",
+      "bars": 256,
+      "buy_signals": 0,
+      "sell_signals": 0,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        }
+      }
+    },
+    "600660": {
+      "name": "福耀玻璃",
+      "strategy": "ema_adaptive_vol",
+      "bars": 256,
+      "buy_signals": 0,
+      "sell_signals": 0,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        }
+      }
+    },
+    "600570": {
+      "name": "恒生电子",
+      "strategy": "ema_adaptive_vol",
+      "bars": 256,
+      "buy_signals": 0,
+      "sell_signals": 0,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 0.0,
+          "max_dd_pct": 0.0,
+          "sharpe": 0.0,
+          "trades": 0,
+          "round_trips": 0,
+          "win_rate": 0.0,
+          "total_pnl": 0,
+          "suppressed_buys": 0
+        }
+      }
+    },
+    "605566": {
+      "name": "福莱蒽特",
+      "strategy": "macd",
+      "bars": 256,
+      "buy_signals": 9,
+      "sell_signals": 9,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": -50.72,
+          "max_dd_pct": -60.53,
+          "sharpe": -1.483,
+          "trades": 18,
+          "round_trips": 9,
+          "win_rate": 33.3,
+          "total_pnl": -50444.37,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": -60.39,
+          "max_dd_pct": -62.12,
+          "sharpe": -2.613,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 16.7,
+          "total_pnl": -60225.21,
+          "suppressed_buys": 3
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": -50.57,
+          "max_dd_pct": -56.39,
+          "sharpe": -1.949,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 33.3,
+          "total_pnl": -50399.71,
+          "suppressed_buys": 3
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": -47.48,
+          "max_dd_pct": -58.4,
+          "sharpe": -1.657,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 33.3,
+          "total_pnl": -47299.36,
+          "suppressed_buys": 3
+        },
+        "C 信号间隔 3d": {
+          "return_pct": -50.72,
+          "max_dd_pct": -60.53,
+          "sharpe": -1.483,
+          "trades": 18,
+          "round_trips": 9,
+          "win_rate": 33.3,
+          "total_pnl": -50444.37,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": -54.8,
+          "max_dd_pct": -56.64,
+          "sharpe": -1.903,
+          "trades": 16,
+          "round_trips": 8,
+          "win_rate": 25.0,
+          "total_pnl": -54583.62,
+          "suppressed_buys": 1
+        },
+        "C 信号间隔 10d": {
+          "return_pct": -52.2,
+          "max_dd_pct": -57.24,
+          "sharpe": -1.934,
+          "trades": 14,
+          "round_trips": 7,
+          "win_rate": 28.6,
+          "total_pnl": -52003.8,
+          "suppressed_buys": 2
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": -47.48,
+          "max_dd_pct": -58.4,
+          "sharpe": -1.657,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 33.3,
+          "total_pnl": -47299.36,
+          "suppressed_buys": 3
+        }
+      }
+    },
+    "000157": {
+      "name": "中联重科",
+      "strategy": "ema_cross",
+      "bars": 256,
+      "buy_signals": 2,
+      "sell_signals": 3,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 3.4,
+          "max_dd_pct": -11.83,
+          "sharpe": 0.318,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 3461.5,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 3.4,
+          "max_dd_pct": -11.83,
+          "sharpe": 0.318,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 3461.5,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 3.4,
+          "max_dd_pct": -11.83,
+          "sharpe": 0.318,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 3461.5,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 3.4,
+          "max_dd_pct": -11.83,
+          "sharpe": 0.318,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 3461.5,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 3.4,
+          "max_dd_pct": -11.83,
+          "sharpe": 0.318,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 3461.5,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 3.4,
+          "max_dd_pct": -11.83,
+          "sharpe": 0.318,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 3461.5,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 3.4,
+          "max_dd_pct": -11.83,
+          "sharpe": 0.318,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 3461.5,
+          "suppressed_buys": 0
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 3.4,
+          "max_dd_pct": -11.83,
+          "sharpe": 0.318,
+          "trades": 4,
+          "round_trips": 2,
+          "win_rate": 50.0,
+          "total_pnl": 3461.5,
+          "suppressed_buys": 0
+        }
+      }
+    },
+    "601061": {
+      "name": "中信金属",
+      "strategy": "ema_obv",
+      "bars": 256,
+      "buy_signals": 6,
+      "sell_signals": 121,
+      "variants": {
+        "A 基准(现状)": {
+          "return_pct": 67.47,
+          "max_dd_pct": -7.74,
+          "sharpe": 2.497,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 83.3,
+          "total_pnl": 67695.08,
+          "suppressed_buys": 0
+        },
+        "B 卖出冷却 5d": {
+          "return_pct": 65.5,
+          "max_dd_pct": -7.74,
+          "sharpe": 2.442,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 80.0,
+          "total_pnl": 65688.68,
+          "suppressed_buys": 1
+        },
+        "B 卖出冷却 10d": {
+          "return_pct": 58.68,
+          "max_dd_pct": -7.74,
+          "sharpe": 2.287,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 58830.39,
+          "suppressed_buys": 2
+        },
+        "B 卖出冷却 15d": {
+          "return_pct": 58.68,
+          "max_dd_pct": -7.74,
+          "sharpe": 2.287,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 58830.39,
+          "suppressed_buys": 2
+        },
+        "C 信号间隔 3d": {
+          "return_pct": 67.47,
+          "max_dd_pct": -7.74,
+          "sharpe": 2.497,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 83.3,
+          "total_pnl": 67695.08,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 5d": {
+          "return_pct": 67.47,
+          "max_dd_pct": -7.74,
+          "sharpe": 2.497,
+          "trades": 12,
+          "round_trips": 6,
+          "win_rate": 83.3,
+          "total_pnl": 67695.08,
+          "suppressed_buys": 0
+        },
+        "C 信号间隔 10d": {
+          "return_pct": 60.76,
+          "max_dd_pct": -7.74,
+          "sharpe": 2.344,
+          "trades": 10,
+          "round_trips": 5,
+          "win_rate": 80.0,
+          "total_pnl": 60942.42,
+          "suppressed_buys": 1
+        },
+        "D 组合(卖15+间5)": {
+          "return_pct": 58.68,
+          "max_dd_pct": -7.74,
+          "sharpe": 2.287,
+          "trades": 8,
+          "round_trips": 4,
+          "win_rate": 75.0,
+          "total_pnl": 58830.39,
+          "suppressed_buys": 2
+        }
+      }
+    }
+  }
+}

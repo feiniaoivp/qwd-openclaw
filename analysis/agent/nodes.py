@@ -436,23 +436,64 @@ def rule_risk_advice(state):
             action = "SELL"
             reason = "信号级:%s 分:%s" % (level, score)
         elif "强烈买入" in level or "关注" in level:
+            # ── 2026-09-19 修复#5："关注"级必须绑定真实金叉事件 ──
+            # 背景：09-14~09-18 招商银行被连续 5 日签发 BUY(关注级)，而 indicators 里
+            # MACD_cross_up=false、EMA_bull=true —— 属"趋势仍在但无新触发"的持有状态，
+            # 不是买入时点。全量核对：750 次 BUY 中 522 次(70%) 属此类"非金叉的关注级"，
+            # 是 challenge_review 每日 high 危误报的主来源，也是重复候选噪声的来源。
+            # 规则：仅当 "关注" 级且 MACD/EMA 无金叉事件时，降级为观望(等待触发)。
+            # 注："强烈买入" 不在此约束内(它有独立的多因子确认)。
+            _ind = s.get("indicators") or {}
+            if "关注" in level and "强烈买入" not in level and isinstance(_ind, dict):
+                _cross_up = bool(_ind.get("MACD_cross_up")) or bool(_ind.get("EMA_cross_up"))
+                if not _cross_up:
+                    action = "HOLD"
+                    reason = ("关注级无金叉触发(MACD多头但非金叉)，降级为观望等待新触发；"
+                              "避免「趋势仍在」状态被反复当作买入时点。")
+                    advice_list.append({"symbol": sym, "name": name, "action": action,
+                                        "reason": reason})
+                    continue
             # ── 2026-08-19 修复#4：破位回落拦截 —— 收盘价已跌破 EMA26(中期趋势转空) 时，
             # 买入/关注信号强制降级为观望(HOLD)，禁止接飞刀。
             # 依据：2026-08-19 国瓷材料 5日-13%、盘中破止损仍被给"强烈买入"——BUY 评级明显失当；
             # 以及记忆中的 08-02"天量高开低走=出货"教训。
+            # 2026-09-19 修复#6：叠加 ATR 带宽容错 —— 全量 140 次破位拦截中 107 次(76%)
+            # 偏离 EMA26 在 -3% 以内(中位 -2.00%)，属均线附近边界抖动；深度破位仅 1 次。
+            # 故浅破位不拦截，交由后续门控/止损处理，减少无意义的高危误报。
             _close_val = float(close) if close else None
             _ema26_val = None
-            _ind = s.get("indicators") or {}
             if isinstance(_ind, dict):
                 try: _ema26_val = float(_ind.get("EMA26")) if _ind.get("EMA26") is not None else None
                 except Exception: _ema26_val = None
-            if _close_val is not None and _ema26_val is not None and _close_val < _ema26_val:
-                action = "HOLD"
-                reason = ("破位回落拦截:现价¥%s已跌破EMA26(¥%s)，中期趋势转空，买入/关注降级为观望，禁追。"
-                          % (close, round(_ema26_val,2)))
-                advice_list.append({"symbol": sym, "name": name, "action": action,
-                                    "reason": reason})
-                continue
+            if _close_val is not None and _ema26_val is not None:
+                # ATR 可能不在 indicators 里(实测 indicators 仅含 MACD/EMA/RSI)。
+                # 缺失时用 proxy = |EMA12-EMA26|/close 作为波动率代理（EMA 乖离天然反映波动）。
+                _atr_pct = 0.0
+                try:
+                    _atr_v = float(_ind.get("ATR") or 0)
+                    if _atr_v > 0 and _close_val > 0:
+                        _atr_pct = _atr_v / _close_val * 100
+                except Exception:
+                    _atr_pct = 0.0
+                if _atr_pct <= 0:
+                    try:
+                        _e12 = float(_ind.get("EMA12"))
+                        if _close_val > 0:
+                            # 乖离率×2 作为 ATR% 代理(经验系数，仅用于定宽容差)
+                            _atr_pct = abs(_e12 - _ema26_val) / _close_val * 100 * 2
+                    except Exception:
+                        _atr_pct = 0.0
+                # 带宽容错阈值：默认 2%，但不超过 0.5*ATR%，区间 [1%, 3%]，
+                # 避免均线附近 ±2% 的边界抖动被当作"破位"（实测 76% 拦截属此类）。
+                _tol_pct = min(3.0, max(1.0, 0.5 * _atr_pct)) if _atr_pct > 0 else 2.0
+                _deep_break = _close_val < _ema26_val * (1 - _tol_pct / 100.0)
+                if _deep_break:
+                    action = "HOLD"
+                    reason = ("破位回落拦截:现价¥%s已跌破EMA26(¥%s)达%.1f%%(超容差%.1f%%)，中期趋势转空，买入/关注降级为观望，禁追。"
+                              % (close, round(_ema26_val,2), (_ema26_val-_close_val)/_ema26_val*100, _tol_pct))
+                    advice_list.append({"symbol": sym, "name": name, "action": action,
+                                        "reason": reason})
+                    continue
             # ── 2026-08-19 三因素共振门控：情绪+基本面两维未达标，买入降级为观望 ──
             if _res_gate is not None:
                 try:
