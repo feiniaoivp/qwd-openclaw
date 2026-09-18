@@ -38,3 +38,5 @@ data_cache/
 *.cache.lock
 *.tmp.*
 data/_price_cache_challenge.json
+data/_router_provenance.json
+data/_price_provenance_challenge.json

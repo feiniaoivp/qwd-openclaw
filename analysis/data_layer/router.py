@@ -9,6 +9,7 @@ Data Router - 统一数据路由入口
 """
 
 import os
+import json
 import logging
 from typing import List, Dict, Optional, Any
 from datetime import datetime
@@ -51,6 +52,66 @@ class DataRouter:
         # 健康检查状态
         self._last_health_check = 0
         self._health_check_interval = 600  # 10分钟
+
+        # 数据来源溯源（2026-09-19 新增）
+        # 记录每个 cache_key 实际命中的数据源与复权状态，供消费方（回测/复盘/审计）
+        # 显式标注「这条数据是前复权还是不复权」，避免口径混用而不自知。
+        # 结构: {cache_key: {"source": str, "adjust": str, "adjusted": bool}}
+        self._provenance: Dict[str, dict] = {}
+        # 落盘副本：TTL 缓存命中时 _mark 不会重跑，跨进程更是全新实例，
+        # 只有持久化才能让「口径标注」在缓存命中场景下依然可靠。
+        self._prov_path = os.path.join(os.path.expanduser("~/.openclaw/workspace"),
+                                       "data", "_router_provenance.json")
+        self._prov_loaded = False
+
+    def _load_provenance(self):
+        """从磁盘恢复 provenance（幂等），使缓存命中时仍能回答数据口径。"""
+        if self._prov_loaded:
+            return
+        self._prov_loaded = True
+        try:
+            with open(self._prov_path, encoding="utf-8") as f:
+                disk = json.load(f)
+            if isinstance(disk, dict):
+                for k, v in disk.items():
+                    self._provenance.setdefault(k, v)
+        except Exception:
+            pass
+
+    def _save_provenance(self):
+        try:
+            os.makedirs(os.path.dirname(self._prov_path), exist_ok=True)
+            with open(self._prov_path, "w", encoding="utf-8") as f:
+                json.dump(self._provenance, f, ensure_ascii=False)
+        except Exception:
+            pass
+
+    def _mark(self, cache_key: str, source: str, adjust: str, adjusted: bool):
+        """记录一次数据获取的来源与复权状态（并落盘，供跨进程查询）"""
+        self._provenance[cache_key] = {
+            "source": source,
+            "adjust": adjust,
+            "adjusted": adjusted,
+        }
+        self._save_provenance()
+
+    def get_provenance(self, symbol: str, start_date: str = "20240101",
+                       adjust: str = "qfq") -> Optional[dict]:
+        """查询最近一次 get_daily 实际命中的数据源/复权状态。
+
+        返回: {"source": "baostock"/"akshare"/"新浪日K", "adjust": "qfq"/"none",
+                "adjusted": bool, "fallback": bool} 或 None
+        """
+        self._load_provenance()
+        cache_key = f"daily:{symbol}:{start_date}:{adjust}"
+        p = self._provenance.get(cache_key)
+        if p is None:
+            # 从未拉取过 -> 返回 None 让调用方标 "unknown" 而非猜错。
+            return None
+        out = dict(p)
+        # 请求复权但实际拿到不复权 => 降级兜底
+        out["fallback"] = (adjust in ("qfq", "hfq") and not p["adjusted"])
+        return out
     
     @property
     def sina_realtime(self):
@@ -140,6 +201,9 @@ class DataRouter:
         cache_key = f"daily:{symbol}:{start_date}:{adjust}"
         cached = self.cache.get(cache_key)
         if cached is not None:
+            # 缓存命中时 _mark 不会重跑 -> 从落盘 provenance 补齐口径标注，
+            # 否则消费方会把"已知口径"误标为 unknown。
+            self._load_provenance()
             return cached
 
         want_adjusted = adjust in ("qfq", "hfq")
@@ -159,6 +223,7 @@ class DataRouter:
                 df = _ok(self.baostock.get_daily(symbol, start_date=start_date, adjustflag=adjustflag))
                 if df is not None:
                     log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [baostock {adjust}]")
+                    self._mark(cache_key, "baostock", adjust, True)
                     self.cache.set(cache_key, df, CACHE_TTL["daily"])
                     return df
             except Exception as e:
@@ -181,6 +246,7 @@ class DataRouter:
                     df = _ok(df)
                     if df is not None:
                         log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [akshare qfq]")
+                        self._mark(cache_key, "akshare", "qfq", True)
                         self.cache.set(cache_key, df, CACHE_TTL["daily"])
                         return df
             except Exception as e:
@@ -192,6 +258,7 @@ class DataRouter:
                 if df is not None:
                     log.warning(f"  ⚠️ {name}({symbol}): 复权源全失败，回退新浪【不复权】{len(df)} 条"
                                 f" —— 信号/回测口径可能与其它标的不可比")
+                    self._mark(cache_key, "新浪日K", "none", False)
                     self.cache.set(cache_key, df, CACHE_TTL["daily"])
                     return df
             except Exception as e:
@@ -203,6 +270,7 @@ class DataRouter:
             df = _ok(self.sina_daily.get_daily(symbol, n=5000))
             if df is not None:
                 log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [新浪日K 不复权]")
+                self._mark(cache_key, "新浪日K", "none", False)
                 self.cache.set(cache_key, df, CACHE_TTL["daily"])
                 return df
         except Exception as e:
@@ -212,6 +280,7 @@ class DataRouter:
             df = _ok(self.baostock.get_daily(symbol, start_date=start_date, adjustflag="3"))
             if df is not None:
                 log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [baostock 不复权]")
+                self._mark(cache_key, "baostock", "none", False)
                 self.cache.set(cache_key, df, CACHE_TTL["daily"])
                 return df
         except Exception as e:

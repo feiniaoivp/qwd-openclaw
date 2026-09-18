@@ -15,6 +15,14 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
+# 关键（2026-09-19 修复）：脚本模式运行（python3 analysis/challenge_review.py）时，
+# sys.path[0] 是 analysis/ 而非工作区根，导致 data_layer 内部的 `import analysis.xxx` 静默失败
+# （表现为价格获取全空、T+5 全 None，且异常被 catch 吃掉）。
+# 必须同时插工作区根；幂等，已存在则跳过。
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
 AGENT_RUNS_DIR = os.path.join(WORKSPACE, "data", "agent_runs")
 DAILY_DIR = os.path.join(WORKSPACE, "analysis", "daily")
 
@@ -32,6 +40,28 @@ log = logging.getLogger(__name__)
 _PRICE_CACHE: Dict[str, Dict[str, float]] = {}
 _PRICE_CACHE_PATH = os.path.join(WORKSPACE, "data", "_price_cache_challenge.json")
 _PRICE_CACHE_LOADED = False
+# 数据源溯源（2026-09-19）：让每条收益声明自己是前复权还是不復权算的。
+# 结构: {symbol: {"source": str, "adjust": str, "adjusted": bool, "fallback": bool}}
+_PROVENANCE: Dict[str, dict] = {}
+_PROVENANCE_PATH = os.path.join(WORKSPACE, "data", "_price_provenance_challenge.json")
+_PROV_LOADED = False
+
+
+def _load_provenance():
+    global _PROV_LOADED
+    if _PROV_LOADED:
+        return
+    try:
+        with open(_PROVENANCE_PATH, encoding="utf-8") as f:
+            _PROVENANCE.update(json.load(f))
+    except Exception:
+        pass
+    _PROV_LOADED = True
+
+
+def _adjust_label() -> str:
+    """返回人类可读的复权口径标注"""
+    return "前复权" if True else "不復权"
 
 
 def _load_price_cache():
@@ -49,13 +79,18 @@ def _load_price_cache():
 def _get_close_series(symbol: str) -> Dict[str, float]:
     """返回 {date_str: close} 映射；失败返回空 dict（调用方必须处理空）"""
     _load_price_cache()
-    if symbol in _PRICE_CACHE:
+    _load_provenance()
+    # 注意：只缓存"非空"结果。空序列往往源于瞬时拉网失败，
+    # 若把空值落盘/缓存，会永久污染后续所有运行（曾导致 T+5 全部 None）。
+    if _PRICE_CACHE.get(symbol):
         return _PRICE_CACHE[symbol]
     series: Dict[str, float] = {}
+    prov: dict = {}
     try:
         sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
         from data_layer.router import get_router
-        df = get_router().get_daily(symbol, "", start_date="20260101")
+        router = get_router()
+        df = router.get_daily(symbol, "", start_date="20260101")
         if df is not None and len(df) > 0:
             for _, row in df.iterrows():
                 try:
@@ -64,10 +99,42 @@ def _get_close_series(symbol: str) -> Dict[str, float]:
                     series[ds] = float(row["close"])
                 except Exception:
                     continue
+        # 取数据源溯源（跨进程缓存命中时为 None -> 标 unknown，不猜）
+        p = router.get_provenance(symbol, start_date="20260101")
+        if p:
+            prov = p
+        elif series:
+            prov = {"source": "unknown", "adjust": "unknown",
+                    "adjusted": None, "fallback": None}
     except Exception as e:
         log.debug("价格获取失败 %s: %s", symbol, e)
-    _PRICE_CACHE[symbol] = series
+    if series:
+        _PRICE_CACHE[symbol] = series
+        if prov:
+            _PROVENANCE[symbol] = prov
+    # 空结果不缓存、不落盘，避免瞬时故障被永久固化
     return series
+
+
+def get_provenance(symbol: str) -> Optional[dict]:
+    """返回该股价格序列的数据源/复权口径标注（供报告展示）"""
+    _load_provenance()
+    return _PROVENANCE.get(symbol)
+
+
+def provenance_label(symbol: str) -> str:
+    """人类可读口径标签，如 'baostock/前复权' 或 '新浪日K/不復权 ⚠️降级兜底'"""
+    p = get_provenance(symbol)
+    if not p:
+        return ""
+    adj = p.get("adjust")
+    adj_txt = {"qfq": "前复权", "hfq": "后复权", "none": "不復权"}.get(adj, adj or "未知")
+    txt = f"{p.get('source','?')}/{adj_txt}"
+    if p.get("fallback"):
+        txt += " ⚠️降级兜底(与其它标的不可比)"
+    elif p.get("adjusted") is None:
+        txt += "(源未知)"
+    return txt
 
 
 def _forward_return(symbol: str, from_date: str, hold_days: int = 5):
@@ -101,8 +168,13 @@ def _forward_return(symbol: str, from_date: str, hold_days: int = 5):
 def _save_price_cache():
     try:
         os.makedirs(os.path.dirname(_PRICE_CACHE_PATH), exist_ok=True)
+        # 只落盘非空序列，防止把"拉网失败"的脏数据永久写入
+        clean = {k: v for k, v in _PRICE_CACHE.items() if v}
         with open(_PRICE_CACHE_PATH, "w", encoding="utf-8") as f:
-            json.dump(_PRICE_CACHE, f, ensure_ascii=False)
+            json.dump(clean, f, ensure_ascii=False)
+        clean_prov = {k: v for k, v in _PROVENANCE.items() if k in clean}
+        with open(_PROVENANCE_PATH, "w", encoding="utf-8") as f:
+            json.dump(clean_prov, f, ensure_ascii=False)
     except Exception as e:
         log.debug("价格缓存落盘失败: %s", e)
 
@@ -641,14 +713,18 @@ def check_historical_judgment_review(state):
                         continue
                     seen_keys.add(key)
 
-                    # ── 真实后续收益对照（T+5）──
+                    # ── 真实后续收益对照（T+5，带口径标注）──
                     fwd = _forward_return(sym, hist_date, hold_days=5)
+                    _prov = get_provenance(sym) or {}
+                    _prov_txt = provenance_label(sym)
                     if fwd:
                         ret_pct, base_d, end_d = fwd
                         verdict = ("❌打脸" if ret_pct < -1.0
                                    else "✅兑现" if ret_pct > 1.0
                                    else "➖持平")
                         fwd_txt = f"T+5 实际: {ret_pct:+.2f}% ({base_d}→{end_d}) {verdict}"
+                        if _prov_txt:
+                            fwd_txt += f" [{_prov_txt}]"
                     else:
                         ret_pct = None
                         fwd_txt = "T+5 实际: 数据不足/待观察"
@@ -664,18 +740,25 @@ def check_historical_judgment_review(state):
                         "curr_level": cur_level,
                         "forward_return_pct": ret_pct,
                         "forward_note": fwd_txt,
+                        "data_provenance": _prov,
+                        "data_provenance_label": _prov_txt,
                         "msg": f"历史 {hist_date} 同股票也曾 BUY，{fwd_txt}；当前又给同类 BUY",
                     }
-                    # 每股只留一条：优先“已有 T+5 结果”的（最能说明是否打脸），
-                    # 否则保最新一次历史 BUY 作为占位。
-                    _ready = ret_pct is not None
-                    if sym not in best_by_sym:
-                        best_by_sym[sym] = cand
-                        fwd_ready[sym] = _ready
-                    elif _ready and not fwd_ready[sym]:
+                    # 每股只留一条：优先“已有 T+5 结果”的那条（最能说明是否打脸）。
+                    # run_files 倒序扫描；找到有结果的就采用并跳出所有层级，
+                    # 否则持续扫描更早日期，找不到再退回最早存的占位。
+                    if ret_pct is not None:
                         best_by_sym[sym] = cand
                         fwd_ready[sym] = True
-                    break  # 只取最近一次历史 BUY
+                        _found_ready = True
+                    elif sym not in best_by_sym:
+                        best_by_sym[sym] = cand
+                        fwd_ready[sym] = False
+                    # 跳出 ha 循环（该 run 内该股只有一条建议）
+                    break
+            # 已找到带真实结果的候选 -> 停止扫描更早的 run
+            if fwd_ready.get(sym):
+                break
 
     findings.extend(best_by_sym.values())
     return findings
@@ -768,6 +851,15 @@ def format_report(findings: List[Dict], run_id: str, date: str) -> str:
     lines.append(f"Run ID: {run_id}")
     lines.append(f"共 {len(findings)} 项质疑 | 🔴高危{sum(1 for f in findings if f.get('severity')=='HIGH')} 🟡中危{sum(1 for f in findings if f.get('severity')=='MEDIUM')} 🟢低危{sum(1 for f in findings if f.get('severity')=='LOW')}")
     lines.append("")
+    # 数据口径声明（2026-09-19）：让报告自身声明其收益数据是用什么算的
+    _provs = {}
+    for f in findings:
+        lbl = f.get("data_provenance_label")
+        if lbl:
+            _provs[lbl] = _provs.get(lbl, 0) + 1
+    if _provs:
+        _txt = "、".join(f"{k}×{v}" for k, v in _provs.items())
+        lines.append(f"📊 数据口径: {_txt}（T+5 收益溯源）")
     if not findings:
         lines.append("✅ 未发现需质疑的明显矛盾，报告内部逻辑自洽。")
     else:
