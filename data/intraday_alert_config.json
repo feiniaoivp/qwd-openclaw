@@ -1,282 +1,350 @@
 {
   "_meta": {
-    "version": "1.0",
+    "version": "1.1",
     "created": "2026-08-25",
-    "basis": "2026-08-24 close + 08-24/25 盘前地缘&新闻分析",
-    "market_context": "美国对伊朗经济D-Day、黄金破4600、美联储沃什政策抉择、英伟达财报待出。大盘弱势(健康度5.0)，防御轮动，高估成长承压。总仓位建议<=5成。",
+    "updated": "2026-09-13",
+    "basis": "2026-09-11 close + 09-13 周末资讯(超级央行周/美联储9-16议息)",
+    "market_context": "上证3888跌破全部均线，周五放量破位(579亿)。030健康度5/10，仓位上限减半至25%，买入乘数0.5x。核心变量=美联储9/15-16议息(加息概率90%)。策略:防守+等待，不新开仓。",
     "rules": [
       "break_below: 实时价跌破 level → 触发卖出/止损预警",
       "break_above: 实时价升破 level → 触发买入/加仓预警",
       "drop_pct: 当日跌幅 <= value → 触发下跌超限预警",
       "surge_pct: 当日涨幅 >= value → 触发急涨预警"
-    ]
+    ],
+    "index_levels": {
+      "note": "大盘关键位(上证指数)，用于人工盯盘参考；由 push_intraday_alerts 补充推送",
+      "support": [3850.0, 3800.0, 3764.0],
+      "resistance": [3929.0, 3943.0, 3986.0],
+      "pivot": 3900.0
+    }
   },
   "stocks": {
+    "002413": {
+      "name": "雷科防务",
+      "action": "持有/跌破止损必走",
+      "type": "持仓·军工",
+      "levels": {
+        "break_below": 7.59,
+        "buy_zone_low": 8.0
+      },
+      "note": "【唯一持仓】1800股@8.18，现8.41(+2.8%)。ATR止损7.59，跌破无条件离场。止盈8.92/9.17/9.48/10.39"
+    },
     "600036": {
       "name": "招商银行",
+      "action": "防御首选/回踩低吸",
+      "type": "防御受益",
+      "levels": {
+        "break_below": 40.0,
+        "buy_zone_low": 40.5
+      },
+      "note": "20日+7.5%站上MA20，银行防御核心。跌破40减仓"
+    },
+    "300719": {
+      "name": "安达维尔",
       "action": "持有/低吸",
       "type": "防御受益",
       "levels": {
-        "break_below": 38.0,
-        "buy_zone_low": 38.9
+        "break_below": 11.75,
+        "buy_zone_low": 12.0
       },
-      "note": "避险+银行核心资产重估双受益，跌破38不破再上车"
+      "note": "20日+7.1%相对强势，跌破11.75(ATR止损)离场"
     },
     "000708": {
       "name": "中信特钢",
       "action": "持有/回踩低吸",
       "type": "防御受益",
       "levels": {
-        "break_below": 13.6
+        "break_below": 13.2
       },
-      "note": "特钢+设备更新，量能配合，昨日+2.2%逆势"
+      "note": "相对抗跌，跌破13.2(前低)减仓"
     },
-    "000157": {
-      "name": "中联重科",
-      "action": "持有",
-      "type": "防御受益",
+    "601100": {
+      "name": "恒立液压",
+      "action": "观望/站上MA20再考虑",
+      "type": "中性",
       "levels": {
-        "break_below": 6.9
+        "break_below": 97.0
       },
-      "note": "工程机械出海+基建对冲，跌破6.9止盈保护"
-    },
-    "002318": {
-      "name": "久立特材",
-      "action": "持有",
-      "type": "防御受益",
-      "levels": {
-        "break_below": 19.0
-      },
-      "note": "实控人增持+回购落地，昨+1.4%"
-    },
-    "002466": {
-      "name": "天齐锂业",
-      "action": "持有勿追",
-      "type": "防御受益",
-      "levels": {
-        "break_below": 47.5
-      },
-      "note": "能源金属景气+扣非爆表，弱反弹勿追高"
+      "note": "现100，MA20=102压制。跌破97(20日低)离场"
     },
     "600030": {
       "name": "中信证券",
-      "action": "持有",
+      "action": "观望",
       "type": "业绩硬/券商",
       "levels": {
-        "break_below": 26.8
+        "break_below": 26.5,
+        "buy_zone_low": 26.9
       },
-      "note": "中报净利+69.6%，券商红利+并购整合题材"
+      "note": "中报+69.6%，但跌破MA20。跌破26.5(ATR止损)不接飞刀"
     },
     "601066": {
       "name": "中信建投",
-      "action": "持有",
+      "action": "观望",
       "type": "业绩硬/券商",
       "levels": {
-        "break_below": 24.5
+        "break_below": 23.0
       },
-      "note": "中报净利+69.4%"
-    },
-    "601995": {
-      "name": "中金公司",
-      "action": "事件关注",
-      "type": "并购催化",
-      "levels": {
-        "break_below": 33.0
-      },
-      "note": "8/27换股吸并东兴/信达上会，事件驱动可留意"
+      "note": "中报+69.4%，20日-6.3%走弱。跌破23减"
     },
     "600584": {
       "name": "长电科技",
       "action": "破位减仓/不接飞刀",
       "type": "高估科技",
       "levels": {
-        "break_below": 73.8
+        "break_below": 66.0,
+        "drop_pct": -5.0
       },
-      "note": "中报+79%但被AI半导体杀跌，昨日-6.07%，78.5已失守，等英伟达财报指引"
+      "note": "MA20=74压制，20日-13.9%。no-new-buy区，跌破66加速下行"
     },
     "688981": {
       "name": "中芯国际",
       "action": "观望",
       "type": "高估科技",
       "levels": {
-        "break_below": 120.0
+        "break_below": 115.0,
+        "drop_pct": -5.0
       },
-      "note": "跌破120后观望，半导体情绪锚在英伟达"
+      "note": "20日-11.6%，半导体情绪看AI链。跌破115减"
     },
     "002156": {
       "name": "通富微电",
       "action": "急跌勿抢",
       "type": "高估科技",
       "levels": {
-        "break_below": 61.0
+        "break_below": 56.0,
+        "drop_pct": -5.0,
+        "surge_pct": 5.0
       },
-      "note": "前日涨停今日跌，61下方不企稳则减"
+      "note": "20日-7.9%，跌破56不企稳则减"
+    },
+    "300014": {
+      "name": "亿纬锂能",
+      "action": "波段/勿追",
+      "type": "高估科技",
+      "levels": {
+        "break_below": 47.0,
+        "drop_pct": -5.0,
+        "surge_pct": 5.0
+      },
+      "note": "20日-13.9%，no-new-buy区。跌破47减"
+    },
+    "002466": {
+      "name": "天齐锂业",
+      "action": "持有勿追",
+      "type": "防御受益",
+      "levels": {
+        "break_below": 42.0,
+        "drop_pct": -5.0
+      },
+      "note": "中报+4900%，但股价弱。跌破42减"
     },
     "300285": {
       "name": "国瓷材料",
       "action": "保护利润/回补",
-      "type": "高估科技",
+      "type": "中性偏强",
       "levels": {
-        "break_below": 64.0,
-        "buy_zone_low": 62.5
+        "break_below": 60.0,
+        "buy_zone_low": 62.0
       },
-      "note": "MLCC机构扎堆(150+家调研)基本面亮点，但高位回撤-5.5%，MACD绿柱收敛再回补"
-    },
-    "603308": {
-      "name": "应流股份",
-      "action": "减仓避抛压",
-      "type": "转债摘牌",
-      "levels": {
-        "break_below": 42.0
-      },
-      "note": "应流转债付赎摘牌进行中(第6次提示)，强制赎回对正股有抛压+航发弱"
-    },
-    "601061": {
-      "name": "中信金属",
-      "action": "跌破减仓",
-      "type": "业绩强但被下杀",
-      "levels": {
-        "break_below": 11.5
-      },
-      "note": "中报+84.5%业绩强，但跟随下杀，跌破11.5减等企稳"
-    },
-    "605566": {
-      "name": "福莱蒽特",
-      "action": "破位减",
-      "type": "弱势",
-      "levels": {
-        "break_below": 25.1
-      },
-      "note": "25.1下方不参与，反弹减"
-    },
-    "600160": {
-      "name": "巨化股份",
-      "action": "观望",
-      "type": "化工",
-      "levels": {
-        "break_below": 37.8
-      },
-      "note": "化工景气改善但短期被压，38失守减"
-    },
-    "002413": {
-      "name": "雷科防务",
-      "action": "反弹离场优先",
-      "type": "弱势/亏损",
-      "levels": {
-        "break_below": 7.4
-      },
-      "note": "中报亏损+军工弱，持仓最弱一环"
+      "note": "周五+4.01%逆势领涨，但距MA20 -3.4%。跌破60(20日低)离场，回踩62可轻仓"
     },
     "600660": {
       "name": "福耀玻璃",
       "action": "反弹减仓",
       "type": "业绩杀",
       "levels": {
-        "break_below": 56.0
+        "break_below": 53.5
       },
-      "note": "中报净利-17.4%+机构减持，中长期逻辑转弱"
+      "note": "20日-4.0%破MA20，中报-17.4%。跌破53.5(20日低)加速"
     },
-    "300014": {
-      "name": "亿纬锂能",
-      "action": "波段操作",
-      "type": "中性",
+    "601061": {
+      "name": "中信金属",
+      "action": "跌破减仓",
+      "type": "业绩强但被下杀",
       "levels": {
-        "break_below": 54.5,
-        "drop_pct": -5.0,
-        "surge_pct": 5.0
+        "break_below": 11.3,
+        "drop_pct": -5.0
       },
-      "note": "中性"
+      "note": "周五-8.23%重挫。跌破11.3减等企稳"
+    },
+    "600570": {
+      "name": "恒生电子",
+      "action": "弱势观望",
+      "type": "弱势",
+      "levels": {
+        "break_below": 20.0,
+        "drop_pct": -5.0
+      },
+      "note": "20日-7.5%，跌破20整数关口加速"
+    },
+    "605566": {
+      "name": "福莱蒽特",
+      "action": "破位减",
+      "type": "弱势",
+      "levels": {
+        "break_below": 25.0,
+        "drop_pct": -5.0
+      },
+      "note": "周五-3.52%，跌破25不参与"
+    },
+    "600160": {
+      "name": "巨化股份",
+      "action": "观望",
+      "type": "化工",
+      "levels": {
+        "break_below": 34.5,
+        "drop_pct": -5.0
+      },
+      "note": "周五-4.70%，20日-13.5%。跌破34.5减"
+    },
+    "600346": {
+      "name": "恒力石化",
+      "action": "观望",
+      "type": "化工",
+      "levels": {
+        "break_below": 17.0,
+        "drop_pct": -5.0
+      },
+      "note": "周五-6.24%，化工看油价。跌破17减"
+    },
+    "000157": {
+      "name": "中联重科",
+      "action": "持有/低吸",
+      "type": "防御受益",
+      "levels": {
+        "break_below": 6.4
+      },
+      "note": "工程机械出海，跌破6.4(20日低)止盈保护"
+    },
+    "601995": {
+      "name": "中金公司",
+      "action": "事件关注",
+      "type": "并购催化",
+      "levels": {
+        "break_below": 31.0
+      },
+      "note": "吸并东兴/信达获批，事件驱动。跌破31减"
     },
     "300124": {
       "name": "汇川技术",
       "action": "波段操作",
       "type": "中性",
       "levels": {
-        "break_below": 57.5,
+        "break_below": 52.0,
         "drop_pct": -5.0,
         "surge_pct": 5.0
       },
-      "note": "中性"
-    },
-    "601100": {
-      "name": "恒立液压",
-      "action": "波段操作",
-      "type": "中性",
-      "levels": {
-        "break_below": 103.5,
-        "drop_pct": -5.0,
-        "surge_pct": 5.0
-      },
-      "note": "中性"
-    },
-    "300719": {
-      "name": "安达维尔",
-      "action": "波段操作",
-      "type": "中性",
-      "levels": {
-        "break_below": 11.2,
-        "drop_pct": -5.0,
-        "surge_pct": 5.0
-      },
-      "note": "中性"
+      "note": "20日-12.6%走弱，跌破52减"
     },
     "002335": {
       "name": "科华数据",
       "action": "波段操作",
       "type": "中性",
       "levels": {
-        "break_below": 29.0,
+        "break_below": 28.0,
         "drop_pct": -5.0,
         "surge_pct": 5.0
       },
-      "note": "中性"
+      "note": "20日-11.4%，跌破28减"
     },
     "300748": {
       "name": "金力永磁",
       "action": "波段操作",
       "type": "中性",
       "levels": {
-        "break_below": 27.0,
+        "break_below": 24.0,
         "drop_pct": -5.0,
         "surge_pct": 5.0
       },
-      "note": "中性"
+      "note": "20日-10.4%，跌破24减"
     },
-    "600346": {
-      "name": "恒力石化",
-      "action": "波段操作",
-      "type": "中性",
+    "603308": {
+      "name": "应流股份",
+      "action": "减仓避抛压",
+      "type": "转债摘牌",
       "levels": {
-        "break_below": 18.4,
-        "drop_pct": -5.0,
-        "surge_pct": 5.0
+        "break_below": 42.0,
+        "drop_pct": -5.0
       },
-      "note": "化工景气改善，地缘油价变量关注"
+      "note": "转债强制赎回抛压，20日-11.5%。跌破42减"
     },
     "000987": {
       "name": "越秀资本",
       "action": "波段操作",
       "type": "中性",
       "levels": {
-        "break_below": 7.3,
-        "drop_pct": -5.0,
-        "surge_pct": 5.0
+        "break_below": 7.2,
+        "drop_pct": -5.0
       },
-      "note": "中性"
+      "note": "周五-3.65%，跌破7.2减"
     },
-    "600570": {
-      "name": "恒生电子",
-      "action": "波段操作",
-      "type": "中性",
+    "002318": {
+      "name": "久立特材",
+      "action": "观望",
+      "type": "弱势",
       "levels": {
-        "break_below": 20.8,
-        "drop_pct": -5.0,
-        "surge_pct": 5.0
+        "break_below": 18.2,
+        "drop_pct": -5.0
       },
-      "note": "中性"
+      "note": "20日-5.0%，中报-52.6%。跌破18.2减"
     },
     "600089": {
       "name": "特变电工",
+      "action": "波段操作",
+      "type": "电网装备/特高压",
+      "levels": {
+        "break_below": 53.0,
+        "drop_pct": -5.0,
+        "surge_pct": 5.0
+      },
+      "note": "全球变压器龙头、沙特164亿大单"
+    },
+    "600406": {
+      "name": "国电南瑞",
+      "action": "波段操作",
+      "type": "电网装备/特高压",
+      "levels": {
+        "break_below": 43.0,
+        "drop_pct": -5.0,
+        "surge_pct": 5.0
+      },
+      "note": "换流阀龙头、电网自动化一哥"
+    },
+    "000400": {
+      "name": "许继电气",
+      "action": "波段操作",
+      "type": "电网装备/特高压",
+      "levels": {
+        "break_below": 48.0,
+        "drop_pct": -5.0,
+        "surge_pct": 5.0
+      },
+      "note": "换流阀/直流控保双龙头"
+    },
+    "601179": {
+      "name": "中国西电",
+      "action": "波段操作",
+      "type": "电网装备/特高压",
+      "levels": {
+        "break_below": 33.0,
+        "drop_pct": -5.0,
+        "surge_pct": 5.0
+      },
+      "note": "央企装备平台、特高压核心供应商"
+    },
+    "600312": {
+      "name": "平高电气",
+      "action": "波段操作",
+      "type": "电网装备/特高压",
+      "levels": {
+        "break_below": 30.0,
+        "drop_pct": -5.0,
+        "surge_pct": 5.0
+      },
+      "note": "GIS全球龙头、远销70+国"
+    },
+    "002028": {
+      "name": "思源电气",
       "action": "波段操作",
       "type": "电网装备/特高压",
       "levels": {
@@ -284,84 +352,29 @@
         "drop_pct": -5.0,
         "surge_pct": 5.0
       },
-      "note": "全球变压器龙头、±1100kV换流变一哥、沙特164亿大单"
-    },
-    "600406": {
-      "name": "国电南瑞",
-      "action": "波段操作",
-      "type": "电网装备/特高压",
-      "levels": {
-        "break_below": 45.0,
-        "drop_pct": -5.0,
-        "surge_pct": 5.0
-      },
-      "note": "换流阀龙头47-49%市占、电网自动化一哥"
-    },
-    "000400": {
-      "name": "许继电气",
-      "action": "波段操作",
-      "type": "电网装备/特高压",
-      "levels": {
-        "break_below": 50.0,
-        "drop_pct": -5.0,
-        "surge_pct": 5.0
-      },
-      "note": "换流阀/直流控保双龙头、2026H1国际收入4.35亿大增"
-    },
-    "601179": {
-      "name": "中国西电",
-      "action": "波段操作",
-      "type": "电网装备/特高压",
-      "levels": {
-        "break_below": 35.0,
-        "drop_pct": -5.0,
-        "surge_pct": 5.0
-      },
-      "note": "央企装备平台、一次设备全链条、特高压核心供应商"
-    },
-    "600312": {
-      "name": "平高电气",
-      "action": "波段操作",
-      "type": "电网装备/特高压",
-      "levels": {
-        "break_below": 32.0,
-        "drop_pct": -5.0,
-        "surge_pct": 5.0
-      },
-      "note": "GIS全球龙头、意大利/西班牙欧洲标杆项目、远销70+国"
-    },
-    "002028": {
-      "name": "思源电气",
-      "action": "波段操作",
-      "type": "电网装备/特高压",
-      "levels": {
-        "break_below": 58.0,
-        "drop_pct": -5.0,
-        "surge_pct": 5.0
-      },
-      "note": "高压开关/无功补偿、德国/瑞典批量落地、欧洲高端认证"
+      "note": "高压开关/无功补偿、欧洲高端认证"
     },
     "002270": {
       "name": "华明装备",
       "action": "波段操作",
       "type": "电网装备/特高压",
       "levels": {
-        "break_below": 28.0,
+        "break_below": 26.0,
         "drop_pct": -5.0,
         "surge_pct": 5.0
       },
-      "note": "分接开关高壁垒零部件、随变压器出口高增受益"
+      "note": "分接开关高壁垒零部件"
     },
     "002130": {
       "name": "沃尔核材",
       "action": "波段操作",
       "type": "电网装备/特高压",
       "levels": {
-        "break_below": 22.0,
+        "break_below": 20.0,
         "drop_pct": -5.0,
         "surge_pct": 5.0
       },
-      "note": "电缆附件/绝缘材料~74%市占、特高压刚需材料环节"
+      "note": "电缆附件/绝缘材料~74%市占"
     }
   }
 }

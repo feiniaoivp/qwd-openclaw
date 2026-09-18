@@ -1,0 +1,1396 @@
+{
+  "date": "2026-09-18",
+  "window": {
+    "start": "20240101",
+    "end": "20260726"
+  },
+  "note": "固定EMA12/26 vs 政权自适应(趋势12/26/震荡5/20/夹缝20/60) vs ADX自适应 vs 波动率自适应",
+  "results": [
+    {
+      "symbol": "600030",
+      "name": "中信证券",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 53.39,
+          "annualized_return_pct": 18.45,
+          "annualized_volatility_pct": 23.48,
+          "sharpe_ratio": 0.701,
+          "max_drawdown_pct": -24.14,
+          "win_rate_pct": 33.3,
+          "profit_loss_ratio": 5.71,
+          "total_trades": 9,
+          "final_equity": 153391.13
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 41.88,
+          "annualized_return_pct": 14.85,
+          "annualized_volatility_pct": 23.4,
+          "sharpe_ratio": 0.549,
+          "max_drawdown_pct": -28.01,
+          "win_rate_pct": 60.0,
+          "profit_loss_ratio": 2.82,
+          "total_trades": 5,
+          "final_equity": 141882.91
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "error": "'NoneType' object has no attribute 'iloc'"
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 52.07,
+          "annualized_return_pct": 18.05,
+          "annualized_volatility_pct": 24.1,
+          "sharpe_ratio": 0.666,
+          "max_drawdown_pct": -22.71,
+          "win_rate_pct": 30.0,
+          "profit_loss_ratio": 6.41,
+          "total_trades": 10,
+          "final_equity": 152066.88
+        }
+      }
+    },
+    {
+      "symbol": "601066",
+      "name": "中信建投",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 26.43,
+          "annualized_return_pct": 9.73,
+          "annualized_volatility_pct": 24.71,
+          "sharpe_ratio": 0.313,
+          "max_drawdown_pct": -28.62,
+          "win_rate_pct": 30.0,
+          "profit_loss_ratio": 4.59,
+          "total_trades": 10,
+          "final_equity": 126429.84
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 15.69,
+          "annualized_return_pct": 5.94,
+          "annualized_volatility_pct": 24.39,
+          "sharpe_ratio": 0.161,
+          "max_drawdown_pct": -25.59,
+          "win_rate_pct": 60.0,
+          "profit_loss_ratio": 1.45,
+          "total_trades": 5,
+          "final_equity": 115688.29
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "error": "'NoneType' object has no attribute 'iloc'"
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 24.67,
+          "annualized_return_pct": 9.12,
+          "annualized_volatility_pct": 26.24,
+          "sharpe_ratio": 0.271,
+          "max_drawdown_pct": -35.21,
+          "win_rate_pct": 37.5,
+          "profit_loss_ratio": 3.8,
+          "total_trades": 8,
+          "final_equity": 124672.61
+        }
+      }
+    },
+    {
+      "symbol": "600036",
+      "name": "招商银行",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": -2.89,
+          "annualized_return_pct": -1.15,
+          "annualized_volatility_pct": 14.72,
+          "sharpe_ratio": -0.214,
+          "max_drawdown_pct": -17.65,
+          "win_rate_pct": 40.0,
+          "profit_loss_ratio": 1.28,
+          "total_trades": 10,
+          "final_equity": 97111.32
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 22.16,
+          "annualized_return_pct": 8.24,
+          "annualized_volatility_pct": 13.9,
+          "sharpe_ratio": 0.449,
+          "max_drawdown_pct": -11.83,
+          "win_rate_pct": 50.0,
+          "profit_loss_ratio": 4.56,
+          "total_trades": 4,
+          "final_equity": 122156.91
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "error": "'NoneType' object has no attribute 'iloc'"
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 4.7,
+          "annualized_return_pct": 1.84,
+          "annualized_volatility_pct": 16.21,
+          "sharpe_ratio": -0.01,
+          "max_drawdown_pct": -20.88,
+          "win_rate_pct": 42.9,
+          "profit_loss_ratio": 1.68,
+          "total_trades": 7,
+          "final_equity": 104702.39
+        }
+      }
+    },
+    {
+      "symbol": "601995",
+      "name": "中金公司",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": -15.99,
+          "annualized_return_pct": -6.88,
+          "annualized_volatility_pct": 26.15,
+          "sharpe_ratio": -0.34,
+          "max_drawdown_pct": -32.31,
+          "win_rate_pct": 23.1,
+          "profit_loss_ratio": 2.03,
+          "total_trades": 13,
+          "final_equity": 84014.07
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": -27.55,
+          "annualized_return_pct": -12.35,
+          "annualized_volatility_pct": 24.19,
+          "sharpe_ratio": -0.593,
+          "max_drawdown_pct": -40.69,
+          "win_rate_pct": 25.0,
+          "profit_loss_ratio": 0.36,
+          "total_trades": 8,
+          "final_equity": 72445.23
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "error": "'NoneType' object has no attribute 'iloc'"
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": -11.99,
+          "annualized_return_pct": -5.09,
+          "annualized_volatility_pct": 18.9,
+          "sharpe_ratio": -0.375,
+          "max_drawdown_pct": -18.21,
+          "win_rate_pct": 25.0,
+          "profit_loss_ratio": 1.03,
+          "total_trades": 8,
+          "final_equity": 88009.87
+        }
+      }
+    },
+    {
+      "symbol": "000987",
+      "name": "越秀资本",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 49.06,
+          "annualized_return_pct": 17.12,
+          "annualized_volatility_pct": 28.8,
+          "sharpe_ratio": 0.525,
+          "max_drawdown_pct": -31.05,
+          "win_rate_pct": 30.0,
+          "profit_loss_ratio": 5.07,
+          "total_trades": 10,
+          "final_equity": 149064.04
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 12.54,
+          "annualized_return_pct": 4.79,
+          "annualized_volatility_pct": 28.44,
+          "sharpe_ratio": 0.098,
+          "max_drawdown_pct": -37.7,
+          "win_rate_pct": 50.0,
+          "profit_loss_ratio": 1.73,
+          "total_trades": 4,
+          "final_equity": 112537.07
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "error": "'NoneType' object has no attribute 'iloc'"
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 36.05,
+          "annualized_return_pct": 12.96,
+          "annualized_volatility_pct": 26.62,
+          "sharpe_ratio": 0.412,
+          "max_drawdown_pct": -32.87,
+          "win_rate_pct": 28.6,
+          "profit_loss_ratio": 7.42,
+          "total_trades": 7,
+          "final_equity": 136053.38
+        }
+      }
+    },
+    {
+      "symbol": "600584",
+      "name": "长电科技",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 122.32,
+          "annualized_return_pct": 37.55,
+          "annualized_volatility_pct": 42.96,
+          "sharpe_ratio": 0.827,
+          "max_drawdown_pct": -32.2,
+          "win_rate_pct": 62.5,
+          "profit_loss_ratio": 3.62,
+          "total_trades": 8,
+          "final_equity": 222321.87
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 90.96,
+          "annualized_return_pct": 29.45,
+          "annualized_volatility_pct": 43.36,
+          "sharpe_ratio": 0.633,
+          "max_drawdown_pct": -27.77,
+          "win_rate_pct": 50.0,
+          "profit_loss_ratio": 7.36,
+          "total_trades": 6,
+          "final_equity": 190958.4
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 95.21,
+          "annualized_return_pct": 30.59,
+          "annualized_volatility_pct": 40.85,
+          "sharpe_ratio": 0.7,
+          "max_drawdown_pct": -28.1,
+          "win_rate_pct": 57.1,
+          "profit_loss_ratio": 4.71,
+          "total_trades": 7,
+          "final_equity": 195205.53
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 166.26,
+          "annualized_return_pct": 47.81,
+          "annualized_volatility_pct": 44.77,
+          "sharpe_ratio": 1.023,
+          "max_drawdown_pct": -29.13,
+          "win_rate_pct": 42.9,
+          "profit_loss_ratio": 15.36,
+          "total_trades": 7,
+          "final_equity": 266261.75
+        }
+      }
+    },
+    {
+      "symbol": "688981",
+      "name": "中芯国际",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 138.98,
+          "annualized_return_pct": 41.65,
+          "annualized_volatility_pct": 46.01,
+          "sharpe_ratio": 0.862,
+          "max_drawdown_pct": -24.38,
+          "win_rate_pct": 71.4,
+          "profit_loss_ratio": 3.39,
+          "total_trades": 7,
+          "final_equity": 238980.26
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 102.55,
+          "annualized_return_pct": 32.59,
+          "annualized_volatility_pct": 47.23,
+          "sharpe_ratio": 0.648,
+          "max_drawdown_pct": -26.37,
+          "win_rate_pct": 60.0,
+          "profit_loss_ratio": 6.51,
+          "total_trades": 5,
+          "final_equity": 202549.98
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 110.24,
+          "annualized_return_pct": 34.58,
+          "annualized_volatility_pct": 47.0,
+          "sharpe_ratio": 0.693,
+          "max_drawdown_pct": -35.56,
+          "win_rate_pct": 57.1,
+          "profit_loss_ratio": 6.14,
+          "total_trades": 7,
+          "final_equity": 210242.24
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 249.71,
+          "annualized_return_pct": 64.93,
+          "annualized_volatility_pct": 48.72,
+          "sharpe_ratio": 1.292,
+          "max_drawdown_pct": -22.16,
+          "win_rate_pct": 66.7,
+          "profit_loss_ratio": 6.83,
+          "total_trades": 6,
+          "final_equity": 349710.27
+        }
+      }
+    },
+    {
+      "symbol": "002156",
+      "name": "通富微电",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 195.5,
+          "annualized_return_pct": 53.55,
+          "annualized_volatility_pct": 46.9,
+          "sharpe_ratio": 1.099,
+          "max_drawdown_pct": -35.32,
+          "win_rate_pct": 55.6,
+          "profit_loss_ratio": 6.68,
+          "total_trades": 9,
+          "final_equity": 295502.0
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 148.34,
+          "annualized_return_pct": 43.34,
+          "annualized_volatility_pct": 46.72,
+          "sharpe_ratio": 0.885,
+          "max_drawdown_pct": -28.56,
+          "win_rate_pct": 80.0,
+          "profit_loss_ratio": 3.16,
+          "total_trades": 5,
+          "final_equity": 248337.64
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 253.8,
+          "annualized_return_pct": 64.89,
+          "annualized_volatility_pct": 47.91,
+          "sharpe_ratio": 1.313,
+          "max_drawdown_pct": -28.65,
+          "win_rate_pct": 60.0,
+          "profit_loss_ratio": 10.35,
+          "total_trades": 5,
+          "final_equity": 353800.29
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 231.26,
+          "annualized_return_pct": 60.65,
+          "annualized_volatility_pct": 46.79,
+          "sharpe_ratio": 1.254,
+          "max_drawdown_pct": -33.52,
+          "win_rate_pct": 71.4,
+          "profit_loss_ratio": 5.58,
+          "total_trades": 7,
+          "final_equity": 331257.53
+        }
+      }
+    },
+    {
+      "symbol": "002413",
+      "name": "雷科防务",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 78.0,
+          "annualized_return_pct": 25.64,
+          "annualized_volatility_pct": 46.91,
+          "sharpe_ratio": 0.504,
+          "max_drawdown_pct": -41.12,
+          "win_rate_pct": 37.5,
+          "profit_loss_ratio": 3.53,
+          "total_trades": 8,
+          "final_equity": 177996.8
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 28.07,
+          "annualized_return_pct": 10.29,
+          "annualized_volatility_pct": 45.63,
+          "sharpe_ratio": 0.182,
+          "max_drawdown_pct": -47.03,
+          "win_rate_pct": 40.0,
+          "profit_loss_ratio": 2.49,
+          "total_trades": 5,
+          "final_equity": 128068.54
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 135.49,
+          "annualized_return_pct": 40.36,
+          "annualized_volatility_pct": 47.21,
+          "sharpe_ratio": 0.813,
+          "max_drawdown_pct": -43.64,
+          "win_rate_pct": 37.5,
+          "profit_loss_ratio": 5.96,
+          "total_trades": 8,
+          "final_equity": 235491.94
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 157.98,
+          "annualized_return_pct": 45.52,
+          "annualized_volatility_pct": 45.59,
+          "sharpe_ratio": 0.954,
+          "max_drawdown_pct": -40.42,
+          "win_rate_pct": 28.6,
+          "profit_loss_ratio": 8.75,
+          "total_trades": 7,
+          "final_equity": 257983.81
+        }
+      }
+    },
+    {
+      "symbol": "300014",
+      "name": "亿纬锂能",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 3.57,
+          "annualized_return_pct": 1.4,
+          "annualized_volatility_pct": 41.55,
+          "sharpe_ratio": -0.015,
+          "max_drawdown_pct": -40.55,
+          "win_rate_pct": 25.0,
+          "profit_loss_ratio": 3.2,
+          "total_trades": 12,
+          "final_equity": 103567.81
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": -47.63,
+          "annualized_return_pct": -22.59,
+          "annualized_volatility_pct": 35.52,
+          "sharpe_ratio": -0.692,
+          "max_drawdown_pct": -60.44,
+          "win_rate_pct": 11.1,
+          "profit_loss_ratio": 2.43,
+          "total_trades": 9,
+          "final_equity": 52369.02
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 6.38,
+          "annualized_return_pct": 2.48,
+          "annualized_volatility_pct": 32.79,
+          "sharpe_ratio": 0.015,
+          "max_drawdown_pct": -39.52,
+          "win_rate_pct": 14.3,
+          "profit_loss_ratio": 6.82,
+          "total_trades": 7,
+          "final_equity": 106376.81
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 0.28,
+          "annualized_return_pct": 0.11,
+          "annualized_volatility_pct": 47.44,
+          "sharpe_ratio": -0.04,
+          "max_drawdown_pct": -52.72,
+          "win_rate_pct": 50.0,
+          "profit_loss_ratio": 1.01,
+          "total_trades": 6,
+          "final_equity": 100283.72
+        }
+      }
+    },
+    {
+      "symbol": "002466",
+      "name": "天齐锂业",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 87.72,
+          "annualized_return_pct": 28.31,
+          "annualized_volatility_pct": 35.39,
+          "sharpe_ratio": 0.743,
+          "max_drawdown_pct": -26.19,
+          "win_rate_pct": 50.0,
+          "profit_loss_ratio": 4.45,
+          "total_trades": 6,
+          "final_equity": 187721.43
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 22.62,
+          "annualized_return_pct": 8.41,
+          "annualized_volatility_pct": 35.14,
+          "sharpe_ratio": 0.182,
+          "max_drawdown_pct": -38.47,
+          "win_rate_pct": 40.0,
+          "profit_loss_ratio": 2.41,
+          "total_trades": 5,
+          "final_equity": 122624.6
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "error": "'NoneType' object has no attribute 'iloc'"
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 41.44,
+          "annualized_return_pct": 14.71,
+          "annualized_volatility_pct": 35.83,
+          "sharpe_ratio": 0.355,
+          "max_drawdown_pct": -31.14,
+          "win_rate_pct": 25.0,
+          "profit_loss_ratio": 8.38,
+          "total_trades": 4,
+          "final_equity": 141440.8
+        }
+      }
+    },
+    {
+      "symbol": "300285",
+      "name": "国瓷材料",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 148.11,
+          "annualized_return_pct": 43.29,
+          "annualized_volatility_pct": 50.63,
+          "sharpe_ratio": 0.815,
+          "max_drawdown_pct": -39.94,
+          "win_rate_pct": 50.0,
+          "profit_loss_ratio": 9.01,
+          "total_trades": 8,
+          "final_equity": 248114.93
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 101.44,
+          "annualized_return_pct": 31.94,
+          "annualized_volatility_pct": 52.0,
+          "sharpe_ratio": 0.576,
+          "max_drawdown_pct": -52.51,
+          "win_rate_pct": 25.0,
+          "profit_loss_ratio": 11.65,
+          "total_trades": 4,
+          "final_equity": 201443.57
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": -11.35,
+          "annualized_return_pct": -4.65,
+          "annualized_volatility_pct": 23.2,
+          "sharpe_ratio": -0.287,
+          "max_drawdown_pct": -21.99,
+          "win_rate_pct": 25.0,
+          "profit_loss_ratio": 0.72,
+          "total_trades": 4,
+          "final_equity": 88653.51
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 238.02,
+          "annualized_return_pct": 61.94,
+          "annualized_volatility_pct": 55.69,
+          "sharpe_ratio": 1.076,
+          "max_drawdown_pct": -52.65,
+          "win_rate_pct": 75.0,
+          "profit_loss_ratio": 201.26,
+          "total_trades": 4,
+          "final_equity": 338015.8
+        }
+      }
+    },
+    {
+      "symbol": "603308",
+      "name": "应流股份",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 338.61,
+          "annualized_return_pct": 79.53,
+          "annualized_volatility_pct": 46.93,
+          "sharpe_ratio": 1.652,
+          "max_drawdown_pct": -21.73,
+          "win_rate_pct": 83.3,
+          "profit_loss_ratio": 6.47,
+          "total_trades": 6,
+          "final_equity": 438613.94
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 308.2,
+          "annualized_return_pct": 74.5,
+          "annualized_volatility_pct": 44.81,
+          "sharpe_ratio": 1.618,
+          "max_drawdown_pct": -30.72,
+          "win_rate_pct": 100.0,
+          "profit_loss_ratio": 154135.58,
+          "total_trades": 2,
+          "final_equity": 408200.1
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 202.08,
+          "annualized_return_pct": 54.89,
+          "annualized_volatility_pct": 40.9,
+          "sharpe_ratio": 1.293,
+          "max_drawdown_pct": -38.02,
+          "win_rate_pct": 100.0,
+          "profit_loss_ratio": 67398.67,
+          "total_trades": 3,
+          "final_equity": 302084.91
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 340.66,
+          "annualized_return_pct": 79.86,
+          "annualized_volatility_pct": 44.81,
+          "sharpe_ratio": 1.737,
+          "max_drawdown_pct": -27.21,
+          "win_rate_pct": 75.0,
+          "profit_loss_ratio": 17.81,
+          "total_trades": 4,
+          "final_equity": 440658.14
+        }
+      }
+    },
+    {
+      "symbol": "300124",
+      "name": "汇川技术",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 35.91,
+          "annualized_return_pct": 12.91,
+          "annualized_volatility_pct": 29.99,
+          "sharpe_ratio": 0.364,
+          "max_drawdown_pct": -26.17,
+          "win_rate_pct": 57.1,
+          "profit_loss_ratio": 1.72,
+          "total_trades": 7,
+          "final_equity": 135913.43
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": -13.32,
+          "annualized_return_pct": -5.5,
+          "annualized_volatility_pct": 29.9,
+          "sharpe_ratio": -0.251,
+          "max_drawdown_pct": -32.65,
+          "win_rate_pct": 40.0,
+          "profit_loss_ratio": 0.67,
+          "total_trades": 5,
+          "final_equity": 86684.6
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 10.69,
+          "annualized_return_pct": 4.1,
+          "annualized_volatility_pct": 18.97,
+          "sharpe_ratio": 0.111,
+          "max_drawdown_pct": -18.33,
+          "win_rate_pct": 33.3,
+          "profit_loss_ratio": 3.07,
+          "total_trades": 6,
+          "final_equity": 110690.86
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 30.48,
+          "annualized_return_pct": 11.11,
+          "annualized_volatility_pct": 33.71,
+          "sharpe_ratio": 0.27,
+          "max_drawdown_pct": -32.9,
+          "win_rate_pct": 42.9,
+          "profit_loss_ratio": 2.76,
+          "total_trades": 7,
+          "final_equity": 130482.33
+        }
+      }
+    },
+    {
+      "symbol": "601100",
+      "name": "恒立液压",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 2.34,
+          "annualized_return_pct": 0.92,
+          "annualized_volatility_pct": 33.63,
+          "sharpe_ratio": -0.032,
+          "max_drawdown_pct": -36.74,
+          "win_rate_pct": 41.7,
+          "profit_loss_ratio": 1.48,
+          "total_trades": 12,
+          "final_equity": 102336.35
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 24.75,
+          "annualized_return_pct": 9.15,
+          "annualized_volatility_pct": 35.9,
+          "sharpe_ratio": 0.199,
+          "max_drawdown_pct": -34.02,
+          "win_rate_pct": 60.0,
+          "profit_loss_ratio": 1.41,
+          "total_trades": 5,
+          "final_equity": 124754.84
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "error": "'NoneType' object has no attribute 'iloc'"
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 70.22,
+          "annualized_return_pct": 23.44,
+          "annualized_volatility_pct": 35.47,
+          "sharpe_ratio": 0.604,
+          "max_drawdown_pct": -33.88,
+          "win_rate_pct": 57.1,
+          "profit_loss_ratio": 3.02,
+          "total_trades": 7,
+          "final_equity": 170224.49
+        }
+      }
+    },
+    {
+      "symbol": "002318",
+      "name": "久立特材",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 33.29,
+          "annualized_return_pct": 12.05,
+          "annualized_volatility_pct": 24.77,
+          "sharpe_ratio": 0.406,
+          "max_drawdown_pct": -20.17,
+          "win_rate_pct": 62.5,
+          "profit_loss_ratio": 1.79,
+          "total_trades": 8,
+          "final_equity": 133293.38
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 14.32,
+          "annualized_return_pct": 5.44,
+          "annualized_volatility_pct": 22.34,
+          "sharpe_ratio": 0.154,
+          "max_drawdown_pct": -20.98,
+          "win_rate_pct": 50.0,
+          "profit_loss_ratio": 2.44,
+          "total_trades": 4,
+          "final_equity": 114318.37
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 29.29,
+          "annualized_return_pct": 10.7,
+          "annualized_volatility_pct": 21.46,
+          "sharpe_ratio": 0.406,
+          "max_drawdown_pct": -16.29,
+          "win_rate_pct": 80.0,
+          "profit_loss_ratio": 1.17,
+          "total_trades": 5,
+          "final_equity": 129293.51
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": -22.21,
+          "annualized_return_pct": -9.46,
+          "annualized_volatility_pct": 26.34,
+          "sharpe_ratio": -0.435,
+          "max_drawdown_pct": -47.45,
+          "win_rate_pct": 50.0,
+          "profit_loss_ratio": 0.45,
+          "total_trades": 6,
+          "final_equity": 77788.87
+        }
+      }
+    },
+    {
+      "symbol": "300719",
+      "name": "安达维尔",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 21.94,
+          "annualized_return_pct": 8.17,
+          "annualized_volatility_pct": 51.17,
+          "sharpe_ratio": 0.121,
+          "max_drawdown_pct": -46.27,
+          "win_rate_pct": 30.0,
+          "profit_loss_ratio": 3.16,
+          "total_trades": 10,
+          "final_equity": 121943.56
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": -53.72,
+          "annualized_return_pct": -26.28,
+          "annualized_volatility_pct": 32.51,
+          "sharpe_ratio": -0.87,
+          "max_drawdown_pct": -55.76,
+          "win_rate_pct": 0.0,
+          "profit_loss_ratio": 0.0,
+          "total_trades": 7,
+          "final_equity": 46279.75
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "error": "'NoneType' object has no attribute 'iloc'"
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": -7.61,
+          "annualized_return_pct": -3.08,
+          "annualized_volatility_pct": 37.78,
+          "sharpe_ratio": -0.135,
+          "max_drawdown_pct": -39.86,
+          "win_rate_pct": 22.2,
+          "profit_loss_ratio": 2.78,
+          "total_trades": 9,
+          "final_equity": 92389.09
+        }
+      }
+    },
+    {
+      "symbol": "002335",
+      "name": "科华数据",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 12.65,
+          "annualized_return_pct": 4.83,
+          "annualized_volatility_pct": 45.44,
+          "sharpe_ratio": 0.062,
+          "max_drawdown_pct": -52.82,
+          "win_rate_pct": 30.8,
+          "profit_loss_ratio": 2.5,
+          "total_trades": 13,
+          "final_equity": 112649.81
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 15.38,
+          "annualized_return_pct": 5.83,
+          "annualized_volatility_pct": 47.08,
+          "sharpe_ratio": 0.081,
+          "max_drawdown_pct": -51.6,
+          "win_rate_pct": 28.6,
+          "profit_loss_ratio": 3.19,
+          "total_trades": 7,
+          "final_equity": 115380.9
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 20.73,
+          "annualized_return_pct": 7.74,
+          "annualized_volatility_pct": 34.69,
+          "sharpe_ratio": 0.165,
+          "max_drawdown_pct": -38.7,
+          "win_rate_pct": 37.5,
+          "profit_loss_ratio": 2.36,
+          "total_trades": 8,
+          "final_equity": 120727.29
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 33.57,
+          "annualized_return_pct": 12.14,
+          "annualized_volatility_pct": 50.46,
+          "sharpe_ratio": 0.201,
+          "max_drawdown_pct": -55.28,
+          "win_rate_pct": 28.6,
+          "profit_loss_ratio": 3.32,
+          "total_trades": 7,
+          "final_equity": 133573.81
+        }
+      }
+    },
+    {
+      "symbol": "300748",
+      "name": "金力永磁",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 71.99,
+          "annualized_return_pct": 23.94,
+          "annualized_volatility_pct": 45.7,
+          "sharpe_ratio": 0.48,
+          "max_drawdown_pct": -38.51,
+          "win_rate_pct": 25.0,
+          "profit_loss_ratio": 6.39,
+          "total_trades": 8,
+          "final_equity": 171988.4
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 43.96,
+          "annualized_return_pct": 15.51,
+          "annualized_volatility_pct": 44.6,
+          "sharpe_ratio": 0.303,
+          "max_drawdown_pct": -45.99,
+          "win_rate_pct": 40.0,
+          "profit_loss_ratio": 2.65,
+          "total_trades": 5,
+          "final_equity": 143960.24
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 70.16,
+          "annualized_return_pct": 23.42,
+          "annualized_volatility_pct": 41.17,
+          "sharpe_ratio": 0.52,
+          "max_drawdown_pct": -36.07,
+          "win_rate_pct": 28.6,
+          "profit_loss_ratio": 4.95,
+          "total_trades": 7,
+          "final_equity": 170160.79
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 46.53,
+          "annualized_return_pct": 16.32,
+          "annualized_volatility_pct": 45.73,
+          "sharpe_ratio": 0.313,
+          "max_drawdown_pct": -34.2,
+          "win_rate_pct": 33.3,
+          "profit_loss_ratio": 4.52,
+          "total_trades": 6,
+          "final_equity": 146528.77
+        }
+      }
+    },
+    {
+      "symbol": "600160",
+      "name": "巨化股份",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 42.24,
+          "annualized_return_pct": 14.96,
+          "annualized_volatility_pct": 29.94,
+          "sharpe_ratio": 0.433,
+          "max_drawdown_pct": -28.15,
+          "win_rate_pct": 55.6,
+          "profit_loss_ratio": 2.06,
+          "total_trades": 9,
+          "final_equity": 142236.46
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 51.87,
+          "annualized_return_pct": 17.99,
+          "annualized_volatility_pct": 31.57,
+          "sharpe_ratio": 0.506,
+          "max_drawdown_pct": -32.03,
+          "win_rate_pct": 75.0,
+          "profit_loss_ratio": 2.72,
+          "total_trades": 4,
+          "final_equity": 151872.16
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 47.54,
+          "annualized_return_pct": 16.64,
+          "annualized_volatility_pct": 31.78,
+          "sharpe_ratio": 0.461,
+          "max_drawdown_pct": -24.86,
+          "win_rate_pct": 71.4,
+          "profit_loss_ratio": 2.93,
+          "total_trades": 7,
+          "final_equity": 147544.55
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 31.69,
+          "annualized_return_pct": 11.51,
+          "annualized_volatility_pct": 32.08,
+          "sharpe_ratio": 0.296,
+          "max_drawdown_pct": -32.07,
+          "win_rate_pct": 44.4,
+          "profit_loss_ratio": 2.11,
+          "total_trades": 9,
+          "final_equity": 131687.64
+        }
+      }
+    },
+    {
+      "symbol": "600346",
+      "name": "恒力石化",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 17.34,
+          "annualized_return_pct": 6.53,
+          "annualized_volatility_pct": 27.1,
+          "sharpe_ratio": 0.167,
+          "max_drawdown_pct": -27.98,
+          "win_rate_pct": 27.3,
+          "profit_loss_ratio": 4.26,
+          "total_trades": 11,
+          "final_equity": 117336.33
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": -5.78,
+          "annualized_return_pct": -2.33,
+          "annualized_volatility_pct": 26.58,
+          "sharpe_ratio": -0.163,
+          "max_drawdown_pct": -34.07,
+          "win_rate_pct": 16.7,
+          "profit_loss_ratio": 4.03,
+          "total_trades": 6,
+          "final_equity": 94222.62
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 17.12,
+          "annualized_return_pct": 6.46,
+          "annualized_volatility_pct": 29.13,
+          "sharpe_ratio": 0.153,
+          "max_drawdown_pct": -36.94,
+          "win_rate_pct": 55.6,
+          "profit_loss_ratio": 1.12,
+          "total_trades": 9,
+          "final_equity": 117124.87
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": -18.8,
+          "annualized_return_pct": -7.91,
+          "annualized_volatility_pct": 30.42,
+          "sharpe_ratio": -0.326,
+          "max_drawdown_pct": -49.93,
+          "win_rate_pct": 40.0,
+          "profit_loss_ratio": 0.92,
+          "total_trades": 5,
+          "final_equity": 81204.86
+        }
+      }
+    },
+    {
+      "symbol": "000708",
+      "name": "中信特钢",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": -8.5,
+          "annualized_return_pct": -3.45,
+          "annualized_volatility_pct": 20.22,
+          "sharpe_ratio": -0.27,
+          "max_drawdown_pct": -23.64,
+          "win_rate_pct": 37.5,
+          "profit_loss_ratio": 1.18,
+          "total_trades": 8,
+          "final_equity": 91502.65
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 19.48,
+          "annualized_return_pct": 7.3,
+          "annualized_volatility_pct": 19.6,
+          "sharpe_ratio": 0.27,
+          "max_drawdown_pct": -16.19,
+          "win_rate_pct": 33.3,
+          "profit_loss_ratio": 5.57,
+          "total_trades": 3,
+          "final_equity": 119480.56
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "error": "'NoneType' object has no attribute 'iloc'"
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 19.04,
+          "annualized_return_pct": 7.14,
+          "annualized_volatility_pct": 20.06,
+          "sharpe_ratio": 0.256,
+          "max_drawdown_pct": -17.03,
+          "win_rate_pct": 33.3,
+          "profit_loss_ratio": 4.65,
+          "total_trades": 6,
+          "final_equity": 119040.55
+        }
+      }
+    },
+    {
+      "symbol": "600660",
+      "name": "福耀玻璃",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": -0.06,
+          "annualized_return_pct": -0.02,
+          "annualized_volatility_pct": 15.56,
+          "sharpe_ratio": -0.13,
+          "max_drawdown_pct": -20.38,
+          "win_rate_pct": 45.5,
+          "profit_loss_ratio": 1.21,
+          "total_trades": 11,
+          "final_equity": 99937.54
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 7.67,
+          "annualized_return_pct": 2.97,
+          "annualized_volatility_pct": 14.86,
+          "sharpe_ratio": 0.065,
+          "max_drawdown_pct": -20.58,
+          "win_rate_pct": 50.0,
+          "profit_loss_ratio": 1.65,
+          "total_trades": 4,
+          "final_equity": 107665.76
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 20.46,
+          "annualized_return_pct": 7.65,
+          "annualized_volatility_pct": 15.32,
+          "sharpe_ratio": 0.369,
+          "max_drawdown_pct": -15.7,
+          "win_rate_pct": 60.0,
+          "profit_loss_ratio": 2.71,
+          "total_trades": 5,
+          "final_equity": 120460.34
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": -11.37,
+          "annualized_return_pct": -4.66,
+          "annualized_volatility_pct": 17.44,
+          "sharpe_ratio": -0.382,
+          "max_drawdown_pct": -27.93,
+          "win_rate_pct": 37.5,
+          "profit_loss_ratio": 1.0,
+          "total_trades": 8,
+          "final_equity": 88631.65
+        }
+      }
+    },
+    {
+      "symbol": "600570",
+      "name": "恒生电子",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 73.68,
+          "annualized_return_pct": 24.42,
+          "annualized_volatility_pct": 31.13,
+          "sharpe_ratio": 0.72,
+          "max_drawdown_pct": -21.43,
+          "win_rate_pct": 50.0,
+          "profit_loss_ratio": 3.89,
+          "total_trades": 6,
+          "final_equity": 173680.11
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": -2.46,
+          "annualized_return_pct": -0.98,
+          "annualized_volatility_pct": 28.72,
+          "sharpe_ratio": -0.104,
+          "max_drawdown_pct": -39.17,
+          "win_rate_pct": 50.0,
+          "profit_loss_ratio": 0.87,
+          "total_trades": 4,
+          "final_equity": 97537.64
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": -15.87,
+          "annualized_return_pct": -6.61,
+          "annualized_volatility_pct": 13.33,
+          "sharpe_ratio": -0.646,
+          "max_drawdown_pct": -20.18,
+          "win_rate_pct": 33.3,
+          "profit_loss_ratio": 0.05,
+          "total_trades": 3,
+          "final_equity": 84127.36
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 4.24,
+          "annualized_return_pct": 1.66,
+          "annualized_volatility_pct": 36.76,
+          "sharpe_ratio": -0.009,
+          "max_drawdown_pct": -51.24,
+          "win_rate_pct": 20.0,
+          "profit_loss_ratio": 4.29,
+          "total_trades": 5,
+          "final_equity": 104241.27
+        }
+      }
+    },
+    {
+      "symbol": "605566",
+      "name": "福莱蒽特",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 4.84,
+          "annualized_return_pct": 1.89,
+          "annualized_volatility_pct": 37.75,
+          "sharpe_ratio": -0.003,
+          "max_drawdown_pct": -37.69,
+          "win_rate_pct": 30.0,
+          "profit_loss_ratio": 2.58,
+          "total_trades": 10,
+          "final_equity": 104841.37
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 51.22,
+          "annualized_return_pct": 17.78,
+          "annualized_volatility_pct": 38.67,
+          "sharpe_ratio": 0.408,
+          "max_drawdown_pct": -45.61,
+          "win_rate_pct": 66.7,
+          "profit_loss_ratio": 2.62,
+          "total_trades": 3,
+          "final_equity": 151220.46
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": -32.52,
+          "annualized_return_pct": -14.42,
+          "annualized_volatility_pct": 29.2,
+          "sharpe_ratio": -0.562,
+          "max_drawdown_pct": -39.46,
+          "win_rate_pct": 27.3,
+          "profit_loss_ratio": 1.21,
+          "total_trades": 11,
+          "final_equity": 67478.58
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 7.58,
+          "annualized_return_pct": 2.93,
+          "annualized_volatility_pct": 38.04,
+          "sharpe_ratio": 0.025,
+          "max_drawdown_pct": -43.23,
+          "win_rate_pct": 40.0,
+          "profit_loss_ratio": 1.72,
+          "total_trades": 10,
+          "final_equity": 107577.69
+        }
+      }
+    },
+    {
+      "symbol": "000157",
+      "name": "中联重科",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": -6.14,
+          "annualized_return_pct": -2.48,
+          "annualized_volatility_pct": 19.89,
+          "sharpe_ratio": -0.225,
+          "max_drawdown_pct": -21.91,
+          "win_rate_pct": 40.0,
+          "profit_loss_ratio": 1.01,
+          "total_trades": 10,
+          "final_equity": 93862.99
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 0.02,
+          "annualized_return_pct": 0.01,
+          "annualized_volatility_pct": 20.36,
+          "sharpe_ratio": -0.098,
+          "max_drawdown_pct": -19.07,
+          "win_rate_pct": 20.0,
+          "profit_loss_ratio": 4.07,
+          "total_trades": 5,
+          "final_equity": 100023.65
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 9.86,
+          "annualized_return_pct": 3.79,
+          "annualized_volatility_pct": 17.12,
+          "sharpe_ratio": 0.105,
+          "max_drawdown_pct": -15.92,
+          "win_rate_pct": 57.1,
+          "profit_loss_ratio": 1.71,
+          "total_trades": 7,
+          "final_equity": 109860.36
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": -10.48,
+          "annualized_return_pct": -4.29,
+          "annualized_volatility_pct": 19.88,
+          "sharpe_ratio": -0.316,
+          "max_drawdown_pct": -23.5,
+          "win_rate_pct": 40.0,
+          "profit_loss_ratio": 0.63,
+          "total_trades": 10,
+          "final_equity": 89515.9
+        }
+      }
+    },
+    {
+      "symbol": "601061",
+      "name": "中信金属",
+      "strategies": {
+        "ema_fixed": {
+          "label": "固定EMA12/26",
+          "total_return_pct": 27.2,
+          "annualized_return_pct": 9.99,
+          "annualized_volatility_pct": 28.4,
+          "sharpe_ratio": 0.281,
+          "max_drawdown_pct": -38.25,
+          "win_rate_pct": 20.0,
+          "profit_loss_ratio": 6.15,
+          "total_trades": 10,
+          "final_equity": 127204.78
+        },
+        "ema_adaptive_regime": {
+          "label": "政权自适应EMA",
+          "total_return_pct": 42.28,
+          "annualized_return_pct": 14.98,
+          "annualized_volatility_pct": 27.6,
+          "sharpe_ratio": 0.47,
+          "max_drawdown_pct": -34.21,
+          "win_rate_pct": 25.0,
+          "profit_loss_ratio": 7.21,
+          "total_trades": 4,
+          "final_equity": 142281.06
+        },
+        "ema_adaptive_adx": {
+          "label": "ADX自适应EMA",
+          "total_return_pct": 56.65,
+          "annualized_return_pct": 19.44,
+          "annualized_volatility_pct": 24.46,
+          "sharpe_ratio": 0.713,
+          "max_drawdown_pct": -26.46,
+          "win_rate_pct": 50.0,
+          "profit_loss_ratio": 3.73,
+          "total_trades": 6,
+          "final_equity": 156652.2
+        },
+        "ema_adaptive_vol": {
+          "label": "波动率自适应EMA",
+          "total_return_pct": 59.05,
+          "annualized_return_pct": 20.16,
+          "annualized_volatility_pct": 29.45,
+          "sharpe_ratio": 0.617,
+          "max_drawdown_pct": -38.11,
+          "win_rate_pct": 25.0,
+          "profit_loss_ratio": 8.64,
+          "total_trades": 8,
+          "final_equity": 159052.24
+        }
+      }
+    }
+  ]
+}

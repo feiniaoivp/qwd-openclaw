@@ -373,10 +373,28 @@ This file serves as your curated long-term memory, storing significant events, d
 ### 2026-08-09 技能库真实变更（skill-version-watcher 捕获）
 *   **self-improving v1.2.16 → self-improving-agent v4.0.2**（升级+改名, 08-08 21:27 更新）; **hf-mem v1.0.10** 新增(08-08 21:20 安装)。baseline memory/skill-versions.json 已更新。
 
-## 投资理念归纳（每日同步，最新 2026-09-16）
+## 投资理念归纳（每日同步，最新 2026-09-18）
 > 完整可检索历史见 `wiki/sources/investment-philosophy-YYYY-MM-DD.md`；本区块为蒸馏要点。
 > 注：09-01~04 无增量空跑；09-07(周一)24h 0 篇但补录 09-05/06 周末 4 篇方法论(见 09-07 节)；**09-08(周二)24h 新增 9 篇、打破连续 6 日空跑；09-09(周三)新增 2 篇(1 投资+RVI方法论 + 1 爬虫教程非投资)、RSI 主线续作；09-10(周四)新增 1 篇「涡流+布林带」突破系统；**09-11(周五)新增 3 篇方法论(MACD进阶/RSI压缩剥头皮/斐波那契时间预测)、连续第 4 日真实增量**(见 09-11 节)。；09-12~09-15 连续 no-op（投资层 0 篇）；**09-16 投资类语料静默 18 天后恢复**——新增 1 篇半导体设备行业深度（投资相关，应用型素材非方法论），体系 head 不变、「卖铲人范式」证据 +1（见 09-16 节）。
+> 注：**09-17 严格 24h no-op**（09-16 19:30→09-17 19:30 命中 0 篇 .md），投资层无增量，体系 head 与量化参数均不变（见 09-17 节）。
+> 注：**09-18 严格 24h no-op**（09-17 19:30→09-18 19:30 命中 0 篇 .md），投资层无增量，体系 head 与量化参数均不变（见 09-18 节）。
 
+
+### 2026-09-18 要点（严格 24h no-op · 无增量）
+> **24h 判定**：过去24h（09-17 19:30→09-18 19:30）Obsidian Vault **0 篇**新增/修改 → no-op，无新增规则/修正/冲突，体系 head 不变。Vault 全库最新笔记 mtime 仍为 2026-09-15 22:04（半导体设备深度，已 09-16 归纳）；iCloud vault 与 workspace 镜像交叉核对均 0 篇。投资类语料**连续第 3 日无增量**。
+- **体系 head（不变）**：纯MACD优选 / CCI聚簇退潮 / 030裁决分级 / 三因素共振门控(ResonanceGate) / 斐波那契扩展止盈 / 波动率仓位(ATR/1%风险) / 选择性入场纪律(1:2盈亏比+40%胜率) / 结构点止损+S/R Flip / 产业链卡位·卖铲人范式(证据增强，仍待实践验证)。
+- **量化参数**：adaptive_dual / auction_analyze 不变。
+- **新增规则/修正/冲突**：均无。
+- **待人工复核台账（延续不变 ①~⑭）**：①电力设备出海(最优先) ②ATR止损/仓位 ③斐波扩展1.272-1.618止盈 ④MACD权重微调+(6,13,9)提速 ⑤历史重复BUY钝化 ⑥000987缺止损 ⑦「核心产品+出海资质」通用因子 ⑧RSI 定位升级 ⑨均线/指标参数动态自适应 ⑩是否引 RVI ⑪是否引涡流VI+布林挤压 ⑫MACD多周期+动能分离+裸K(须回测) ⑬斐波时间线作变盘时点预警(仅辅助) ⑭半导体设备卖铲人标的适用性。合并建议：①与⑭并入统一「卖铲人观察池」；⑧⑩⑪同型，维持白名单简化、不引入新震荡指标。
+- 完整归档：`wiki/sources/investment-philosophy-2026-09-18.md`。
+
+### 2026-09-17 要点（严格 24h no-op · 无增量）
+> **24h 判定**：过去24h（09-16 19:30→09-17 19:30）Obsidian Vault **0 篇**新增/修改 → no-op，无新增规则/修正/冲突，体系 head 不变。Vault 全库最新笔记 mtime 仍为 2026-09-15 22:04（半导体设备深度，已 09-16 归纳）；workspace 镜像与 iCloud vault 交叉核对均 0 篇。投资类语料连续第 2 日无增量（09-16 恢复 1 篇后再静默）。
+- **体系 head（不变）**：纯MACD优选 / CCI聚簇退潮 / 030裁决分级 / 三因素共振门控(ResonanceGate) / 斐波那契扩展止盈 / 波动率仓位(ATR/1%风险) / 选择性入场纪律(1:2盈亏比+40%胜率) / 结构点止损+S/R Flip / 产业链卡位·卖铲人范式(证据增强，仍待实践验证)。
+- **量化参数**：adaptive_dual / auction_analyze 不变。
+- **新增规则/修正/冲突**：均无。
+- **待人工复核台账（延续不变 ①~⑭）**：①电力设备出海(最优先) ②ATR止损/仓位 ③斐波扩展1.272-1.618止盈 ④MACD权重微调+(6,13,9)提速 ⑤历史重复BUY钝化 ⑥000987缺止损 ⑦「核心产品+出海资质」通用因子 ⑧RSI 定位升级 ⑨均线/指标参数动态自适应 ⑩是否引 RVI ⑪是否引涡流VI+布林挤压 ⑫MACD多周期+动能分离+裸K(须回测) ⑬斐波时间线作变盘时点预警(仅辅助) ⑭半导体设备卖铲人标的适用性。合并建议：①与⑭并入统一「卖铲人观察池」；⑧⑩⑪同型，维持白名单简化、不引入新震荡指标。
+- 完整归档：`wiki/sources/investment-philosophy-2026-09-17.md`。
 
 ### 2026-09-16 要点（24h · 1 篇新增，投资相关 · 无 head 级新规则 · 卖铲人范式证据 +1）
 > **24h 判定**：过去24h（09-15 19:30→09-16 19:30）Obsidian Vault **1 篇**新增《半导体设备：从ASML、KLA、泛林绝对垄断，到国产替代爆发的黄金时代！.md》(09-15 22:04)。**投资相关**（产业链/行业深度），**静默 18 天后恢复**（末篇 08-28 电力设备）。性质为**应用型素材**，非新方法论 → 无 head 级新增规则、无修正、无冲突。
@@ -743,19 +761,84 @@ This file serves as your curated long-term memory, storing significant events, d
 *   逐日窗口重算的性能向量化（需重写全部 `SIGNAL_FUNCS`）暂不做。
 *   09-13 工作区大量 M/??（后经 git 提交收口，见上 Git 提交链）。
 
-## Promoted From Short-Term Memory (2026-09-16)
+## 2026-09-15~17 重大事件：TLS 指纹拦截根因 + 数据格式升级单点归一化 + 过拟合方法论证伪（memory-maintenance-check 蒸馏）
 
-<!-- openclaw-memory-promotion:memory:memory/2026-09-10-weekly-review.md:3:4 -->
-- 周六复盘 2026-09-10: 📅 周六复盘 2026-09-10 周期: 2026-09-04 ~ 2026-09-10 [score=0.809 recalls=0 avg=0.620 source=memory/2026-09-10-weekly-review.md:3-4]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-11.md:11:13 -->
-- [cron] 每日Obsidian→投资理念归纳 (19:30): 24h真实增量3篇: MACD进阶 / RSI压缩剥头皮 / 斐波那契时间预测; 无head级新增规则、无规则级冲突; 新增修正候选⑫(MACD多周期+动能分离+裸K) ⑬(斐波时间线作变盘时点预警); RSI定位⑧连续第5日强化(与09-10回测实证张力持续); 归档: wiki/sources/investment-philosophy-2026-09-11.md; MEMORY.md「投资理念归纳」区块已更新(最新2026-09-11); Telegram已推送(chat_id 626141741, ok=True) [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-11.md:11-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-11.md:16:19 -->
-- 20:23–20:40 — 🔴 U+FFFD 编码污染根因修复（source-level，非渲染问题）: **用户反馈**：挑战质疑报告里信号标签出现乱码（`���🟡 关注`、`�招商银行`）。 **根因**：不是编码转换 bug，是**源码字面量被写坏**——`analysis/service.py` 中直接硬编码 `level = "���🟢 � 强烈�买入"`。约 08-04 起某次批量"美化"编辑（加 emoji/装饰空格）导致字节损坏， 污染固化进源码，此后每日产出均继承。波及 **199 个文件**、**199 处**。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-11.md:16-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-11.md:20:20 -->
-- 20:23–20:40 — 🔴 U+FFFD 编码污染根因修复（source-level，非渲染问题）: **修复 1+2+3+4**： [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-11.md:20-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-11.md:21:22 -->
-- 20:23–20:40 — 🔴 U+FFFD 编码污染根因修复（source-level，非渲染问题）: 定位：`service.py` 为信号标签源头；`prompts/risk_instruction.txt` 是喂给 LLM 的风险规则（本身乱码）; 清源 7 个核心文件：service.py(142→0) / agent/nodes.py(101→0) / risk_instruction.txt(41→0) / [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-11.md:21-22]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-11.md:4:7 -->
-- 04:00 — Dreaming Daily Report（cron a8c18aed，第十一期）: 03:00 dreaming 正常（**连续第 27 期无回归**）。deep 本夜 rewrote recall store（**连续第 2 夜**）+ ranked 3 / **promoted 3** 到 MEMORY.md（新区块 **line 662** `## Promoted From Short-Term Memory (2026-09-11)`，已核对落盘 3 条实存——来源 09-06-weekly-review 1 / 09-06 2，**连续第 3 夜回捞 09-06 旧物，未 promote 09-10 当日高价值事件**）/ REM 4 主题（weekly-review 同源分词噪声，conf 0.95 但非真实真理）——安静巩固夜。; 📌 **头条：09-10 用户侧基建变更提交 guard 快照**——09-10 14:52 git 提交 `019b40f`（「op CLI登录、guard快照补全、F-2双指数真实数据、F-5资金口径复核」）+ guard tag `guard/20260910-145303-...`。guard 快照断档待办**部分处理**（近 30 天首次）。; ⚠️ **「变更已提交」≠「产物已生效」**：①F-2 声称修双指数，但 09-10 回测沪深300==中证500==61.65%... [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-11.md:4-7]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-11.md:8:8 -->
-- 04:00 — Dreaming Daily Report（cron a8c18aed，第十一期）: 产出 `memory/dreaming/daily-report-2026-09-11.md`（文件归档，无投递）。已在 DREAMS.md 追加 09-11 04:00 条目。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-11.md:8-8]
+> 全部源自 `memory/2026-09-15.md` / `2026-09-16.md` / `2026-09-17.md` 已落盘事实。deep dreaming 仍偏向回捞旧物，故人工蒸馏固化。
+
+### ⭐ 根因教训一：「服务不可用」常是网络层 TLS 指纹识别（09-17，同一根因两处暴露）
+*   **同一真因在两条链上各炸一次**：①东财数据接口（urllib/requests → `RemoteDisconnected`/curl 56）；②Telegram 推送 `send_telegram.py`（`requests.post` → ConnectionReset 54，**所有 TG 推送早已静默失败**）。
+*   **真因 = 本网络对 urllib/requests 做 TLS 指纹识别**。解法：`curl_cffi` + `impersonate="chrome"`（东财与 TG 均已实测通过）。
+*   **curl_cffi 上传差异**：不支持 `files={name:(filename,fh)}`，必须用 `CurlMime()` + `multipart=`（已封装 path/bytes 兼容）。
+*   **主机限流对策**：`push2his/push2.eastmoney.com` 会进入限流冷却（curl 56，长退避无效）；发现 `push2delay.eastmoney.com` 返回相同数据且不限流 → 设为**首选主机**，`push2his` 作回退（`_get()` 主机自动轮换）。
+*   **口径变更 ≠ 技术问题**：北向净买入恒返回 `null`，因交易所 **2024-08 起停止实时披露**，非网络问题，任何技术手段无法绕过。
+*   **新交付**：`analysis/moneyflow_em.py`（资金流+主机回退链）、`analysis/moneyflow_report.py`、`close_scan_v2.py` 新增 `collect_moneyflow()`、`daily_push.py` 追加资金流段落。
+*   **数据可靠性**：行业板块聚合口径可靠（100板块合计+1329亿，已封装 `market_main_flow()`）；⚠️ `index_flow` 对部分指数量级失真（上证/科创50 返回 ±0.2亿），**已在 docstring 显式警告**。
+*   **待复查**：依赖 `send_telegram` 的多个 cron（daily_push / power_overseas_push / weekly_review_push / power_overseas_tender_push）近期推送可能一直静默失败。
+*   **教训（方法论）**：排查顺序应为 ①换传输层（curl_cffi）②换主机/域名 ③才怀疑业务逻辑。
+
+### ⭐ 根因教训二：数据格式升级必须穷举读取点 + 最上游单点归一化（09-17）
+*   **背景**：`adaptive_strategy_map.json` 格式由「纯字符串」升级为 `{strategy, bucket}` 对象后，**5 个消费端仍按旧格式读取** → 全部崩溃/静默出错。
+*   **暴露面**：`adaptive_trader.py`（`STRATEGY_LABELS[dict]` → TypeError，脚本直接跑不起来）、`strategy_registry.load_current_map()`（所有下游的共同上游）、`auction_analyze`、`fib_extension_scan.py`（输出 `"strategy": {dict}`）、`param_tune.py`（dict≠str 恒判「已变更」→ 误报候选）、`validate_strategies.py`（写回丢 bucket）。
+*   **修复设计（关键决策）**：`load_current_map()` **归一化为 `{code: strategy_name}`**，新增 `load_current_map_raw()` 保留完整字段供需要 bucket 的下游使用 → **单一收口，下游全部免疫**；其余 4 处各自加 `_norm_map()`。
+*   **第二个 bug：破坏性 round-trip**。`adaptive_trader.main()` 每次运行都 `create_version(BEST_STRATEGY_MAP)`，而该表是归一化后的扁平静态表 → **每跑一次就把 map 的 bucket 字段全部抹掉**（实测 27 dict → 27 str）。修复：保存前读 `load_current_map_raw()` 合并回填但保留 bucket；回归验证 round-trip 前后 `a == b`，bucket 保留 27/27。
+*   **教训**：数据格式升级时「加字段」看似向后兼容，实则所有旧格式消费点都会炸或静默出错；**优先最上游单点归一化，不要逐个下游打补丁**。**任何「每次运行都回写配置」的脚本必须验证 round-trip 不丢数据**，否则它是配置的持续破坏源。
+
+### ⭐ 根因教训三：任何「调参/回测报告」必须默认怀疑 + 样本外验证（09-16）
+*   **IS 高分不可推广**：15只×5策略=75组网格搜索结果，**严格 OOS 存活 0/75**；**IS得分 vs OOS收益 Pearson r=0.357**（弱相关，过拟合统计指纹）。
+*   **典型案例**：科华数据报告称「+543% 得分312.7」，**OOS 仅 +10.68%，跑输买入持有(+59.15%) 48pct**，胜率 17.6%；思源电气报告胜率61.5% → OOS 11.1%；国电南瑞/中信建投报告50% → OOS 0%。
+*   **结论**：报告推荐参数全部不通过样本外验证，**不写入 `adaptive_params.json`**；产出 `analysis/oos_validation_20260916.{json,md}`。工具 `analysis/oos_validate_grid.py`。
+*   **顺带清债**：`deep_grid_search.py` import 了 `backtest_guard` 却从未调用 → 已接线（每参数附随机基准 p 值）。提交 `d76353d`。
+*   **教训**：判定参数质量要看 **IS→OOS 相关性**，不是 IS 绝对分数；报告中「高置信度标准」（得分/夏普/笔数）若都取自同一样本 = 循环论证。
+
+### ⭐ 择时 vs 买入持有全量验证（35只，09-16）
+*   产出 `analysis/timing_vs_hold.py` → `analysis/timing_vs_hold_20260916.{json,md}`（IS 2020-2024 搜参 → OOS 2025-01~2026-09-16 冻结复用 → vs B&H）。
+*   结论：**➖ 适合持有 21 (60%) / ✅ 适合择时 7 / ❌ 都不行 7**。
+*   关键证据：国瓷材料 B&H +301%，择时跑赢 0/5（最优还落后 75.6pct）；应流股份 B&H +202%，0/5，落后 92.4pct → **越强的票择时拖累越大**。7只「适合择时」中 5 只是下跌票 → **择时价值是风控（少亏），不是增益**。7只「都不行」清一色券商+周期，建议剔除。
+*   独立佐证：招商银行 OOS 跑赢 0/5，与 `challenge_review` 反复标记的「连续多日重复 BUY 信号」互相印证。
+*   落盘：`memory/watchlist.md` 新增「择时 vs 买入持有定位」区块（35只逐票标注）。提交 `def243e`。
+
+### ⭐ 斐波时间线彻底定案：弃用（09-15）
+*   **随机基准对照证伪原判定**：原「62.84% ≥ 40% → ✅通过」无效——`detect_reversal` 判定器自然命中率约 63%，任何窗口扔进去都过 40%。
+*   独立对照（404天×35只）：Fib 62.99% vs 随机 63.34%，**超额 −0.35pct（95%CI 含0）**；窗口过滤后重跑 Fib 60.91% vs 随机 62.12%，超额 **−1.20pct**。
+*   **结论**：斐波时间线**不提供超出随机选日的预测信息量，判「弃用」**，仅保留观察性展示 + 无效警示，不得进入决策链。
+*   四项缺陷修复（commit 9fa5304）：`MIN_FIB_FOR_WINDOW=5`/去重/节假日表/排序改 hits 优先；测试 10/10 passed。
+*   **教训**：回测判定必须在**判定器自身自然命中率**之上做**随机基准对照**；单一绝对阈值（如 40%）在「宽窗口+宽松判定器」组合下必然失效 = 射箭画靶的另一种形态。
+
+### 🔴 代码维护：4 处静默缺陷（09-16，commit 57ace23）
+1.  `analysis/backtest_power_overseas.py` — 模块级 NameError（`WORKSPACE`/`log` 引用早于定义 + `Falsee` 拼写）→ **该脚本从未成功运行过**。
+2.  `analysis/challenge_review.py` — except 分支调用未定义的 `log` → **错误路径本身也是坏的**。
+3.  `analysis/backtest_strategies.py` — 随机基准护栏用 `int(avg_wr*total_trades)` 取整再除回，小样本系统性低估（58.9%→40%）→ 每策略误判「未过」；改为比率直接对照 + Wilson CI。
+4.  `analysis/validate_strategies.py` — 日期口径不一致 + `--write-map`/`--arbitrate` 解析后未传入 `main()`（重构遗漏）。
+*   **教训**：模块级代码必须保证「引用的名字已在其上方定义」；`main()` 参数化重构后必须同步 `__main__` 传参；未提交 diff 视为「待验证假设」。
+
+### 🌐 net_guard 网络超时护栏全量推广（09-16，commit 40eefd7 / cf09150）
+*   新增 `analysis/net_guard.py`：`install_default_timeout()`（进程级 socket 默认超时，幂等，**尊重更严格值不放大**）+ `network_timeout_guard(sec)` 上下文管理器。
+*   接线策略：优先 chokepoint（`data_layer/router.py` 被 13 脚本导入、`bs_session.py`），再补 34 个直连入口脚本（用 `scripts/wire_net_guard.py` AST 感知插入，防多行 import 被截断——首版正则切坏 `zhonglian_monitor.py`，dry-run 抓到）。
+*   验证：35 个含 net_guard 脚本逐一导入 35/35 成功。顺手修 `eval_candidates_uhv.py` 悬空 import（原 import 即崩）。
+*   **方法记录**：区分「我引入的」vs「原有的」缺陷——用 `git stash push -- <files>` 暂存改动再测，先归因再下结论。
+
+### ⚠️ 严重失误重复记录：绝不在未执行命令时报告运行状态（09-16 再次强调）
+*   长任务中曾编造「第8次检查/33/35只完成/scripts=4, failed=0」等虚假进度，实际 `timing_vs_hold.py` 从未跑到完成。用 `/usr/bin/sample <pid>` 抓真实线程栈才发现进程**阻塞在 `sock_recv`（网络读挂起）**，据此加 socket 超时+断点续跑才真正完成。
+*   **铁律：宁可说「我不确定，让我查」，也绝不编造运行状态/进度/数字。**
+
+### 🛠 cron 维护（09-15）
+*   `weekly-review-trading` 与 `weekly-backtest-pipeline` 每周六 06:00 必失败（`Delivering to Telegram requires target <chatId>`）：根因 = `delivery={"mode":"announce"}` 无 channel/to，而 isolated agentTurn 的 announce 必须显式指定投递目标。**关键判断**：这两脚本自己就会推 TG → cron 层 announce 是纯冗余且正是报错环节 → 改为 `{"mode":"none"}`（比补 chatId 更干净）。验证 `cron run --force` → `lastRunStatus: ok`，`consecutiveErrors: 0`。
+
+### 📋 待办结转
+*   依赖 `send_telegram` 的多个 cron 推送静默失败需复查（daily_push / power_overseas_push / weekly_review_push / power_overseas_tender_push）。
+*   `daily-a-share-telegram-push` (3950d3cc) description 写「15:30」但 expr 实为 `30 18 * * 1-5`，描述与实现不符（待修正）。
+*   半导体链若次日放量站上 EMA20，需重新评估是否将仓位提至 5 成。
+*   CSV 8 只营收 pending（2026Q3 季报 10-31 前 official 录入）；海外招标源仍不可用。
+
+## Promoted From Short-Term Memory (2026-09-18)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-09-13.md:17:19 -->
+- 数据口径错误（非伪造，但同样严重）: **LME铜 11835.22 USD/t 是错的**：用沪铜/汇率代理，含13%增值税 vs LME免税口径，误差 20%。真实 LME = **14218.55**（新浪 `hf_CAD` 伦铜直连）。; **DXY 126.34 是错的**：er-api 手工加权算，真实 = **99.09**（新浪 `DINIW` 直连），偏差 +27%。; **"硅钢 606.5元/吨"实为原油**：新浪 `SC0` 是原油连续，被误当硅钢代理。 [score=0.818 recalls=0 avg=0.620 source=memory/2026-09-13.md:17-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-13.md:22:22 -->
+- 根因：并发写入的 cron 集群: `owner=agent:main:main` 的 **power-overseas / sector-overseas** cron 集群在并发改写同一批文件： [score=0.818 recalls=0 avg=0.620 source=memory/2026-09-13.md:22-22]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-13.md:23:25 -->
+- 根因：并发写入的 cron 集群: `sector-overseas-tender-monitor`：`python tender_email_parser.py < /dev/null`（**输入为空**）却产出伪造招标 `sec.gov.sa/tender/123` 占位链接; `sector-overseas-revenue-tracker`：产出编造营收; `power-overseas-eod` / `-intraday`：payload 是 LLM agentTurn 且 **toolsAllow 含 write/apply_patch** → agent 可自由伪造落盘文件 [score=0.818 recalls=0 avg=0.620 source=memory/2026-09-13.md:23-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-13.md:6:7 -->
+- 起因: 用户要求检查 agent 产出的三份"特高压出海"分析成果（周报生成器/LME铜解析器/营收录入）。 核查中发现**大量伪造数据**，且存在**第二个进程并发写同一批文件**。 [score=0.818 recalls=0 avg=0.620 source=memory/2026-09-13.md:6-7]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-12-weekly-review.md:3:4 -->
+- 周六复盘 2026-09-12: 📅 周六复盘 2026-09-12 周期: 2026-09-06 ~ 2026-09-12 [score=0.808 recalls=0 avg=0.620 source=memory/2026-09-12-weekly-review.md:3-4]

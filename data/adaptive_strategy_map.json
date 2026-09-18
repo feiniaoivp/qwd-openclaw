@@ -4,18 +4,18 @@
     "bucket": "tier2"
   },
   "000708": {
-    "strategy": "ema_cross",
+    "strategy": "ema_adaptive_vol",
     "bucket": "tier1"
   },
   "000987": {
-    "strategy": "bollinger",
+    "strategy": "ema_adaptive_vol",
     "bucket": "tier1",
     "stop_loss_pct": -8,
     "take_profit_pct": 25,
     "position_limit_pct": 5
   },
   "002156": {
-    "strategy": "ema_obv",
+    "strategy": "ema_adaptive_vol",
     "bucket": "tier1"
   },
   "002318": {
@@ -27,7 +27,7 @@
     "bucket": "tier1"
   },
   "002413": {
-    "strategy": "ema_cross",
+    "strategy": "ema_adaptive_vol",
     "bucket": "tier1"
   },
   "002466": {
@@ -44,7 +44,7 @@
     "bucket": "tier2"
   },
   "300285": {
-    "strategy": "macd",
+    "strategy": "ema_adaptive_vol",
     "bucket": "tier1"
   },
   "300719": {
@@ -52,9 +52,8 @@
     "bucket": "tier2"
   },
   "300748": {
-    "strategy": "ema_cross",
-    "bucket": "tier1",
-    "note": "auto-fallback: kdj_cci/bull_trend removed from whitelist (2026-09-17 backtest)"
+    "strategy": "ema_adaptive_vol",
+    "bucket": "tier1"
   },
   "600030": {
     "strategy": "macd",
@@ -65,7 +64,7 @@
     "bucket": "tier1"
   },
   "600160": {
-    "strategy": "ema_cross",
+    "strategy": "ema_adaptive_vol",
     "bucket": "tier1"
   },
   "600346": {
@@ -73,19 +72,19 @@
     "bucket": "tier1"
   },
   "600570": {
-    "strategy": "ema_cross",
+    "strategy": "ema_adaptive_vol",
     "bucket": "tier2"
   },
   "600584": {
-    "strategy": "macd",
+    "strategy": "ema_adaptive_vol",
     "bucket": "tier1"
   },
   "600660": {
-    "strategy": "macd",
+    "strategy": "ema_adaptive_vol",
     "bucket": "tier1"
   },
   "601061": {
-    "strategy": "ema_obv",
+    "strategy": "ema_adaptive_vol",
     "bucket": "tier1"
   },
   "601066": {
@@ -101,7 +100,7 @@
     "bucket": "tier3"
   },
   "603308": {
-    "strategy": "ema_cross",
+    "strategy": "ema_adaptive_vol",
     "bucket": "tier1"
   },
   "605566": {
@@ -109,8 +108,7 @@
     "bucket": "tier1"
   },
   "688981": {
-    "strategy": "ema_cross",
-    "bucket": "tier1",
-    "note": "auto-fallback: kdj_cci/bull_trend removed from whitelist (2026-09-17 backtest)"
+    "strategy": "ema_adaptive_vol",
+    "bucket": "tier1"
   }
 }

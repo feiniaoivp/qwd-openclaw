@@ -644,6 +644,2023 @@
       "kind": "verify",
       "events": 0,
       "hit_rate": "0/0(尚无数)"
+    },
+    {
+      "date": "2026-09-15",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "0/0(尚无数)"
     }
-  ]
+  ],
+  "time_baseline": {
+    "600036": {
+      "name": "招商银行",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-16",
+        "window_end": "2026-09-16",
+        "idx": 151,
+        "hits": 3,
+        "sources": [
+          "swing_high@34",
+          "swing_high@8",
+          "swing_low@21"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-16",
+          "window_end": "2026-09-16",
+          "idx": 151,
+          "hits": 3,
+          "sources": [
+            "swing_high@34",
+            "swing_high@8",
+            "swing_low@21"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-23",
+          "window_end": "2026-09-29",
+          "idx": 156,
+          "hits": 4,
+          "sources": [
+            "swing_high@13",
+            "swing_high@55",
+            "swing_low@55",
+            "ext(1.272)"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-05",
+          "window_end": "2026-10-05",
+          "idx": 164,
+          "hits": 3,
+          "sources": [
+            "ext(1.618)",
+            "swing_high@21",
+            "swing_low@34"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-22",
+          "window_end": "2026-10-22",
+          "idx": 177,
+          "hits": 2,
+          "sources": [
+            "ext(2.618)",
+            "swing_high@34"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-11-10",
+          "window_end": "2026-11-12",
+          "idx": 190,
+          "hits": 2,
+          "sources": [
+            "swing_high@89",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-01-26",
+          "window_end": "2027-01-28",
+          "idx": 245,
+          "hits": 2,
+          "sources": [
+            "swing_high@144",
+            "swing_low@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "000987": {
+      "name": "越秀资本",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-18",
+        "window_end": "2026-09-22",
+        "idx": 153,
+        "hits": 4,
+        "sources": [
+          "swing_high@13",
+          "swing_low@21",
+          "ext(1.272)",
+          "swing_high@34"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-18",
+          "window_end": "2026-09-22",
+          "idx": 153,
+          "hits": 4,
+          "sources": [
+            "swing_high@13",
+            "swing_low@21",
+            "ext(1.272)",
+            "swing_high@34"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-28",
+          "window_end": "2026-09-30",
+          "idx": 159,
+          "hits": 2,
+          "sources": [
+            "ext(1.618)",
+            "swing_high@21"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-10-06",
+          "window_end": "2026-10-14",
+          "idx": 165,
+          "hits": 4,
+          "sources": [
+            "swing_high@55",
+            "swing_low@34",
+            "swing_low@55",
+            "ext(2.618)"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-19",
+          "window_end": "2026-10-21",
+          "idx": 174,
+          "hits": 2,
+          "sources": [
+            "swing_high@34",
+            "swing_high@55"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "600584": {
+      "name": "长电科技",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-16",
+        "window_end": "2026-09-18",
+        "idx": 151,
+        "hits": 4,
+        "sources": [
+          "swing_high@21",
+          "swing_low@8",
+          "swing_low@34",
+          "swing_low@55"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-16",
+          "window_end": "2026-09-18",
+          "idx": 151,
+          "hits": 4,
+          "sources": [
+            "swing_high@21",
+            "swing_low@8",
+            "swing_low@34",
+            "swing_low@55"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-23",
+          "window_end": "2026-09-25",
+          "idx": 156,
+          "hits": 3,
+          "sources": [
+            "swing_low@13",
+            "ext(1.272)",
+            "swing_high@55"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-05",
+          "window_end": "2026-10-05",
+          "idx": 164,
+          "hits": 2,
+          "sources": [
+            "swing_high@34",
+            "swing_low@21"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-10-15",
+          "window_end": "2026-10-19",
+          "idx": 172,
+          "hits": 2,
+          "sources": [
+            "ext(2.618)",
+            "swing_low@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-11-03",
+          "window_end": "2026-11-05",
+          "idx": 185,
+          "hits": 2,
+          "sources": [
+            "swing_high@55",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "688981": {
+      "name": "中芯国际",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-16",
+        "window_end": "2026-09-29",
+        "idx": 151,
+        "hits": 7,
+        "sources": [
+          "swing_high@21",
+          "ext(2.618)",
+          "swing_high@13",
+          "swing_low@34",
+          "swing_low@21",
+          "swing_high@55",
+          "swing_high@21"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-16",
+          "window_end": "2026-09-29",
+          "idx": 151,
+          "hits": 7,
+          "sources": [
+            "swing_high@21",
+            "ext(2.618)",
+            "swing_high@13",
+            "swing_low@34",
+            "swing_low@21",
+            "swing_high@55",
+            "swing_high@21"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-16",
+          "window_end": "2026-10-20",
+          "idx": 173,
+          "hits": 2,
+          "sources": [
+            "swing_high@34",
+            "swing_low@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-11-10",
+          "window_end": "2026-11-16",
+          "idx": 190,
+          "hits": 3,
+          "sources": [
+            "swing_low@55",
+            "swing_high@89",
+            "swing_high@55"
+          ],
+          "strength": "high"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "002156": {
+      "name": "通富微电",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-16",
+        "window_end": "2026-09-16",
+        "idx": 151,
+        "hits": 4,
+        "sources": [
+          "ext(2.618)",
+          "swing_high@13",
+          "swing_high@21",
+          "swing_low@8"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-16",
+          "window_end": "2026-09-16",
+          "idx": 151,
+          "hits": 4,
+          "sources": [
+            "ext(2.618)",
+            "swing_high@13",
+            "swing_high@21",
+            "swing_low@8"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-23",
+          "window_end": "2026-09-23",
+          "idx": 156,
+          "hits": 2,
+          "sources": [
+            "swing_low@13",
+            "swing_low@21"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-05",
+          "idx": 162,
+          "hits": 3,
+          "sources": [
+            "swing_low@34",
+            "swing_high@34",
+            "swing_low@21"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-30",
+          "window_end": "2026-11-03",
+          "idx": 183,
+          "hits": 2,
+          "sources": [
+            "swing_low@55",
+            "swing_high@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-12-17",
+          "window_end": "2026-12-21",
+          "idx": 217,
+          "hits": 2,
+          "sources": [
+            "swing_low@89",
+            "swing_high@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-03-04",
+          "window_end": "2027-03-08",
+          "idx": 272,
+          "hits": 2,
+          "sources": [
+            "swing_low@144",
+            "swing_high@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "002413": {
+      "name": "雷科防务",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-15",
+        "window_end": "2026-09-29",
+        "idx": 150,
+        "hits": 9,
+        "sources": [
+          "swing_low@5",
+          "swing_high@8",
+          "swing_low@8",
+          "swing_low@21",
+          "ext(1.272)",
+          "swing_high@13",
+          "swing_high@34",
+          "swing_low@13",
+          "ext(1.618)"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-15",
+          "window_end": "2026-09-29",
+          "idx": 150,
+          "hits": 9,
+          "sources": [
+            "swing_low@5",
+            "swing_high@8",
+            "swing_low@8",
+            "swing_low@21",
+            "ext(1.272)",
+            "swing_high@13",
+            "swing_high@34",
+            "swing_low@13",
+            "ext(1.618)"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-05",
+          "window_end": "2026-10-12",
+          "idx": 164,
+          "hits": 5,
+          "sources": [
+            "swing_high@21",
+            "swing_low@55",
+            "swing_low@21",
+            "swing_low@34",
+            "ext(2.618)"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-22",
+          "window_end": "2026-10-26",
+          "idx": 177,
+          "hits": 3,
+          "sources": [
+            "swing_high@34",
+            "swing_high@55",
+            "swing_low@34"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-11-20",
+          "window_end": "2026-11-24",
+          "idx": 198,
+          "hits": 3,
+          "sources": [
+            "swing_high@55",
+            "swing_low@89",
+            "swing_low@55"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2027-01-07",
+          "window_end": "2027-01-11",
+          "idx": 232,
+          "hits": 2,
+          "sources": [
+            "swing_high@89",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-03-25",
+          "window_end": "2027-03-29",
+          "idx": 287,
+          "hits": 2,
+          "sources": [
+            "swing_high@144",
+            "swing_low@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "300014": {
+      "name": "亿纬锂能",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-10-01",
+        "window_end": "2026-10-05",
+        "idx": 162,
+        "hits": 2,
+        "sources": [
+          "swing_high@34",
+          "swing_low@55"
+        ],
+        "strength": "medium"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-05",
+          "idx": 162,
+          "hits": 2,
+          "sources": [
+            "swing_high@34",
+            "swing_low@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-10-12",
+          "window_end": "2026-10-14",
+          "idx": 169,
+          "hits": 2,
+          "sources": [
+            "swing_high@55",
+            "swing_low@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-11-27",
+          "window_end": "2026-12-01",
+          "idx": 203,
+          "hits": 2,
+          "sources": [
+            "swing_high@89",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-02-12",
+          "window_end": "2027-02-16",
+          "idx": 258,
+          "hits": 2,
+          "sources": [
+            "swing_high@144",
+            "swing_low@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "002466": {
+      "name": "天齐锂业",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-21",
+        "window_end": "2026-09-23",
+        "idx": 154,
+        "hits": 2,
+        "sources": [
+          "swing_low@21",
+          "ext(2.618)"
+        ],
+        "strength": "medium"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-21",
+          "window_end": "2026-09-23",
+          "idx": 154,
+          "hits": 2,
+          "sources": [
+            "swing_low@21",
+            "ext(2.618)"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-09-28",
+          "window_end": "2026-10-01",
+          "idx": 159,
+          "hits": 3,
+          "sources": [
+            "swing_high@21",
+            "swing_high@34",
+            "swing_high@55"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-06",
+          "window_end": "2026-10-08",
+          "idx": 165,
+          "hits": 2,
+          "sources": [
+            "swing_low@55",
+            "swing_low@34"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "601865": {
+      "name": "福莱特",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-22",
+        "window_end": "2026-09-29",
+        "idx": 155,
+        "hits": 4,
+        "sources": [
+          "ext(1.272)",
+          "swing_high@34",
+          "swing_low@21",
+          "ext(1.618)"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-22",
+          "window_end": "2026-09-29",
+          "idx": 155,
+          "hits": 4,
+          "sources": [
+            "ext(1.272)",
+            "swing_high@34",
+            "swing_low@21",
+            "ext(1.618)"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-13",
+          "window_end": "2026-10-14",
+          "idx": 170,
+          "hits": 2,
+          "sources": [
+            "swing_low@89",
+            "swing_low@34"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-10-19",
+          "window_end": "2026-10-23",
+          "idx": 174,
+          "hits": 3,
+          "sources": [
+            "ext(2.618)",
+            "swing_high@89",
+            "swing_high@55"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-12-29",
+          "window_end": "2026-12-30",
+          "idx": 225,
+          "hits": 2,
+          "sources": [
+            "swing_low@144",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "300285": {
+      "name": "国瓷材料",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-16",
+        "window_end": "2026-09-16",
+        "idx": 151,
+        "hits": 2,
+        "sources": [
+          "ext(1.272)",
+          "swing_high@13"
+        ],
+        "strength": "medium"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-16",
+          "window_end": "2026-09-16",
+          "idx": 151,
+          "hits": 2,
+          "sources": [
+            "ext(1.272)",
+            "swing_high@13"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-09-21",
+          "window_end": "2026-09-23",
+          "idx": 154,
+          "hits": 3,
+          "sources": [
+            "ext(1.618)",
+            "swing_low@34",
+            "swing_low@21"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-28",
+          "window_end": "2026-09-28",
+          "idx": 159,
+          "hits": 2,
+          "sources": [
+            "swing_high@21",
+            "swing_high@34"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-10-08",
+          "window_end": "2026-10-12",
+          "idx": 167,
+          "hits": 2,
+          "sources": [
+            "swing_high@55",
+            "swing_low@34"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "603308": {
+      "name": "应流股份",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-15",
+        "window_end": "2026-09-23",
+        "idx": 150,
+        "hits": 8,
+        "sources": [
+          "ext(1.618)",
+          "swing_high@21",
+          "swing_low@8",
+          "swing_low@34",
+          "swing_high@13",
+          "ext(2.618)",
+          "swing_low@13",
+          "swing_low@21"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-15",
+          "window_end": "2026-09-23",
+          "idx": 150,
+          "hits": 8,
+          "sources": [
+            "ext(1.618)",
+            "swing_high@21",
+            "swing_low@8",
+            "swing_low@34",
+            "swing_high@13",
+            "ext(2.618)",
+            "swing_low@13",
+            "swing_low@21"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-30",
+          "window_end": "2026-10-02",
+          "idx": 161,
+          "hits": 3,
+          "sources": [
+            "swing_high@21",
+            "swing_high@34",
+            "swing_low@21"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-15",
+          "window_end": "2026-10-21",
+          "idx": 172,
+          "hits": 3,
+          "sources": [
+            "swing_low@55",
+            "swing_high@34",
+            "swing_low@34"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-11-17",
+          "window_end": "2026-11-19",
+          "idx": 195,
+          "hits": 2,
+          "sources": [
+            "swing_high@55",
+            "swing_low@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-01-04",
+          "window_end": "2027-01-06",
+          "idx": 229,
+          "hits": 2,
+          "sources": [
+            "swing_high@89",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-03-22",
+          "window_end": "2027-03-24",
+          "idx": 284,
+          "hits": 2,
+          "sources": [
+            "swing_high@144",
+            "swing_low@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "300124": {
+      "name": "汇川技术",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-22",
+        "window_end": "2026-09-25",
+        "idx": 155,
+        "hits": 3,
+        "sources": [
+          "swing_low@21",
+          "swing_high@21",
+          "swing_high@34"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-22",
+          "window_end": "2026-09-25",
+          "idx": 155,
+          "hits": 3,
+          "sources": [
+            "swing_low@21",
+            "swing_high@21",
+            "swing_high@34"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-08",
+          "window_end": "2026-10-13",
+          "idx": 167,
+          "hits": 4,
+          "sources": [
+            "swing_high@55",
+            "swing_low@34",
+            "swing_high@34",
+            "swing_low@55"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-11-09",
+          "window_end": "2026-11-11",
+          "idx": 189,
+          "hits": 2,
+          "sources": [
+            "swing_low@55",
+            "swing_high@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-12-25",
+          "window_end": "2026-12-29",
+          "idx": 223,
+          "hits": 2,
+          "sources": [
+            "swing_low@89",
+            "swing_high@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-03-12",
+          "window_end": "2027-03-16",
+          "idx": 278,
+          "hits": 2,
+          "sources": [
+            "swing_low@144",
+            "swing_high@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "601100": {
+      "name": "恒立液压",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-15",
+        "window_end": "2026-09-15",
+        "idx": 150,
+        "hits": 3,
+        "sources": [
+          "swing_high@21",
+          "swing_high@5",
+          "swing_low@13"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-15",
+          "window_end": "2026-09-15",
+          "idx": 150,
+          "hits": 3,
+          "sources": [
+            "swing_high@21",
+            "swing_high@5",
+            "swing_low@13"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-18",
+          "window_end": "2026-09-22",
+          "idx": 153,
+          "hits": 3,
+          "sources": [
+            "swing_high@34",
+            "swing_high@8",
+            "ext(1.272)"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-25",
+          "window_end": "2026-09-28",
+          "idx": 158,
+          "hits": 4,
+          "sources": [
+            "ext(1.618)",
+            "swing_high@13",
+            "swing_low@21",
+            "swing_low@34"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-07",
+          "window_end": "2026-10-07",
+          "idx": 166,
+          "hits": 2,
+          "sources": [
+            "ext(2.618)",
+            "swing_high@21"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-10-26",
+          "window_end": "2026-10-27",
+          "idx": 179,
+          "hits": 2,
+          "sources": [
+            "swing_high@34",
+            "swing_low@55"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "002318": {
+      "name": "久立特材",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-18",
+        "window_end": "2026-09-21",
+        "idx": 153,
+        "hits": 2,
+        "sources": [
+          "swing_high@13",
+          "swing_high@34"
+        ],
+        "strength": "medium"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-18",
+          "window_end": "2026-09-21",
+          "idx": 153,
+          "hits": 2,
+          "sources": [
+            "swing_high@13",
+            "swing_high@34"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-09-30",
+          "window_end": "2026-10-01",
+          "idx": 161,
+          "hits": 3,
+          "sources": [
+            "swing_high@21",
+            "swing_low@55",
+            "ext(1.272)"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-19",
+          "window_end": "2026-10-20",
+          "idx": 174,
+          "hits": 2,
+          "sources": [
+            "swing_high@34",
+            "swing_high@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-11-17",
+          "window_end": "2026-11-17",
+          "idx": 195,
+          "hits": 2,
+          "sources": [
+            "swing_high@55",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "300719": {
+      "name": "安达维尔",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-16",
+        "window_end": "2026-09-18",
+        "idx": 151,
+        "hits": 3,
+        "sources": [
+          "swing_high@21",
+          "swing_low@21",
+          "swing_high@55"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-16",
+          "window_end": "2026-09-18",
+          "idx": 151,
+          "hits": 3,
+          "sources": [
+            "swing_high@21",
+            "swing_low@21",
+            "swing_high@55"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-02",
+          "window_end": "2026-10-06",
+          "idx": 163,
+          "hits": 4,
+          "sources": [
+            "ext(1.618)",
+            "swing_high@34",
+            "swing_low@34",
+            "swing_low@55"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-30",
+          "window_end": "2026-11-05",
+          "idx": 183,
+          "hits": 5,
+          "sources": [
+            "ext(2.618)",
+            "swing_low@89",
+            "swing_high@55",
+            "swing_low@55",
+            "swing_high@89"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-12-21",
+          "window_end": "2026-12-22",
+          "idx": 219,
+          "hits": 2,
+          "sources": [
+            "swing_high@89",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-03-08",
+          "window_end": "2027-03-09",
+          "idx": 274,
+          "hits": 2,
+          "sources": [
+            "swing_high@144",
+            "swing_low@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "002335": {
+      "name": "科华数据",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-16",
+        "window_end": "2026-09-16",
+        "idx": 151,
+        "hits": 3,
+        "sources": [
+          "ext(2.618)",
+          "swing_high@13",
+          "swing_high@8"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-16",
+          "window_end": "2026-09-16",
+          "idx": 151,
+          "hits": 3,
+          "sources": [
+            "ext(2.618)",
+            "swing_high@13",
+            "swing_high@8"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-21",
+          "window_end": "2026-09-23",
+          "idx": 154,
+          "hits": 3,
+          "sources": [
+            "swing_low@13",
+            "swing_low@21",
+            "swing_high@13"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-28",
+          "window_end": "2026-10-05",
+          "idx": 159,
+          "hits": 4,
+          "sources": [
+            "swing_high@21",
+            "swing_high@34",
+            "swing_low@21",
+            "swing_high@21"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-20",
+          "window_end": "2026-10-22",
+          "idx": 175,
+          "hits": 2,
+          "sources": [
+            "swing_low@34",
+            "swing_high@34"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-11-18",
+          "window_end": "2026-11-20",
+          "idx": 196,
+          "hits": 2,
+          "sources": [
+            "swing_low@55",
+            "swing_high@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-01-05",
+          "window_end": "2027-01-07",
+          "idx": 230,
+          "hits": 2,
+          "sources": [
+            "swing_low@89",
+            "swing_high@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-03-23",
+          "window_end": "2027-03-25",
+          "idx": 285,
+          "hits": 2,
+          "sources": [
+            "swing_low@144",
+            "swing_high@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "300748": {
+      "name": "金力永磁",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-15",
+        "window_end": "2026-09-22",
+        "idx": 150,
+        "hits": 4,
+        "sources": [
+          "swing_low@34",
+          "swing_low@21",
+          "swing_low@13",
+          "swing_high@21"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-15",
+          "window_end": "2026-09-22",
+          "idx": 150,
+          "hits": 4,
+          "sources": [
+            "swing_low@34",
+            "swing_low@21",
+            "swing_low@13",
+            "swing_high@21"
+          ],
+          "strength": "high"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "002180": {
+      "name": "奔图科技",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-16",
+        "window_end": "2026-09-18",
+        "idx": 151,
+        "hits": 3,
+        "sources": [
+          "swing_high@21",
+          "ext(2.618)",
+          "swing_high@13"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-16",
+          "window_end": "2026-09-18",
+          "idx": 151,
+          "hits": 3,
+          "sources": [
+            "swing_high@21",
+            "ext(2.618)",
+            "swing_high@13"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-23",
+          "window_end": "2026-09-24",
+          "idx": 156,
+          "hits": 2,
+          "sources": [
+            "swing_low@21",
+            "swing_high@34"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-09-30",
+          "window_end": "2026-10-05",
+          "idx": 161,
+          "hits": 3,
+          "sources": [
+            "swing_high@21",
+            "swing_low@34",
+            "swing_high@34"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-30",
+          "window_end": "2026-11-03",
+          "idx": 183,
+          "hits": 2,
+          "sources": [
+            "swing_low@55",
+            "swing_high@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-12-17",
+          "window_end": "2026-12-21",
+          "idx": 217,
+          "hits": 2,
+          "sources": [
+            "swing_low@89",
+            "swing_high@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-03-04",
+          "window_end": "2027-03-08",
+          "idx": 272,
+          "hits": 2,
+          "sources": [
+            "swing_low@144",
+            "swing_high@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "300847": {
+      "name": "中船汉光",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-21",
+        "window_end": "2026-09-30",
+        "idx": 154,
+        "hits": 6,
+        "sources": [
+          "swing_low@21",
+          "ext(1.272)",
+          "swing_high@34",
+          "swing_high@55",
+          "swing_low@55",
+          "ext(1.618)"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-21",
+          "window_end": "2026-09-30",
+          "idx": 154,
+          "hits": 6,
+          "sources": [
+            "swing_low@21",
+            "ext(1.272)",
+            "swing_high@34",
+            "swing_high@55",
+            "swing_low@55",
+            "ext(1.618)"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-22",
+          "window_end": "2026-10-23",
+          "idx": 177,
+          "hits": 2,
+          "sources": [
+            "swing_high@55",
+            "ext(2.618)"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-11-12",
+          "window_end": "2026-11-16",
+          "idx": 192,
+          "hits": 2,
+          "sources": [
+            "swing_high@89",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-01-28",
+          "window_end": "2027-02-01",
+          "idx": 247,
+          "hits": 2,
+          "sources": [
+            "swing_high@144",
+            "swing_low@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "600160": {
+      "name": "巨化股份",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-16",
+        "window_end": "2026-09-17",
+        "idx": 151,
+        "hits": 3,
+        "sources": [
+          "swing_high@13",
+          "ext(1.272)",
+          "swing_high@55"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-16",
+          "window_end": "2026-09-17",
+          "idx": 151,
+          "hits": 3,
+          "sources": [
+            "swing_high@13",
+            "ext(1.272)",
+            "swing_high@55"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-23",
+          "window_end": "2026-09-28",
+          "idx": 156,
+          "hits": 4,
+          "sources": [
+            "ext(1.618)",
+            "swing_low@21",
+            "swing_high@34",
+            "swing_high@21"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-06",
+          "window_end": "2026-10-12",
+          "idx": 165,
+          "hits": 3,
+          "sources": [
+            "swing_low@55",
+            "ext(2.618)",
+            "swing_low@34"
+          ],
+          "strength": "high"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "600346": {
+      "name": "恒力石化",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-18",
+        "window_end": "2026-09-18",
+        "idx": 153,
+        "hits": 2,
+        "sources": [
+          "swing_high@13",
+          "swing_high@21"
+        ],
+        "strength": "medium"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-18",
+          "window_end": "2026-09-18",
+          "idx": 153,
+          "hits": 2,
+          "sources": [
+            "swing_high@13",
+            "swing_high@21"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-09-24",
+          "window_end": "2026-10-01",
+          "idx": 157,
+          "hits": 4,
+          "sources": [
+            "swing_low@21",
+            "swing_high@34",
+            "swing_high@21",
+            "swing_low@34"
+          ],
+          "strength": "high"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "000708": {
+      "name": "中信特钢",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-16",
+        "window_end": "2026-09-21",
+        "idx": 151,
+        "hits": 3,
+        "sources": [
+          "swing_high@34",
+          "swing_high@21",
+          "swing_low@21"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-16",
+          "window_end": "2026-09-21",
+          "idx": 151,
+          "hits": 3,
+          "sources": [
+            "swing_high@34",
+            "swing_high@21",
+            "swing_low@21"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-07",
+          "window_end": "2026-10-08",
+          "idx": 166,
+          "hits": 2,
+          "sources": [
+            "swing_high@34",
+            "swing_low@34"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-11-05",
+          "window_end": "2026-11-06",
+          "idx": 187,
+          "hits": 2,
+          "sources": [
+            "swing_high@55",
+            "swing_low@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-12-23",
+          "window_end": "2026-12-24",
+          "idx": 221,
+          "hits": 2,
+          "sources": [
+            "swing_high@89",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-03-10",
+          "window_end": "2027-03-11",
+          "idx": 276,
+          "hits": 2,
+          "sources": [
+            "swing_high@144",
+            "swing_low@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "600660": {
+      "name": "福耀玻璃",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-15",
+        "window_end": "2026-09-23",
+        "idx": 150,
+        "hits": 6,
+        "sources": [
+          "ext(1.618)",
+          "swing_high@34",
+          "swing_low@13",
+          "swing_high@13",
+          "swing_high@21",
+          "ext(2.618)"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-15",
+          "window_end": "2026-09-23",
+          "idx": 150,
+          "hits": 6,
+          "sources": [
+            "ext(1.618)",
+            "swing_high@34",
+            "swing_low@13",
+            "swing_high@13",
+            "swing_high@21",
+            "ext(2.618)"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-29",
+          "window_end": "2026-10-01",
+          "idx": 160,
+          "hits": 3,
+          "sources": [
+            "swing_low@21",
+            "swing_high@21",
+            "swing_low@34"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-15",
+          "window_end": "2026-10-19",
+          "idx": 172,
+          "hits": 3,
+          "sources": [
+            "swing_high@55",
+            "swing_low@34",
+            "swing_high@34"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-11-16",
+          "window_end": "2026-11-17",
+          "idx": 194,
+          "hits": 2,
+          "sources": [
+            "swing_low@55",
+            "swing_high@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-01-01",
+          "window_end": "2027-01-04",
+          "idx": 228,
+          "hits": 2,
+          "sources": [
+            "swing_low@89",
+            "swing_high@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-03-19",
+          "window_end": "2027-03-22",
+          "idx": 283,
+          "hits": 2,
+          "sources": [
+            "swing_low@144",
+            "swing_high@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "600570": {
+      "name": "恒生电子",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-16",
+        "window_end": "2026-09-25",
+        "idx": 151,
+        "hits": 6,
+        "sources": [
+          "swing_high@8",
+          "swing_low@21",
+          "ext(1.272)",
+          "swing_high@13",
+          "swing_high@34",
+          "ext(1.618)"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-16",
+          "window_end": "2026-09-25",
+          "idx": 151,
+          "hits": 6,
+          "sources": [
+            "swing_high@8",
+            "swing_low@21",
+            "ext(1.272)",
+            "swing_high@13",
+            "swing_high@34",
+            "ext(1.618)"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-05",
+          "window_end": "2026-10-12",
+          "idx": 164,
+          "hits": 5,
+          "sources": [
+            "swing_high@21",
+            "swing_high@55",
+            "swing_low@34",
+            "ext(2.618)",
+            "swing_low@55"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-22",
+          "window_end": "2026-10-22",
+          "idx": 177,
+          "hits": 2,
+          "sources": [
+            "swing_high@34",
+            "swing_high@55"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-11-20",
+          "window_end": "2026-11-23",
+          "idx": 198,
+          "hits": 2,
+          "sources": [
+            "swing_high@55",
+            "swing_high@89"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "605566": {
+      "name": "福莱蒽特",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-16",
+        "window_end": "2026-09-17",
+        "idx": 151,
+        "hits": 3,
+        "sources": [
+          "swing_high@21",
+          "swing_low@34",
+          "swing_high@13"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-16",
+          "window_end": "2026-09-17",
+          "idx": 151,
+          "hits": 3,
+          "sources": [
+            "swing_high@21",
+            "swing_low@34",
+            "swing_high@13"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-09",
+          "window_end": "2026-10-16",
+          "idx": 168,
+          "hits": 4,
+          "sources": [
+            "swing_low@34",
+            "swing_high@55",
+            "swing_low@55",
+            "swing_high@34"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-11-30",
+          "window_end": "2026-12-02",
+          "idx": 204,
+          "hits": 2,
+          "sources": [
+            "swing_high@89",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2027-02-15",
+          "window_end": "2027-02-17",
+          "idx": 259,
+          "hits": 2,
+          "sources": [
+            "swing_high@144",
+            "swing_low@144"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "000157": {
+      "name": "中联重科",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-15",
+        "window_end": "2026-09-22",
+        "idx": 150,
+        "hits": 8,
+        "sources": [
+          "swing_high@5",
+          "swing_low@8",
+          "swing_high@34",
+          "swing_low@21",
+          "swing_high@8",
+          "ext(1.272)",
+          "swing_high@21",
+          "swing_low@13"
+        ],
+        "strength": "high"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-15",
+          "window_end": "2026-09-22",
+          "idx": 150,
+          "hits": 8,
+          "sources": [
+            "swing_high@5",
+            "swing_low@8",
+            "swing_high@34",
+            "swing_low@21",
+            "swing_high@8",
+            "ext(1.272)",
+            "swing_high@21",
+            "swing_low@13"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-09-25",
+          "window_end": "2026-09-25",
+          "idx": 158,
+          "hits": 2,
+          "sources": [
+            "ext(1.618)",
+            "swing_high@13"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-10-02",
+          "window_end": "2026-10-09",
+          "idx": 163,
+          "hits": 5,
+          "sources": [
+            "swing_low@21",
+            "swing_low@34",
+            "ext(2.618)",
+            "swing_high@21",
+            "swing_high@34"
+          ],
+          "strength": "high"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    },
+    "601061": {
+      "name": "中信金属",
+      "as_of": "2026-09-14",
+      "as_of_idx": 149,
+      "next_window": {
+        "window_start": "2026-09-21",
+        "window_end": "2026-09-21",
+        "idx": 154,
+        "hits": 2,
+        "sources": [
+          "swing_high@55",
+          "swing_low@13"
+        ],
+        "strength": "medium"
+      },
+      "confluence": [
+        {
+          "window_start": "2026-09-21",
+          "window_end": "2026-09-21",
+          "idx": 154,
+          "hits": 2,
+          "sources": [
+            "swing_high@55",
+            "swing_low@13"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-09-28",
+          "window_end": "2026-10-05",
+          "idx": 159,
+          "hits": 4,
+          "sources": [
+            "swing_high@34",
+            "ext(1.272)",
+            "swing_low@21",
+            "swing_low@55"
+          ],
+          "strength": "high"
+        },
+        {
+          "window_start": "2026-10-30",
+          "window_end": "2026-11-02",
+          "idx": 183,
+          "hits": 2,
+          "sources": [
+            "ext(2.618)",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        },
+        {
+          "window_start": "2026-11-18",
+          "window_end": "2026-11-20",
+          "idx": 196,
+          "hits": 2,
+          "sources": [
+            "swing_low@55",
+            "swing_low@89"
+          ],
+          "strength": "medium"
+        }
+      ],
+      "note": "仅时点预警，不可作方向信号；须配合价格指标（时价合一）再作决策",
+      "locked_at": "2026-08-20"
+    }
+  }
 }

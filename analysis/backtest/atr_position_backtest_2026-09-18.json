@@ -1,0 +1,4546 @@
+{
+  "date": "2026-09-18",
+  "window": {
+    "start": "20240101",
+    "end": "20260726"
+  },
+  "note": "固定仓位=每只10万初始资金 | ATR仓位=单笔风险1%总资金(300万) 止损2×ATR 单股上限15%",
+  "results": [
+    {
+      "symbol": "600030",
+      "name": "中信证券",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 50.24,
+            "annualized_return_pct": 17.48,
+            "annualized_volatility_pct": 21.38,
+            "sharpe_ratio": 0.724,
+            "max_drawdown_pct": -19.62,
+            "win_rate_pct": 37.5,
+            "profit_loss_ratio": 6.65,
+            "max_consecutive_losses": 2,
+            "total_trades": 8,
+            "avg_days_between_trades": 77.4,
+            "final_equity": 150244.91
+          },
+          "atr_position": {
+            "total_return_pct": 240.34,
+            "annualized_return_pct": 62.38,
+            "annualized_volatility_pct": 58.05,
+            "sharpe_ratio": 1.04,
+            "max_drawdown_pct": -33.03,
+            "win_rate_pct": 37.5,
+            "profit_loss_ratio": 9.0,
+            "total_trades": 8,
+            "final_equity": 340344.31,
+            "avg_shares_per_trade": 18488.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": 1.13,
+            "annualized_return_pct": 0.45,
+            "annualized_volatility_pct": 6.04,
+            "sharpe_ratio": -0.257,
+            "max_drawdown_pct": -8.25,
+            "win_rate_pct": 37.5,
+            "profit_loss_ratio": 1.87,
+            "max_consecutive_losses": 3,
+            "total_trades": 8,
+            "avg_days_between_trades": 77.4,
+            "final_equity": 101134.2
+          },
+          "atr_position": {
+            "total_return_pct": 6.43,
+            "annualized_return_pct": 2.5,
+            "annualized_volatility_pct": 26.11,
+            "sharpe_ratio": 0.019,
+            "max_drawdown_pct": -26.93,
+            "win_rate_pct": 37.5,
+            "profit_loss_ratio": 1.92,
+            "total_trades": 8,
+            "final_equity": 106430.14,
+            "avg_shares_per_trade": 19850.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 38.62,
+            "annualized_return_pct": 13.8,
+            "annualized_volatility_pct": 21.36,
+            "sharpe_ratio": 0.552,
+            "max_drawdown_pct": -19.38,
+            "win_rate_pct": 24.0,
+            "profit_loss_ratio": 6.67,
+            "max_consecutive_losses": 5,
+            "total_trades": 25,
+            "avg_days_between_trades": 24.8,
+            "final_equity": 138618.97
+          },
+          "atr_position": {
+            "total_return_pct": 181.69,
+            "annualized_return_pct": 50.67,
+            "annualized_volatility_pct": 63.44,
+            "sharpe_ratio": 0.767,
+            "max_drawdown_pct": -39.39,
+            "win_rate_pct": 24.0,
+            "profit_loss_ratio": 7.96,
+            "total_trades": 25,
+            "final_equity": 281691.55,
+            "avg_shares_per_trade": 19212.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 53.39,
+            "annualized_return_pct": 18.45,
+            "annualized_volatility_pct": 23.48,
+            "sharpe_ratio": 0.701,
+            "max_drawdown_pct": -24.14,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 5.71,
+            "max_consecutive_losses": 3,
+            "total_trades": 9,
+            "avg_days_between_trades": 68.8,
+            "final_equity": 153391.13
+          },
+          "atr_position": {
+            "total_return_pct": 264.97,
+            "annualized_return_pct": 66.93,
+            "annualized_volatility_pct": 60.48,
+            "sharpe_ratio": 1.074,
+            "max_drawdown_pct": -35.96,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 8.25,
+            "total_trades": 9,
+            "final_equity": 364972.7,
+            "avg_shares_per_trade": 18600.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 58.06,
+            "annualized_return_pct": 19.87,
+            "annualized_volatility_pct": 23.11,
+            "sharpe_ratio": 0.773,
+            "max_drawdown_pct": -15.13,
+            "win_rate_pct": 45.0,
+            "profit_loss_ratio": 4.15,
+            "max_consecutive_losses": 3,
+            "total_trades": 20,
+            "avg_days_between_trades": 30.9,
+            "final_equity": 158060.89
+          },
+          "atr_position": {
+            "total_return_pct": 243.95,
+            "annualized_return_pct": 63.06,
+            "annualized_volatility_pct": 63.42,
+            "sharpe_ratio": 0.963,
+            "max_drawdown_pct": -38.52,
+            "win_rate_pct": 45.0,
+            "profit_loss_ratio": 4.52,
+            "total_trades": 20,
+            "final_equity": 343948.8,
+            "avg_shares_per_trade": 19680.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -12.4,
+            "annualized_return_pct": -5.11,
+            "annualized_volatility_pct": 5.37,
+            "sharpe_ratio": -1.322,
+            "max_drawdown_pct": -12.4,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 0.55,
+            "max_consecutive_losses": 8,
+            "total_trades": 15,
+            "avg_days_between_trades": 41.3,
+            "final_equity": 87599.6
+          },
+          "atr_position": {
+            "total_return_pct": -58.47,
+            "annualized_return_pct": -29.38,
+            "annualized_volatility_pct": 34.05,
+            "sharpe_ratio": -0.922,
+            "max_drawdown_pct": -58.47,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 0.58,
+            "total_trades": 15,
+            "final_equity": 41529.48,
+            "avg_shares_per_trade": 17900.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "601066",
+      "name": "中信建投",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 6.47,
+            "annualized_return_pct": 2.51,
+            "annualized_volatility_pct": 22.13,
+            "sharpe_ratio": 0.023,
+            "max_drawdown_pct": -27.52,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 2.51,
+            "max_consecutive_losses": 4,
+            "total_trades": 12,
+            "avg_days_between_trades": 51.6,
+            "final_equity": 106471.04
+          },
+          "atr_position": {
+            "total_return_pct": 50.5,
+            "annualized_return_pct": 17.56,
+            "annualized_volatility_pct": 80.34,
+            "sharpe_ratio": 0.194,
+            "max_drawdown_pct": -61.83,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 2.95,
+            "total_trades": 12,
+            "final_equity": 150502.2,
+            "avg_shares_per_trade": 18775.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": 2.55,
+            "annualized_return_pct": 1.0,
+            "annualized_volatility_pct": 5.84,
+            "sharpe_ratio": -0.171,
+            "max_drawdown_pct": -10.27,
+            "win_rate_pct": 37.5,
+            "profit_loss_ratio": 2.2,
+            "max_consecutive_losses": 3,
+            "total_trades": 8,
+            "avg_days_between_trades": 77.4,
+            "final_equity": 102554.92
+          },
+          "atr_position": {
+            "total_return_pct": 12.95,
+            "annualized_return_pct": 4.94,
+            "annualized_volatility_pct": 22.51,
+            "sharpe_ratio": 0.131,
+            "max_drawdown_pct": -32.42,
+            "win_rate_pct": 37.5,
+            "profit_loss_ratio": 2.28,
+            "total_trades": 8,
+            "final_equity": 112954.74,
+            "avg_shares_per_trade": 20500.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": -18.9,
+            "annualized_return_pct": -7.96,
+            "annualized_volatility_pct": 17.22,
+            "sharpe_ratio": -0.578,
+            "max_drawdown_pct": -24.04,
+            "win_rate_pct": 19.2,
+            "profit_loss_ratio": 1.93,
+            "max_consecutive_losses": 11,
+            "total_trades": 26,
+            "avg_days_between_trades": 23.8,
+            "final_equity": 81095.38
+          },
+          "atr_position": {
+            "total_return_pct": -91.41,
+            "annualized_return_pct": -62.14,
+            "annualized_volatility_pct": 3245.46,
+            "sharpe_ratio": -0.02,
+            "max_drawdown_pct": -119.11,
+            "win_rate_pct": 19.2,
+            "profit_loss_ratio": 1.97,
+            "total_trades": 26,
+            "final_equity": 8593.1,
+            "avg_shares_per_trade": 18912.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 26.43,
+            "annualized_return_pct": 9.73,
+            "annualized_volatility_pct": 24.71,
+            "sharpe_ratio": 0.313,
+            "max_drawdown_pct": -28.62,
+            "win_rate_pct": 30.0,
+            "profit_loss_ratio": 4.59,
+            "max_consecutive_losses": 3,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 126429.84
+          },
+          "atr_position": {
+            "total_return_pct": 68.93,
+            "annualized_return_pct": 23.06,
+            "annualized_volatility_pct": 64.77,
+            "sharpe_ratio": 0.325,
+            "max_drawdown_pct": -52.28,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 6.17,
+            "total_trades": 10,
+            "final_equity": 168927.67,
+            "avg_shares_per_trade": 19430.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 11.43,
+            "annualized_return_pct": 4.38,
+            "annualized_volatility_pct": 23.31,
+            "sharpe_ratio": 0.102,
+            "max_drawdown_pct": -39.63,
+            "win_rate_pct": 34.8,
+            "profit_loss_ratio": 2.25,
+            "max_consecutive_losses": 6,
+            "total_trades": 23,
+            "avg_days_between_trades": 26.9,
+            "final_equity": 111431.73
+          },
+          "atr_position": {
+            "total_return_pct": 117.35,
+            "annualized_return_pct": 35.97,
+            "annualized_volatility_pct": 73.82,
+            "sharpe_ratio": 0.46,
+            "max_drawdown_pct": -66.56,
+            "win_rate_pct": 34.8,
+            "profit_loss_ratio": 2.88,
+            "total_trades": 23,
+            "final_equity": 217349.19,
+            "avg_shares_per_trade": 19078.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -21.96,
+            "annualized_return_pct": -9.35,
+            "annualized_volatility_pct": 8.44,
+            "sharpe_ratio": -1.344,
+            "max_drawdown_pct": -22.35,
+            "win_rate_pct": 6.7,
+            "profit_loss_ratio": 0.2,
+            "max_consecutive_losses": 8,
+            "total_trades": 15,
+            "avg_days_between_trades": 41.3,
+            "final_equity": 78035.5
+          },
+          "atr_position": {
+            "total_return_pct": -102.31,
+            "annualized_return_pct": NaN,
+            "annualized_volatility_pct": 134.46,
+            "sharpe_ratio": NaN,
+            "max_drawdown_pct": -102.26,
+            "win_rate_pct": 6.7,
+            "profit_loss_ratio": 0.22,
+            "total_trades": 15,
+            "final_equity": -2307.98,
+            "avg_shares_per_trade": 16493.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "600036",
+      "name": "招商银行",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": -6.35,
+            "annualized_return_pct": -2.57,
+            "annualized_volatility_pct": 12.8,
+            "sharpe_ratio": -0.357,
+            "max_drawdown_pct": -13.87,
+            "win_rate_pct": 38.5,
+            "profit_loss_ratio": 1.13,
+            "max_consecutive_losses": 3,
+            "total_trades": 13,
+            "avg_days_between_trades": 47.6,
+            "final_equity": 93645.67
+          },
+          "atr_position": {
+            "total_return_pct": -27.34,
+            "annualized_return_pct": -11.88,
+            "annualized_volatility_pct": 64.27,
+            "sharpe_ratio": -0.216,
+            "max_drawdown_pct": -53.94,
+            "win_rate_pct": 38.5,
+            "profit_loss_ratio": 1.17,
+            "total_trades": 13,
+            "final_equity": 72657.63,
+            "avg_shares_per_trade": 12815.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": 25.8,
+            "annualized_return_pct": 9.51,
+            "annualized_volatility_pct": 9.51,
+            "sharpe_ratio": 0.79,
+            "max_drawdown_pct": -9.37,
+            "win_rate_pct": 57.1,
+            "profit_loss_ratio": 6.03,
+            "max_consecutive_losses": 3,
+            "total_trades": 7,
+            "avg_days_between_trades": 88.4,
+            "final_equity": 125798.41
+          },
+          "atr_position": {
+            "total_return_pct": 114.27,
+            "annualized_return_pct": 35.21,
+            "annualized_volatility_pct": 28.8,
+            "sharpe_ratio": 1.153,
+            "max_drawdown_pct": -22.77,
+            "win_rate_pct": 57.1,
+            "profit_loss_ratio": 6.97,
+            "total_trades": 7,
+            "final_equity": 214268.37,
+            "avg_shares_per_trade": 12400.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 2.77,
+            "annualized_return_pct": 1.09,
+            "annualized_volatility_pct": 13.22,
+            "sharpe_ratio": -0.069,
+            "max_drawdown_pct": -15.78,
+            "win_rate_pct": 22.2,
+            "profit_loss_ratio": 3.92,
+            "max_consecutive_losses": 7,
+            "total_trades": 36,
+            "avg_days_between_trades": 17.2,
+            "final_equity": 102767.8
+          },
+          "atr_position": {
+            "total_return_pct": 19.66,
+            "annualized_return_pct": 7.36,
+            "annualized_volatility_pct": 55.35,
+            "sharpe_ratio": 0.097,
+            "max_drawdown_pct": -46.33,
+            "win_rate_pct": 22.2,
+            "profit_loss_ratio": 4.11,
+            "total_trades": 36,
+            "final_equity": 119657.5,
+            "avg_shares_per_trade": 12881.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": -2.89,
+            "annualized_return_pct": -1.15,
+            "annualized_volatility_pct": 14.72,
+            "sharpe_ratio": -0.214,
+            "max_drawdown_pct": -17.65,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 1.28,
+            "max_consecutive_losses": 4,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 97111.32
+          },
+          "atr_position": {
+            "total_return_pct": -1.49,
+            "annualized_return_pct": -0.59,
+            "annualized_volatility_pct": 67.75,
+            "sharpe_ratio": -0.038,
+            "max_drawdown_pct": -55.37,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 1.49,
+            "total_trades": 10,
+            "final_equity": 98505.87,
+            "avg_shares_per_trade": 12580.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 27.3,
+            "annualized_return_pct": 10.03,
+            "annualized_volatility_pct": 15.47,
+            "sharpe_ratio": 0.519,
+            "max_drawdown_pct": -14.99,
+            "win_rate_pct": 41.7,
+            "profit_loss_ratio": 2.62,
+            "max_consecutive_losses": 3,
+            "total_trades": 24,
+            "avg_days_between_trades": 25.8,
+            "final_equity": 127301.92
+          },
+          "atr_position": {
+            "total_return_pct": 126.15,
+            "annualized_return_pct": 38.13,
+            "annualized_volatility_pct": 40.96,
+            "sharpe_ratio": 0.882,
+            "max_drawdown_pct": -27.52,
+            "win_rate_pct": 41.7,
+            "profit_loss_ratio": 2.94,
+            "total_trades": 24,
+            "final_equity": 226154.52,
+            "avg_shares_per_trade": 12400.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 6.08,
+            "annualized_return_pct": 2.36,
+            "annualized_volatility_pct": 7.22,
+            "sharpe_ratio": 0.05,
+            "max_drawdown_pct": -5.73,
+            "win_rate_pct": 44.4,
+            "profit_loss_ratio": 2.07,
+            "max_consecutive_losses": 4,
+            "total_trades": 18,
+            "avg_days_between_trades": 34.4,
+            "final_equity": 106080.86
+          },
+          "atr_position": {
+            "total_return_pct": 28.51,
+            "annualized_return_pct": 10.44,
+            "annualized_volatility_pct": 27.96,
+            "sharpe_ratio": 0.302,
+            "max_drawdown_pct": -19.76,
+            "win_rate_pct": 44.4,
+            "profit_loss_ratio": 2.14,
+            "total_trades": 18,
+            "final_equity": 128505.09,
+            "avg_shares_per_trade": 12111.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "601995",
+      "name": "中金公司",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": -7.36,
+            "annualized_return_pct": -3.08,
+            "annualized_volatility_pct": 22.7,
+            "sharpe_ratio": -0.224,
+            "max_drawdown_pct": -26.69,
+            "win_rate_pct": 30.0,
+            "profit_loss_ratio": 1.79,
+            "max_consecutive_losses": 3,
+            "total_trades": 10,
+            "avg_days_between_trades": 59.9,
+            "final_equity": 92636.41
+          },
+          "atr_position": {
+            "total_return_pct": -14.53,
+            "annualized_return_pct": -6.22,
+            "annualized_volatility_pct": 85.61,
+            "sharpe_ratio": -0.096,
+            "max_drawdown_pct": -63.51,
+            "win_rate_pct": 30.0,
+            "profit_loss_ratio": 2.09,
+            "total_trades": 10,
+            "final_equity": 85471.24,
+            "avg_shares_per_trade": 12870.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": 6.66,
+            "annualized_return_pct": 2.67,
+            "annualized_volatility_pct": 8.59,
+            "sharpe_ratio": 0.078,
+            "max_drawdown_pct": -7.2,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 1.9,
+            "max_consecutive_losses": 3,
+            "total_trades": 8,
+            "avg_days_between_trades": 74.9,
+            "final_equity": 106655.97
+          },
+          "atr_position": {
+            "total_return_pct": 31.08,
+            "annualized_return_pct": 11.7,
+            "annualized_volatility_pct": 35.65,
+            "sharpe_ratio": 0.272,
+            "max_drawdown_pct": -20.88,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 2.01,
+            "total_trades": 8,
+            "final_equity": 131078.22,
+            "avg_shares_per_trade": 14500.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": -22.04,
+            "annualized_return_pct": -9.68,
+            "annualized_volatility_pct": 11.82,
+            "sharpe_ratio": -0.988,
+            "max_drawdown_pct": -22.04,
+            "win_rate_pct": 19.0,
+            "profit_loss_ratio": 1.02,
+            "max_consecutive_losses": 8,
+            "total_trades": 21,
+            "avg_days_between_trades": 28.5,
+            "final_equity": 77957.24
+          },
+          "atr_position": {
+            "total_return_pct": -98.56,
+            "annualized_return_pct": -82.33,
+            "annualized_volatility_pct": 148.07,
+            "sharpe_ratio": -0.57,
+            "max_drawdown_pct": -98.56,
+            "win_rate_pct": 19.0,
+            "profit_loss_ratio": 1.17,
+            "total_trades": 21,
+            "final_equity": 1443.52,
+            "avg_shares_per_trade": 11752.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": -15.99,
+            "annualized_return_pct": -6.88,
+            "annualized_volatility_pct": 26.15,
+            "sharpe_ratio": -0.34,
+            "max_drawdown_pct": -32.31,
+            "win_rate_pct": 23.1,
+            "profit_loss_ratio": 2.03,
+            "max_consecutive_losses": 4,
+            "total_trades": 13,
+            "avg_days_between_trades": 46.1,
+            "final_equity": 84014.07
+          },
+          "atr_position": {
+            "total_return_pct": -62.6,
+            "annualized_return_pct": -33.12,
+            "annualized_volatility_pct": 198.0,
+            "sharpe_ratio": -0.177,
+            "max_drawdown_pct": -87.39,
+            "win_rate_pct": 23.1,
+            "profit_loss_ratio": 2.29,
+            "total_trades": 13,
+            "final_equity": 37401.12,
+            "avg_shares_per_trade": 13285.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 0.07,
+            "annualized_return_pct": 0.03,
+            "annualized_volatility_pct": 25.54,
+            "sharpe_ratio": -0.077,
+            "max_drawdown_pct": -29.44,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 2.03,
+            "max_consecutive_losses": 5,
+            "total_trades": 21,
+            "avg_days_between_trades": 28.5,
+            "final_equity": 100066.8
+          },
+          "atr_position": {
+            "total_return_pct": 27.13,
+            "annualized_return_pct": 10.32,
+            "annualized_volatility_pct": 93.4,
+            "sharpe_ratio": 0.089,
+            "max_drawdown_pct": -60.14,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 2.33,
+            "total_trades": 21,
+            "final_equity": 127134.18,
+            "avg_shares_per_trade": 12924.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 1.76,
+            "annualized_return_pct": 0.72,
+            "annualized_volatility_pct": 7.28,
+            "sharpe_ratio": -0.176,
+            "max_drawdown_pct": -7.99,
+            "win_rate_pct": 38.5,
+            "profit_loss_ratio": 1.91,
+            "max_consecutive_losses": 5,
+            "total_trades": 13,
+            "avg_days_between_trades": 46.1,
+            "final_equity": 101760.65
+          },
+          "atr_position": {
+            "total_return_pct": 6.81,
+            "annualized_return_pct": 2.73,
+            "annualized_volatility_pct": 30.6,
+            "sharpe_ratio": 0.024,
+            "max_drawdown_pct": -28.57,
+            "win_rate_pct": 38.5,
+            "profit_loss_ratio": 1.88,
+            "total_trades": 13,
+            "final_equity": 106810.25,
+            "avg_shares_per_trade": 12554.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "000987",
+      "name": "越秀资本",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 82.83,
+            "annualized_return_pct": 26.98,
+            "annualized_volatility_pct": 26.47,
+            "sharpe_ratio": 0.944,
+            "max_drawdown_pct": -22.09,
+            "win_rate_pct": 44.4,
+            "profit_loss_ratio": 7.38,
+            "max_consecutive_losses": 2,
+            "total_trades": 9,
+            "avg_days_between_trades": 68.8,
+            "final_equity": 182833.71
+          },
+          "atr_position": {
+            "total_return_pct": 333.54,
+            "annualized_return_pct": 78.7,
+            "annualized_volatility_pct": 64.87,
+            "sharpe_ratio": 1.182,
+            "max_drawdown_pct": -38.03,
+            "win_rate_pct": 44.4,
+            "profit_loss_ratio": 7.75,
+            "total_trades": 9,
+            "final_equity": 433539.52,
+            "avg_shares_per_trade": 72589.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -14.06,
+            "annualized_return_pct": -5.82,
+            "annualized_volatility_pct": 11.89,
+            "sharpe_ratio": -0.658,
+            "max_drawdown_pct": -20.25,
+            "win_rate_pct": 35.7,
+            "profit_loss_ratio": 0.7,
+            "max_consecutive_losses": 5,
+            "total_trades": 14,
+            "avg_days_between_trades": 44.2,
+            "final_equity": 85944.0
+          },
+          "atr_position": {
+            "total_return_pct": -64.75,
+            "annualized_return_pct": -33.81,
+            "annualized_volatility_pct": 186.07,
+            "sharpe_ratio": -0.192,
+            "max_drawdown_pct": -85.27,
+            "win_rate_pct": 35.7,
+            "profit_loss_ratio": 0.73,
+            "total_trades": 14,
+            "final_equity": 35252.59,
+            "avg_shares_per_trade": 74021.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": -36.18,
+            "annualized_return_pct": -16.29,
+            "annualized_volatility_pct": 17.36,
+            "sharpe_ratio": -1.054,
+            "max_drawdown_pct": -37.96,
+            "win_rate_pct": 11.5,
+            "profit_loss_ratio": 1.82,
+            "max_consecutive_losses": 10,
+            "total_trades": 26,
+            "avg_days_between_trades": 23.8,
+            "final_equity": 63817.09
+          },
+          "atr_position": {
+            "total_return_pct": -178.68,
+            "annualized_return_pct": NaN,
+            "annualized_volatility_pct": 2146.13,
+            "sharpe_ratio": NaN,
+            "max_drawdown_pct": -171.36,
+            "win_rate_pct": 11.5,
+            "profit_loss_ratio": 1.83,
+            "total_trades": 26,
+            "final_equity": -78682.0,
+            "avg_shares_per_trade": 67362.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 49.06,
+            "annualized_return_pct": 17.12,
+            "annualized_volatility_pct": 28.8,
+            "sharpe_ratio": 0.525,
+            "max_drawdown_pct": -31.05,
+            "win_rate_pct": 30.0,
+            "profit_loss_ratio": 5.07,
+            "max_consecutive_losses": 3,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 149064.04
+          },
+          "atr_position": {
+            "total_return_pct": 253.04,
+            "annualized_return_pct": 64.75,
+            "annualized_volatility_pct": 80.22,
+            "sharpe_ratio": 0.782,
+            "max_drawdown_pct": -56.62,
+            "win_rate_pct": 30.0,
+            "profit_loss_ratio": 7.07,
+            "total_trades": 10,
+            "final_equity": 353040.87,
+            "avg_shares_per_trade": 69200.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 90.13,
+            "annualized_return_pct": 28.96,
+            "annualized_volatility_pct": 30.24,
+            "sharpe_ratio": 0.891,
+            "max_drawdown_pct": -28.36,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 2.96,
+            "max_consecutive_losses": 4,
+            "total_trades": 20,
+            "avg_days_between_trades": 30.9,
+            "final_equity": 190130.51
+          },
+          "atr_position": {
+            "total_return_pct": 355.91,
+            "annualized_return_pct": 82.3,
+            "annualized_volatility_pct": 71.03,
+            "sharpe_ratio": 1.131,
+            "max_drawdown_pct": -48.06,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 3.36,
+            "total_trades": 20,
+            "final_equity": 455909.1,
+            "avg_shares_per_trade": 70355.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -13.74,
+            "annualized_return_pct": -5.68,
+            "annualized_volatility_pct": 4.62,
+            "sharpe_ratio": -1.662,
+            "max_drawdown_pct": -13.74,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 0.1,
+            "max_consecutive_losses": 4,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 86255.6
+          },
+          "atr_position": {
+            "total_return_pct": -53.28,
+            "annualized_return_pct": -26.01,
+            "annualized_volatility_pct": 27.67,
+            "sharpe_ratio": -1.012,
+            "max_drawdown_pct": -53.28,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 0.13,
+            "total_trades": 10,
+            "final_equity": 46722.04,
+            "avg_shares_per_trade": 52360.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "600584",
+      "name": "长电科技",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 81.23,
+            "annualized_return_pct": 26.78,
+            "annualized_volatility_pct": 36.0,
+            "sharpe_ratio": 0.688,
+            "max_drawdown_pct": -24.48,
+            "win_rate_pct": 60.0,
+            "profit_loss_ratio": 2.35,
+            "max_consecutive_losses": 1,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.4,
+            "final_equity": 181232.66
+          },
+          "atr_position": {
+            "total_return_pct": 313.21,
+            "annualized_return_pct": 76.14,
+            "annualized_volatility_pct": 82.25,
+            "sharpe_ratio": 0.901,
+            "max_drawdown_pct": -46.22,
+            "win_rate_pct": 60.0,
+            "profit_loss_ratio": 2.48,
+            "total_trades": 10,
+            "final_equity": 413208.55,
+            "avg_shares_per_trade": 10810.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": 61.72,
+            "annualized_return_pct": 21.14,
+            "annualized_volatility_pct": 14.13,
+            "sharpe_ratio": 1.355,
+            "max_drawdown_pct": -11.26,
+            "win_rate_pct": 71.4,
+            "profit_loss_ratio": 4.51,
+            "max_consecutive_losses": 2,
+            "total_trades": 7,
+            "avg_days_between_trades": 87.7,
+            "final_equity": 161716.81
+          },
+          "atr_position": {
+            "total_return_pct": 199.74,
+            "annualized_return_pct": 54.96,
+            "annualized_volatility_pct": 33.3,
+            "sharpe_ratio": 1.59,
+            "max_drawdown_pct": -21.71,
+            "win_rate_pct": 71.4,
+            "profit_loss_ratio": 4.37,
+            "total_trades": 7,
+            "final_equity": 299741.61,
+            "avg_shares_per_trade": 12414.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 26.53,
+            "annualized_return_pct": 9.85,
+            "annualized_volatility_pct": 27.1,
+            "sharpe_ratio": 0.289,
+            "max_drawdown_pct": -22.53,
+            "win_rate_pct": 25.0,
+            "profit_loss_ratio": 4.57,
+            "max_consecutive_losses": 7,
+            "total_trades": 24,
+            "avg_days_between_trades": 25.6,
+            "final_equity": 126532.9
+          },
+          "atr_position": {
+            "total_return_pct": 117.94,
+            "annualized_return_pct": 36.46,
+            "annualized_volatility_pct": 57.41,
+            "sharpe_ratio": 0.6,
+            "max_drawdown_pct": -46.35,
+            "win_rate_pct": 25.0,
+            "profit_loss_ratio": 5.69,
+            "total_trades": 24,
+            "final_equity": 217942.74,
+            "avg_shares_per_trade": 10292.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 122.32,
+            "annualized_return_pct": 37.55,
+            "annualized_volatility_pct": 42.96,
+            "sharpe_ratio": 0.827,
+            "max_drawdown_pct": -32.2,
+            "win_rate_pct": 62.5,
+            "profit_loss_ratio": 3.62,
+            "max_consecutive_losses": 2,
+            "total_trades": 8,
+            "avg_days_between_trades": 76.8,
+            "final_equity": 222321.87
+          },
+          "atr_position": {
+            "total_return_pct": 453.65,
+            "annualized_return_pct": 97.96,
+            "annualized_volatility_pct": 100.09,
+            "sharpe_ratio": 0.959,
+            "max_drawdown_pct": -65.7,
+            "win_rate_pct": 62.5,
+            "profit_loss_ratio": 3.68,
+            "total_trades": 8,
+            "final_equity": 553653.17,
+            "avg_shares_per_trade": 11938.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 159.36,
+            "annualized_return_pct": 46.27,
+            "annualized_volatility_pct": 35.34,
+            "sharpe_ratio": 1.253,
+            "max_drawdown_pct": -26.67,
+            "win_rate_pct": 47.4,
+            "profit_loss_ratio": 4.87,
+            "max_consecutive_losses": 4,
+            "total_trades": 19,
+            "avg_days_between_trades": 32.3,
+            "final_equity": 259364.92
+          },
+          "atr_position": {
+            "total_return_pct": 480.34,
+            "annualized_return_pct": 101.71,
+            "annualized_volatility_pct": 72.42,
+            "sharpe_ratio": 1.377,
+            "max_drawdown_pct": -44.52,
+            "win_rate_pct": 47.4,
+            "profit_loss_ratio": 4.4,
+            "total_trades": 19,
+            "final_equity": 580341.89,
+            "avg_shares_per_trade": 11247.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -23.31,
+            "annualized_return_pct": -10.05,
+            "annualized_volatility_pct": 10.62,
+            "sharpe_ratio": -1.134,
+            "max_drawdown_pct": -23.31,
+            "win_rate_pct": 27.8,
+            "profit_loss_ratio": 0.42,
+            "max_consecutive_losses": 7,
+            "total_trades": 18,
+            "avg_days_between_trades": 34.1,
+            "final_equity": 76687.57
+          },
+          "atr_position": {
+            "total_return_pct": -98.39,
+            "annualized_return_pct": -80.74,
+            "annualized_volatility_pct": 114.72,
+            "sharpe_ratio": -0.721,
+            "max_drawdown_pct": -98.39,
+            "win_rate_pct": 27.8,
+            "profit_loss_ratio": 0.4,
+            "total_trades": 18,
+            "final_equity": 1611.36,
+            "avg_shares_per_trade": 10194.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "688981",
+      "name": "中芯国际",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 74.18,
+            "annualized_return_pct": 24.83,
+            "annualized_volatility_pct": 40.51,
+            "sharpe_ratio": 0.564,
+            "max_drawdown_pct": -34.73,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 2.18,
+            "max_consecutive_losses": 2,
+            "total_trades": 12,
+            "avg_days_between_trades": 51.1,
+            "final_equity": 174180.08
+          },
+          "atr_position": {
+            "total_return_pct": 425.98,
+            "annualized_return_pct": 94.16,
+            "annualized_volatility_pct": 161.35,
+            "sharpe_ratio": 0.571,
+            "max_drawdown_pct": -58.19,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 4.39,
+            "total_trades": 12,
+            "final_equity": 525977.35,
+            "avg_shares_per_trade": 5742.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": 64.57,
+            "annualized_return_pct": 22.03,
+            "annualized_volatility_pct": 24.26,
+            "sharpe_ratio": 0.825,
+            "max_drawdown_pct": -20.77,
+            "win_rate_pct": 55.6,
+            "profit_loss_ratio": 4.39,
+            "max_consecutive_losses": 2,
+            "total_trades": 9,
+            "avg_days_between_trades": 68.1,
+            "final_equity": 164565.03
+          },
+          "atr_position": {
+            "total_return_pct": 290.71,
+            "annualized_return_pct": 72.4,
+            "annualized_volatility_pct": 63.81,
+            "sharpe_ratio": 1.103,
+            "max_drawdown_pct": -33.35,
+            "win_rate_pct": 55.6,
+            "profit_loss_ratio": 5.68,
+            "total_trades": 9,
+            "final_equity": 390708.01,
+            "avg_shares_per_trade": 6556.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": -26.66,
+            "annualized_return_pct": -11.65,
+            "annualized_volatility_pct": 24.88,
+            "sharpe_ratio": -0.549,
+            "max_drawdown_pct": -36.4,
+            "win_rate_pct": 23.7,
+            "profit_loss_ratio": 1.6,
+            "max_consecutive_losses": 6,
+            "total_trades": 38,
+            "avg_days_between_trades": 16.1,
+            "final_equity": 73343.01
+          },
+          "atr_position": {
+            "total_return_pct": -63.18,
+            "annualized_return_pct": -32.92,
+            "annualized_volatility_pct": 1083.25,
+            "sharpe_ratio": -0.032,
+            "max_drawdown_pct": -180.58,
+            "win_rate_pct": 23.7,
+            "profit_loss_ratio": 2.39,
+            "total_trades": 38,
+            "final_equity": 36823.32,
+            "avg_shares_per_trade": 4995.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 138.98,
+            "annualized_return_pct": 41.65,
+            "annualized_volatility_pct": 46.01,
+            "sharpe_ratio": 0.862,
+            "max_drawdown_pct": -24.38,
+            "win_rate_pct": 71.4,
+            "profit_loss_ratio": 3.39,
+            "max_consecutive_losses": 1,
+            "total_trades": 7,
+            "avg_days_between_trades": 87.6,
+            "final_equity": 238980.26
+          },
+          "atr_position": {
+            "total_return_pct": 477.27,
+            "annualized_return_pct": 101.51,
+            "annualized_volatility_pct": 112.37,
+            "sharpe_ratio": 0.886,
+            "max_drawdown_pct": -40.71,
+            "win_rate_pct": 71.4,
+            "profit_loss_ratio": 3.77,
+            "total_trades": 7,
+            "final_equity": 577269.51,
+            "avg_shares_per_trade": 5943.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 99.27,
+            "annualized_return_pct": 31.73,
+            "annualized_volatility_pct": 41.5,
+            "sharpe_ratio": 0.716,
+            "max_drawdown_pct": -35.16,
+            "win_rate_pct": 35.0,
+            "profit_loss_ratio": 3.64,
+            "max_consecutive_losses": 6,
+            "total_trades": 20,
+            "avg_days_between_trades": 30.6,
+            "final_equity": 199274.14
+          },
+          "atr_position": {
+            "total_return_pct": 546.27,
+            "annualized_return_pct": 110.81,
+            "annualized_volatility_pct": 78.57,
+            "sharpe_ratio": 1.385,
+            "max_drawdown_pct": -34.58,
+            "win_rate_pct": 35.0,
+            "profit_loss_ratio": 7.35,
+            "total_trades": 20,
+            "final_equity": 646266.22,
+            "avg_shares_per_trade": 5130.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -5.93,
+            "annualized_return_pct": -2.41,
+            "annualized_volatility_pct": 9.79,
+            "sharpe_ratio": -0.451,
+            "max_drawdown_pct": -13.45,
+            "win_rate_pct": 36.4,
+            "profit_loss_ratio": 1.15,
+            "max_consecutive_losses": 4,
+            "total_trades": 11,
+            "avg_days_between_trades": 55.7,
+            "final_equity": 94071.03
+          },
+          "atr_position": {
+            "total_return_pct": -32.46,
+            "annualized_return_pct": -14.51,
+            "annualized_volatility_pct": 39.11,
+            "sharpe_ratio": -0.422,
+            "max_drawdown_pct": -51.57,
+            "win_rate_pct": 36.4,
+            "profit_loss_ratio": 0.99,
+            "total_trades": 11,
+            "final_equity": 67544.4,
+            "avg_shares_per_trade": 6055.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "002156",
+      "name": "通富微电",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 126.6,
+            "annualized_return_pct": 38.23,
+            "annualized_volatility_pct": 38.3,
+            "sharpe_ratio": 0.946,
+            "max_drawdown_pct": -29.85,
+            "win_rate_pct": 55.6,
+            "profit_loss_ratio": 2.45,
+            "max_consecutive_losses": 2,
+            "total_trades": 9,
+            "avg_days_between_trades": 68.8,
+            "final_equity": 226600.23
+          },
+          "atr_position": {
+            "total_return_pct": 550.42,
+            "annualized_return_pct": 109.83,
+            "annualized_volatility_pct": 84.69,
+            "sharpe_ratio": 1.273,
+            "max_drawdown_pct": -45.62,
+            "win_rate_pct": 55.6,
+            "profit_loss_ratio": 4.82,
+            "total_trades": 9,
+            "final_equity": 650422.15,
+            "avg_shares_per_trade": 12333.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -3.32,
+            "annualized_return_pct": -1.33,
+            "annualized_volatility_pct": 16.39,
+            "sharpe_ratio": -0.203,
+            "max_drawdown_pct": -21.94,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 1.37,
+            "max_consecutive_losses": 3,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 96680.39
+          },
+          "atr_position": {
+            "total_return_pct": 27.66,
+            "annualized_return_pct": 10.15,
+            "annualized_volatility_pct": 112.04,
+            "sharpe_ratio": 0.073,
+            "max_drawdown_pct": -80.94,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 1.81,
+            "total_trades": 10,
+            "final_equity": 127660.77,
+            "avg_shares_per_trade": 16490.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 110.55,
+            "annualized_return_pct": 34.27,
+            "annualized_volatility_pct": 36.11,
+            "sharpe_ratio": 0.894,
+            "max_drawdown_pct": -35.06,
+            "win_rate_pct": 29.6,
+            "profit_loss_ratio": 6.21,
+            "max_consecutive_losses": 8,
+            "total_trades": 27,
+            "avg_days_between_trades": 22.9,
+            "final_equity": 210548.19
+          },
+          "atr_position": {
+            "total_return_pct": 380.5,
+            "annualized_return_pct": 86.13,
+            "annualized_volatility_pct": 69.61,
+            "sharpe_ratio": 1.209,
+            "max_drawdown_pct": -45.75,
+            "win_rate_pct": 29.6,
+            "profit_loss_ratio": 7.61,
+            "total_trades": 27,
+            "final_equity": 480500.81,
+            "avg_shares_per_trade": 13022.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 195.5,
+            "annualized_return_pct": 53.55,
+            "annualized_volatility_pct": 46.9,
+            "sharpe_ratio": 1.099,
+            "max_drawdown_pct": -35.32,
+            "win_rate_pct": 55.6,
+            "profit_loss_ratio": 6.68,
+            "max_consecutive_losses": 2,
+            "total_trades": 9,
+            "avg_days_between_trades": 68.8,
+            "final_equity": 295502.0
+          },
+          "atr_position": {
+            "total_return_pct": 455.53,
+            "annualized_return_pct": 97.13,
+            "annualized_volatility_pct": 385.87,
+            "sharpe_ratio": 0.247,
+            "max_drawdown_pct": -99.19,
+            "win_rate_pct": 44.4,
+            "profit_loss_ratio": 6.3,
+            "total_trades": 9,
+            "final_equity": 555529.97,
+            "avg_shares_per_trade": 13767.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 146.01,
+            "annualized_return_pct": 42.8,
+            "annualized_volatility_pct": 40.75,
+            "sharpe_ratio": 1.001,
+            "max_drawdown_pct": -35.04,
+            "win_rate_pct": 43.8,
+            "profit_loss_ratio": 3.13,
+            "max_consecutive_losses": 3,
+            "total_trades": 16,
+            "avg_days_between_trades": 38.7,
+            "final_equity": 246008.15
+          },
+          "atr_position": {
+            "total_return_pct": 519.22,
+            "annualized_return_pct": 105.78,
+            "annualized_volatility_pct": 69.15,
+            "sharpe_ratio": 1.501,
+            "max_drawdown_pct": -46.13,
+            "win_rate_pct": 43.8,
+            "profit_loss_ratio": 5.42,
+            "total_trades": 16,
+            "final_equity": 619222.04,
+            "avg_shares_per_trade": 12294.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 45.23,
+            "annualized_return_pct": 15.91,
+            "annualized_volatility_pct": 22.4,
+            "sharpe_ratio": 0.621,
+            "max_drawdown_pct": -14.9,
+            "win_rate_pct": 35.0,
+            "profit_loss_ratio": 4.0,
+            "max_consecutive_losses": 5,
+            "total_trades": 20,
+            "avg_days_between_trades": 30.9,
+            "final_equity": 145226.98
+          },
+          "atr_position": {
+            "total_return_pct": 235.74,
+            "annualized_return_pct": 61.51,
+            "annualized_volatility_pct": 71.74,
+            "sharpe_ratio": 0.829,
+            "max_drawdown_pct": -55.52,
+            "win_rate_pct": 35.0,
+            "profit_loss_ratio": 5.84,
+            "total_trades": 20,
+            "final_equity": 335740.19,
+            "avg_shares_per_trade": 9095.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "002413",
+      "name": "雷科防务",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 46.62,
+            "annualized_return_pct": 16.35,
+            "annualized_volatility_pct": 38.88,
+            "sharpe_ratio": 0.369,
+            "max_drawdown_pct": -48.16,
+            "win_rate_pct": 42.9,
+            "profit_loss_ratio": 2.23,
+            "max_consecutive_losses": 3,
+            "total_trades": 14,
+            "avg_days_between_trades": 44.2,
+            "final_equity": 146618.15
+          },
+          "atr_position": {
+            "total_return_pct": 252.43,
+            "annualized_return_pct": 64.64,
+            "annualized_volatility_pct": 140.03,
+            "sharpe_ratio": 0.447,
+            "max_drawdown_pct": -86.72,
+            "win_rate_pct": 42.9,
+            "profit_loss_ratio": 2.97,
+            "total_trades": 14,
+            "final_equity": 352428.46,
+            "avg_shares_per_trade": 71629.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -31.97,
+            "annualized_return_pct": -14.14,
+            "annualized_volatility_pct": 11.99,
+            "sharpe_ratio": -1.346,
+            "max_drawdown_pct": -35.45,
+            "win_rate_pct": 23.1,
+            "profit_loss_ratio": 0.15,
+            "max_consecutive_losses": 6,
+            "total_trades": 13,
+            "avg_days_between_trades": 47.6,
+            "final_equity": 68026.45
+          },
+          "atr_position": {
+            "total_return_pct": -120.65,
+            "annualized_return_pct": NaN,
+            "annualized_volatility_pct": 3539.73,
+            "sharpe_ratio": NaN,
+            "max_drawdown_pct": -121.49,
+            "win_rate_pct": 23.1,
+            "profit_loss_ratio": 0.13,
+            "total_trades": 13,
+            "final_equity": -20647.83,
+            "avg_shares_per_trade": 62615.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 24.08,
+            "annualized_return_pct": 8.91,
+            "annualized_volatility_pct": 27.44,
+            "sharpe_ratio": 0.252,
+            "max_drawdown_pct": -35.14,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 4.13,
+            "max_consecutive_losses": 2,
+            "total_trades": 9,
+            "avg_days_between_trades": 68.8,
+            "final_equity": 124078.48
+          },
+          "atr_position": {
+            "total_return_pct": 46.94,
+            "annualized_return_pct": 16.45,
+            "annualized_volatility_pct": 84.53,
+            "sharpe_ratio": 0.171,
+            "max_drawdown_pct": -57.69,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 3.46,
+            "total_trades": 9,
+            "final_equity": 146937.5,
+            "avg_shares_per_trade": 52944.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 78.0,
+            "annualized_return_pct": 25.64,
+            "annualized_volatility_pct": 46.91,
+            "sharpe_ratio": 0.504,
+            "max_drawdown_pct": -41.12,
+            "win_rate_pct": 37.5,
+            "profit_loss_ratio": 3.53,
+            "max_consecutive_losses": 3,
+            "total_trades": 8,
+            "avg_days_between_trades": 77.4,
+            "final_equity": 177996.8
+          },
+          "atr_position": {
+            "total_return_pct": 645.17,
+            "annualized_return_pct": 121.43,
+            "annualized_volatility_pct": 517.77,
+            "sharpe_ratio": 0.231,
+            "max_drawdown_pct": -118.3,
+            "win_rate_pct": 37.5,
+            "profit_loss_ratio": 8.36,
+            "total_trades": 8,
+            "final_equity": 745166.33,
+            "avg_shares_per_trade": 79362.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 40.46,
+            "annualized_return_pct": 14.39,
+            "annualized_volatility_pct": 42.52,
+            "sharpe_ratio": 0.291,
+            "max_drawdown_pct": -61.71,
+            "win_rate_pct": 31.8,
+            "profit_loss_ratio": 2.73,
+            "max_consecutive_losses": 6,
+            "total_trades": 22,
+            "avg_days_between_trades": 28.1,
+            "final_equity": 140456.79
+          },
+          "atr_position": {
+            "total_return_pct": 399.54,
+            "annualized_return_pct": 89.01,
+            "annualized_volatility_pct": 197.79,
+            "sharpe_ratio": 0.44,
+            "max_drawdown_pct": -96.71,
+            "win_rate_pct": 31.8,
+            "profit_loss_ratio": 5.09,
+            "total_trades": 22,
+            "final_equity": 499535.57,
+            "avg_shares_per_trade": 68182.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -24.93,
+            "annualized_return_pct": -10.73,
+            "annualized_volatility_pct": 12.49,
+            "sharpe_ratio": -1.019,
+            "max_drawdown_pct": -28.68,
+            "win_rate_pct": 25.0,
+            "profit_loss_ratio": 0.53,
+            "max_consecutive_losses": 7,
+            "total_trades": 12,
+            "avg_days_between_trades": 51.6,
+            "final_equity": 75071.41
+          },
+          "atr_position": {
+            "total_return_pct": -86.58,
+            "annualized_return_pct": -54.84,
+            "annualized_volatility_pct": 9627.19,
+            "sharpe_ratio": -0.006,
+            "max_drawdown_pct": -104.72,
+            "win_rate_pct": 25.0,
+            "profit_loss_ratio": 0.75,
+            "total_trades": 12,
+            "final_equity": 13417.31,
+            "avg_shares_per_trade": 58725.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "300014",
+      "name": "亿纬锂能",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 69.1,
+            "annualized_return_pct": 23.11,
+            "annualized_volatility_pct": 36.89,
+            "sharpe_ratio": 0.572,
+            "max_drawdown_pct": -28.67,
+            "win_rate_pct": 55.6,
+            "profit_loss_ratio": 2.24,
+            "max_consecutive_losses": 1,
+            "total_trades": 9,
+            "avg_days_between_trades": 68.8,
+            "final_equity": 169102.04
+          },
+          "atr_position": {
+            "total_return_pct": 317.91,
+            "annualized_return_pct": 76.13,
+            "annualized_volatility_pct": 90.7,
+            "sharpe_ratio": 0.817,
+            "max_drawdown_pct": -49.93,
+            "win_rate_pct": 55.6,
+            "profit_loss_ratio": 3.55,
+            "total_trades": 9,
+            "final_equity": 417913.61,
+            "avg_shares_per_trade": 8911.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": 27.72,
+            "annualized_return_pct": 10.17,
+            "annualized_volatility_pct": 15.26,
+            "sharpe_ratio": 0.535,
+            "max_drawdown_pct": -14.06,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 4.23,
+            "max_consecutive_losses": 2,
+            "total_trades": 8,
+            "avg_days_between_trades": 77.4,
+            "final_equity": 127724.04
+          },
+          "atr_position": {
+            "total_return_pct": 91.08,
+            "annualized_return_pct": 29.21,
+            "annualized_volatility_pct": 34.01,
+            "sharpe_ratio": 0.8,
+            "max_drawdown_pct": -24.13,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 4.66,
+            "total_trades": 8,
+            "final_equity": 191083.64,
+            "avg_shares_per_trade": 7312.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 52.01,
+            "annualized_return_pct": 18.03,
+            "annualized_volatility_pct": 34.22,
+            "sharpe_ratio": 0.468,
+            "max_drawdown_pct": -27.13,
+            "win_rate_pct": 22.7,
+            "profit_loss_ratio": 8.26,
+            "max_consecutive_losses": 9,
+            "total_trades": 22,
+            "avg_days_between_trades": 28.1,
+            "final_equity": 152010.53
+          },
+          "atr_position": {
+            "total_return_pct": 263.52,
+            "annualized_return_pct": 66.67,
+            "annualized_volatility_pct": 213.24,
+            "sharpe_ratio": 0.303,
+            "max_drawdown_pct": -77.24,
+            "win_rate_pct": 22.7,
+            "profit_loss_ratio": 9.08,
+            "total_trades": 22,
+            "final_equity": 363521.77,
+            "avg_shares_per_trade": 9427.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 3.57,
+            "annualized_return_pct": 1.4,
+            "annualized_volatility_pct": 41.55,
+            "sharpe_ratio": -0.015,
+            "max_drawdown_pct": -40.55,
+            "win_rate_pct": 25.0,
+            "profit_loss_ratio": 3.2,
+            "max_consecutive_losses": 4,
+            "total_trades": 12,
+            "avg_days_between_trades": 51.6,
+            "final_equity": 103567.81
+          },
+          "atr_position": {
+            "total_return_pct": 123.36,
+            "annualized_return_pct": 37.45,
+            "annualized_volatility_pct": 201.34,
+            "sharpe_ratio": 0.176,
+            "max_drawdown_pct": -76.87,
+            "win_rate_pct": 25.0,
+            "profit_loss_ratio": 5.05,
+            "total_trades": 12,
+            "final_equity": 223355.63,
+            "avg_shares_per_trade": 8617.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 13.99,
+            "annualized_return_pct": 5.32,
+            "annualized_volatility_pct": 39.11,
+            "sharpe_ratio": 0.085,
+            "max_drawdown_pct": -42.84,
+            "win_rate_pct": 20.8,
+            "profit_loss_ratio": 4.31,
+            "max_consecutive_losses": 10,
+            "total_trades": 24,
+            "avg_days_between_trades": 25.8,
+            "final_equity": 113990.17
+          },
+          "atr_position": {
+            "total_return_pct": 212.63,
+            "annualized_return_pct": 57.01,
+            "annualized_volatility_pct": 94.15,
+            "sharpe_ratio": 0.584,
+            "max_drawdown_pct": -65.95,
+            "win_rate_pct": 20.8,
+            "profit_loss_ratio": 6.67,
+            "total_trades": 24,
+            "final_equity": 312633.5,
+            "avg_shares_per_trade": 7221.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 58.54,
+            "annualized_return_pct": 20.01,
+            "annualized_volatility_pct": 15.24,
+            "sharpe_ratio": 1.182,
+            "max_drawdown_pct": -9.94,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 10.64,
+            "max_consecutive_losses": 6,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 158543.05
+          },
+          "atr_position": {
+            "total_return_pct": 293.74,
+            "annualized_return_pct": 72.02,
+            "annualized_volatility_pct": 51.13,
+            "sharpe_ratio": 1.37,
+            "max_drawdown_pct": -39.67,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 13.02,
+            "total_trades": 10,
+            "final_equity": 393739.09,
+            "avg_shares_per_trade": 7850.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "002466",
+      "name": "天齐锂业",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 65.85,
+            "annualized_return_pct": 22.17,
+            "annualized_volatility_pct": 31.01,
+            "sharpe_ratio": 0.65,
+            "max_drawdown_pct": -28.47,
+            "win_rate_pct": 44.4,
+            "profit_loss_ratio": 3.15,
+            "max_consecutive_losses": 3,
+            "total_trades": 9,
+            "avg_days_between_trades": 68.8,
+            "final_equity": 165847.21
+          },
+          "atr_position": {
+            "total_return_pct": 249.5,
+            "annualized_return_pct": 64.1,
+            "annualized_volatility_pct": 61.49,
+            "sharpe_ratio": 1.01,
+            "max_drawdown_pct": -39.82,
+            "win_rate_pct": 44.4,
+            "profit_loss_ratio": 4.21,
+            "total_trades": 9,
+            "final_equity": 349498.71,
+            "avg_shares_per_trade": 9356.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -49.11,
+            "annualized_return_pct": -23.46,
+            "annualized_volatility_pct": 16.83,
+            "sharpe_ratio": -1.513,
+            "max_drawdown_pct": -49.32,
+            "win_rate_pct": 22.2,
+            "profit_loss_ratio": 0.22,
+            "max_consecutive_losses": 12,
+            "total_trades": 18,
+            "avg_days_between_trades": 34.4,
+            "final_equity": 50886.93
+          },
+          "atr_position": {
+            "total_return_pct": -243.79,
+            "annualized_return_pct": NaN,
+            "annualized_volatility_pct": 1018.14,
+            "sharpe_ratio": NaN,
+            "max_drawdown_pct": -244.56,
+            "win_rate_pct": 22.2,
+            "profit_loss_ratio": 0.24,
+            "total_trades": 18,
+            "final_equity": -143785.02,
+            "avg_shares_per_trade": 10606.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 59.95,
+            "annualized_return_pct": 20.43,
+            "annualized_volatility_pct": 25.99,
+            "sharpe_ratio": 0.709,
+            "max_drawdown_pct": -17.63,
+            "win_rate_pct": 42.9,
+            "profit_loss_ratio": 4.84,
+            "max_consecutive_losses": 4,
+            "total_trades": 14,
+            "avg_days_between_trades": 44.2,
+            "final_equity": 159954.16
+          },
+          "atr_position": {
+            "total_return_pct": 202.3,
+            "annualized_return_pct": 54.94,
+            "annualized_volatility_pct": 72.66,
+            "sharpe_ratio": 0.729,
+            "max_drawdown_pct": -50.74,
+            "win_rate_pct": 42.9,
+            "profit_loss_ratio": 4.78,
+            "total_trades": 14,
+            "final_equity": 302304.26,
+            "avg_shares_per_trade": 11207.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 87.72,
+            "annualized_return_pct": 28.31,
+            "annualized_volatility_pct": 35.39,
+            "sharpe_ratio": 0.743,
+            "max_drawdown_pct": -26.19,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 4.45,
+            "max_consecutive_losses": 1,
+            "total_trades": 6,
+            "avg_days_between_trades": 103.2,
+            "final_equity": 187721.43
+          },
+          "atr_position": {
+            "total_return_pct": 353.04,
+            "annualized_return_pct": 81.84,
+            "annualized_volatility_pct": 83.12,
+            "sharpe_ratio": 0.961,
+            "max_drawdown_pct": -54.25,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 5.61,
+            "total_trades": 6,
+            "final_equity": 453038.35,
+            "avg_shares_per_trade": 9483.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": -18.64,
+            "annualized_return_pct": -7.84,
+            "annualized_volatility_pct": 35.68,
+            "sharpe_ratio": -0.276,
+            "max_drawdown_pct": -44.05,
+            "win_rate_pct": 29.2,
+            "profit_loss_ratio": 1.87,
+            "max_consecutive_losses": 6,
+            "total_trades": 24,
+            "avg_days_between_trades": 25.8,
+            "final_equity": 81355.68
+          },
+          "atr_position": {
+            "total_return_pct": 36.84,
+            "annualized_return_pct": 13.22,
+            "annualized_volatility_pct": 3103.38,
+            "sharpe_ratio": 0.004,
+            "max_drawdown_pct": -154.32,
+            "win_rate_pct": 29.2,
+            "profit_loss_ratio": 2.72,
+            "total_trades": 24,
+            "final_equity": 136843.6,
+            "avg_shares_per_trade": 9746.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 15.34,
+            "annualized_return_pct": 5.81,
+            "annualized_volatility_pct": 12.14,
+            "sharpe_ratio": 0.314,
+            "max_drawdown_pct": -9.69,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 4.86,
+            "max_consecutive_losses": 2,
+            "total_trades": 6,
+            "avg_days_between_trades": 103.2,
+            "final_equity": 115338.08
+          },
+          "atr_position": {
+            "total_return_pct": 45.09,
+            "annualized_return_pct": 15.87,
+            "annualized_volatility_pct": 32.89,
+            "sharpe_ratio": 0.422,
+            "max_drawdown_pct": -24.74,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 4.91,
+            "total_trades": 6,
+            "final_equity": 145093.41,
+            "avg_shares_per_trade": 7100.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "300285",
+      "name": "国瓷材料",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 145.74,
+            "annualized_return_pct": 42.74,
+            "annualized_volatility_pct": 44.71,
+            "sharpe_ratio": 0.911,
+            "max_drawdown_pct": -28.85,
+            "win_rate_pct": 45.5,
+            "profit_loss_ratio": 5.64,
+            "max_consecutive_losses": 2,
+            "total_trades": 11,
+            "avg_days_between_trades": 56.3,
+            "final_equity": 245744.68
+          },
+          "atr_position": {
+            "total_return_pct": 431.98,
+            "annualized_return_pct": 93.78,
+            "annualized_volatility_pct": 92.85,
+            "sharpe_ratio": 0.988,
+            "max_drawdown_pct": -60.18,
+            "win_rate_pct": 45.5,
+            "profit_loss_ratio": 5.5,
+            "total_trades": 11,
+            "final_equity": 531978.37,
+            "avg_shares_per_trade": 17555.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": 32.73,
+            "annualized_return_pct": 11.86,
+            "annualized_volatility_pct": 19.59,
+            "sharpe_ratio": 0.503,
+            "max_drawdown_pct": -17.07,
+            "win_rate_pct": 44.4,
+            "profit_loss_ratio": 3.83,
+            "max_consecutive_losses": 2,
+            "total_trades": 9,
+            "avg_days_between_trades": 68.8,
+            "final_equity": 132726.87
+          },
+          "atr_position": {
+            "total_return_pct": 150.43,
+            "annualized_return_pct": 43.81,
+            "annualized_volatility_pct": 61.59,
+            "sharpe_ratio": 0.679,
+            "max_drawdown_pct": -43.06,
+            "win_rate_pct": 44.4,
+            "profit_loss_ratio": 4.16,
+            "total_trades": 9,
+            "final_equity": 250429.17,
+            "avg_shares_per_trade": 27056.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 104.35,
+            "annualized_return_pct": 32.69,
+            "annualized_volatility_pct": 40.6,
+            "sharpe_ratio": 0.756,
+            "max_drawdown_pct": -35.32,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 6.74,
+            "max_consecutive_losses": 11,
+            "total_trades": 30,
+            "avg_days_between_trades": 20.6,
+            "final_equity": 204349.99
+          },
+          "atr_position": {
+            "total_return_pct": 267.91,
+            "annualized_return_pct": 67.46,
+            "annualized_volatility_pct": 93.5,
+            "sharpe_ratio": 0.7,
+            "max_drawdown_pct": -76.69,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 5.46,
+            "total_trades": 30,
+            "final_equity": 367907.35,
+            "avg_shares_per_trade": 19373.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 148.11,
+            "annualized_return_pct": 43.29,
+            "annualized_volatility_pct": 50.63,
+            "sharpe_ratio": 0.815,
+            "max_drawdown_pct": -39.94,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 9.01,
+            "max_consecutive_losses": 3,
+            "total_trades": 8,
+            "avg_days_between_trades": 77.4,
+            "final_equity": 248114.93
+          },
+          "atr_position": {
+            "total_return_pct": 378.44,
+            "annualized_return_pct": 85.81,
+            "annualized_volatility_pct": 155.42,
+            "sharpe_ratio": 0.539,
+            "max_drawdown_pct": -78.67,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 6.1,
+            "total_trades": 8,
+            "final_equity": 478442.48,
+            "avg_shares_per_trade": 19188.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 409.45,
+            "annualized_return_pct": 90.49,
+            "annualized_volatility_pct": 47.73,
+            "sharpe_ratio": 1.854,
+            "max_drawdown_pct": -22.44,
+            "win_rate_pct": 47.1,
+            "profit_loss_ratio": 11.05,
+            "max_consecutive_losses": 3,
+            "total_trades": 17,
+            "avg_days_between_trades": 36.4,
+            "final_equity": 509447.13
+          },
+          "atr_position": {
+            "total_return_pct": 777.45,
+            "annualized_return_pct": 136.23,
+            "annualized_volatility_pct": 88.23,
+            "sharpe_ratio": 1.521,
+            "max_drawdown_pct": -56.55,
+            "win_rate_pct": 47.1,
+            "profit_loss_ratio": 7.34,
+            "total_trades": 17,
+            "final_equity": 877453.49,
+            "avg_shares_per_trade": 20782.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 23.94,
+            "annualized_return_pct": 8.87,
+            "annualized_volatility_pct": 16.73,
+            "sharpe_ratio": 0.41,
+            "max_drawdown_pct": -10.62,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 4.75,
+            "max_consecutive_losses": 4,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 123940.67
+          },
+          "atr_position": {
+            "total_return_pct": 72.15,
+            "annualized_return_pct": 23.99,
+            "annualized_volatility_pct": 60.52,
+            "sharpe_ratio": 0.363,
+            "max_drawdown_pct": -24.86,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 4.01,
+            "total_trades": 10,
+            "final_equity": 172148.69,
+            "avg_shares_per_trade": 14630.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "603308",
+      "name": "应流股份",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 161.92,
+            "annualized_return_pct": 46.39,
+            "annualized_volatility_pct": 38.8,
+            "sharpe_ratio": 1.144,
+            "max_drawdown_pct": -26.26,
+            "win_rate_pct": 66.7,
+            "profit_loss_ratio": 4.01,
+            "max_consecutive_losses": 2,
+            "total_trades": 12,
+            "avg_days_between_trades": 51.6,
+            "final_equity": 261915.7
+          },
+          "atr_position": {
+            "total_return_pct": 387.56,
+            "annualized_return_pct": 87.21,
+            "annualized_volatility_pct": 88.68,
+            "sharpe_ratio": 0.961,
+            "max_drawdown_pct": -65.79,
+            "win_rate_pct": 66.7,
+            "profit_loss_ratio": 3.15,
+            "total_trades": 12,
+            "final_equity": 487562.12,
+            "avg_shares_per_trade": 18400.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -6.17,
+            "annualized_return_pct": -2.49,
+            "annualized_volatility_pct": 17.09,
+            "sharpe_ratio": -0.263,
+            "max_drawdown_pct": -23.0,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 3.24,
+            "max_consecutive_losses": 5,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 93828.73
+          },
+          "atr_position": {
+            "total_return_pct": 38.4,
+            "annualized_return_pct": 13.72,
+            "annualized_volatility_pct": 70.97,
+            "sharpe_ratio": 0.165,
+            "max_drawdown_pct": -66.47,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 5.7,
+            "total_trades": 10,
+            "final_equity": 138395.07,
+            "avg_shares_per_trade": 24520.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 86.23,
+            "annualized_return_pct": 27.9,
+            "annualized_volatility_pct": 33.34,
+            "sharpe_ratio": 0.777,
+            "max_drawdown_pct": -27.06,
+            "win_rate_pct": 26.7,
+            "profit_loss_ratio": 6.37,
+            "max_consecutive_losses": 4,
+            "total_trades": 30,
+            "avg_days_between_trades": 20.6,
+            "final_equity": 186231.08
+          },
+          "atr_position": {
+            "total_return_pct": 272.06,
+            "annualized_return_pct": 68.21,
+            "annualized_volatility_pct": 71.84,
+            "sharpe_ratio": 0.922,
+            "max_drawdown_pct": -49.93,
+            "win_rate_pct": 26.7,
+            "profit_loss_ratio": 7.05,
+            "total_trades": 30,
+            "final_equity": 372055.43,
+            "avg_shares_per_trade": 14337.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 338.61,
+            "annualized_return_pct": 79.53,
+            "annualized_volatility_pct": 46.93,
+            "sharpe_ratio": 1.652,
+            "max_drawdown_pct": -21.73,
+            "win_rate_pct": 83.3,
+            "profit_loss_ratio": 6.47,
+            "max_consecutive_losses": 1,
+            "total_trades": 6,
+            "avg_days_between_trades": 103.2,
+            "final_equity": 438613.94
+          },
+          "atr_position": {
+            "total_return_pct": 558.98,
+            "annualized_return_pct": 110.92,
+            "annualized_volatility_pct": 86.76,
+            "sharpe_ratio": 1.255,
+            "max_drawdown_pct": -53.56,
+            "win_rate_pct": 83.3,
+            "profit_loss_ratio": 3.16,
+            "total_trades": 6,
+            "final_equity": 658980.15,
+            "avg_shares_per_trade": 22650.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 191.72,
+            "annualized_return_pct": 52.77,
+            "annualized_volatility_pct": 38.04,
+            "sharpe_ratio": 1.335,
+            "max_drawdown_pct": -21.21,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 3.25,
+            "max_consecutive_losses": 2,
+            "total_trades": 18,
+            "avg_days_between_trades": 34.4,
+            "final_equity": 291717.2
+          },
+          "atr_position": {
+            "total_return_pct": 293.17,
+            "annualized_return_pct": 71.92,
+            "annualized_volatility_pct": 70.33,
+            "sharpe_ratio": 0.994,
+            "max_drawdown_pct": -52.85,
+            "win_rate_pct": 44.4,
+            "profit_loss_ratio": 3.67,
+            "total_trades": 18,
+            "final_equity": 393168.5,
+            "avg_shares_per_trade": 14750.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 16.33,
+            "annualized_return_pct": 6.17,
+            "annualized_volatility_pct": 12.54,
+            "sharpe_ratio": 0.333,
+            "max_drawdown_pct": -11.95,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 5.61,
+            "max_consecutive_losses": 2,
+            "total_trades": 6,
+            "avg_days_between_trades": 103.2,
+            "final_equity": 116326.01
+          },
+          "atr_position": {
+            "total_return_pct": 49.63,
+            "annualized_return_pct": 17.29,
+            "annualized_volatility_pct": 35.35,
+            "sharpe_ratio": 0.433,
+            "max_drawdown_pct": -30.23,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 5.71,
+            "total_trades": 6,
+            "final_equity": 149626.72,
+            "avg_shares_per_trade": 13850.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "300124",
+      "name": "汇川技术",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 22.8,
+            "annualized_return_pct": 8.47,
+            "annualized_volatility_pct": 26.42,
+            "sharpe_ratio": 0.245,
+            "max_drawdown_pct": -35.82,
+            "win_rate_pct": 45.5,
+            "profit_loss_ratio": 2.14,
+            "max_consecutive_losses": 4,
+            "total_trades": 11,
+            "avg_days_between_trades": 56.3,
+            "final_equity": 122804.81
+          },
+          "atr_position": {
+            "total_return_pct": 126.09,
+            "annualized_return_pct": 38.11,
+            "annualized_volatility_pct": 68.11,
+            "sharpe_ratio": 0.53,
+            "max_drawdown_pct": -63.61,
+            "win_rate_pct": 45.5,
+            "profit_loss_ratio": 2.64,
+            "total_trades": 11,
+            "final_equity": 226094.06,
+            "avg_shares_per_trade": 6473.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -7.5,
+            "annualized_return_pct": -3.04,
+            "annualized_volatility_pct": 12.06,
+            "sharpe_ratio": -0.418,
+            "max_drawdown_pct": -17.93,
+            "win_rate_pct": 21.4,
+            "profit_loss_ratio": 2.55,
+            "max_consecutive_losses": 6,
+            "total_trades": 14,
+            "avg_days_between_trades": 44.2,
+            "final_equity": 92504.53
+          },
+          "atr_position": {
+            "total_return_pct": -30.43,
+            "annualized_return_pct": -13.38,
+            "annualized_volatility_pct": 96.71,
+            "sharpe_ratio": -0.159,
+            "max_drawdown_pct": -83.17,
+            "win_rate_pct": 21.4,
+            "profit_loss_ratio": 2.72,
+            "total_trades": 14,
+            "final_equity": 69570.69,
+            "avg_shares_per_trade": 7393.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 0.02,
+            "annualized_return_pct": 0.01,
+            "annualized_volatility_pct": 17.4,
+            "sharpe_ratio": -0.115,
+            "max_drawdown_pct": -27.18,
+            "win_rate_pct": 29.2,
+            "profit_loss_ratio": 2.48,
+            "max_consecutive_losses": 7,
+            "total_trades": 24,
+            "avg_days_between_trades": 25.8,
+            "final_equity": 100018.15
+          },
+          "atr_position": {
+            "total_return_pct": 7.53,
+            "annualized_return_pct": 2.92,
+            "annualized_volatility_pct": 87.89,
+            "sharpe_ratio": 0.01,
+            "max_drawdown_pct": -76.29,
+            "win_rate_pct": 29.2,
+            "profit_loss_ratio": 2.6,
+            "total_trades": 24,
+            "final_equity": 107530.56,
+            "avg_shares_per_trade": 6838.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 35.91,
+            "annualized_return_pct": 12.91,
+            "annualized_volatility_pct": 29.99,
+            "sharpe_ratio": 0.364,
+            "max_drawdown_pct": -26.17,
+            "win_rate_pct": 57.1,
+            "profit_loss_ratio": 1.72,
+            "max_consecutive_losses": 1,
+            "total_trades": 7,
+            "avg_days_between_trades": 88.4,
+            "final_equity": 135913.43
+          },
+          "atr_position": {
+            "total_return_pct": 176.34,
+            "annualized_return_pct": 49.53,
+            "annualized_volatility_pct": 79.55,
+            "sharpe_ratio": 0.597,
+            "max_drawdown_pct": -55.55,
+            "win_rate_pct": 57.1,
+            "profit_loss_ratio": 2.24,
+            "total_trades": 7,
+            "final_equity": 276339.59,
+            "avg_shares_per_trade": 6986.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 10.23,
+            "annualized_return_pct": 3.93,
+            "annualized_volatility_pct": 31.39,
+            "sharpe_ratio": 0.061,
+            "max_drawdown_pct": -31.0,
+            "win_rate_pct": 27.3,
+            "profit_loss_ratio": 2.97,
+            "max_consecutive_losses": 5,
+            "total_trades": 22,
+            "avg_days_between_trades": 28.1,
+            "final_equity": 110228.36
+          },
+          "atr_position": {
+            "total_return_pct": 153.66,
+            "annualized_return_pct": 44.55,
+            "annualized_volatility_pct": 2705.33,
+            "sharpe_ratio": 0.016,
+            "max_drawdown_pct": -127.46,
+            "win_rate_pct": 27.3,
+            "profit_loss_ratio": 3.94,
+            "total_trades": 22,
+            "final_equity": 253663.02,
+            "avg_shares_per_trade": 6859.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -16.55,
+            "annualized_return_pct": -6.91,
+            "annualized_volatility_pct": 9.4,
+            "sharpe_ratio": -0.949,
+            "max_drawdown_pct": -19.12,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 1.23,
+            "max_consecutive_losses": 6,
+            "total_trades": 15,
+            "avg_days_between_trades": 41.3,
+            "final_equity": 83446.13
+          },
+          "atr_position": {
+            "total_return_pct": -71.78,
+            "annualized_return_pct": -39.4,
+            "annualized_volatility_pct": 58.6,
+            "sharpe_ratio": -0.706,
+            "max_drawdown_pct": -75.98,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 1.29,
+            "total_trades": 15,
+            "final_equity": 28215.38,
+            "avg_shares_per_trade": 6233.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "601100",
+      "name": "恒立液压",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": -2.0,
+            "annualized_return_pct": -0.8,
+            "annualized_volatility_pct": 25.68,
+            "sharpe_ratio": -0.109,
+            "max_drawdown_pct": -39.85,
+            "win_rate_pct": 30.8,
+            "profit_loss_ratio": 2.2,
+            "max_consecutive_losses": 3,
+            "total_trades": 13,
+            "avg_days_between_trades": 47.6,
+            "final_equity": 97999.37
+          },
+          "atr_position": {
+            "total_return_pct": 65.14,
+            "annualized_return_pct": 21.96,
+            "annualized_volatility_pct": 60.44,
+            "sharpe_ratio": 0.33,
+            "max_drawdown_pct": -57.06,
+            "win_rate_pct": 30.8,
+            "profit_loss_ratio": 2.99,
+            "total_trades": 13,
+            "final_equity": 165136.84,
+            "avg_shares_per_trade": 4908.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -4.57,
+            "annualized_return_pct": -1.83,
+            "annualized_volatility_pct": 9.09,
+            "sharpe_ratio": -0.422,
+            "max_drawdown_pct": -12.24,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 0.81,
+            "max_consecutive_losses": 2,
+            "total_trades": 5,
+            "avg_days_between_trades": 123.8,
+            "final_equity": 95434.15
+          },
+          "atr_position": {
+            "total_return_pct": -19.32,
+            "annualized_return_pct": -8.15,
+            "annualized_volatility_pct": 39.31,
+            "sharpe_ratio": -0.258,
+            "max_drawdown_pct": -43.56,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 0.75,
+            "total_trades": 5,
+            "final_equity": 80681.81,
+            "avg_shares_per_trade": 6520.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": -19.96,
+            "annualized_return_pct": -8.44,
+            "annualized_volatility_pct": 23.52,
+            "sharpe_ratio": -0.444,
+            "max_drawdown_pct": -26.58,
+            "win_rate_pct": 17.1,
+            "profit_loss_ratio": 3.46,
+            "max_consecutive_losses": 16,
+            "total_trades": 41,
+            "avg_days_between_trades": 15.1,
+            "final_equity": 80039.01
+          },
+          "atr_position": {
+            "total_return_pct": -60.89,
+            "annualized_return_pct": -31.03,
+            "annualized_volatility_pct": 3621.68,
+            "sharpe_ratio": -0.009,
+            "max_drawdown_pct": -110.27,
+            "win_rate_pct": 17.1,
+            "profit_loss_ratio": 3.86,
+            "total_trades": 41,
+            "final_equity": 39113.89,
+            "avg_shares_per_trade": 5290.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 2.34,
+            "annualized_return_pct": 0.92,
+            "annualized_volatility_pct": 33.63,
+            "sharpe_ratio": -0.032,
+            "max_drawdown_pct": -36.74,
+            "win_rate_pct": 41.7,
+            "profit_loss_ratio": 1.48,
+            "max_consecutive_losses": 2,
+            "total_trades": 12,
+            "avg_days_between_trades": 51.6,
+            "final_equity": 102336.35
+          },
+          "atr_position": {
+            "total_return_pct": 77.0,
+            "annualized_return_pct": 25.36,
+            "annualized_volatility_pct": 259.48,
+            "sharpe_ratio": 0.09,
+            "max_drawdown_pct": -96.86,
+            "win_rate_pct": 41.7,
+            "profit_loss_ratio": 2.04,
+            "total_trades": 12,
+            "final_equity": 177000.53,
+            "avg_shares_per_trade": 5892.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 10.98,
+            "annualized_return_pct": 4.21,
+            "annualized_volatility_pct": 30.87,
+            "sharpe_ratio": 0.072,
+            "max_drawdown_pct": -31.64,
+            "win_rate_pct": 26.9,
+            "profit_loss_ratio": 3.03,
+            "max_consecutive_losses": 5,
+            "total_trades": 26,
+            "avg_days_between_trades": 23.8,
+            "final_equity": 110982.48
+          },
+          "atr_position": {
+            "total_return_pct": 172.16,
+            "annualized_return_pct": 48.63,
+            "annualized_volatility_pct": 94.65,
+            "sharpe_ratio": 0.493,
+            "max_drawdown_pct": -62.45,
+            "win_rate_pct": 26.9,
+            "profit_loss_ratio": 4.33,
+            "total_trades": 26,
+            "final_equity": 272155.32,
+            "avg_shares_per_trade": 5231.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 6.31,
+            "annualized_return_pct": 2.45,
+            "annualized_volatility_pct": 8.4,
+            "sharpe_ratio": 0.054,
+            "max_drawdown_pct": -10.41,
+            "win_rate_pct": 62.5,
+            "profit_loss_ratio": 1.38,
+            "max_consecutive_losses": 2,
+            "total_trades": 8,
+            "avg_days_between_trades": 77.4,
+            "final_equity": 106311.2
+          },
+          "atr_position": {
+            "total_return_pct": 20.96,
+            "annualized_return_pct": 7.82,
+            "annualized_volatility_pct": 28.89,
+            "sharpe_ratio": 0.202,
+            "max_drawdown_pct": -32.52,
+            "win_rate_pct": 62.5,
+            "profit_loss_ratio": 1.3,
+            "total_trades": 8,
+            "final_equity": 120961.09,
+            "avg_shares_per_trade": 4050.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "002318",
+      "name": "久立特材",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 33.24,
+            "annualized_return_pct": 12.03,
+            "annualized_volatility_pct": 21.86,
+            "sharpe_ratio": 0.459,
+            "max_drawdown_pct": -22.04,
+            "win_rate_pct": 45.5,
+            "profit_loss_ratio": 3.19,
+            "max_consecutive_losses": 6,
+            "total_trades": 11,
+            "avg_days_between_trades": 56.3,
+            "final_equity": 133241.55
+          },
+          "atr_position": {
+            "total_return_pct": 146.34,
+            "annualized_return_pct": 42.88,
+            "annualized_volatility_pct": 63.37,
+            "sharpe_ratio": 0.645,
+            "max_drawdown_pct": -50.95,
+            "win_rate_pct": 45.5,
+            "profit_loss_ratio": 3.4,
+            "total_trades": 11,
+            "final_equity": 246337.29,
+            "avg_shares_per_trade": 20345.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -9.5,
+            "annualized_return_pct": -3.87,
+            "annualized_volatility_pct": 9.53,
+            "sharpe_ratio": -0.616,
+            "max_drawdown_pct": -19.72,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 1.8,
+            "max_consecutive_losses": 8,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 90503.83
+          },
+          "atr_position": {
+            "total_return_pct": -51.33,
+            "annualized_return_pct": -24.8,
+            "annualized_volatility_pct": 133.59,
+            "sharpe_ratio": -0.201,
+            "max_drawdown_pct": -90.14,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 1.46,
+            "total_trades": 10,
+            "final_equity": 48665.62,
+            "avg_shares_per_trade": 20100.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": -0.13,
+            "annualized_return_pct": -0.05,
+            "annualized_volatility_pct": 18.27,
+            "sharpe_ratio": -0.112,
+            "max_drawdown_pct": -25.19,
+            "win_rate_pct": 22.6,
+            "profit_loss_ratio": 3.49,
+            "max_consecutive_losses": 10,
+            "total_trades": 31,
+            "avg_days_between_trades": 20.0,
+            "final_equity": 99865.46
+          },
+          "atr_position": {
+            "total_return_pct": -4.98,
+            "annualized_return_pct": -2.0,
+            "annualized_volatility_pct": 67.21,
+            "sharpe_ratio": -0.06,
+            "max_drawdown_pct": -64.77,
+            "win_rate_pct": 22.6,
+            "profit_loss_ratio": 3.41,
+            "total_trades": 31,
+            "final_equity": 95021.37,
+            "avg_shares_per_trade": 20210.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 33.29,
+            "annualized_return_pct": 12.05,
+            "annualized_volatility_pct": 24.77,
+            "sharpe_ratio": 0.406,
+            "max_drawdown_pct": -20.17,
+            "win_rate_pct": 62.5,
+            "profit_loss_ratio": 1.79,
+            "max_consecutive_losses": 2,
+            "total_trades": 8,
+            "avg_days_between_trades": 77.4,
+            "final_equity": 133293.38
+          },
+          "atr_position": {
+            "total_return_pct": 124.58,
+            "annualized_return_pct": 37.74,
+            "annualized_volatility_pct": 70.69,
+            "sharpe_ratio": 0.506,
+            "max_drawdown_pct": -53.64,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 2.57,
+            "total_trades": 8,
+            "final_equity": 224582.13,
+            "avg_shares_per_trade": 20150.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": -17.45,
+            "annualized_return_pct": -7.31,
+            "annualized_volatility_pct": 23.82,
+            "sharpe_ratio": -0.391,
+            "max_drawdown_pct": -33.43,
+            "win_rate_pct": 21.7,
+            "profit_loss_ratio": 2.7,
+            "max_consecutive_losses": 5,
+            "total_trades": 23,
+            "avg_days_between_trades": 26.9,
+            "final_equity": 82551.38
+          },
+          "atr_position": {
+            "total_return_pct": -20.48,
+            "annualized_return_pct": -8.67,
+            "annualized_volatility_pct": 111.55,
+            "sharpe_ratio": -0.096,
+            "max_drawdown_pct": -77.85,
+            "win_rate_pct": 21.7,
+            "profit_loss_ratio": 3.37,
+            "total_trades": 23,
+            "final_equity": 79523.1,
+            "avg_shares_per_trade": 19091.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -16.72,
+            "annualized_return_pct": -6.98,
+            "annualized_volatility_pct": 9.01,
+            "sharpe_ratio": -0.997,
+            "max_drawdown_pct": -26.29,
+            "win_rate_pct": 14.3,
+            "profit_loss_ratio": 2.04,
+            "max_consecutive_losses": 9,
+            "total_trades": 21,
+            "avg_days_between_trades": 29.5,
+            "final_equity": 83284.68
+          },
+          "atr_position": {
+            "total_return_pct": -78.22,
+            "annualized_return_pct": -45.3,
+            "annualized_volatility_pct": 48.77,
+            "sharpe_ratio": -0.97,
+            "max_drawdown_pct": -86.34,
+            "win_rate_pct": 14.3,
+            "profit_loss_ratio": 2.01,
+            "total_trades": 21,
+            "final_equity": 21775.57,
+            "avg_shares_per_trade": 19014.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "300719",
+      "name": "安达维尔",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 34.0,
+            "annualized_return_pct": 12.28,
+            "annualized_volatility_pct": 43.86,
+            "sharpe_ratio": 0.234,
+            "max_drawdown_pct": -38.64,
+            "win_rate_pct": 38.5,
+            "profit_loss_ratio": 2.48,
+            "max_consecutive_losses": 3,
+            "total_trades": 13,
+            "avg_days_between_trades": 47.6,
+            "final_equity": 134000.9
+          },
+          "atr_position": {
+            "total_return_pct": 124.86,
+            "annualized_return_pct": 37.81,
+            "annualized_volatility_pct": 83.73,
+            "sharpe_ratio": 0.428,
+            "max_drawdown_pct": -48.2,
+            "win_rate_pct": 38.5,
+            "profit_loss_ratio": 3.1,
+            "total_trades": 13,
+            "final_equity": 224859.95,
+            "avg_shares_per_trade": 20054.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -27.14,
+            "annualized_return_pct": -11.78,
+            "annualized_volatility_pct": 12.83,
+            "sharpe_ratio": -1.074,
+            "max_drawdown_pct": -27.14,
+            "win_rate_pct": 15.4,
+            "profit_loss_ratio": 0.63,
+            "max_consecutive_losses": 4,
+            "total_trades": 13,
+            "avg_days_between_trades": 47.6,
+            "final_equity": 72863.83
+          },
+          "atr_position": {
+            "total_return_pct": -93.88,
+            "annualized_return_pct": -66.89,
+            "annualized_volatility_pct": 95.63,
+            "sharpe_ratio": -0.72,
+            "max_drawdown_pct": -93.88,
+            "win_rate_pct": 15.4,
+            "profit_loss_ratio": 0.62,
+            "total_trades": 13,
+            "final_equity": 6124.78,
+            "avg_shares_per_trade": 23131.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": -20.96,
+            "annualized_return_pct": -8.89,
+            "annualized_volatility_pct": 28.53,
+            "sharpe_ratio": -0.382,
+            "max_drawdown_pct": -47.01,
+            "win_rate_pct": 12.0,
+            "profit_loss_ratio": 4.82,
+            "max_consecutive_losses": 14,
+            "total_trades": 25,
+            "avg_days_between_trades": 24.8,
+            "final_equity": 79042.07
+          },
+          "atr_position": {
+            "total_return_pct": -42.88,
+            "annualized_return_pct": -19.88,
+            "annualized_volatility_pct": 85.13,
+            "sharpe_ratio": -0.257,
+            "max_drawdown_pct": -83.14,
+            "win_rate_pct": 12.0,
+            "profit_loss_ratio": 5.86,
+            "total_trades": 25,
+            "final_equity": 57116.77,
+            "avg_shares_per_trade": 20936.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 21.94,
+            "annualized_return_pct": 8.17,
+            "annualized_volatility_pct": 51.17,
+            "sharpe_ratio": 0.121,
+            "max_drawdown_pct": -46.27,
+            "win_rate_pct": 30.0,
+            "profit_loss_ratio": 3.16,
+            "max_consecutive_losses": 4,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 121943.56
+          },
+          "atr_position": {
+            "total_return_pct": 76.99,
+            "annualized_return_pct": 25.35,
+            "annualized_volatility_pct": 90.1,
+            "sharpe_ratio": 0.259,
+            "max_drawdown_pct": -62.28,
+            "win_rate_pct": 30.0,
+            "profit_loss_ratio": 3.56,
+            "total_trades": 10,
+            "final_equity": 176990.17,
+            "avg_shares_per_trade": 20920.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 2.49,
+            "annualized_return_pct": 0.98,
+            "annualized_volatility_pct": 43.18,
+            "sharpe_ratio": -0.024,
+            "max_drawdown_pct": -52.95,
+            "win_rate_pct": 29.2,
+            "profit_loss_ratio": 2.49,
+            "max_consecutive_losses": 9,
+            "total_trades": 24,
+            "avg_days_between_trades": 25.8,
+            "final_equity": 102494.19
+          },
+          "atr_position": {
+            "total_return_pct": 22.39,
+            "annualized_return_pct": 8.33,
+            "annualized_volatility_pct": 71.32,
+            "sharpe_ratio": 0.089,
+            "max_drawdown_pct": -69.42,
+            "win_rate_pct": 29.2,
+            "profit_loss_ratio": 2.63,
+            "total_trades": 24,
+            "final_equity": 122394.23,
+            "avg_shares_per_trade": 20992.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -24.15,
+            "annualized_return_pct": -10.36,
+            "annualized_volatility_pct": 9.84,
+            "sharpe_ratio": -1.256,
+            "max_drawdown_pct": -24.15,
+            "win_rate_pct": 7.7,
+            "profit_loss_ratio": 0.97,
+            "max_consecutive_losses": 11,
+            "total_trades": 13,
+            "avg_days_between_trades": 47.6,
+            "final_equity": 75846.39
+          },
+          "atr_position": {
+            "total_return_pct": -83.45,
+            "annualized_return_pct": -50.93,
+            "annualized_volatility_pct": 99.68,
+            "sharpe_ratio": -0.531,
+            "max_drawdown_pct": -84.6,
+            "win_rate_pct": 7.7,
+            "profit_loss_ratio": 1.49,
+            "total_trades": 13,
+            "final_equity": 16548.56,
+            "avg_shares_per_trade": 19262.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "002335",
+      "name": "科华数据",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 17.35,
+            "annualized_return_pct": 6.54,
+            "annualized_volatility_pct": 35.74,
+            "sharpe_ratio": 0.127,
+            "max_drawdown_pct": -40.79,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 1.21,
+            "max_consecutive_losses": 3,
+            "total_trades": 14,
+            "avg_days_between_trades": 44.2,
+            "final_equity": 117350.87
+          },
+          "atr_position": {
+            "total_return_pct": 89.21,
+            "annualized_return_pct": 28.71,
+            "annualized_volatility_pct": 92.75,
+            "sharpe_ratio": 0.288,
+            "max_drawdown_pct": -58.65,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 1.47,
+            "total_trades": 14,
+            "final_equity": 189210.41,
+            "avg_shares_per_trade": 13679.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": 2.33,
+            "annualized_return_pct": 0.91,
+            "annualized_volatility_pct": 12.15,
+            "sharpe_ratio": -0.089,
+            "max_drawdown_pct": -13.97,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 2.32,
+            "max_consecutive_losses": 3,
+            "total_trades": 6,
+            "avg_days_between_trades": 103.2,
+            "final_equity": 102327.67
+          },
+          "atr_position": {
+            "total_return_pct": 12.87,
+            "annualized_return_pct": 4.91,
+            "annualized_volatility_pct": 63.39,
+            "sharpe_ratio": 0.046,
+            "max_drawdown_pct": -59.49,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 2.48,
+            "total_trades": 6,
+            "final_equity": 112867.75,
+            "avg_shares_per_trade": 22283.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 44.99,
+            "annualized_return_pct": 15.84,
+            "annualized_volatility_pct": 28.76,
+            "sharpe_ratio": 0.481,
+            "max_drawdown_pct": -20.83,
+            "win_rate_pct": 25.0,
+            "profit_loss_ratio": 5.74,
+            "max_consecutive_losses": 7,
+            "total_trades": 20,
+            "avg_days_between_trades": 30.9,
+            "final_equity": 144985.55
+          },
+          "atr_position": {
+            "total_return_pct": 175.27,
+            "annualized_return_pct": 49.3,
+            "annualized_volatility_pct": 61.53,
+            "sharpe_ratio": 0.769,
+            "max_drawdown_pct": -39.0,
+            "win_rate_pct": 25.0,
+            "profit_loss_ratio": 7.92,
+            "total_trades": 20,
+            "final_equity": 275266.56,
+            "avg_shares_per_trade": 12140.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 12.65,
+            "annualized_return_pct": 4.83,
+            "annualized_volatility_pct": 45.44,
+            "sharpe_ratio": 0.062,
+            "max_drawdown_pct": -52.82,
+            "win_rate_pct": 30.8,
+            "profit_loss_ratio": 2.5,
+            "max_consecutive_losses": 5,
+            "total_trades": 13,
+            "avg_days_between_trades": 47.6,
+            "final_equity": 112649.81
+          },
+          "atr_position": {
+            "total_return_pct": 105.05,
+            "annualized_return_pct": 32.87,
+            "annualized_volatility_pct": 120.62,
+            "sharpe_ratio": 0.256,
+            "max_drawdown_pct": -67.78,
+            "win_rate_pct": 23.1,
+            "profit_loss_ratio": 4.76,
+            "total_trades": 13,
+            "final_equity": 205048.89,
+            "avg_shares_per_trade": 12062.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 23.97,
+            "annualized_return_pct": 8.87,
+            "annualized_volatility_pct": 40.28,
+            "sharpe_ratio": 0.171,
+            "max_drawdown_pct": -34.89,
+            "win_rate_pct": 42.9,
+            "profit_loss_ratio": 1.66,
+            "max_consecutive_losses": 6,
+            "total_trades": 28,
+            "avg_days_between_trades": 22.1,
+            "final_equity": 123965.08
+          },
+          "atr_position": {
+            "total_return_pct": 107.28,
+            "annualized_return_pct": 33.44,
+            "annualized_volatility_pct": 441.48,
+            "sharpe_ratio": 0.071,
+            "max_drawdown_pct": -93.32,
+            "win_rate_pct": 42.9,
+            "profit_loss_ratio": 1.88,
+            "total_trades": 28,
+            "final_equity": 207284.07,
+            "avg_shares_per_trade": 14004.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 27.21,
+            "annualized_return_pct": 9.99,
+            "annualized_volatility_pct": 12.11,
+            "sharpe_ratio": 0.66,
+            "max_drawdown_pct": -8.12,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 10.62,
+            "max_consecutive_losses": 3,
+            "total_trades": 5,
+            "avg_days_between_trades": 123.8,
+            "final_equity": 127212.19
+          },
+          "atr_position": {
+            "total_return_pct": 95.69,
+            "annualized_return_pct": 30.44,
+            "annualized_volatility_pct": 34.09,
+            "sharpe_ratio": 0.834,
+            "max_drawdown_pct": -22.12,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 10.42,
+            "total_trades": 5,
+            "final_equity": 195693.07,
+            "avg_shares_per_trade": 13660.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "300748",
+      "name": "金力永磁",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 35.1,
+            "annualized_return_pct": 12.64,
+            "annualized_volatility_pct": 37.95,
+            "sharpe_ratio": 0.28,
+            "max_drawdown_pct": -38.1,
+            "win_rate_pct": 30.0,
+            "profit_loss_ratio": 3.86,
+            "max_consecutive_losses": 4,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 135096.46
+          },
+          "atr_position": {
+            "total_return_pct": 237.69,
+            "annualized_return_pct": 61.88,
+            "annualized_volatility_pct": 73.89,
+            "sharpe_ratio": 0.81,
+            "max_drawdown_pct": -47.28,
+            "win_rate_pct": 30.0,
+            "profit_loss_ratio": 7.1,
+            "total_trades": 10,
+            "final_equity": 337694.96,
+            "avg_shares_per_trade": 14660.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -0.37,
+            "annualized_return_pct": -0.15,
+            "annualized_volatility_pct": 9.66,
+            "sharpe_ratio": -0.222,
+            "max_drawdown_pct": -8.49,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 0.97,
+            "max_consecutive_losses": 1,
+            "total_trades": 6,
+            "avg_days_between_trades": 103.2,
+            "final_equity": 99632.39
+          },
+          "atr_position": {
+            "total_return_pct": 2.7,
+            "annualized_return_pct": 1.06,
+            "annualized_volatility_pct": 33.2,
+            "sharpe_ratio": -0.028,
+            "max_drawdown_pct": -27.6,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 1.12,
+            "total_trades": 6,
+            "final_equity": 102699.08,
+            "avg_shares_per_trade": 26983.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 28.89,
+            "annualized_return_pct": 10.57,
+            "annualized_volatility_pct": 38.91,
+            "sharpe_ratio": 0.22,
+            "max_drawdown_pct": -43.44,
+            "win_rate_pct": 24.0,
+            "profit_loss_ratio": 4.14,
+            "max_consecutive_losses": 7,
+            "total_trades": 25,
+            "avg_days_between_trades": 24.8,
+            "final_equity": 128887.88
+          },
+          "atr_position": {
+            "total_return_pct": 268.58,
+            "annualized_return_pct": 67.58,
+            "annualized_volatility_pct": 70.38,
+            "sharpe_ratio": 0.932,
+            "max_drawdown_pct": -48.61,
+            "win_rate_pct": 24.0,
+            "profit_loss_ratio": 7.23,
+            "total_trades": 25,
+            "final_equity": 368579.01,
+            "avg_shares_per_trade": 14212.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 71.99,
+            "annualized_return_pct": 23.94,
+            "annualized_volatility_pct": 45.7,
+            "sharpe_ratio": 0.48,
+            "max_drawdown_pct": -38.51,
+            "win_rate_pct": 25.0,
+            "profit_loss_ratio": 6.39,
+            "max_consecutive_losses": 3,
+            "total_trades": 8,
+            "avg_days_between_trades": 77.4,
+            "final_equity": 171988.4
+          },
+          "atr_position": {
+            "total_return_pct": 375.57,
+            "annualized_return_pct": 85.37,
+            "annualized_volatility_pct": 88.06,
+            "sharpe_ratio": 0.947,
+            "max_drawdown_pct": -49.98,
+            "win_rate_pct": 25.0,
+            "profit_loss_ratio": 11.85,
+            "total_trades": 8,
+            "final_equity": 475570.01,
+            "avg_shares_per_trade": 15738.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 9.09,
+            "annualized_return_pct": 3.5,
+            "annualized_volatility_pct": 42.66,
+            "sharpe_ratio": 0.035,
+            "max_drawdown_pct": -41.7,
+            "win_rate_pct": 31.8,
+            "profit_loss_ratio": 2.34,
+            "max_consecutive_losses": 6,
+            "total_trades": 22,
+            "avg_days_between_trades": 28.1,
+            "final_equity": 109090.27
+          },
+          "atr_position": {
+            "total_return_pct": 262.46,
+            "annualized_return_pct": 66.48,
+            "annualized_volatility_pct": 1168.1,
+            "sharpe_ratio": 0.055,
+            "max_drawdown_pct": -145.54,
+            "win_rate_pct": 31.8,
+            "profit_loss_ratio": 3.99,
+            "total_trades": 22,
+            "final_equity": 362456.4,
+            "avg_shares_per_trade": 18768.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -21.12,
+            "annualized_return_pct": -8.96,
+            "annualized_volatility_pct": 15.23,
+            "sharpe_ratio": -0.72,
+            "max_drawdown_pct": -23.34,
+            "win_rate_pct": 42.1,
+            "profit_loss_ratio": 0.46,
+            "max_consecutive_losses": 5,
+            "total_trades": 19,
+            "avg_days_between_trades": 32.6,
+            "final_equity": 78876.62
+          },
+          "atr_position": {
+            "total_return_pct": -60.51,
+            "annualized_return_pct": -30.77,
+            "annualized_volatility_pct": 53.19,
+            "sharpe_ratio": -0.616,
+            "max_drawdown_pct": -65.34,
+            "win_rate_pct": 42.1,
+            "profit_loss_ratio": 0.44,
+            "total_trades": 19,
+            "final_equity": 39492.81,
+            "avg_shares_per_trade": 11384.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "600160",
+      "name": "巨化股份",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 10.42,
+            "annualized_return_pct": 4.0,
+            "annualized_volatility_pct": 27.17,
+            "sharpe_ratio": 0.074,
+            "max_drawdown_pct": -32.43,
+            "win_rate_pct": 37.5,
+            "profit_loss_ratio": 1.96,
+            "max_consecutive_losses": 5,
+            "total_trades": 16,
+            "avg_days_between_trades": 38.7,
+            "final_equity": 110418.6
+          },
+          "atr_position": {
+            "total_return_pct": 46.55,
+            "annualized_return_pct": 16.33,
+            "annualized_volatility_pct": 87.94,
+            "sharpe_ratio": 0.163,
+            "max_drawdown_pct": -71.42,
+            "win_rate_pct": 37.5,
+            "profit_loss_ratio": 2.0,
+            "total_trades": 16,
+            "final_equity": 146547.58,
+            "avg_shares_per_trade": 14944.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": 17.89,
+            "annualized_return_pct": 6.73,
+            "annualized_volatility_pct": 13.03,
+            "sharpe_ratio": 0.363,
+            "max_drawdown_pct": -17.36,
+            "win_rate_pct": 16.7,
+            "profit_loss_ratio": 8.9,
+            "max_consecutive_losses": 3,
+            "total_trades": 6,
+            "avg_days_between_trades": 103.2,
+            "final_equity": 117885.17
+          },
+          "atr_position": {
+            "total_return_pct": 77.99,
+            "annualized_return_pct": 25.63,
+            "annualized_volatility_pct": 51.5,
+            "sharpe_ratio": 0.459,
+            "max_drawdown_pct": -62.44,
+            "win_rate_pct": 16.7,
+            "profit_loss_ratio": 9.8,
+            "total_trades": 6,
+            "final_equity": 177993.13,
+            "avg_shares_per_trade": 17333.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 72.93,
+            "annualized_return_pct": 24.21,
+            "annualized_volatility_pct": 26.43,
+            "sharpe_ratio": 0.84,
+            "max_drawdown_pct": -31.45,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 3.76,
+            "max_consecutive_losses": 6,
+            "total_trades": 25,
+            "avg_days_between_trades": 24.8,
+            "final_equity": 172927.56
+          },
+          "atr_position": {
+            "total_return_pct": 245.43,
+            "annualized_return_pct": 63.34,
+            "annualized_volatility_pct": 46.07,
+            "sharpe_ratio": 1.331,
+            "max_drawdown_pct": -40.02,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 4.33,
+            "total_trades": 25,
+            "final_equity": 345434.99,
+            "avg_shares_per_trade": 14704.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 42.24,
+            "annualized_return_pct": 14.96,
+            "annualized_volatility_pct": 29.94,
+            "sharpe_ratio": 0.433,
+            "max_drawdown_pct": -28.15,
+            "win_rate_pct": 55.6,
+            "profit_loss_ratio": 2.06,
+            "max_consecutive_losses": 1,
+            "total_trades": 9,
+            "avg_days_between_trades": 68.8,
+            "final_equity": 142236.46
+          },
+          "atr_position": {
+            "total_return_pct": 172.0,
+            "annualized_return_pct": 48.59,
+            "annualized_volatility_pct": 77.66,
+            "sharpe_ratio": 0.6,
+            "max_drawdown_pct": -46.12,
+            "win_rate_pct": 55.6,
+            "profit_loss_ratio": 2.28,
+            "total_trades": 9,
+            "final_equity": 271998.22,
+            "avg_shares_per_trade": 14856.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 40.76,
+            "annualized_return_pct": 14.49,
+            "annualized_volatility_pct": 29.51,
+            "sharpe_ratio": 0.423,
+            "max_drawdown_pct": -26.88,
+            "win_rate_pct": 39.3,
+            "profit_loss_ratio": 2.36,
+            "max_consecutive_losses": 3,
+            "total_trades": 28,
+            "avg_days_between_trades": 22.1,
+            "final_equity": 140759.9
+          },
+          "atr_position": {
+            "total_return_pct": 176.01,
+            "annualized_return_pct": 49.46,
+            "annualized_volatility_pct": 82.12,
+            "sharpe_ratio": 0.578,
+            "max_drawdown_pct": -57.88,
+            "win_rate_pct": 39.3,
+            "profit_loss_ratio": 2.54,
+            "total_trades": 28,
+            "final_equity": 276012.66,
+            "avg_shares_per_trade": 15239.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 17.08,
+            "annualized_return_pct": 6.44,
+            "annualized_volatility_pct": 13.15,
+            "sharpe_ratio": 0.338,
+            "max_drawdown_pct": -11.44,
+            "win_rate_pct": 53.3,
+            "profit_loss_ratio": 2.02,
+            "max_consecutive_losses": 2,
+            "total_trades": 15,
+            "avg_days_between_trades": 41.3,
+            "final_equity": 117078.58
+          },
+          "atr_position": {
+            "total_return_pct": 69.13,
+            "annualized_return_pct": 23.12,
+            "annualized_volatility_pct": 39.77,
+            "sharpe_ratio": 0.531,
+            "max_drawdown_pct": -26.61,
+            "win_rate_pct": 53.3,
+            "profit_loss_ratio": 2.13,
+            "total_trades": 15,
+            "final_equity": 169128.93,
+            "avg_shares_per_trade": 14960.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "600346",
+      "name": "恒力石化",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": -2.01,
+            "annualized_return_pct": -0.8,
+            "annualized_volatility_pct": 20.9,
+            "sharpe_ratio": -0.134,
+            "max_drawdown_pct": -27.11,
+            "win_rate_pct": 41.7,
+            "profit_loss_ratio": 1.35,
+            "max_consecutive_losses": 6,
+            "total_trades": 12,
+            "avg_days_between_trades": 51.6,
+            "final_equity": 97987.79
+          },
+          "atr_position": {
+            "total_return_pct": 34.32,
+            "annualized_return_pct": 12.39,
+            "annualized_volatility_pct": 70.16,
+            "sharpe_ratio": 0.148,
+            "max_drawdown_pct": -64.8,
+            "win_rate_pct": 41.7,
+            "profit_loss_ratio": 1.72,
+            "total_trades": 12,
+            "final_equity": 134323.72,
+            "avg_shares_per_trade": 28658.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -11.0,
+            "annualized_return_pct": -4.51,
+            "annualized_volatility_pct": 7.06,
+            "sharpe_ratio": -0.922,
+            "max_drawdown_pct": -14.38,
+            "win_rate_pct": 11.1,
+            "profit_loss_ratio": 1.44,
+            "max_consecutive_losses": 8,
+            "total_trades": 9,
+            "avg_days_between_trades": 68.8,
+            "final_equity": 88996.12
+          },
+          "atr_position": {
+            "total_return_pct": -48.53,
+            "annualized_return_pct": -23.12,
+            "annualized_volatility_pct": 36.32,
+            "sharpe_ratio": -0.692,
+            "max_drawdown_pct": -57.63,
+            "win_rate_pct": 11.1,
+            "profit_loss_ratio": 0.99,
+            "total_trades": 9,
+            "final_equity": 51466.42,
+            "avg_shares_per_trade": 29122.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": -8.13,
+            "annualized_return_pct": -3.3,
+            "annualized_volatility_pct": 16.51,
+            "sharpe_ratio": -0.321,
+            "max_drawdown_pct": -32.12,
+            "win_rate_pct": 22.2,
+            "profit_loss_ratio": 2.93,
+            "max_consecutive_losses": 6,
+            "total_trades": 27,
+            "avg_days_between_trades": 22.9,
+            "final_equity": 91874.78
+          },
+          "atr_position": {
+            "total_return_pct": -3.71,
+            "annualized_return_pct": -1.48,
+            "annualized_volatility_pct": 44.7,
+            "sharpe_ratio": -0.078,
+            "max_drawdown_pct": -62.87,
+            "win_rate_pct": 22.2,
+            "profit_loss_ratio": 3.49,
+            "total_trades": 27,
+            "final_equity": 96294.34,
+            "avg_shares_per_trade": 29141.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 17.34,
+            "annualized_return_pct": 6.53,
+            "annualized_volatility_pct": 27.1,
+            "sharpe_ratio": 0.167,
+            "max_drawdown_pct": -27.98,
+            "win_rate_pct": 27.3,
+            "profit_loss_ratio": 4.26,
+            "max_consecutive_losses": 7,
+            "total_trades": 11,
+            "avg_days_between_trades": 56.3,
+            "final_equity": 117336.33
+          },
+          "atr_position": {
+            "total_return_pct": 81.64,
+            "annualized_return_pct": 26.65,
+            "annualized_volatility_pct": 73.67,
+            "sharpe_ratio": 0.335,
+            "max_drawdown_pct": -67.69,
+            "win_rate_pct": 18.2,
+            "profit_loss_ratio": 7.92,
+            "total_trades": 11,
+            "final_equity": 181637.7,
+            "avg_shares_per_trade": 29882.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 13.77,
+            "annualized_return_pct": 5.24,
+            "annualized_volatility_pct": 25.11,
+            "sharpe_ratio": 0.129,
+            "max_drawdown_pct": -22.94,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 1.35,
+            "max_consecutive_losses": 3,
+            "total_trades": 18,
+            "avg_days_between_trades": 34.4,
+            "final_equity": 113774.22
+          },
+          "atr_position": {
+            "total_return_pct": 120.71,
+            "annualized_return_pct": 36.8,
+            "annualized_volatility_pct": 103.92,
+            "sharpe_ratio": 0.335,
+            "max_drawdown_pct": -70.23,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 1.89,
+            "total_trades": 18,
+            "final_equity": 220709.65,
+            "avg_shares_per_trade": 27794.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -16.85,
+            "annualized_return_pct": -7.04,
+            "annualized_volatility_pct": 16.86,
+            "sharpe_ratio": -0.536,
+            "max_drawdown_pct": -28.6,
+            "win_rate_pct": 23.3,
+            "profit_loss_ratio": 2.13,
+            "max_consecutive_losses": 12,
+            "total_trades": 30,
+            "avg_days_between_trades": 20.6,
+            "final_equity": 83150.75
+          },
+          "atr_position": {
+            "total_return_pct": -29.33,
+            "annualized_return_pct": -12.84,
+            "annualized_volatility_pct": 118.58,
+            "sharpe_ratio": -0.125,
+            "max_drawdown_pct": -85.0,
+            "win_rate_pct": 23.3,
+            "profit_loss_ratio": 2.82,
+            "total_trades": 30,
+            "final_equity": 70672.09,
+            "avg_shares_per_trade": 25800.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "000708",
+      "name": "中信特钢",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": -14.2,
+            "annualized_return_pct": -5.88,
+            "annualized_volatility_pct": 17.52,
+            "sharpe_ratio": -0.45,
+            "max_drawdown_pct": -26.08,
+            "win_rate_pct": 41.7,
+            "profit_loss_ratio": 0.86,
+            "max_consecutive_losses": 3,
+            "total_trades": 12,
+            "avg_days_between_trades": 51.6,
+            "final_equity": 85795.53
+          },
+          "atr_position": {
+            "total_return_pct": -60.09,
+            "annualized_return_pct": -30.48,
+            "annualized_volatility_pct": 99.07,
+            "sharpe_ratio": -0.328,
+            "max_drawdown_pct": -84.82,
+            "win_rate_pct": 41.7,
+            "profit_loss_ratio": 0.91,
+            "total_trades": 12,
+            "final_equity": 39908.8,
+            "avg_shares_per_trade": 35200.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": 1.91,
+            "annualized_return_pct": 0.75,
+            "annualized_volatility_pct": 12.62,
+            "sharpe_ratio": -0.099,
+            "max_drawdown_pct": -15.68,
+            "win_rate_pct": 23.1,
+            "profit_loss_ratio": 3.74,
+            "max_consecutive_losses": 8,
+            "total_trades": 13,
+            "avg_days_between_trades": 47.6,
+            "final_equity": 101911.25
+          },
+          "atr_position": {
+            "total_return_pct": 19.32,
+            "annualized_return_pct": 7.24,
+            "annualized_volatility_pct": 99.54,
+            "sharpe_ratio": 0.053,
+            "max_drawdown_pct": -76.3,
+            "win_rate_pct": 23.1,
+            "profit_loss_ratio": 4.12,
+            "total_trades": 13,
+            "final_equity": 119316.38,
+            "avg_shares_per_trade": 41408.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": -21.95,
+            "annualized_return_pct": -9.34,
+            "annualized_volatility_pct": 16.36,
+            "sharpe_ratio": -0.693,
+            "max_drawdown_pct": -29.22,
+            "win_rate_pct": 17.9,
+            "profit_loss_ratio": 2.12,
+            "max_consecutive_losses": 8,
+            "total_trades": 28,
+            "avg_days_between_trades": 22.1,
+            "final_equity": 78054.23
+          },
+          "atr_position": {
+            "total_return_pct": -103.38,
+            "annualized_return_pct": NaN,
+            "annualized_volatility_pct": 1266.31,
+            "sharpe_ratio": NaN,
+            "max_drawdown_pct": -102.29,
+            "win_rate_pct": 17.9,
+            "profit_loss_ratio": 2.29,
+            "total_trades": 28,
+            "final_equity": -3378.57,
+            "avg_shares_per_trade": 34871.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": -8.5,
+            "annualized_return_pct": -3.45,
+            "annualized_volatility_pct": 20.22,
+            "sharpe_ratio": -0.27,
+            "max_drawdown_pct": -23.64,
+            "win_rate_pct": 37.5,
+            "profit_loss_ratio": 1.18,
+            "max_consecutive_losses": 3,
+            "total_trades": 8,
+            "avg_days_between_trades": 77.4,
+            "final_equity": 91502.65
+          },
+          "atr_position": {
+            "total_return_pct": 6.23,
+            "annualized_return_pct": 2.42,
+            "annualized_volatility_pct": 93.88,
+            "sharpe_ratio": 0.004,
+            "max_drawdown_pct": -76.03,
+            "win_rate_pct": 37.5,
+            "profit_loss_ratio": 1.78,
+            "total_trades": 8,
+            "final_equity": 106225.16,
+            "avg_shares_per_trade": 35775.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": -8.5,
+            "annualized_return_pct": -3.46,
+            "annualized_volatility_pct": 21.67,
+            "sharpe_ratio": -0.252,
+            "max_drawdown_pct": -32.73,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 1.74,
+            "max_consecutive_losses": 5,
+            "total_trades": 24,
+            "avg_days_between_trades": 25.8,
+            "final_equity": 91497.22
+          },
+          "atr_position": {
+            "total_return_pct": -8.08,
+            "annualized_return_pct": -3.28,
+            "annualized_volatility_pct": 98.8,
+            "sharpe_ratio": -0.053,
+            "max_drawdown_pct": -81.68,
+            "win_rate_pct": 33.3,
+            "profit_loss_ratio": 1.96,
+            "total_trades": 24,
+            "final_equity": 91919.28,
+            "avg_shares_per_trade": 36762.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 11.08,
+            "annualized_return_pct": 4.25,
+            "annualized_volatility_pct": 14.26,
+            "sharpe_ratio": 0.158,
+            "max_drawdown_pct": -18.48,
+            "win_rate_pct": 32.1,
+            "profit_loss_ratio": 2.89,
+            "max_consecutive_losses": 8,
+            "total_trades": 28,
+            "avg_days_between_trades": 22.1,
+            "final_equity": 111084.88
+          },
+          "atr_position": {
+            "total_return_pct": 57.58,
+            "annualized_return_pct": 19.72,
+            "annualized_volatility_pct": 45.57,
+            "sharpe_ratio": 0.389,
+            "max_drawdown_pct": -39.36,
+            "win_rate_pct": 32.1,
+            "profit_loss_ratio": 3.12,
+            "total_trades": 28,
+            "final_equity": 157582.68,
+            "avg_shares_per_trade": 33143.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "600660",
+      "name": "福耀玻璃",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 15.1,
+            "annualized_return_pct": 5.72,
+            "annualized_volatility_pct": 13.3,
+            "sharpe_ratio": 0.28,
+            "max_drawdown_pct": -11.9,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 2.81,
+            "max_consecutive_losses": 2,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 115095.65
+          },
+          "atr_position": {
+            "total_return_pct": 74.74,
+            "annualized_return_pct": 24.72,
+            "annualized_volatility_pct": 43.84,
+            "sharpe_ratio": 0.518,
+            "max_drawdown_pct": -34.79,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 3.09,
+            "total_trades": 10,
+            "final_equity": 174738.04,
+            "avg_shares_per_trade": 8820.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -1.26,
+            "annualized_return_pct": -0.5,
+            "annualized_volatility_pct": 6.75,
+            "sharpe_ratio": -0.371,
+            "max_drawdown_pct": -9.79,
+            "win_rate_pct": 42.9,
+            "profit_loss_ratio": 1.1,
+            "max_consecutive_losses": 2,
+            "total_trades": 7,
+            "avg_days_between_trades": 88.4,
+            "final_equity": 98739.36
+          },
+          "atr_position": {
+            "total_return_pct": -5.81,
+            "annualized_return_pct": -2.34,
+            "annualized_volatility_pct": 27.66,
+            "sharpe_ratio": -0.157,
+            "max_drawdown_pct": -33.8,
+            "win_rate_pct": 42.9,
+            "profit_loss_ratio": 1.1,
+            "total_trades": 7,
+            "final_equity": 94188.33,
+            "avg_shares_per_trade": 7843.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": -11.24,
+            "annualized_return_pct": -4.61,
+            "annualized_volatility_pct": 11.75,
+            "sharpe_ratio": -0.562,
+            "max_drawdown_pct": -28.42,
+            "win_rate_pct": 16.7,
+            "profit_loss_ratio": 3.81,
+            "max_consecutive_losses": 12,
+            "total_trades": 36,
+            "avg_days_between_trades": 17.2,
+            "final_equity": 88762.87
+          },
+          "atr_position": {
+            "total_return_pct": -44.74,
+            "annualized_return_pct": -20.93,
+            "annualized_volatility_pct": 57.85,
+            "sharpe_ratio": -0.396,
+            "max_drawdown_pct": -82.57,
+            "win_rate_pct": 16.7,
+            "profit_loss_ratio": 3.98,
+            "total_trades": 36,
+            "final_equity": 55255.31,
+            "avg_shares_per_trade": 8503.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": -0.06,
+            "annualized_return_pct": -0.02,
+            "annualized_volatility_pct": 15.56,
+            "sharpe_ratio": -0.13,
+            "max_drawdown_pct": -20.38,
+            "win_rate_pct": 45.5,
+            "profit_loss_ratio": 1.21,
+            "max_consecutive_losses": 2,
+            "total_trades": 11,
+            "avg_days_between_trades": 56.3,
+            "final_equity": 99937.54
+          },
+          "atr_position": {
+            "total_return_pct": 24.08,
+            "annualized_return_pct": 8.92,
+            "annualized_volatility_pct": 57.88,
+            "sharpe_ratio": 0.119,
+            "max_drawdown_pct": -48.02,
+            "win_rate_pct": 45.5,
+            "profit_loss_ratio": 1.48,
+            "total_trades": 11,
+            "final_equity": 124081.19,
+            "avg_shares_per_trade": 8264.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 43.72,
+            "annualized_return_pct": 15.44,
+            "annualized_volatility_pct": 17.63,
+            "sharpe_ratio": 0.762,
+            "max_drawdown_pct": -29.35,
+            "win_rate_pct": 40.9,
+            "profit_loss_ratio": 2.64,
+            "max_consecutive_losses": 8,
+            "total_trades": 22,
+            "avg_days_between_trades": 28.1,
+            "final_equity": 143723.47
+          },
+          "atr_position": {
+            "total_return_pct": 201.84,
+            "annualized_return_pct": 54.84,
+            "annualized_volatility_pct": 41.53,
+            "sharpe_ratio": 1.272,
+            "max_drawdown_pct": -39.03,
+            "win_rate_pct": 40.9,
+            "profit_loss_ratio": 3.29,
+            "total_trades": 22,
+            "final_equity": 301835.36,
+            "avg_shares_per_trade": 8282.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -8.51,
+            "annualized_return_pct": -3.46,
+            "annualized_volatility_pct": 5.19,
+            "sharpe_ratio": -1.053,
+            "max_drawdown_pct": -13.57,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 1.71,
+            "max_consecutive_losses": 9,
+            "total_trades": 15,
+            "avg_days_between_trades": 41.3,
+            "final_equity": 91488.23
+          },
+          "atr_position": {
+            "total_return_pct": -40.06,
+            "annualized_return_pct": -18.34,
+            "annualized_volatility_pct": 24.24,
+            "sharpe_ratio": -0.839,
+            "max_drawdown_pct": -52.81,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 1.69,
+            "total_trades": 15,
+            "final_equity": 59943.18,
+            "avg_shares_per_trade": 8073.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "600570",
+      "name": "恒生电子",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 44.22,
+            "annualized_return_pct": 15.6,
+            "annualized_volatility_pct": 26.99,
+            "sharpe_ratio": 0.504,
+            "max_drawdown_pct": -18.85,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 3.18,
+            "max_consecutive_losses": 2,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 144219.05
+          },
+          "atr_position": {
+            "total_return_pct": 223.03,
+            "annualized_return_pct": 59.06,
+            "annualized_volatility_pct": 59.43,
+            "sharpe_ratio": 0.96,
+            "max_drawdown_pct": -32.63,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 4.49,
+            "total_trades": 10,
+            "final_equity": 323026.12,
+            "avg_shares_per_trade": 15930.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -9.4,
+            "annualized_return_pct": -3.83,
+            "annualized_volatility_pct": 13.46,
+            "sharpe_ratio": -0.433,
+            "max_drawdown_pct": -15.19,
+            "win_rate_pct": 35.7,
+            "profit_loss_ratio": 1.07,
+            "max_consecutive_losses": 5,
+            "total_trades": 14,
+            "avg_days_between_trades": 44.2,
+            "final_equity": 90597.58
+          },
+          "atr_position": {
+            "total_return_pct": -39.03,
+            "annualized_return_pct": -17.79,
+            "annualized_volatility_pct": 80.04,
+            "sharpe_ratio": -0.247,
+            "max_drawdown_pct": -62.89,
+            "win_rate_pct": 35.7,
+            "profit_loss_ratio": 1.13,
+            "total_trades": 14,
+            "final_equity": 60965.26,
+            "avg_shares_per_trade": 20457.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 8.58,
+            "annualized_return_pct": 3.31,
+            "annualized_volatility_pct": 23.34,
+            "sharpe_ratio": 0.056,
+            "max_drawdown_pct": -24.38,
+            "win_rate_pct": 24.0,
+            "profit_loss_ratio": 3.74,
+            "max_consecutive_losses": 8,
+            "total_trades": 25,
+            "avg_days_between_trades": 24.8,
+            "final_equity": 108576.85
+          },
+          "atr_position": {
+            "total_return_pct": 75.38,
+            "annualized_return_pct": 24.9,
+            "annualized_volatility_pct": 581.89,
+            "sharpe_ratio": 0.039,
+            "max_drawdown_pct": -96.82,
+            "win_rate_pct": 24.0,
+            "profit_loss_ratio": 4.52,
+            "total_trades": 25,
+            "final_equity": 175384.26,
+            "avg_shares_per_trade": 16972.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 73.68,
+            "annualized_return_pct": 24.42,
+            "annualized_volatility_pct": 31.13,
+            "sharpe_ratio": 0.72,
+            "max_drawdown_pct": -21.43,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 3.89,
+            "max_consecutive_losses": 1,
+            "total_trades": 6,
+            "avg_days_between_trades": 103.2,
+            "final_equity": 173680.11
+          },
+          "atr_position": {
+            "total_return_pct": 346.95,
+            "annualized_return_pct": 80.87,
+            "annualized_volatility_pct": 71.28,
+            "sharpe_ratio": 1.106,
+            "max_drawdown_pct": -41.47,
+            "win_rate_pct": 50.0,
+            "profit_loss_ratio": 5.68,
+            "total_trades": 6,
+            "final_equity": 446954.71,
+            "avg_shares_per_trade": 16883.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 49.55,
+            "annualized_return_pct": 17.27,
+            "annualized_volatility_pct": 31.03,
+            "sharpe_ratio": 0.492,
+            "max_drawdown_pct": -29.26,
+            "win_rate_pct": 29.4,
+            "profit_loss_ratio": 3.7,
+            "max_consecutive_losses": 4,
+            "total_trades": 17,
+            "avg_days_between_trades": 36.4,
+            "final_equity": 149549.99
+          },
+          "atr_position": {
+            "total_return_pct": 301.72,
+            "annualized_return_pct": 73.39,
+            "annualized_volatility_pct": 100.72,
+            "sharpe_ratio": 0.709,
+            "max_drawdown_pct": -71.3,
+            "win_rate_pct": 29.4,
+            "profit_loss_ratio": 5.53,
+            "total_trades": 17,
+            "final_equity": 401721.57,
+            "avg_shares_per_trade": 16776.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 0.97,
+            "annualized_return_pct": 0.38,
+            "annualized_volatility_pct": 0.69,
+            "sharpe_ratio": -2.338,
+            "max_drawdown_pct": -0.13,
+            "win_rate_pct": 100.0,
+            "profit_loss_ratio": 994.2,
+            "max_consecutive_losses": 0,
+            "total_trades": 1,
+            "avg_days_between_trades": 619.0,
+            "final_equity": 100965.06
+          },
+          "atr_position": {
+            "total_return_pct": 3.8,
+            "annualized_return_pct": 1.49,
+            "annualized_volatility_pct": 2.73,
+            "sharpe_ratio": -0.188,
+            "max_drawdown_pct": -0.5,
+            "win_rate_pct": 100.0,
+            "profit_loss_ratio": 3910.52,
+            "total_trades": 1,
+            "final_equity": 103795.9,
+            "avg_shares_per_trade": 11800.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "605566",
+      "name": "福莱蒽特",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 9.2,
+            "annualized_return_pct": 3.54,
+            "annualized_volatility_pct": 27.51,
+            "sharpe_ratio": 0.056,
+            "max_drawdown_pct": -22.69,
+            "win_rate_pct": 45.5,
+            "profit_loss_ratio": 1.51,
+            "max_consecutive_losses": 2,
+            "total_trades": 11,
+            "avg_days_between_trades": 56.3,
+            "final_equity": 109196.37
+          },
+          "atr_position": {
+            "total_return_pct": 67.16,
+            "annualized_return_pct": 22.55,
+            "annualized_volatility_pct": 126.74,
+            "sharpe_ratio": 0.162,
+            "max_drawdown_pct": -68.73,
+            "win_rate_pct": 45.5,
+            "profit_loss_ratio": 1.77,
+            "total_trades": 11,
+            "final_equity": 167155.38,
+            "avg_shares_per_trade": 18145.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -14.68,
+            "annualized_return_pct": -6.09,
+            "annualized_volatility_pct": 9.98,
+            "sharpe_ratio": -0.811,
+            "max_drawdown_pct": -16.28,
+            "win_rate_pct": 25.0,
+            "profit_loss_ratio": 1.18,
+            "max_consecutive_losses": 3,
+            "total_trades": 8,
+            "avg_days_between_trades": 77.4,
+            "final_equity": 85316.5
+          },
+          "atr_position": {
+            "total_return_pct": -29.54,
+            "annualized_return_pct": -12.94,
+            "annualized_volatility_pct": 39.55,
+            "sharpe_ratio": -0.378,
+            "max_drawdown_pct": -42.14,
+            "win_rate_pct": 25.0,
+            "profit_loss_ratio": 1.61,
+            "total_trades": 8,
+            "final_equity": 70460.24,
+            "avg_shares_per_trade": 18650.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 10.74,
+            "annualized_return_pct": 4.12,
+            "annualized_volatility_pct": 23.63,
+            "sharpe_ratio": 0.09,
+            "max_drawdown_pct": -23.88,
+            "win_rate_pct": 32.1,
+            "profit_loss_ratio": 2.57,
+            "max_consecutive_losses": 5,
+            "total_trades": 28,
+            "avg_days_between_trades": 22.1,
+            "final_equity": 110741.02
+          },
+          "atr_position": {
+            "total_return_pct": 65.69,
+            "annualized_return_pct": 22.12,
+            "annualized_volatility_pct": 73.23,
+            "sharpe_ratio": 0.275,
+            "max_drawdown_pct": -58.28,
+            "win_rate_pct": 32.1,
+            "profit_loss_ratio": 2.92,
+            "total_trades": 28,
+            "final_equity": 165691.49,
+            "avg_shares_per_trade": 17489.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 4.84,
+            "annualized_return_pct": 1.89,
+            "annualized_volatility_pct": 37.75,
+            "sharpe_ratio": -0.003,
+            "max_drawdown_pct": -37.69,
+            "win_rate_pct": 30.0,
+            "profit_loss_ratio": 2.58,
+            "max_consecutive_losses": 3,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 104841.37
+          },
+          "atr_position": {
+            "total_return_pct": 145.74,
+            "annualized_return_pct": 42.74,
+            "annualized_volatility_pct": 2991.63,
+            "sharpe_ratio": 0.014,
+            "max_drawdown_pct": -100.06,
+            "win_rate_pct": 30.0,
+            "profit_loss_ratio": 4.4,
+            "total_trades": 10,
+            "final_equity": 245743.16,
+            "avg_shares_per_trade": 20050.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 53.72,
+            "annualized_return_pct": 18.55,
+            "annualized_volatility_pct": 30.98,
+            "sharpe_ratio": 0.534,
+            "max_drawdown_pct": -28.85,
+            "win_rate_pct": 55.0,
+            "profit_loss_ratio": 1.59,
+            "max_consecutive_losses": 2,
+            "total_trades": 20,
+            "avg_days_between_trades": 30.9,
+            "final_equity": 153723.95
+          },
+          "atr_position": {
+            "total_return_pct": 211.69,
+            "annualized_return_pct": 56.83,
+            "annualized_volatility_pct": 75.29,
+            "sharpe_ratio": 0.728,
+            "max_drawdown_pct": -43.53,
+            "win_rate_pct": 55.0,
+            "profit_loss_ratio": 1.82,
+            "total_trades": 20,
+            "final_equity": 311694.07,
+            "avg_shares_per_trade": 16495.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -5.39,
+            "annualized_return_pct": -2.17,
+            "annualized_volatility_pct": 8.56,
+            "sharpe_ratio": -0.487,
+            "max_drawdown_pct": -9.1,
+            "win_rate_pct": 57.1,
+            "profit_loss_ratio": 0.34,
+            "max_consecutive_losses": 2,
+            "total_trades": 14,
+            "avg_days_between_trades": 44.2,
+            "final_equity": 94605.05
+          },
+          "atr_position": {
+            "total_return_pct": -22.93,
+            "annualized_return_pct": -9.79,
+            "annualized_volatility_pct": 36.79,
+            "sharpe_ratio": -0.321,
+            "max_drawdown_pct": -37.84,
+            "win_rate_pct": 57.1,
+            "profit_loss_ratio": 0.32,
+            "total_trades": 14,
+            "final_equity": 77071.74,
+            "avg_shares_per_trade": 18300.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "000157",
+      "name": "中联重科",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": -13.79,
+            "annualized_return_pct": -5.71,
+            "annualized_volatility_pct": 18.2,
+            "sharpe_ratio": -0.423,
+            "max_drawdown_pct": -25.44,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 0.72,
+            "max_consecutive_losses": 4,
+            "total_trades": 15,
+            "avg_days_between_trades": 41.3,
+            "final_equity": 86206.54
+          },
+          "atr_position": {
+            "total_return_pct": -63.77,
+            "annualized_return_pct": -33.09,
+            "annualized_volatility_pct": 106.06,
+            "sharpe_ratio": -0.331,
+            "max_drawdown_pct": -80.56,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 0.74,
+            "total_trades": 15,
+            "final_equity": 36228.44,
+            "avg_shares_per_trade": 57460.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": -4.22,
+            "annualized_return_pct": -1.69,
+            "annualized_volatility_pct": 11.98,
+            "sharpe_ratio": -0.308,
+            "max_drawdown_pct": -17.32,
+            "win_rate_pct": 23.1,
+            "profit_loss_ratio": 2.75,
+            "max_consecutive_losses": 7,
+            "total_trades": 13,
+            "avg_days_between_trades": 47.6,
+            "final_equity": 95784.78
+          },
+          "atr_position": {
+            "total_return_pct": -12.85,
+            "annualized_return_pct": -5.3,
+            "annualized_volatility_pct": 80.02,
+            "sharpe_ratio": -0.091,
+            "max_drawdown_pct": -77.28,
+            "win_rate_pct": 23.1,
+            "profit_loss_ratio": 2.98,
+            "total_trades": 13,
+            "final_equity": 87147.39,
+            "avg_shares_per_trade": 65900.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 2.73,
+            "annualized_return_pct": 1.07,
+            "annualized_volatility_pct": 18.0,
+            "sharpe_ratio": -0.052,
+            "max_drawdown_pct": -26.09,
+            "win_rate_pct": 35.0,
+            "profit_loss_ratio": 2.04,
+            "max_consecutive_losses": 6,
+            "total_trades": 20,
+            "avg_days_between_trades": 30.9,
+            "final_equity": 102728.12
+          },
+          "atr_position": {
+            "total_return_pct": 23.69,
+            "annualized_return_pct": 8.78,
+            "annualized_volatility_pct": 48.66,
+            "sharpe_ratio": 0.139,
+            "max_drawdown_pct": -52.5,
+            "win_rate_pct": 35.0,
+            "profit_loss_ratio": 2.22,
+            "total_trades": 20,
+            "final_equity": 123688.71,
+            "avg_shares_per_trade": 56525.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": -6.14,
+            "annualized_return_pct": -2.48,
+            "annualized_volatility_pct": 19.89,
+            "sharpe_ratio": -0.225,
+            "max_drawdown_pct": -21.91,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 1.01,
+            "max_consecutive_losses": 4,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 93862.99
+          },
+          "atr_position": {
+            "total_return_pct": -25.2,
+            "annualized_return_pct": -10.85,
+            "annualized_volatility_pct": 149.51,
+            "sharpe_ratio": -0.086,
+            "max_drawdown_pct": -83.23,
+            "win_rate_pct": 40.0,
+            "profit_loss_ratio": 1.09,
+            "total_trades": 10,
+            "final_equity": 74803.84,
+            "avg_shares_per_trade": 60580.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": -22.74,
+            "annualized_return_pct": -9.71,
+            "annualized_volatility_pct": 22.04,
+            "sharpe_ratio": -0.531,
+            "max_drawdown_pct": -34.41,
+            "win_rate_pct": 28.6,
+            "profit_loss_ratio": 1.62,
+            "max_consecutive_losses": 5,
+            "total_trades": 28,
+            "avg_days_between_trades": 22.1,
+            "final_equity": 77262.15
+          },
+          "atr_position": {
+            "total_return_pct": -94.6,
+            "annualized_return_pct": -68.5,
+            "annualized_volatility_pct": 866.7,
+            "sharpe_ratio": -0.081,
+            "max_drawdown_pct": -106.24,
+            "win_rate_pct": 28.6,
+            "profit_loss_ratio": 1.73,
+            "total_trades": 28,
+            "final_equity": 5400.48,
+            "avg_shares_per_trade": 58207.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": 0.6,
+            "annualized_return_pct": 0.24,
+            "annualized_volatility_pct": 10.11,
+            "sharpe_ratio": -0.174,
+            "max_drawdown_pct": -12.09,
+            "win_rate_pct": 34.6,
+            "profit_loss_ratio": 2.01,
+            "max_consecutive_losses": 6,
+            "total_trades": 26,
+            "avg_days_between_trades": 23.8,
+            "final_equity": 100598.3
+          },
+          "atr_position": {
+            "total_return_pct": 7.7,
+            "annualized_return_pct": 2.98,
+            "annualized_volatility_pct": 43.47,
+            "sharpe_ratio": 0.023,
+            "max_drawdown_pct": -38.89,
+            "win_rate_pct": 34.6,
+            "profit_loss_ratio": 2.12,
+            "total_trades": 26,
+            "final_equity": 107698.54,
+            "avg_shares_per_trade": 57904.0
+          }
+        }
+      }
+    },
+    {
+      "symbol": "601061",
+      "name": "中信金属",
+      "strategies": {
+        "bollinger_atr": {
+          "fixed_position": {
+            "total_return_pct": 15.73,
+            "annualized_return_pct": 5.95,
+            "annualized_volatility_pct": 25.65,
+            "sharpe_ratio": 0.154,
+            "max_drawdown_pct": -25.87,
+            "win_rate_pct": 41.7,
+            "profit_loss_ratio": 1.97,
+            "max_consecutive_losses": 3,
+            "total_trades": 12,
+            "avg_days_between_trades": 51.6,
+            "final_equity": 115727.37
+          },
+          "atr_position": {
+            "total_return_pct": 119.48,
+            "annualized_return_pct": 36.5,
+            "annualized_volatility_pct": 297.95,
+            "sharpe_ratio": 0.116,
+            "max_drawdown_pct": -94.92,
+            "win_rate_pct": 41.7,
+            "profit_loss_ratio": 2.43,
+            "total_trades": 12,
+            "final_equity": 219475.38,
+            "avg_shares_per_trade": 49642.0
+          }
+        },
+        "kdj_cci": {
+          "fixed_position": {
+            "total_return_pct": 12.12,
+            "annualized_return_pct": 4.63,
+            "annualized_volatility_pct": 12.67,
+            "sharpe_ratio": 0.208,
+            "max_drawdown_pct": -13.56,
+            "win_rate_pct": 57.1,
+            "profit_loss_ratio": 1.54,
+            "max_consecutive_losses": 2,
+            "total_trades": 7,
+            "avg_days_between_trades": 88.4,
+            "final_equity": 112117.8
+          },
+          "atr_position": {
+            "total_return_pct": 52.81,
+            "annualized_return_pct": 18.27,
+            "annualized_volatility_pct": 43.81,
+            "sharpe_ratio": 0.371,
+            "max_drawdown_pct": -44.41,
+            "win_rate_pct": 57.1,
+            "profit_loss_ratio": 1.63,
+            "total_trades": 7,
+            "final_equity": 152809.37,
+            "avg_shares_per_trade": 50043.0
+          }
+        },
+        "ema_obv": {
+          "fixed_position": {
+            "total_return_pct": 36.02,
+            "annualized_return_pct": 12.95,
+            "annualized_volatility_pct": 24.32,
+            "sharpe_ratio": 0.45,
+            "max_drawdown_pct": -28.54,
+            "win_rate_pct": 17.4,
+            "profit_loss_ratio": 8.93,
+            "max_consecutive_losses": 7,
+            "total_trades": 23,
+            "avg_days_between_trades": 26.9,
+            "final_equity": 136017.07
+          },
+          "atr_position": {
+            "total_return_pct": 231.11,
+            "annualized_return_pct": 60.62,
+            "annualized_volatility_pct": 123.14,
+            "sharpe_ratio": 0.476,
+            "max_drawdown_pct": -85.02,
+            "win_rate_pct": 17.4,
+            "profit_loss_ratio": 11.69,
+            "total_trades": 23,
+            "final_equity": 331106.86,
+            "avg_shares_per_trade": 52191.0
+          }
+        },
+        "ema_cross": {
+          "fixed_position": {
+            "total_return_pct": 27.2,
+            "annualized_return_pct": 9.99,
+            "annualized_volatility_pct": 28.4,
+            "sharpe_ratio": 0.281,
+            "max_drawdown_pct": -38.25,
+            "win_rate_pct": 20.0,
+            "profit_loss_ratio": 6.15,
+            "max_consecutive_losses": 3,
+            "total_trades": 10,
+            "avg_days_between_trades": 61.9,
+            "final_equity": 127204.78
+          },
+          "atr_position": {
+            "total_return_pct": -87.66,
+            "annualized_return_pct": -56.32,
+            "annualized_volatility_pct": 114.17,
+            "sharpe_ratio": -0.511,
+            "max_drawdown_pct": -93.27,
+            "win_rate_pct": 10.0,
+            "profit_loss_ratio": 3.38,
+            "total_trades": 10,
+            "final_equity": 12338.64,
+            "avg_shares_per_trade": 50330.0
+          }
+        },
+        "macd": {
+          "fixed_position": {
+            "total_return_pct": 26.04,
+            "annualized_return_pct": 9.59,
+            "annualized_volatility_pct": 28.69,
+            "sharpe_ratio": 0.265,
+            "max_drawdown_pct": -29.98,
+            "win_rate_pct": 41.7,
+            "profit_loss_ratio": 1.91,
+            "max_consecutive_losses": 6,
+            "total_trades": 24,
+            "avg_days_between_trades": 25.8,
+            "final_equity": 126039.7
+          },
+          "atr_position": {
+            "total_return_pct": 194.07,
+            "annualized_return_pct": 53.25,
+            "annualized_volatility_pct": 145.61,
+            "sharpe_ratio": 0.352,
+            "max_drawdown_pct": -82.34,
+            "win_rate_pct": 41.7,
+            "profit_loss_ratio": 2.61,
+            "total_trades": 24,
+            "final_equity": 294066.5,
+            "avg_shares_per_trade": 49971.0
+          }
+        },
+        "bull_trend": {
+          "fixed_position": {
+            "total_return_pct": -7.63,
+            "annualized_return_pct": -3.09,
+            "annualized_volatility_pct": 12.34,
+            "sharpe_ratio": -0.412,
+            "max_drawdown_pct": -20.83,
+            "win_rate_pct": 36.4,
+            "profit_loss_ratio": 1.32,
+            "max_consecutive_losses": 3,
+            "total_trades": 22,
+            "avg_days_between_trades": 28.1,
+            "final_equity": 92374.03
+          },
+          "atr_position": {
+            "total_return_pct": -27.44,
+            "annualized_return_pct": -11.92,
+            "annualized_volatility_pct": 73.91,
+            "sharpe_ratio": -0.188,
+            "max_drawdown_pct": -72.37,
+            "win_rate_pct": 36.4,
+            "profit_loss_ratio": 1.39,
+            "total_trades": 22,
+            "final_equity": 72561.21,
+            "avg_shares_per_trade": 47886.0
+          }
+        }
+      }
+    }
+  ]
+}

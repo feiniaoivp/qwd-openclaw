@@ -262,6 +262,7 @@ STRATEGY_LABELS = {
     "ema_obv": "📈 EMA+OBV",
     "ema_cross": "💹 EMA12/26",
     "macd": "📉 纯MACD",
+    "ema_adaptive_vol": "🌊 波动自适应EMA",
 }
 
 # 各策略默认参数 (param_tune 未覆盖时使用)
@@ -271,6 +272,7 @@ DEFAULT_PARAMS = {
     "ema_obv": {"length": 20},
     "ema_cross": {"fast": 12, "slow": 26},
     "macd": {"fast": 12, "slow": 26, "signal": 9},
+    "ema_adaptive_vol": {"fast": 8, "slow": 21, "atr_lookback": 60, "high_pct": 70, "low_pct": 30},
 }
 
 DEFAULT_STRATEGY = "ema_cross"
@@ -611,12 +613,89 @@ def signal_macd(df, params=None):
             "fib_tp": {"targets": compute_fib_targets(df)}}
 
 
+def signal_ema_adaptive_vol(df, params=None):
+    """波动率自适应EMA：ATR percentile 决定周期
+    - 高波动(ATR%ile>70): EMA20/50 (慢速滤噪)
+    - 低波动(ATR%ile<30): EMA8/21 (快速捕捉)
+    - 中性: EMA12/26 (标准)
+    """
+    p = dict(DEFAULT_PARAMS.get("ema_adaptive_vol", {}))
+    p.update(params or {})
+    fast = p.get("fast", 8)
+    slow = p.get("slow", 21)
+    atr_lookback = p.get("atr_lookback", 60)
+    high_pct = p.get("high_pct", 70)
+    low_pct = p.get("low_pct", 30)
+    
+    df = df.copy()
+    df["ATR"] = ta.atr(df["high"], df["low"], df["close"], length=14)
+    df["ATR_pct"] = df["ATR"] / df["close"] * 100
+    
+    actions, position = [], False
+    
+    for i in range(max(30, atr_lookback), len(df)):
+        row = df.iloc[i]
+        dt = str(row["date"].date())
+        price = float(row["close"])
+        
+        # 计算ATR百分位（过去atr_lookback天）
+        atr_pct_series = df["ATR_pct"].iloc[max(0,i-atr_lookback):i+1]
+        atr_pct = float(row["ATR_pct"]) if pd.notna(row["ATR_pct"]) else atr_pct_series.median()
+        atr_percentile = (atr_pct_series < atr_pct).mean() * 100
+        
+        # 根据波动率选择EMA周期
+        if atr_percentile > high_pct:      # 高波动
+            cur_fast, cur_slow = 20, 50
+        elif atr_percentile < low_pct:     # 低波动
+            cur_fast, cur_slow = fast, slow
+        else:
+            cur_fast, cur_slow = 12, 26
+        
+        # 计算当前EMA
+        ema_fast = ta.ema(df["close"].iloc[:i+1], length=cur_fast).iloc[-1]
+        ema_slow = ta.ema(df["close"].iloc[:i+1], length=cur_slow).iloc[-1]
+        ema_fast_prev = ta.ema(df["close"].iloc[:i], length=cur_fast).iloc[-1]
+        ema_slow_prev = ta.ema(df["close"].iloc[:i], length=cur_slow).iloc[-1]
+        
+        ef, es = float(ema_fast), float(ema_slow)
+        pef, pes = float(ema_fast_prev), float(ema_slow_prev)
+        
+        cross_up = pef <= pes and ef > es
+        cross_down = pef >= pes and ef < es
+        
+        atr_val = float(df["ATR"].iloc[i]) if pd.notna(df["ATR"].iloc[i]) else 0
+        
+        if not position and cross_up:
+            action = "🟢买入"
+            reason = f"波动自适应EMA{cur_fast}/{cur_slow}金叉 ATR%ile={atr_percentile:.0f}% 止损¥{_compute_atr_stop(price, atr_val):.2f}"
+            actions.append({"date": dt, "type": "BUY", "price": price, "reason": reason})
+            position = True
+        elif position and cross_down:
+            action = "🔴卖出"
+            reason = f"波动自适应EMA{cur_fast}/{cur_slow}死叉 ATR%ile={atr_percentile:.0f}%"
+            actions.append({"date": dt, "type": "SELL", "price": price, "reason": reason})
+            position = False
+    
+    # 返回最后一个信号用于实时显示
+    last_action = "持有"
+    last_reason = "无信号"
+    if actions:
+        last_action = actions[-1]["type"]
+        last_reason = actions[-1]["reason"]
+    
+    return {"action": last_action, "reason": last_reason, "price": price,
+            "indicators": f"ATR%ile={atr_percentile:.0f}% EMA{cur_fast}/{cur_slow}",
+            "atr": atr_val, "atr_stop": _compute_atr_stop(price, atr_val),
+            "fib_tp": {"targets": compute_fib_targets(df)}}
+
+
 SIGNAL_FUNCS = {
     "bollinger": signal_bollinger_atr,
     "kdj_cci": signal_kdj_cci,
     "ema_obv": signal_ema_obv,
     "ema_cross": signal_ema_cross,
     "macd": signal_macd,
+    "ema_adaptive_vol": signal_ema_adaptive_vol,
 }
 
 

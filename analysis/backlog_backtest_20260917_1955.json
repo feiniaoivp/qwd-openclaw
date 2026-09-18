@@ -1,0 +1,66 @@
+{
+  "atr_pos_0.05": {
+    "error": "全失败",
+    "success": 0
+  },
+  "atr_pos_0.10": {
+    "error": "全失败",
+    "success": 0
+  },
+  "atr_pos_0.15": {
+    "error": "全失败",
+    "success": 0
+  },
+  "atr_pos_0.20": {
+    "error": "全失败",
+    "success": 0
+  },
+  "fib_tp_1.272": {
+    "error": "全失败",
+    "success": 0
+  },
+  "fib_tp_1.618": {
+    "error": "全失败",
+    "success": 0
+  },
+  "fib_tp_2.0": {
+    "error": "全失败",
+    "success": 0
+  },
+  "fib_tp_2.618": {
+    "error": "全失败",
+    "success": 0
+  },
+  "macd_6_13_9": {
+    "error": "全失败",
+    "success": 0
+  },
+  "macd_8_17_9": {
+    "error": "全失败",
+    "success": 0
+  },
+  "macd_12_26_9": {
+    "error": "全失败",
+    "success": 0
+  },
+  "macd_5_35_5": {
+    "error": "全失败",
+    "success": 0
+  },
+  "ema_adapt_atr": {
+    "error": "全失败",
+    "success": 0
+  },
+  "ema_adapt_vol": {
+    "error": "全失败",
+    "success": 0
+  },
+  "macd_momentum": {
+    "error": "全失败",
+    "success": 0
+  },
+  "naked_k": {
+    "error": "全失败",
+    "success": 0
+  }
+}

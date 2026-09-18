@@ -1,0 +1,11 @@
+{
+  "strategies": {
+    "macd": {},
+    "ema_cross": {},
+    "bollinger_atr": {},
+    "kdj_cci": {},
+    "ema_obv": {},
+    "bull_trend": {}
+  },
+  "summary": []
+}

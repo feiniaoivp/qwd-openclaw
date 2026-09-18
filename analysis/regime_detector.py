@@ -46,6 +46,71 @@ except ImportError:
     _install_net_timeout()
 
 
+# ── 状态持久化：防止 regime 频繁切换（hysteresis）──
+# 按 symbol 维护独立状态，支持多股票并行回测/实时
+_regime_states = {}
+
+def _get_state(symbol: str = "default") -> dict:
+    """获取或创建 symbol 的 regime 状态"""
+    if symbol not in _regime_states:
+        _regime_states[symbol] = {
+            "last_regime": None,
+            "hold_bars": 0,
+            "min_hold_bars": 10,
+            "switch_threshold": 2,
+            "pending_regime": None,
+            "pending_count": 0,
+        }
+    return _regime_states[symbol]
+
+
+def reset_regime_state(symbol: str = "default"):
+    """重置指定 symbol 的状态（新回测/新交易日开始时调用）"""
+    _regime_states[symbol] = {
+        "last_regime": None,
+        "hold_bars": 0,
+        "min_hold_bars": 10,
+        "switch_threshold": 2,
+        "pending_regime": None,
+        "pending_count": 0,
+    }
+
+
+def _apply_hysteresis(new_regime: str, symbol: str = "default") -> str:
+    """应用 hysteresis：regime 变更需连续确认 N 根 K 线"""
+    state = _get_state(symbol)
+    
+    if state["last_regime"] is None:
+        state["last_regime"] = new_regime
+        state["hold_bars"] = 1
+        return new_regime
+    
+    if new_regime == state["last_regime"]:
+        state["hold_bars"] += 1
+        state["pending_regime"] = None
+        state["pending_count"] = 0
+        return state["last_regime"]
+    
+    # 新 regime 不同
+    if state["pending_regime"] == new_regime:
+        state["pending_count"] += 1
+    else:
+        state["pending_regime"] = new_regime
+        state["pending_count"] = 1
+    
+    # 连续确认次数达到阈值才切换
+    if state["pending_count"] >= state["switch_threshold"]:
+        state["last_regime"] = new_regime
+        state["hold_bars"] = 1
+        state["pending_regime"] = None
+        state["pending_count"] = 0
+        return new_regime
+    
+    # 未达阈值，维持原 regime
+    state["hold_bars"] += 1
+    return state["last_regime"]
+
+
 @dataclass
 class RegimeResult:
     regime: str                    # strong_trend_up / strong_trend_down / weak_trend / chop
@@ -76,6 +141,7 @@ def compute_chop(df: pd.DataFrame, length: int = 14) -> float:
 
 
 def detect_regime(df: pd.DataFrame,
+                  symbol: str = "default",
                   adx_len: int = 14,
                   chop_len: int = 14,
                   atr_len: int = 14) -> RegimeResult:
@@ -97,9 +163,10 @@ def detect_regime(df: pd.DataFrame,
     di_plus_col = [c for c in adx_df.columns if "DMP_" in c.upper()][0]
     di_minus_col = [c for c in adx_df.columns if "DMN_" in c.upper()][0]
 
-    adx = float(adx_df[adx_col].iloc[-1]) if pd.notna(adx_df[adx_col].iloc[-1]) else 0.0
-    di_plus = float(adx_df[di_plus_col].iloc[-1]) if pd.notna(adx_df[di_plus_col].iloc[-1]) else 0.0
-    di_minus = float(adx_df[di_minus_col].iloc[-1]) if pd.notna(adx_df[di_minus_col].iloc[-1]) else 0.0
+    # ADX NaN 时默认 25（中性），避免误判为弱趋势(adx<20)
+    adx = float(adx_df[adx_col].iloc[-1]) if pd.notna(adx_df[adx_col].iloc[-1]) else 25.0
+    di_plus = float(adx_df[di_plus_col].iloc[-1]) if pd.notna(adx_df[di_plus_col].iloc[-1]) else 20.0
+    di_minus = float(adx_df[di_minus_col].iloc[-1]) if pd.notna(adx_df[di_minus_col].iloc[-1]) else 20.0
 
     # CHOP
     chop = compute_chop(df, chop_len)
@@ -179,8 +246,47 @@ def detect_regime(df: pd.DataFrame,
             "macd": {"fast": 12, "slow": 26, "signal": 9},
         }
 
+    # 应用 hysteresis 防抖
+    final_regime = _apply_hysteresis(regime, symbol)
+    
+    # 如果 regime 被 hysteresis 修正，同步调整 avoid_trade 和 params
+    if final_regime != regime:
+        avoid_trade = (final_regime == "chop") or chop_zone
+        if final_regime == "strong_trend_up":
+            params = {
+                "ema_cross": {"fast": 8, "slow": 21},
+                "bollinger": {"length": 15, "std": 2.0},
+                "ema_obv": {"length": 15},
+                "kdj_cci": {"length": 7, "rsi_threshold": 45},
+                "macd": {"fast": 8, "slow": 21, "signal": 5},
+            }
+        elif final_regime == "strong_trend_down":
+            params = {
+                "ema_cross": {"fast": 8, "slow": 21},
+                "bollinger": {"length": 15, "std": 2.0},
+                "ema_obv": {"length": 15},
+                "kdj_cci": {"length": 7, "rsi_threshold": 55},
+                "macd": {"fast": 8, "slow": 21, "signal": 5},
+            }
+        elif final_regime == "chop":
+            params = {
+                "ema_cross": {"fast": 20, "slow": 50},
+                "bollinger": {"length": 30, "std": 2.5},
+                "ema_obv": {"length": 30},
+                "kdj_cci": {"length": 14, "rsi_threshold": 50},
+                "macd": {"fast": 12, "slow": 26, "signal": 9},
+            }
+        else:
+            params = {
+                "ema_cross": {"fast": 12, "slow": 26},
+                "bollinger": {"length": 20, "std": 2.0},
+                "ema_obv": {"length": 20},
+                "kdj_cci": {"length": 9, "rsi_threshold": 40},
+                "macd": {"fast": 12, "slow": 26, "signal": 9},
+            }
+    
     return RegimeResult(
-        regime=regime,
+        regime=final_regime,
         adx=adx, di_plus=di_plus, di_minus=di_minus,
         chop=chop, ema_gap_atr=ema_gap_atr, chop_zone=chop_zone,
         suggested_params=params, avoid_trade=avoid_trade,
@@ -197,16 +303,16 @@ def get_adaptive_params(df: pd.DataFrame, strategy_key: str) -> Dict:
 
 
 # 兼容 adaptive_dual 的接口：返回 param_template + regime_fn
-def make_param_resolver(df: pd.DataFrame):
+def make_param_resolver(df: pd.DataFrame, symbol: str = "default"):
     """
     返回 (static_params_dict, regime_fn)
     regime_fn() -> 当前市场状态下的参数字典
     供 adaptive_dual.load_dual_strategy_map 使用
     """
-    result = detect_regime(df)
+    result = detect_regime(df, symbol=symbol)
 
     def regime_fn():
-        return detect_regime(df).suggested_params
+        return detect_regime(df, symbol=symbol).suggested_params
 
     # 静态默认参数（作为模板）
     static = {
@@ -241,7 +347,7 @@ if __name__ == "__main__":
     df["date"] = pd.to_datetime(df["date"])
     df = df.sort_values("date").reset_index(drop=True).dropna()
 
-    res = detect_regime(df)
+    res = detect_regime(df, symbol="600584")
     print(f"Regime: {res.regime}")
     print(f"ADX: {res.adx:.1f}, DI+: {res.di_plus:.1f}, DI-: {res.di_minus:.1f}")
     print(f"CHOP: {res.chop:.1f}")

@@ -1,0 +1,108 @@
+{
+  "strategies": {
+    "macd": {
+      "success": 27,
+      "avg_return_pct": 0.0,
+      "avg_sharpe": 0.0,
+      "avg_max_dd_pct": 0.0,
+      "avg_trades": 0.0,
+      "avg_win_rate_pct": 0.0
+    },
+    "ema_cross": {
+      "success": 27,
+      "avg_return_pct": 0.0,
+      "avg_sharpe": 0.0,
+      "avg_max_dd_pct": 0.0,
+      "avg_trades": 0.0,
+      "avg_win_rate_pct": 0.0
+    },
+    "bollinger_atr": {
+      "success": 27,
+      "avg_return_pct": 0.0,
+      "avg_sharpe": 0.0,
+      "avg_max_dd_pct": 0.0,
+      "avg_trades": 0.0,
+      "avg_win_rate_pct": 0.0
+    },
+    "kdj_cci": {
+      "success": 27,
+      "avg_return_pct": 0.0,
+      "avg_sharpe": 0.0,
+      "avg_max_dd_pct": 0.0,
+      "avg_trades": 0.0,
+      "avg_win_rate_pct": 0.0
+    },
+    "ema_obv": {
+      "success": 27,
+      "avg_return_pct": 0.0,
+      "avg_sharpe": 0.0,
+      "avg_max_dd_pct": 0.0,
+      "avg_trades": 0.0,
+      "avg_win_rate_pct": 0.0
+    },
+    "bull_trend": {
+      "success": 27,
+      "avg_return_pct": 0.0,
+      "avg_sharpe": 0.0,
+      "avg_max_dd_pct": 0.0,
+      "avg_trades": 0.0,
+      "avg_win_rate_pct": 0.0
+    }
+  },
+  "summary": [
+    {
+      "strategy": "macd",
+      "success": 27,
+      "avg_return": 0.0,
+      "sharpe": 0.0,
+      "max_dd": 0.0,
+      "trades": 0.0,
+      "win_rate": 0.0
+    },
+    {
+      "strategy": "ema_cross",
+      "success": 27,
+      "avg_return": 0.0,
+      "sharpe": 0.0,
+      "max_dd": 0.0,
+      "trades": 0.0,
+      "win_rate": 0.0
+    },
+    {
+      "strategy": "bollinger_atr",
+      "success": 27,
+      "avg_return": 0.0,
+      "sharpe": 0.0,
+      "max_dd": 0.0,
+      "trades": 0.0,
+      "win_rate": 0.0
+    },
+    {
+      "strategy": "kdj_cci",
+      "success": 27,
+      "avg_return": 0.0,
+      "sharpe": 0.0,
+      "max_dd": 0.0,
+      "trades": 0.0,
+      "win_rate": 0.0
+    },
+    {
+      "strategy": "ema_obv",
+      "success": 27,
+      "avg_return": 0.0,
+      "sharpe": 0.0,
+      "max_dd": 0.0,
+      "trades": 0.0,
+      "win_rate": 0.0
+    },
+    {
+      "strategy": "bull_trend",
+      "success": 27,
+      "avg_return": 0.0,
+      "sharpe": 0.0,
+      "max_dd": 0.0,
+      "trades": 0.0,
+      "win_rate": 0.0
+    }
+  ]
+}
