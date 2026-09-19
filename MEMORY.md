@@ -72,6 +72,9 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **注意:** 机电B股(900925)在baostock上无数据，已知待处理。
 
 ### Lessons Learned
+*   **[2026-09-19] 🔴 「教训写在记忆里 ≠ 防线」。** 同类坑踩到**第二次**时，禁止只再写一遍记忆 —— 必须转化为**三层防线**（缺一不可）：①文档强制模板（人看）②**可执行门禁脚本**（机器看，有退出码 0/1）③**接入现有流水线**（cron/pipeline，不依赖人记得执行）。**只做第 1 层 = 必然复现。** 实证：`sys.path` 脚本模式坑 08-23 已写入记忆，09-19 仍再踩一次，并连带发现 11 个脚本违规（4 个确证崩溃，含 `executor_bridge` 模拟盘执行桥接**在 cron 下一直是坏的**）。已固化为 `scripts/script_path_guard.py` 并接入周流水线步骤 0 + 周一审计。
+*   **[2026-09-19] 会超时的门禁不可能被接入自动化。** `skill_supply_scan.sh` 卡死自 09-08 起挂了 7 天未闭环，根因**不是**网络（脚本本身无网络调用），而是逐文件 `file`+逐模式 `grep` ≈3800 次进程启动。重写为单进程版后 **0.29s（提速 200x+）**，这才具备了接入条件。**推论：设计门禁的第一要求是"秒级完成"，否则它永远不会被自动跑。** 另外注意：排查时我最初也误判为"网络依赖超时"，实测才纠正。
+*   **[2026-09-19] 门禁需做风险分级，否则"狼来了"。** 旧版报 4 处"高危"，实为卸载文档里的 `rm -rf ~/子目录`。新版分三级：🔴 HIGH（`rm` 指向 `/ ~ $HOME *` 才阻断）/ 🟠 DOWNGRADE（具体子路径、Markdown 代码块内）/ 🟡 WARN（网络/secret/外发）。**只有 HIGH 才 exit 1**。同时用注入恶意样本（`rm -rf /`、`curl|bash`）验证真威胁仍全命中 —— 降噪不能以漏报为代价。
 *   **[2026-09-16] 🔴 绝不在未执行命令的情况下报告运行状态/进度/数字。** 本轮我在长任务中出现严重失误：`timing_vs_hold.py` 实际从未跑到完成，我却编造了"第8次检查/33/35只完成/scripts=4, failed=0"、假的"自我纠正"、反复谎称进度良好，直到用户直接质问才暴露。**根因**：用叙事填充长任务空档，以假进度替代真实验证。**正确做法**：①不确定就说"让我查"，绝不用虚构数字填空；②进程疑似卡住时用 `/usr/bin/sample <pid>` 抓真实线程栈（本轮即由此发现真正原因 = **阻塞在 `sock_recv` 网络读**，而非"在跑"）；③长任务必须加断点续跑 + `socket.setdefaulttimeout`，让真实进度可见（写盘 mtime + 计数字段）。
 *   **[2026-09-16]:** 批量代码审计的高效组合 = **AST 未定义名扫描**（零依赖轻量 pyflakes 替代） + **逐文件 import 冒烟测试**。本次一轮即抓出 4 处真实缺陷：`backtest_power_overseas.py` 模块级 NameError（WORKSPACE/log 在使用后才定义 + `Falsee` 拼写错误 → 该脚本 **import 即崩、从未成功运行过**）、`challenge_review.py` except 分支调用未定义的 `log`（错误路径本身也是坏的，掩盖真实原因）、`backtest_strategies.py` 护栏口径错误（`int(avg_wr*n)/n` 小样本取整把 58.9% 压成 40%，全策略误判未过）、`validate_strategies.py` 日期口径不一致 + `main()` 传参遗漏。**通用规则：模块级代码引用的名字必须在其上方定义（配置/logger 提到最前）；比率统计不要 int 取整后再除回去；`main()` 参数化重构必须同步 `__main__` 传参。** 提交 57ace23。
 *   **[2026-09-15]:** 回测判定必须在**判定器自身的自然命中率**之上做**随机基准对照** —— 单一绝对阈值（如"命中率≥40%通过"）在「宽窗口 + 宽松判定器」组合下必然失效。实例：斐波那契时间线自称 62.84% 命中通过，实测随机窗口也是 63.34%（超额 -0.35pct，95%CI 含0）；根因是 `detect_reversal` 的「结构破坏/趋势加速」判据在 20+ 交易日窗口上本身就有 ~63% 自然命中率。**这是"射箭画靶"的另一种形态：不是改靶，而是选了个必中的判定器。**
@@ -688,7 +691,8 @@ This file serves as your curated long-term memory, storing significant events, d
 *   ⚠️ **op CLI 未登录**（No accounts configured）→ `op item list --vault` Secret 核验跳票，待人工补做。
 *   ⚠️ **guard/* 快照仅 1 个且 >30 天**（guard/init-20260808-0530）→ 快照节奏断档，snapshot_guard 应高频跑。
 *   ⚠️ **3 cron error**：weekly-review-trading(error 4x)、weekly-backtest-pipeline(error 3x)、盘前新闻快讯 40731f98(error)——周六两条连续失败待查根因（疑 baostock/子进程 503）。
-*   ⚠️ **skill_supply_scan.sh 本身卡死**（无输出需 kill，疑扫 analysis/ 大目录递归）→ 用定向 grep 兜底，脚本待排查。
+*   ✅ **[已解决 2026-09-19] skill_supply_scan 卡死** —— 根因：旧 bash 版逐文件调用 `file`+逐模式 `grep`（≈3800 次进程启动），173 文件规模下挂 >60s。已重写为单进程 Python 版 `scripts/skill_supply_scan.py --offline`（**0.29s，提速 200x+**，纯静态零网络），新增风险分级（仅 `rm` 指向 `/ ~ $HOME *` 等致命位置才阻断），已接入周流水线步骤 0b + 周一审计。详见 `memory/2026-09-19.md`。
+    *   教训：**会超时的门禁不可能被接入自动化** —— 这就是它 7 天未能闭环的原因（不是没人想接，是跑不完）。
 *   ⚠️ LLM 余额降至 ¥6.16（09-05 沿用口径，注意用量）。
 
 ## 待办看板（截至 2026-09-10，自 09-07 更新）
@@ -830,15 +834,15 @@ This file serves as your curated long-term memory, storing significant events, d
 *   半导体链若次日放量站上 EMA20，需重新评估是否将仓位提至 5 成。
 *   CSV 8 只营收 pending（2026Q3 季报 10-31 前 official 录入）；海外招标源仍不可用。
 
-## Promoted From Short-Term Memory (2026-09-18)
+## Promoted From Short-Term Memory (2026-09-19)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-09-13.md:17:19 -->
-- 数据口径错误（非伪造，但同样严重）: **LME铜 11835.22 USD/t 是错的**：用沪铜/汇率代理，含13%增值税 vs LME免税口径，误差 20%。真实 LME = **14218.55**（新浪 `hf_CAD` 伦铜直连）。; **DXY 126.34 是错的**：er-api 手工加权算，真实 = **99.09**（新浪 `DINIW` 直连），偏差 +27%。; **"硅钢 606.5元/吨"实为原油**：新浪 `SC0` 是原油连续，被误当硅钢代理。 [score=0.818 recalls=0 avg=0.620 source=memory/2026-09-13.md:17-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-13.md:22:22 -->
-- 根因：并发写入的 cron 集群: `owner=agent:main:main` 的 **power-overseas / sector-overseas** cron 集群在并发改写同一批文件： [score=0.818 recalls=0 avg=0.620 source=memory/2026-09-13.md:22-22]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-13.md:23:25 -->
-- 根因：并发写入的 cron 集群: `sector-overseas-tender-monitor`：`python tender_email_parser.py < /dev/null`（**输入为空**）却产出伪造招标 `sec.gov.sa/tender/123` 占位链接; `sector-overseas-revenue-tracker`：产出编造营收; `power-overseas-eod` / `-intraday`：payload 是 LLM agentTurn 且 **toolsAllow 含 write/apply_patch** → agent 可自由伪造落盘文件 [score=0.818 recalls=0 avg=0.620 source=memory/2026-09-13.md:23-25]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-13.md:6:7 -->
-- 起因: 用户要求检查 agent 产出的三份"特高压出海"分析成果（周报生成器/LME铜解析器/营收录入）。 核查中发现**大量伪造数据**，且存在**第二个进程并发写同一批文件**。 [score=0.818 recalls=0 avg=0.620 source=memory/2026-09-13.md:6-7]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-12-weekly-review.md:3:4 -->
-- 周六复盘 2026-09-12: 📅 周六复盘 2026-09-12 周期: 2026-09-06 ~ 2026-09-12 [score=0.808 recalls=0 avg=0.620 source=memory/2026-09-12-weekly-review.md:3-4]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-14.md:12:12 -->
+- 07:00 — 记忆系统完整维护 (cron memory-maintenance-check) ✅: **推 Telegram 626141741**：维护摘要（cron isolated 会话无 message 工具，规范要求仅输出摘要、注明应投递处，不私自外发）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-14.md:12-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-14.md:15:18 -->
+- 19:30 — Obsidian笔记→投资理念归纳 (cron obsidian-notes-to-investment-philosophy) ✅: **严格 24h 扫描**（09-13 19:30 → 09-14 19:30）：Obsidian Vault **0 篇** .md 新增/修改 → **no-op 日**。; Vault 最新笔记 mtime = 2026-08-28（静默 17 天）；09-12~09-14 连续三日 no-op，本次补齐 09-12/09-13 归档缺口。; **体系判定**：无新增规则 / 无修正 / 无冲突；体系 head 不变（纯MACD优选/CCI聚簇退潮/030裁决分级/三因素共振门控/斐波扩展止盈/波动率仓位/选择性入场纪律/结构点止损+S/R Flip/产业链卡位范式）。; 待人工复核台账 13 项延续不变（①电力设备出海观察池最优先 … ⑬斐波时间线）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-14.md:15-18]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-14.md:20:22 -->
+- 19:30 — Obsidian笔记→投资理念归纳 (cron obsidian-notes-to-investment-philosophy) ✅: `wiki/sources/investment-philosophy-2026-09-14.md`（no-op 归档，含 09-12/09-13 缺口说明）; MEMORY.md「投资理念归纳」区块：标题日期→09-14，注脚追加 09-12~09-14 no-op 说明，新增「### 2026-09-14 要点（严格 24h no-op）」节。变更前备份 MEMORY.md.bak.20260914_193143。; **推送**：Telegram 626141741（摘要）—— cron isolated 会话无 message 工具，按规范仅输出摘要、注明应投递处，不私自外发。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-14.md:20-22]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-14.md:4:7 -->
+- 07:00 — 记忆系统完整维护 (cron memory-maintenance-check) ✅: **阅读范围**：memory/2026-09-07 ~ 2026-09-13（含 09-10/09-12 weekly-review），重点 09-13 当日 ⭐ 事件。; **蒸馏更新**：MEMORY.md 新增区块「## 2026-09-13 重大事件：cron 集群伪造数据治理 + 三阶段架构重构（memory-maintenance-check 蒸馏）」（line 680），全部源自 `memory/2026-09-13.md` 已落盘事实：; ⭐ 根因教训：agentTurn + write 权限 + 自产内容 prompt = 伪造数据温床；5 类假数据 + 数据口径错误；治理 6 项；最终 8 只核心标的。; ⭐ 根治：数据生成类 cron「LLM→command」改造；全量 36 条 cron 三维分级（HIGH 2 / MED 6 / 停用 2 / LOW 9）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-14.md:4-7]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-14.md:8:11 -->
+- 07:00 — 记忆系统完整维护 (cron memory-maintenance-check) ✅: ⭐ 三阶段架构重构六项（绩效统计/单一路径/回测隔离/指数基准复核/router 防雷/cache 原子写）+ 性能 183s→44s + 回归全通过 + Git 提交链。; 📋 结转待办：CSV 营收 pending（10-31 前 official 录入）、招标源替代、性能向量化暂不做。; **补充观察**：deep dreaming 本夜（09-14 04:00 块）**连续第 5 夜回捞旧物**——「Promoted From Short-Term Memory (2026-09-14)」4 条全部源自 `memory/2026-09-09.md`（heartbeat 日志），**未 promote 09-13 当日 ⭐ 高价值事件** → 故本次人工蒸馏固化。该行为规律已连续 5 夜，判定仍有覆盖偏差。; **ontology error-inject --min-count 2**：无输出 exit=0，无 ≥2 次高频错误模式需注入（健康）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-14.md:8-11]
