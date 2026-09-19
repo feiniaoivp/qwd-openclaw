@@ -159,6 +159,15 @@ def main():
         t = tune_map.get(sym, {}) or {}
         t_strat = t.get("strategy") or "—"
 
+        # 持有期收益分布明细（新评分口径）
+        det0 = (v.get("details") or [{}])[0]
+        dist = v.get("distribution") or {}
+        base_score = det0.get("base_score")
+        dist_score = det0.get("dist_score")
+        med = det0.get("median_ret") if det0.get("median_ret") is not None else dist.get("median_ret")
+        p75 = det0.get("p75_ret") if det0.get("p75_ret") is not None else dist.get("p75_ret")
+        p25 = det0.get("p25_ret") if det0.get("p25_ret") is not None else dist.get("p25_ret")
+
         guard, reason = check_guard(score, sharpe, trades) if score is not None else (None, "")
         err = v.get("error")
         in_sim = sym in sim_codes if sim_codes else None
@@ -170,6 +179,8 @@ def main():
             "ret": ret, "dd": dd, "windows": windows,
             "guard": guard, "reason": reason, "err": err,
             "in_sim": in_sim,
+            "base_score": base_score, "dist_score": dist_score,
+            "med": med, "p75": p75, "p25": p25,
             "changed": (v_strat not in ("—", None) and v_strat != cur),
         })
 
@@ -184,6 +195,15 @@ def main():
     L.append("")
     L.append(f"**护栏口径**：得分 ≥ {MIN_SCORE:.0f} 且 夏普 ≥ {SHARPE_THR}"
              f"（笔数 < 6 时需 ≥ {SHARPE_THR_LOW_N}）")
+    L.append("")
+    L.append("**评分口径（2026-09-19 升级）**：")
+    L.append("")
+    L.append("- 基础分 = 夏普×60 + 收益×0.6 − 回撤惩罚")
+    L.append("- 分布分 = 中位数×0.5 + 上四分位×0.3 − |下四分位|×0.2 + 夏普×30")
+    L.append("- **总分 = (基础分 + 分布分)/2 × 样本量权重**")
+    L.append("")
+    L.append("> 为何加分布项：夏普会把「大赢+大亏」平均掉，掩盖「平时小亏、关键时大赢」的尾部价值。"
+             "趋势策略（如 EMA+OBV 盈亏比 4.17）典型 = 低胜率 + 高盈亏比，只看夏普被系统性低估。")
     L.append("")
     L.append("窗口定义：W1 全量(2020起) / W2 近3年 / W3 近1.5年 / W4 近1年")
     L.append("")
@@ -214,8 +234,8 @@ def main():
 
     L.append("## 三方对照")
     L.append("")
-    L.append("| 代码 | 名称 | 池 | 当前生效 | 验证最优 | 调优候选 | 验证得分 | 夏普 | 笔数 | 年化收益 | 最大回撤 | 护栏 | 变更 |")
-    L.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
+    L.append("| 代码 | 名称 | 池 | 当前生效 | 验证最优 | 调优候选 | 总分 | 基础分 | 分布分 | 中位 | p75 | p25 | 夏普 | 笔数 | 护栏 | 变更 |")
+    L.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for r in rows:
         if r["err"]:
             g = "❌"
@@ -229,8 +249,9 @@ def main():
         pool = "模拟" if r["in_sim"] else ("出海" if r["in_sim"] is False else "—")
         L.append(
             f"| {r['sym']} | {r['name']} | {pool} | `{r['cur']}` | `{r['val']}` | `{r['tune']}` | "
-            f"{fmt(r['score'],1)} | {fmt(r['sharpe'],2)} | {fmt(r['trades'],0)} | "
-            f"{fmt(r['ret'],1,True)}% | {fmt(r['dd'],1)}% | {g} | {mark} |"
+            f"{fmt(r['score'],1)} | {fmt(r['base_score'],1)} | {fmt(r['dist_score'],1)} | "
+            f"{fmt(r['med'],2,True)} | {fmt(r['p75'],2,True)} | {fmt(r['p25'],2,True)} | "
+            f"{fmt(r['sharpe'],2)} | {fmt(r['trades'],0)} | {g} | {mark} |"
         )
 
     # 护栏未过

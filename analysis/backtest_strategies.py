@@ -447,6 +447,20 @@ def run_simulation(df, actions):
     sell_count = len([t for t in trades if t["type"].startswith("SELL")])
     trade_days = (len(df) / buy_count) if buy_count > 0 else 999
 
+    # ── 持有期收益分布 (2026-09-19 新增) ──
+    # 动机：夏普把"大赢+大亏"平均掉，掩盖了"平时小亏、关键时大赢"的尾部价值。
+    # 趋势策略(如 EMA+OBV)典型特征 = 低胜率 + 高盈亏比，只看夏普会被系统性低估。
+    trade_returns = [t.get("pnl_pct", 0.0) for t in closed_trades]
+    if trade_returns:
+        tr = np.array(trade_returns, dtype=float)
+        median_ret = float(np.median(tr))
+        p75_ret = float(np.percentile(tr, 75))
+        p25_ret = float(np.percentile(tr, 25))
+        mean_ret = float(np.mean(tr))
+        std_ret = float(np.std(tr, ddof=1)) if len(tr) > 1 else 0.0
+    else:
+        median_ret = p75_ret = p25_ret = mean_ret = std_ret = 0.0
+
     return {
         "total_return_pct": round(total_return, 2),
         "annualized_return_pct": round(annualized_return, 2),
@@ -459,6 +473,13 @@ def run_simulation(df, actions):
         "total_trades": sell_count,
         "avg_days_between_trades": round(trade_days, 1),
         "final_equity": round(eq_series[-1], 2),
+        # 持有期收益分布（供验证评分使用）
+        "trade_returns": [round(x, 2) for x in trade_returns],
+        "median_ret": round(median_ret, 2),
+        "p75_ret": round(p75_ret, 2),
+        "p25_ret": round(p25_ret, 2),
+        "mean_ret": round(mean_ret, 2),
+        "std_ret": round(std_ret, 2),
     }
 
 
@@ -754,6 +775,16 @@ ALL_STRATEGIES = [
     ("沪深300基准", lambda df: strategy_index_benchmark_cached(df, "sh.000300", "沪深300")),
     ("中证500基准", lambda df: strategy_index_benchmark_cached(df, "sh.000905", "中证500")),
 ]
+
+# ── 非候选策略（仅作对照基准，禁止被选为"最优策略"）──
+# 2026-09-19 修复：之前 benchmark 与真实策略混在候选池里，
+# 当所有真实策略得分为负时"买入并持有"会排第一被选中，
+# 但 key_map 里没有它 -> 静默 fallback 成 ema_cross（写入了从未被选中的策略）。
+# 实证：601995 中金公司 / 000708 中信特钢 上一轮均中招。
+BENCHMARK_NAMES = {"买入并持有(个股)", "沪深300基准", "中证500基准", "买入并持有"}
+
+# 仅候选策略（供 validate_strategies 选优使用）
+CANDIDATE_STRATEGIES = [(n, f) for n, f in ALL_STRATEGIES if n not in BENCHMARK_NAMES]
 
 
 

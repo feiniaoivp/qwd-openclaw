@@ -35,7 +35,7 @@ from analysis.data_layer.router import get_router
 # ── 复用主回测脚本的策略与模拟函数 ──
 from analysis.backtest_strategies import (
     INITIAL_CAPITAL, COMMISSION, SLIPPAGE,
-    run_simulation, ALL_STRATEGIES,
+    run_simulation, ALL_STRATEGIES, CANDIDATE_STRATEGIES,
 )
 
 # ── 回测护栏：随机基准对照 ──
@@ -152,7 +152,7 @@ def main(stocks=None, write_map=False, arbitrate=False):
             
             print(f"    {wname}: {len(wdf)} 条 ({str(wdf['date'].min().date())} ~ {str(wdf['date'].max().date())})")
             wmetrics = {}
-            for sname, sfunc in ALL_STRATEGIES:
+            for sname, sfunc in CANDIDATE_STRATEGIES:
                 try:
                     actions = sfunc(wdf)
                     m = run_simulation(wdf, actions)
@@ -175,9 +175,10 @@ def main(stocks=None, write_map=False, arbitrate=False):
             continue
         name = out["name"]
         # 统计每个策略在4个窗口的表现
-        strat_points = {}   # 策略 -> {收益, 夏普, 回撤, 次数, 出现次数}
-        for sname, _ in ALL_STRATEGIES:
-            pts = {"returns": [], "sharpes": [], "dd": [], "trades": [], "cnt": 0}
+        strat_points = {}   # 策略 -> {收益, 夏普, 回撤, 次数, 出现次数, 持有期分布}
+        for sname, _ in CANDIDATE_STRATEGIES:
+            pts = {"returns": [], "sharpes": [], "dd": [], "trades": [], "cnt": 0,
+                   "trade_returns": []}
             for wname in [w for w, _, _ in WINDOWS]:
                 w = out["windows"].get(wname, {})
                 m = w.get(sname, {})
@@ -187,6 +188,8 @@ def main(stocks=None, write_map=False, arbitrate=False):
                 pts["sharpes"].append(m.get("sharpe_ratio", 0))
                 pts["dd"].append(m.get("max_drawdown_pct", 0))
                 pts["trades"].append(m.get("trades", 0))
+                # 汇总各窗口的持有期收益（逐笔），供中位数/分位数评分
+                pts["trade_returns"].extend(m.get("trade_returns", []) or [])
                 pts["cnt"] += 1
 
             strat_points[sname] = pts
@@ -194,8 +197,14 @@ def main(stocks=None, write_map=False, arbitrate=False):
         # 计算每个策略的稳定性得分
         # 规则:
         #  - 只统计有 >=2 个窗口可用的策略(避免单窗口侥幸)
-        #  - 得分 = (夏普*60 + 收益*0.6 - 回撤惩罚) * 样本量权重
-        #  - 样本量按分档权重: 交易笔数越多越可信; 低笔数好策略不误杀但降权
+        #  - 基础分 = 夏普*60 + 收益*0.6 - 回撤惩罚
+        #  - 2026-09-19 新增「持有期收益分布」项:
+        #      分布分 = 中位数*0.5 + 上四分位*0.3 - |下四分位|*0.2 + 夏普*30
+        #    动机: 夏普把"大赢+大亏"平均掉, 會掩盖"平时小亏、关键时大赢"的尾部价值。
+        #    趋势策略(EMA+OBV 盈亏比 4.17)典型 = 低胜率+高盈亏比, 只看夏普被系统性低估。
+        #    取中位数(抗离群)+上四分位(奖励右侧尾部)-下四分位惩罚(控制左侧尾部)。
+        #  - 最终得分= 两者均值 * 样本量权重
+        USE_DISTRIBUTION = True
         scored = []
         for sname, pts in strat_points.items():
             if pts["cnt"] < 2:
@@ -215,7 +224,24 @@ def main(stocks=None, write_map=False, arbitrate=False):
                 sample_weight = 0.15
             # 回撤惩罚: 超过 -30% 扣分
             dd_penalty = max(0, (abs(avg_dd) - 30)) * 0.5
-            raw = avg_sharpe * 60 + avg_ret * 0.6 - dd_penalty
+            base_raw = avg_sharpe * 60 + avg_ret * 0.6 - dd_penalty
+
+            # ── 持有期收益分布分 ──
+            tr_list = pts.get("trade_returns") or []
+            if len(tr_list) >= 2:
+                tr = np.array(tr_list, dtype=float)
+                median_ret = float(np.median(tr))
+                p75_ret = float(np.percentile(tr, 75))
+                p25_ret = float(np.percentile(tr, 25))
+                dist_raw = (median_ret * 0.5 + p75_ret * 0.3
+                            - abs(p25_ret) * 0.2 + avg_sharpe * 30)
+                dist_used = True
+            else:
+                median_ret = p75_ret = p25_ret = 0.0
+                dist_raw = base_raw   # 无法计算分布时退化为原口径
+                dist_used = False
+
+            raw = (base_raw + dist_raw) / 2 if dist_used else base_raw
             score = raw * sample_weight
             scored.append({
                 "strategy": sname, "score": round(score, 2),
@@ -225,6 +251,14 @@ def main(stocks=None, write_map=False, arbitrate=False):
                 "avg_trades": round(avg_trades, 1),
                 "sample_weight": sample_weight,
                 "windows": pts["cnt"],
+                # 分布明细（审计/对照用）
+                "base_score": round(base_raw, 2),
+                "dist_score": round(dist_raw, 2),
+                "dist_used": dist_used,
+                "median_ret": round(median_ret, 2),
+                "p75_ret": round(p75_ret, 2),
+                "p25_ret": round(p25_ret, 2),
+                "n_trades_pooled": len(tr_list),
             })
 
         if not scored:
@@ -240,16 +274,34 @@ def main(stocks=None, write_map=False, arbitrate=False):
             "EMA12/26金叉(基准C)": "ema_cross", "纯MACD(基准B)": "macd",
             "牛市趋势跟踪": "bull_trend",
         }
+        # 安全断言：最优策略必须能映射到真实 key。
+        # 否则静默 fallback 会把"从未被选中的策略"写进 map（2026-09-19 修复）。
+        if best["strategy"] not in key_map:
+            print(f"  ⚠️ {name}({symbol}): 最优 {best['strategy']} 无法映射到策略 key，跳过（不写入）")
+            continue
         best_map[symbol] = {
-            "strategy": key_map.get(best["strategy"], "ema_cross"),
+            "strategy": key_map[best["strategy"]],
             "name": name, "score": best["score"],
             "avg_return": best["avg_return"], "avg_sharpe": best["avg_sharpe"],
             "avg_dd": best["avg_dd"], "avg_trades": best["avg_trades"],
             "windows_used": best["windows"],
             "details": scored[:3],
+            # 持有期收益分布（新评分口径明细）
+            "distribution": {
+                "median_ret": best.get("median_ret"),
+                "p75_ret": best.get("p75_ret"),
+                "p25_ret": best.get("p25_ret"),
+                "base_score": best.get("base_score"),
+                "dist_score": best.get("dist_score"),
+                "dist_used": best.get("dist_used"),
+                "n_trades_pooled": best.get("n_trades_pooled"),
+            },
         }
         print(f"  {name}({symbol}): 最优 {best['strategy']} "
-              f"得分{best['score']} (多年化夏普{best['avg_sharpe']} 收益{best['avg_return']}% 回撤{best['avg_dd']}%)")
+              f"得分{best['score']} (多年化夏普{best['avg_sharpe']} 收益{best['avg_return']}% 回撤{best['avg_dd']}%"
+              + (f" | 中位{best.get('median_ret')} p75{best.get('p75_ret')} p25{best.get('p25_ret')}"
+                 if best.get("dist_used") else "")
+              + ")")
 
     # ── 保存结果 ──
     os.makedirs(os.path.join(WORKSPACE, "analysis"), exist_ok=True)

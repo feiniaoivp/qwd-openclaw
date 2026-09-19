@@ -1,7 +1,7 @@
 {
   "000157": "ema_cross",
   "000708": "ema_adaptive_vol",
-  "000987": "macd",
+  "000987": "bollinger",
   "002156": "ema_obv",
   "002318": "ema_cross",
   "002335": "macd",
@@ -14,7 +14,7 @@
   "300748": "kdj_cci",
   "600030": "macd",
   "600036": "macd",
-  "600160": "ema_obv",
+  "600160": "ema_cross",
   "600346": "macd",
   "600570": "ema_adaptive_vol",
   "600584": "macd",
@@ -27,10 +27,8 @@
   "605566": "macd",
   "688981": "kdj_cci",
   "600406": "ema_obv",
-  "601179": "ema_obv",
+  "601179": "bollinger",
   "002028": "ema_cross",
   "002270": "ema_obv",
-  "002130": "kdj_cci",
-  "600089": "bollinger",
-  "600312": "kdj_cci"
+  "002130": "kdj_cci"
 }

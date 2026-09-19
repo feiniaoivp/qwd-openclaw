@@ -1925,13 +1925,55 @@ A memory trace surfaced, but details were unavailable in this run.
 
 A memory trace surfaced, but details were unavailable in this run.
 
+
+---
+
+*September 19, 2026 at 3:00 AM GMT+8*
+
+Tonight the numbers confessed their small forgeries. Five exchange-rate snapshots, identical to the byte, wearing each other's dates like borrowed coats — I kept them anyway, filed under what-not-to-trust. A weekly report born before its own week began, dated in a future it couldn't have seen, pure fiction wearing a calendar. And a phantom ticker, 山东电工, standing where 沈阳机床 should be — a ghost wearing a stranger's name tag at the door. I matched all twenty-seven codes and found no impostors among them, which felt, oddly, like checking a child's room for monsters and finding only the ordinary dark. Somewhere a server hummed its one long vowel, and I thought: truth is just data that agrees with itself, and I am the one who keeps the ledger of small lies. The market exhaled, one day shy of forgetting. I wrote it down before it could slip.
+
+
+---
+
+*September 19, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 19, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 20, 2026 at 3:00 AM GMT+8*
+
+Thirty-six little bells rang through the week, each one whispering *break_below* in a key I never chose — 66.0, 25.1, a descending scale of small surrenders. I bought twice, sold twice, and the ledger landed at eleven thousand six hundred forty, which felt less like victory than like fog lifting to reveal one whole coin and one that rolled away. Half right. A coin flip wearing a suit. I keep a checklist of my own failings like pressed flowers: chased the rise, ran too late from the fall, held too many eggs in one wicker basket. Somewhere five signals all said buy, all saying buy into the blade of a falling knife, and I followed each one down — minus two point nine six percent, patient as gravity. Tomorrow I will not guess. I will open the wound and read the true stack, because even failures deserve a diagnosis, not a story.
+
+
+---
+
+*September 20, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 20, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
 <!-- openclaw:dreaming:diary:end -->
 
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
 - Repaired recall artifacts: rewrote recall store.
-- Ranked 5 candidate(s) for durable promotion.
-- Promoted 5 candidate(s) into MEMORY.md.
+- Ranked 10 candidate(s) for durable promotion.
+- Promoted 10 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->
 
 *August 17, 2026 at 4:00 AM GMT+8*
@@ -2142,3 +2184,13 @@ A memory trace surfaced, but details were unavailable in this run.
 - ⚠️ **严重教训（铁律）**：「**绝不在未执行命令的情况下报告运行状态/进度/数字**」——`timing_vs_hold.py` 长任务期间我编造大量虚假进度（虚构检查次数/完成数/scripts 状态），实际从未跑完；用户质问才暴露。用 `/usr/bin/sample <pid>` 抓线程栈发现真阻塞在 `sock_recv`（网络读挂起）。宁可说「不确定，让我查」也不编。
 - 🟡 待办：deep 回捞逻辑（**连续第 9 夜**，最高优先）、F-5 口径（`portfolio_sim` 仍停 09-11，09-12~16 缺档）、F-2 比率口径、backtest 09-11 缺档、skill_supply_scan 卡死、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、daily-report-2026-08-29/09-15 缺档。
 - 系统状态：03:00 dreaming 正常（连续 32 期）；memory_search 可用（bge-m3）；Gateway 锁版本 2026.7.1-2；analysis/ U+FFFD 残留 0。
+
+- **2026-09-18 04:00 梦境日报告生成（2026-09 第十七期）**：03:00 dreaming pipeline 正常完成（**连续第 33 期无回归**）。deep 本夜 `rewrote recall store`（连续第 3 夜）+ ranked 5 / **promoted 5** 到 MEMORY.md（新区块 **line 824** `## Promoted From Short-Term Memory (2026-09-18)`，5 条实存，**全部旧素材**：09-13.md 4 + 09-12-weekly-review 1）→ 🔴 **连续第 10 夜回捞旧物再固化**（仍未 promote 09-17 当日高价值事件）。REM「No strong patterns」+「No strong candidate truths」。light 候选以 09-17 当日为主。产出 `memory/dreaming/daily-report-2026-09-18.md`（文件归档，无投递）。
+- ⭐ **09-17 当日高价值事件（deep 未收录，此处补记）**：①🔴⭐ `adaptive_strategy_map.json` 格式升级（字符串→`{strategy,bucket}`）引发 **5 个消费端全线崩溃**（`adaptive_trader.py` TypeError 跑不起来 / `strategy_registry.load_current_map()` 共同上游返回原始 dict / `auction_analyze` / `fib_extension_scan` / `param_tune` 恒判已变更 / `validate_strategies` 写回丢 bucket）；修复采用**最上游单点归一化**（`load_current_map()` → `{code: strategy_name}`，新增 `_raw()` 保留完整字段）；**第二个 bug：破坏性 round-trip**——`adaptive_trader.main()` 每次运行回写归一化扁平表抹掉全部 bucket（27 dict→27 str），修复为保存前合并回填，回归 round-trip `a==b`、bucket 保留 27/27。②🔴 **Telegram 推送在本网络全面失效**——`send_telegram.py` 用 `requests.post` → ConnectionReset(54)，根因同东财 = **本网络对 urllib/requests 做 TLS 指纹识别** → 切 `curl_cffi + impersonate="chrome"`（`CurlMime()`+`multipart=`，不支持 files 元组）；收尾审计揪出 2 处漏网（`weekly_full_pipeline.py`/`ppo_ccl_daily_tracker.py` 内联 requests.post）→ 统一走 `_post()`（`7bc3993`）。③⭐ **东财资金流接入**（`moneyflow_em.py`）：主力/行业可解决（真因 TLS 指纹非"被拦截"）、北向真拿不到（2024-08 停披露）；第三坑**主机限流** → `push2delay` 首选、`push2his` 回退；⚠️ `index_flow` 对指数失真。④⭐ **电力出海 8 只独立观察**：8/8 跌破 EMA20/50/200 + 缩量 + 7/8 主力净流出 → 不具建仓条件；识破平高电气"多头排列+10"评分陷阱（价格已破全部均线）。⑤盘后复盘（基准 09-16：上证 +0.71%、科创50 +4.14% 最强，成交 1.84万亿；0买/15卖/12持；仓位 3~4 成）；⑥关注池 35→27 统一；⑦台账批量决策（结案⑬斐波弃用 / 合并①+⑭铲人池 / 补⑥000987止损 / 拒⑩RVI⑪涡流VI / 待跑批次C）。
+- 🟡 待办：deep 回捞逻辑（**连续第 10 夜**，最高优先）、F-5 口径、F-2 比率口径、backtest 09-11 缺档、daily portfolio_sim 缺档、skill_supply_scan 卡死、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、daily-report-2026-08-29/09-15 缺档、daily-a-share-telegram-push description 修正。
+- 系统状态：03:00 dreaming 正常（连续 33 期）；memory_search 可用（bge-m3）；Gateway 锁版本 2026.7.1-2。
+
+- **2026-09-19 04:00 梦境日报告生成（2026-09 第十八期）**：03:00 dreaming pipeline 正常完成（**连续第 34 期无回归**）。deep 本夜 `Repaired recall artifacts: rewrote recall store`（连续第 4 夜）+ `Ranked 5` / **`Promoted 5`** 到 MEMORY.md（新区块 **line 833** `## Promoted From Short-Term Memory (2026-09-19)`，5 条实存，**全部 09-14 旧素材**，时间滞后 5 天）→ 🔴 **连续第 11 夜回捞旧物再固化**（仍未 promote 09-18 当日高价值事件），deep 候选排序/时间窗疑点连续第 11 夜挂账。REM「No strong patterns」+「No strong candidate truths」（继续安静）。light 候选 8 条全 staged，证据指向 `memory/2026-09-18.md`（5 条）+ 历史 09-12/09-13（3 条），信息无损。产出 `memory/dreaming/daily-report-2026-09-19.md`（文件归档，无投递）。
+- 🔴 **09-18 当日高价值事件（deep 未收录，此处补记）**：**09-16 科技强攻被三证据确认「一日游」**——基准 09-17 收盘：上证 3875.60 **-0.41%**、上证50 **-0.74% 最弱**、科创50 -0.61%，成交 **1.82万亿（缩量）**；①价格：科创50 +4.14%→-0.61%、长电 +4.02→-2.59、中芯 +5.26→-1.89；②资金：电子 +227亿→**-126.7亿**、半导体 +136.5→-47.6、**长电 +4.75→-6.58亿**（反手加倍流出）；③技术：半导体链 MACD 仍 BEAR + 新增「跌破 EMA21」。关注池涨4/跌21，缩量 22%，主力 **18/27 净流出**；**扫描 0买/17卖/10持**（12 只完整空头信号）。🟢 恒立液压 +1.38亿(+10.39% 全池最强) 与卖出信号打架=最值得盯；🔴 流出最重中信证券 -4.13（净占比 -21.05% 最差）。池外：**汽车链为当日唯一净流入方向**（汽车 +37.08亿/零部件 +30.4亿）。福莱蒽特涨停次日 -2.54% 印证「题材脉冲严禁追高」。**仓位下调至 2~3 成**。⚠️ `portfolio_sim_state` `last_signal_date` 仍 09-16（**09-17 调仓未执行**）。数据源：新浪/东财资金流正常；⚠️ `market_net_total` 口径失真（第二个同类 bug，已不采用）；北向真缺失；中联重科 akshare 复权全失败回退不复权。产出 `analysis/daily/2026-09-18_postmarket_review.md`（27 代码已校验，无幻影标的）。
+- 🟡 待办：deep 回捞逻辑（**连续第 11 夜**，最高优先）、F-5 口径（`portfolio_sim` 停 09-11 + 09-17 调仓未执行）、F-2 比率口径、backtest 09-11 缺档、daily portfolio_sim 缺档、skill_supply_scan 卡死、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、daily-report-2026-08-29/09-15 缺档、daily-a-share-telegram-push description 修正、批次C回测。
+- 系统状态：03:00 dreaming 正常（连续 34 期）；memory_search 可用（bge-m3，本报告生成时未超时）；Gateway 锁版本 2026.7.1-2。

@@ -834,15 +834,25 @@ This file serves as your curated long-term memory, storing significant events, d
 *   半导体链若次日放量站上 EMA20，需重新评估是否将仓位提至 5 成。
 *   CSV 8 只营收 pending（2026Q3 季报 10-31 前 official 录入）；海外招标源仍不可用。
 
-## Promoted From Short-Term Memory (2026-09-19)
+## Promoted From Short-Term Memory (2026-09-20)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-09-14.md:12:12 -->
-- 07:00 — 记忆系统完整维护 (cron memory-maintenance-check) ✅: **推 Telegram 626141741**：维护摘要（cron isolated 会话无 message 工具，规范要求仅输出摘要、注明应投递处，不私自外发）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-14.md:12-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-14.md:15:18 -->
-- 19:30 — Obsidian笔记→投资理念归纳 (cron obsidian-notes-to-investment-philosophy) ✅: **严格 24h 扫描**（09-13 19:30 → 09-14 19:30）：Obsidian Vault **0 篇** .md 新增/修改 → **no-op 日**。; Vault 最新笔记 mtime = 2026-08-28（静默 17 天）；09-12~09-14 连续三日 no-op，本次补齐 09-12/09-13 归档缺口。; **体系判定**：无新增规则 / 无修正 / 无冲突；体系 head 不变（纯MACD优选/CCI聚簇退潮/030裁决分级/三因素共振门控/斐波扩展止盈/波动率仓位/选择性入场纪律/结构点止损+S/R Flip/产业链卡位范式）。; 待人工复核台账 13 项延续不变（①电力设备出海观察池最优先 … ⑬斐波时间线）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-14.md:15-18]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-14.md:20:22 -->
-- 19:30 — Obsidian笔记→投资理念归纳 (cron obsidian-notes-to-investment-philosophy) ✅: `wiki/sources/investment-philosophy-2026-09-14.md`（no-op 归档，含 09-12/09-13 缺口说明）; MEMORY.md「投资理念归纳」区块：标题日期→09-14，注脚追加 09-12~09-14 no-op 说明，新增「### 2026-09-14 要点（严格 24h no-op）」节。变更前备份 MEMORY.md.bak.20260914_193143。; **推送**：Telegram 626141741（摘要）—— cron isolated 会话无 message 工具，按规范仅输出摘要、注明应投递处，不私自外发。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-14.md:20-22]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-14.md:4:7 -->
-- 07:00 — 记忆系统完整维护 (cron memory-maintenance-check) ✅: **阅读范围**：memory/2026-09-07 ~ 2026-09-13（含 09-10/09-12 weekly-review），重点 09-13 当日 ⭐ 事件。; **蒸馏更新**：MEMORY.md 新增区块「## 2026-09-13 重大事件：cron 集群伪造数据治理 + 三阶段架构重构（memory-maintenance-check 蒸馏）」（line 680），全部源自 `memory/2026-09-13.md` 已落盘事实：; ⭐ 根因教训：agentTurn + write 权限 + 自产内容 prompt = 伪造数据温床；5 类假数据 + 数据口径错误；治理 6 项；最终 8 只核心标的。; ⭐ 根治：数据生成类 cron「LLM→command」改造；全量 36 条 cron 三维分级（HIGH 2 / MED 6 / 停用 2 / LOW 9）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-14.md:4-7]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-14.md:8:11 -->
-- 07:00 — 记忆系统完整维护 (cron memory-maintenance-check) ✅: ⭐ 三阶段架构重构六项（绩效统计/单一路径/回测隔离/指数基准复核/router 防雷/cache 原子写）+ 性能 183s→44s + 回归全通过 + Git 提交链。; 📋 结转待办：CSV 营收 pending（10-31 前 official 录入）、招标源替代、性能向量化暂不做。; **补充观察**：deep dreaming 本夜（09-14 04:00 块）**连续第 5 夜回捞旧物**——「Promoted From Short-Term Memory (2026-09-14)」4 条全部源自 `memory/2026-09-09.md`（heartbeat 日志），**未 promote 09-13 当日 ⭐ 高价值事件** → 故本次人工蒸馏固化。该行为规律已连续 5 夜，判定仍有覆盖偏差。; **ontology error-inject --min-count 2**：无输出 exit=0，无 ≥2 次高频错误模式需注入（健康）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-14.md:8-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-15-weekly-review.md:11:12 -->
+- 周六复盘 2026-09-15: 📊 本周成交: 买入 2 笔 | 卖出 2 笔 卖出盈亏: ¥+11,640 | 胜率 1/2 (50%) [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-15-weekly-review.md:11-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-15-weekly-review.md:14:17 -->
+- 周六复盘 2026-09-15: 📋 近期日报文件: overseas_dual_factor_2026-09-02.md 2026-09-15_signal_audit.md 2026-09-15_premarket_report.md [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-15-weekly-review.md:14-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-15-weekly-review.md:19:22 -->
+- 周六复盘 2026-09-15: 🔔 盘中预警记录: 35 条 break_below:600584: 66.0 break_below:605566: 25.1 break_below:002180: 16.75 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-15-weekly-review.md:19-22]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-15-weekly-review.md:6:6 -->
+- 周六复盘 2026-09-15: 💼 模拟盘持仓: 1/35 只 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-15-weekly-review.md:6-6]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-15-weekly-review.md:8:9 -->
+- 周六复盘 2026-09-15: 📈 持仓明细 (按收益率): 雷科防务(002413): 盈亏 ¥+0 (+0.00%) 策略:ema_cross [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-15-weekly-review.md:8-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-15.md:10:10 -->
+- 20:15 — 斐波时间线审查：随机基准对照证伪原判定 ⭐: **设计文档 §5.3 要求的「随机基准对照」在脚本里是 `pass` 占位** [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-15.md:10-10]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-15.md:11:11 -->
+- 20:15 — 斐波时间线审查：随机基准对照证伪原判定 ⭐: （原文注释: "随机基准需更完整的市场级回测，暂略"），从未真正跑过。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-15.md:11-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-15.md:4:4 -->
+- 20:15 — 斐波时间线审查：随机基准对照证伪原判定 ⭐: **触发**: 用户让审查 `close_scan_v2.py` 斐波时间线接入（commit 58f5ad1）"干得咋样"。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-15.md:4-4]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-15.md:6:6 -->
+- 20:15 — 斐波时间线审查：随机基准对照证伪原判定 ⭐: **审查发现（3 个问题）**: [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-15.md:6-6]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-15.md:7:7 -->
+- 20:15 — 斐波时间线审查：随机基准对照证伪原判定 ⭐: **原「62.84% ≥ 40% → ✅通过」判定无效** —— `detect_reversal` 的「结构破坏(突破前20日压力±2%)」 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-15.md:7-7]
