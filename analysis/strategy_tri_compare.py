@@ -133,6 +133,16 @@ def main():
         return labels.get(s, s)
 
     all_syms = sorted(set(cur_map) | set(val_raw) | set(tune_map))
+
+    # 两个池子：模拟盘 27 只（portfolio_sim 实际下单） vs 电网出海观察池（单独跟踪）
+    # 避免把"不在模拟池"误认为"策略缺失"。
+    sim_codes = set()
+    try:
+        from portfolio_core import STOCKS as CORE_STOCKS
+        sim_codes = {s for s, _ in CORE_STOCKS}
+    except Exception:
+        pass
+
     rows = []
     for sym in all_syms:
         v = val_raw.get(sym, {}) or {}
@@ -151,6 +161,7 @@ def main():
 
         guard, reason = check_guard(score, sharpe, trades) if score is not None else (None, "")
         err = v.get("error")
+        in_sim = sym in sim_codes if sim_codes else None
 
         rows.append({
             "sym": sym, "name": name, "bucket": bucket,
@@ -158,6 +169,7 @@ def main():
             "score": score, "sharpe": sharpe, "trades": trades,
             "ret": ret, "dd": dd, "windows": windows,
             "guard": guard, "reason": reason, "err": err,
+            "in_sim": in_sim,
             "changed": (v_strat not in ("—", None) and v_strat != cur),
         })
 
@@ -177,6 +189,8 @@ def main():
     L.append("")
 
     # 统计
+    sim_rows = [r for r in rows if r["in_sim"]]
+    obs_rows = [r for r in rows if r["in_sim"] is False]
     n_changed = sum(1 for r in rows if r["changed"])
     n_guard_ok = sum(1 for r in rows if r["guard"] is True)
     n_guard_no = sum(1 for r in rows if r["guard"] is False)
@@ -186,7 +200,7 @@ def main():
     L.append("")
     L.append(f"| 指标 | 值 |")
     L.append(f"|---|---|")
-    L.append(f"| 对照股票数 | {len(rows)} |")
+    L.append(f"| 对照股票数 | {len(rows)}（模拟盘 {len(sim_rows)} + 出海观察池 {len(obs_rows)}） |")
     L.append(f"| **实际写入变更** | **0**（全部被护栏拦下 → 保留原策略） |")
     L.append(f"| 验证最优 ≠ 当前生效 | {n_changed} |")
     L.append(f"| 护栏通过 | {n_guard_ok} |")
@@ -200,8 +214,8 @@ def main():
 
     L.append("## 三方对照")
     L.append("")
-    L.append("| 代码 | 名称 | 当前生效 | 验证最优 | 调优候选 | 验证得分 | 夏普 | 笔数 | 年化收益 | 最大回撤 | 护栏 | 变更 |")
-    L.append("|---|---|---|---|---|---|---|---|---|---|---|---|")
+    L.append("| 代码 | 名称 | 池 | 当前生效 | 验证最优 | 调优候选 | 验证得分 | 夏普 | 笔数 | 年化收益 | 最大回撤 | 护栏 | 变更 |")
+    L.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     for r in rows:
         if r["err"]:
             g = "❌"
@@ -212,8 +226,9 @@ def main():
         else:
             g = "—"
         mark = "🔄" if r["changed"] else ""
+        pool = "模拟" if r["in_sim"] else ("出海" if r["in_sim"] is False else "—")
         L.append(
-            f"| {r['sym']} | {r['name']} | `{r['cur']}` | `{r['val']}` | `{r['tune']}` | "
+            f"| {r['sym']} | {r['name']} | {pool} | `{r['cur']}` | `{r['val']}` | `{r['tune']}` | "
             f"{fmt(r['score'],1)} | {fmt(r['sharpe'],2)} | {fmt(r['trades'],0)} | "
             f"{fmt(r['ret'],1,True)}% | {fmt(r['dd'],1)}% | {g} | {mark} |"
         )
