@@ -225,7 +225,7 @@ This is a starting point. Add your own conventions, style, and rules as you figu
 *   **公网暴露**：严禁在未配置 mTLS/VPN/白名单的情况下将 Gateway 端口 (18789) 映射到公网
 *   **Secret 落盘**：严禁在聊天、代码、日志、Git 历史、`.env` 明文写入任何 API Key/Token
 *   **财务失控**：严禁关闭 LLM 提供商的月度硬性消费限额或开启自动充值
-*   **未审查技能**：严禁在未运行供应链扫描 (`scripts/skill_supply_scan.sh`) 前安装新技能
+*   **未审查技能**：严禁在未运行供应链扫描 (`scripts/skill_supply_scan.py --offline`) 前安装新技能
 
 ### 必须请示（执行前需用户显式批准）
 | 操作类别 | 典型动作 | 批准方式 |
@@ -271,7 +271,7 @@ echo "✅ 已回滚到 $TAG"
 - [ ] LLM 提供商控制台核对月度限额、自动充值=关
 - [ ] `cron list` 核对 8 个核心任务均 `enabled=true`、最近一次运行成功
 - [ ] `git tag -l 'guard/*' | wc -l` 确认近 30 天有快照记录
-- [ ] `scripts/skill_supply_scan.sh` 扫描新增技能无高危模式
+- [ ] `scripts/skill_supply_scan.py --offline` 扫描新增技能无高危模式
 - [ ] `python3 scripts/script_path_guard.py` 确认无缺失 sys.path 样板的脚本
 
 ---
@@ -297,7 +297,7 @@ echo "✅ 已回滚到 $TAG"
 | 门禁 | 位置 | 检查内容 | 接入点 |
 |---|---|---|---|
 | `script_path_guard.py` | `scripts/` | 脚本 sys.path 样板缺失 | 周流水线步骤 0 |
-| `skill_supply_scan.sh` | `scripts/` | 新技能供应链高危模式 | 装新技能前 |
+| `skill_supply_scan.py --offline` | `scripts/` | 新技能供应链高危模式(纯静态,秒级) | 装新技能前 + 周一审计 |
 | `snapshot_guard.sh` | `scripts/` | 变更前快照 | 重大变更 SOP |
 
 ### 新增门禁时必做

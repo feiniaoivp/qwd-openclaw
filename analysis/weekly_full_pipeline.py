@@ -85,6 +85,15 @@ def main():
     if not r["success"]:
         print("⚠️ sys.path 样板门禁未通过（详见上方违规清单），本次运行可能受影响...")
 
+    # 步骤 0b: 技能供应链静态扫描（2026-09-19 新增，纯静态秒级）
+    # 旧 bash 版逐文件调用 grep/file（≈3800 次进程启动）会卡死，已于 09-19 重写为
+    # 单进程 Python 版并加 --offline；否则无法接入自动化。
+    print("\n🛡️ 步骤 0b/8: 技能供应链静态扫描 (skill_supply_scan.py --offline)")
+    r = run_script("../scripts/skill_supply_scan.py", ["--offline", "--quiet"], timeout=120)
+    results["skill_scan"] = r
+    if not r["success"]:
+        print("⚠️ 供应链扫描发现致命高危，请人工核查（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = run_script("backtest_strategies.py", timeout=600)  # 10分钟上限，当前约3.5分钟跑完，留足缓冲
