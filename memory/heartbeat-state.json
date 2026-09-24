@@ -1,9 +1,0 @@
-{
-  "lastChecks": {
-    "heartbeat": 1789855299,
-    "security_audit": 1789855299,
-    "cron_pipeline_audit": 1788040800,
-    "tg_transport_audit": 1789614041,
-    "cron_health_triage": 1789855299
-  }
-}

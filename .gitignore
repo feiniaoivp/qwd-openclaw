@@ -45,6 +45,7 @@ data/_price_provenance_challenge.json
 data/intraday_*.json
 data/premarket_*.json
 data/portfolio_sim_state.json
+data/portfolio_equity.csv
 data/zhonglian_state.json
 data/news/daily_news_reader.py
 data/agent_runs/

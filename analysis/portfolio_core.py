@@ -245,7 +245,7 @@ def append_trade(trade: Dict):
 
 
 def append_equity_snapshot(date: str, portfolio_summary: Dict, core_value: float, sat_value: float, cash_total: float):
-    """记录每日组合权益快照
+    """记录每日组合权益快照（同日去重：若末行日期相同则覆盖，否则追加）
     CSV 列: date, total_value, total_return_pct, core_value, satellite_value, cash_total, positions_held, total_initial
     """
     import csv
@@ -253,6 +253,8 @@ def append_equity_snapshot(date: str, portfolio_summary: Dict, core_value: float
         return
     file_exists = os.path.exists(EQUITY_FILE)
     
+    fieldnames = ["date", "total_value", "total_return_pct", "core_value",
+                  "satellite_value", "cash_total", "positions_held", "total_initial"]
     row = {
         "date": date,
         "total_value": portfolio_summary.get("total_value", 0),
@@ -263,21 +265,32 @@ def append_equity_snapshot(date: str, portfolio_summary: Dict, core_value: float
         "positions_held": portfolio_summary.get("positions_held", 0),
         "total_initial": portfolio_summary.get("total_initial", 0),
     }
-    
-    # 确保文件以换行符结尾（防止无换行符导致追加行粘连）
+
+    # 读现有所有行（含表头），用于同日去重
+    existing_rows = []
     if file_exists:
-        with open(EQUITY_FILE, "rb") as f:
-            f.seek(-1, os.SEEK_END)
-            last_char = f.read(1)
-            if last_char != b'\n':
-                with open(EQUITY_FILE, "a", newline='') as fw:
-                    fw.write('\n')
-    
-    with open(EQUITY_FILE, "a", newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=row.keys())
-        if not file_exists:
-            writer.writeheader()
-        writer.writerow(row)
+        try:
+            with open(EQUITY_FILE, newline='') as f:
+                existing_rows = list(csv.DictReader(f))
+        except Exception as e:
+            # 读取失败不致命：退化为追加模式（但仍保证换行结尾）
+            print(f"⚠️ 权益快照读取失败，退化为追加模式: {e}")
+            existing_rows = []
+
+    # 同日去重：若末行日期 == 本次 date，则覆盖（替换末行 dict），否则新增
+    if existing_rows and existing_rows[-1].get("date") == date:
+        existing_rows[-1] = row
+    else:
+        existing_rows.append(row)
+
+    # 整文件重写（重写保证换行结尾统一，天然避免行粘连）
+    os.makedirs(os.path.dirname(EQUITY_FILE), exist_ok=True)
+    with open(EQUITY_FILE, "w", newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for r in existing_rows:
+            # 补齐缺失字段（历史行可能缺列），缺失填空
+            writer.writerow({k: r.get(k, "") for k in fieldnames})
 
 
 def init_position(symbol: str, name: str, strategy: str, bucket: str = "tier1") -> Dict:
