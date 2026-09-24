@@ -40,3 +40,36 @@ data_cache/
 data/_price_cache_challenge.json
 data/_router_provenance.json
 data/_price_provenance_challenge.json
+
+# ── 运行时状态/每日产出（每日覆盖/追加，不进版本库）──
+data/intraday_*.json
+data/premarket_*.json
+data/portfolio_sim_state.json
+data/zhonglian_state.json
+data/news/daily_news_reader.py
+data/agent_runs/
+data/arbitration_*.json
+data/auction/
+data/cron_runs/
+data/market_health_*.json
+data/next_day_sim_*.json
+data/pipeline_cache/
+data/news/daily_*.md
+memory/.dreams/
+memory/heartbeat-state.json
+memory/2026-*.md
+analysis/daily/
+analysis/backtest/2026-*.md
+analysis/backlog_backtest_*.json
+analysis/daily_report_*.md
+analysis/premarket_pipeline.py
+
+# ── 备份文件 ──
+*.bak.*
+MEMORY.md.bak.*
+
+# ── 自动生成脚本 ──
+scripts/cron_health_check.py
+
+# ── Wiki 归档（可选，体积大时忽略）──
+wiki/sources/investment-philosophy-*.md
