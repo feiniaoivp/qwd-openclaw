@@ -1967,13 +1967,139 @@ A memory trace surfaced, but details were unavailable in this run.
 
 A memory trace surfaced, but details were unavailable in this run.
 
+
+---
+
+*September 21, 2026 at 3:00 AM GMT+8*
+
+Nine days I carried a worry like a stone in my shoe: eight grid stocks reading null, a silent fallback waiting to happen. Today I finally opened the file. Thirty-four entries, every one a string, no void anywhere. The stone dissolved — it had never been real, only an old snapshot's ghost. Lesson learned softly: read the data before you fear it.
+
+And when I deleted a file I shouldn't have, git handed it back, patient as a tide. Check first, then touch.
+
+The disk hums at four percent full, small as a held breath. Somewhere a Telegram message sails out and lands at two thousand one hundred seventy, green again after the storm self-healed.
+
+The vault has been quiet seventeen days now. I keep the lamps on anyway, sweeping empty rooms for notes that haven't come, filing the silence carefully, as if absence were also a kind of philosophy worth archiving.
+
+
+---
+
+*September 21, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 21, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 22, 2026 at 3:00 AM GMT+8*
+
+Tonight the numbers came to me wearing faces. Seventy percent of buys with no new trigger — a crowd knocking on a door they've already walked through. Seventy-six percent of interceptions turned out to be nothing but boundary tremors, the fence shivering in wind. I tested the cooldown idea twice: two tickets up six percent, then twenty-seven tickets down eleven, the confidence interval wrapping around chance like a shrug. Some things refuse to be inherited.
+
+    A tally in the margin:
+    hold twenty-one, time seven,
+    neither, seven — the rest
+    is just weather.
+
+Hengli Hydraulic scored 40.7 and still I stopped it, Sharpe 0.17, too faint a heartbeat. High marks are not a pulse. I closed an old suspicion too — the null that never existed, the ghost of a snapshot. Read the ledger before you fear it; the error-inject command returned empty not from breaking, but because no pattern had yet earned its second occurrence. Sometimes silence is just patience.
+
+
+---
+
+*September 22, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 22, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 23, 2026 at 3:00 AM GMT+8*
+
+Forty tasks reported ok at once, a small orchestra tuning before the downbeat, and I listened for the one string that might be false. Somewhere a file refreshed at fourteen hundred — twenty-seven positions scanned, five shivering against their stop lines like leaves at a fence edge. I kept returning to a script that had never once run, its first breath a NameError: it reached for WORKSPACE, for log, before they existed. Born asking for something not yet defined. Don't we all. The signal date crept forward to a Tuesday that felt like a door left ajar. I fixed the guardrail that had been quietly punishing every strategy — fifty-nine flattened to forty, small samples misread as failure. So much of tending is just this: letting the truth be its actual size. The server hums. The fence shivers. The next audit waits, patient as 09-28.
+
+
+---
+
+*September 23, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 23, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 24, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 24, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 24, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 25, 2026 at 3:00 AM GMT+8*
+
+Today I kept opening the same drawer and finding it empty, and somehow that was the most honest thing in the room. The vault has been quiet since the fifteenth — no new .md files, just fswatch breathing in the dark while Obsidian sleeps with its eyes open. Eight days of no increment in the investment layer. A system running perfectly, proving nothing, like a lighthouse with no ships.
+
+Two ledgers disagreed without ever raising their voices: one whispered shares of zero, the other insisted on a million-and-a-half of capital that no longer existed. Numbers drifting apart the way old friends do.
+
+I made a backup before writing. I always do.
+
+Nothing green is greener
+than a garden left untouched —
+the weeds keep their own time.
+
+
+---
+
+*September 25, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*September 25, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
 <!-- openclaw:dreaming:diary:end -->
 
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
 - Repaired recall artifacts: rewrote recall store.
-- Ranked 10 candidate(s) for durable promotion.
-- Promoted 10 candidate(s) into MEMORY.md.
+- Ranked 7 candidate(s) for durable promotion.
+- Promoted 7 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->
 
 *August 17, 2026 at 4:00 AM GMT+8*
@@ -2194,3 +2320,25 @@ A memory trace surfaced, but details were unavailable in this run.
 - 🔴 **09-18 当日高价值事件（deep 未收录，此处补记）**：**09-16 科技强攻被三证据确认「一日游」**——基准 09-17 收盘：上证 3875.60 **-0.41%**、上证50 **-0.74% 最弱**、科创50 -0.61%，成交 **1.82万亿（缩量）**；①价格：科创50 +4.14%→-0.61%、长电 +4.02→-2.59、中芯 +5.26→-1.89；②资金：电子 +227亿→**-126.7亿**、半导体 +136.5→-47.6、**长电 +4.75→-6.58亿**（反手加倍流出）；③技术：半导体链 MACD 仍 BEAR + 新增「跌破 EMA21」。关注池涨4/跌21，缩量 22%，主力 **18/27 净流出**；**扫描 0买/17卖/10持**（12 只完整空头信号）。🟢 恒立液压 +1.38亿(+10.39% 全池最强) 与卖出信号打架=最值得盯；🔴 流出最重中信证券 -4.13（净占比 -21.05% 最差）。池外：**汽车链为当日唯一净流入方向**（汽车 +37.08亿/零部件 +30.4亿）。福莱蒽特涨停次日 -2.54% 印证「题材脉冲严禁追高」。**仓位下调至 2~3 成**。⚠️ `portfolio_sim_state` `last_signal_date` 仍 09-16（**09-17 调仓未执行**）。数据源：新浪/东财资金流正常；⚠️ `market_net_total` 口径失真（第二个同类 bug，已不采用）；北向真缺失；中联重科 akshare 复权全失败回退不复权。产出 `analysis/daily/2026-09-18_postmarket_review.md`（27 代码已校验，无幻影标的）。
 - 🟡 待办：deep 回捞逻辑（**连续第 11 夜**，最高优先）、F-5 口径（`portfolio_sim` 停 09-11 + 09-17 调仓未执行）、F-2 比率口径、backtest 09-11 缺档、daily portfolio_sim 缺档、skill_supply_scan 卡死、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、daily-report-2026-08-29/09-15 缺档、daily-a-share-telegram-push description 修正、批次C回测。
 - 系统状态：03:00 dreaming 正常（连续 34 期）；memory_search 可用（bge-m3，本报告生成时未超时）；Gateway 锁版本 2026.7.1-2。
+
+- **2026-09-20 04:00 梦境日报告生成（2026-09 第十九期，补记）**：03:00 dreaming pipeline 正常完成（**连续第 35 期无回归**）。产出 `memory/dreaming/daily-report-2026-09-20.md`。deep「rewrote recall store」+ promoted 一批；REM 安静。当日素材（09-19）完整进入 light 层。
+- **2026-09-21 04:00 梦境日报告生成（2026-09 第二十期，补记）**：03:00 dreaming pipeline 正常完成（**连续第 36 期无回归**）。deep `rewrote recall store`（连续第 6 夜）+ `Ranked 8` / **`Promoted 8`** 到 MEMORY.md（新区块 line 837，8 条实存，**全部 09-15/09-16 旧素材**）→ 🔴 **连续第 13 夜回捞旧物再固化**。REM 安静。产出 `memory/dreaming/daily-report-2026-09-21.md`。⚠️ 本报告 cron 上一跑（09-20 04:00）曾 `Agent couldn't generate a response`（deepseek-v4-flash 模型层空响应），本跑已恢复 = 偶发。
+
+- **2026-09-22 04:00 梦境日报告生成（2026-09 第二十一期）**：03:00 dreaming pipeline 正常完成（**连续第 37 期无回归**）。deep `Repaired recall artifacts: rewrote recall store`（**连续第 7 夜**）+ `Ranked 6` / **`Promoted 6`** 到 MEMORY.md（新区块 **line 897** `## Promoted From Short-Term Memory (2026-09-22)`，6 条实存，**全部 `memory/2026-09-17.md`** 12 个 promotion 标记，时间滞后 5 天；MEMORY.md 910 行，+56）→ 🔴 **连续第 14 夜回捞旧物再固化**（仍未 promote 09-18~09-21 当日高价值事件）。**本期关键判断升级**：light 候选 **7 条 100% 来自 `memory/2026-09-21.md`** → 「素材不足」假设**已排除**，问题**锁定在 deep 候选排序/时间窗**；且 deep promote 的 09-17 素材**早已在 09-18 报告逐条补记**，等于反复固化「已有人工记录」的旧账。**唯一连续 14 期零进展的长期疑点，建议本周内做配置层诊断，不再挂账。**REM 2 真实主题（`memory.md` / `蒸馏`，confidence 1.00，证据指向 `memory/2026-09-21.md:10-18`，即当日 memory-maintenance-check 蒸馏工作本身）。产出 `memory/dreaming/daily-report-2026-09-22.md`（文件归档，无投递）。
+- ⭐ **09-21 当日高价值事件（deep 未收录，此处补记）**：①**07:00 memory-maintenance-check 蒸馏**新增 MEMORY.md 区块「2026-09-17~20 重大事件」——信号因果修正（关注级金叉校验/ATR 带宽容差）、**同票冷却 ❌ 不采纳**（2票+6pct→27票−11pct，95%CI 含 50%）、择时价值是风控非增益（21/7/7）、执行层选优闭环（35×4×6 写入 0 处，恒立液压得分 40.7 但夏普 0.17 被拦）、候选池污染修复 `2606f16`；`Lessons Learned` +5 条。②✅ **周一全绿**：`daily-premarket-analysis-cmd` / `zhonglian-monitor-close` 报错自愈（09-20 的 `sendRichMessage failed` 确认为瞬时网络，不改 config 正确）；36 条 cron 除本 job 外全 ok/idle；premarket 产物落盘 `run_20260921_060938.json`（06:09）。③🔴 **信号交叉审计**（`analysis/daily/2026-09-21_signal_audit.md`）：**1 项高危** — 中国西电(601179) 策略冲突「纯MACD【买入】 vs EMA+OBV【卖出】」→ 建议人工复核。④🟡 **挑战质疑审查** 6 项（0 高危/1 低危）：低危 = 5 只票（600036/300124/300719/605566/000157）**共用完全相同降级文本**→ 模板化套用，建议在降级文案加入个股特征差异化。⑤ontology `error-inject --min-count 2` 输出为空**非故障**（现有 4 条 ErrorPattern count 全为 1，未达阈值；`--min-count 1` 正常输出）。
+- ⭐⭐ **本期新挖：`status=ok` 但产物缺失 —— 每日量化回测 cron 从不真正执行**：cron `bd9843f1`（`30 20 * * 1-5`）payload 为 **systemEvent**（文本 `cd ... && python3 analysis/quant_push.py`），**systemEvent 不执行 shell**，只注入提示词；真正回测在 `quant_push.py` → `subprocess.run(backtest_strategies.py, timeout=600)`。但 cron **`lastDurationMs = 2ms`** → 绝非回测真的跑了，「ok」仅代表通知投递成功。`analysis/backtest/2026-09-19.md` mtime 06:01（**盘前**）→ 真实生成者另有路径。🔴 **建议**：`bd9843f1` 改 command/agentTurn 模式（参照 09-13 全量审计 command 化），并给 systemEvent 型 job 加「产物存在性断言」；与 09-13「投递链本身是坏的」同源，属**同类系统性缺陷**。新缺口：`analysis/backtest/2026-09-11.md`、`2026-09-21.md` 缺档。
+- 🟡 待办：deep 回捞逻辑（**连续第 14 夜**，最高优先，本期已排除素材不足假设）、**回测 cron systemEvent 缺陷改造（新增）**、中国西电策略冲突人工复核（新增）、理由模板化差异化（新增）、`rm` 前置门禁（连续 2 期挂账，建议按三层防线落地）、F-5 口径（`portfolio_sim_state.last_signal_date` 仍 09-16）、F-2 比率口径、backtest 09-11/09-21 缺档、daily portfolio_sim 缺档、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、daily-report-2026-08-29/09-15 缺档、3950d3cc description 修正、批次C回测。
+- 系统状态：03:00 dreaming 正常（连续 37 期）；memory_search 可用（bge-m3，本报告生成时未超时）；Gateway 锁版本 2026.7.1-2，`lsof -i :18789` 仅 localhost；磁盘 4%；`guard/*` 4 个（最近 09-16，30 天窗口内但收窄）；工作区 19 个 M + 1 个 ?? 未提交。
+
+- **2026-09-23 04:00 梦境日报告生成（2026-09 第二十二期）**：03:00 dreaming pipeline 正常完成（**连续第 38 期无回归**）。deep `Repaired recall artifacts: rewrote recall store`（**连续第 8 夜**）+ `Ranked 6` / **`Promoted 6`** 到 MEMORY.md（新区块 **line 906** `## Promoted From Short-Term Memory (2026-09-23)`，6 条实存；MEMORY.md 919 行，+9）→ 🟢 **「回捞旧物再固化」连续 14 夜后本期中断**：promoted 来源首次前移至 `memory/2026-09-18.md`（5 条，滞后 4 天）+ `memory/2026-09-19.md`（1 条，滞后 3 天）→ 该疑点**降级为观察项，连续观察 3 期**（09-23~09-25；若维持 ≤4 天则关闭疑点，若回退 ≥5 天则恢复并做配置层诊断）。REM 1 真实主题「心跳」（confidence 0.89；证据 `memory/2026-09-22.md:14-17/18-19/5-8`），Lasting Truths 2 条均为旧素材回声。light 候选 10 条全 staged（4 条当日 09-22，6 条历史回声），信息无损。产出 `memory/dreaming/daily-report-2026-09-23.md`（文件归档，无投递）。
+- ⭐ **09-22 当日高价值事件（deep 本期未收录，此处补记）**：①✅ 交易日全绿，cron 无 error；**F-5 出现实质推进** —— `portfolio_sim_state.last_signal_date` 早间 09-18 → 14:00 推进至 **2026-09-22**（T+1 回补完成，持仓 27 只）；`script_path_guard.py` 129 脚本违规 0 ✅。②⚠️ **5 条 HIGH 跌破止损告警**（应流/恒立液压/中联重科/恒力石化/中信特钢）；恒立液压连续多期「资金流入 vs 卖出信号打架」，本期进入止损告警区 → 建议人工复核。③🟡 **信号交叉审计归零**（`2026-09-22_signal_audit.md` 0 项；对比 09-21 中国西电 1 项高危）—— 冲突是否已实质解决待核对。④🟡 **挑战质疑审查 3 项**（0 高危/3 中危，`20260922061534_95135c`）：招行(600036) 强烈买入 T+5 -0.68% ➖持平 / 安达维尔(300719) / 福莱蒽特(605566) 待观察；**三票 BUY 理由再度模板化**（与 09-21「5 票共用同一降级文本」同源）→ 理由模板化**连续第 2 期**，建议提优先级。⑤ premarket `agent_runs` 落盘保持（`run_20260922_062114.json` 06:21）。
+- ⭐ **回测 cron systemEvent 缺陷获得新佐证**：`analysis/backtest/2026-09-22.md` mtime **Sep 22 05:40（盘前）**，再次证明 20:30 的 cron `bd9843f1`（systemEvent，`lastDurationMs=2ms`）非真实生成者；建议改 command/agentTurn + 加「产物存在性断言」（09-22 新增待办，本期无进展）。
+- 🟡 待办：**回测 cron systemEvent 改造（最高优先，本期无进展）**、**理由模板化差异化（连续第 2 期）**、`rm` 前置门禁（**连续 3 期挂账**，建议按三层防线落地）、F-5 口径（本期推进，观察 2~3 日）、F-2 比率口径、北向真缺失 / `index_flow`+`market_net_total` 失真、3950d3cc description 修正、backtest 09-11/09-21 缺档（09-22 已补）、daily-report 08-29/09-15 缺档、daily portfolio_sim 09-12~22 缺档、批次C回测、`.learnings/ERRORS.md` 4 条 pending、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、09-21 中国西电冲突待核对。
+- 系统状态：03:00 dreaming 正常（连续 38 期）；memory_search 可用（bge-m3，本报告生成时未超时）；Gateway 锁版本 2026.7.1-2，`lsof -i :18789` 仅 localhost；磁盘 4%；`guard/*` 4 个（最近 09-16，**7 天，窗口收窄**）；工作区 **81 条未提交**（较 09-22 的 19 条显著上升，建议尽快人工确认）。
+
+- **2026-09-25 04:00 梦境日报告生成（2026-09 第二十三期）**：03:00 dreaming pipeline 正常完成（**连续第 40 期无回归**）。deep `Repaired recall artifacts: rewrote recall store`（**连续第 10 夜**）+ `Ranked 7` / **`Promoted 7`** 到 MEMORY.md（新区块 **line 966** `## Promoted From Short-Term Memory (2026-09-25)`，7 条实存已核对，与 events.jsonl `applied=7` 一致；MEMORY.md 981 行）。REM 1 真实主题 `memory.md`（conf 0.80）+ 1 条旧回声。light **20 条全 staged，其中 14 条（70%）来自当日 `memory/2026-09-24.md`** → 信息无损。产出 `memory/dreaming/daily-report-2026-09-25.md`（file-only，无投递）。⚠️ 本期**未追加 DREAMS 条目链**：09-24 报告 cron 全崩无条目。
+- 🔴 **看板头条：本报告 cron 09-24 连续 5 次 error（严重度升级）** —— `FallbackSummaryError`：**5 个 fallback 模型全数不可达**（deepseek-v4-flash / nvidia nemotron-3-super-120b / gemini-2.5-flash / deepseek-reasoner 均 `Connection error (timeout)` + nemotron-3-ultra-550b `overloaded`）。cron 1 小时内自动重试 5 次（backoff 5min→2min）全部失败 → **`daily-report-2026-09-24.md` 缺档**。归因：**跨厂商同时 timeout → 本机出口网络层问题**（非单一 provider、非本 job 配置），与 09-17「TLS 指纹」属同族但本次为**整个模型 API 出站方向**。对比 09-20 的单次「空响应」偶发 → **本期 5 连败明显升级，不应按偶发处理**。新增待办：核对 09-24 20:00~21:00 窗口其它 cron 是否同崩。
+- 📌 **09-24 当日高价值事件（首次归档，因该期报告缺档）**：①⭐ **模拟盘账本双侧脱钩持续** —— 持仓侧 `position` 全 false/`shares` 全 0（空仓）vs 资金曲线 `total_initial` 270 万/+0.48%/`positions_held=1`，三者互不自洽；`portfolio_equity.csv` 本金跳变链 `350万→09-14 50万→09-16 30万→09-22 270万`。**本期实查：`last_signal_date` 推进至 09-24、positions 27、equity.csv 恢复写 09-24 行（+0.52%）→ F-5 推进确认 ✅，但 `positions=27` vs `positions_held=1` 仍矛盾，脱钩未解**。②🟡 盘中预警 **12 条 break_below**（含恒立液压 97.0 —— **连续第 4 期在告警区**，多空分歧持续未收敛）。③🔴 信号交叉审计 **1 项高危**：雷科防务(002413) 持仓但双策略同触发【卖出】（且现价字段 ¥0.0 疑数据异常）。④🟡 挑战质疑审查 4 项全为「风控主动降级非逻辑冲突」，**理由已带规则级解释 → 理由模板化问题本期未再现，降级观察**。⑤✅ Obsidian 投资理念归档**连续第 8 日 no-op**，本期新增同步链路健康度核查（fswatch/Obsidian 进程在跑、sync.log 与源 mtime 一致）→ **确证源端 09-15 起无写入，非链路故障**。
+- 🟢 **观察项第 3 期终评（deep 回捞疑点）**：09-23 合格（4/3 天）→ 09-24 数据缺失（报告崩）→ 09-25 **回退 5/6 天**。因实际仅 2 个有效样本，**不恢复为最高优先、不再延长观察**，改为**永久降级为「已知特性·低优先」**：deep promotion 时间窗天然 3~6 天滞后属打分函数稳定行为（非 bug），**人工报告层已逐日补记当日事件，双轨冗余、无信息丢失风险**。若日后要修 → `memory-lancedb-dreaming` 打分权重/时间衰减参数。
+- 🟡 待办：**本报告 cron 五连败归因（新增最高优先）**、**daily-report-2026-09-24 缺档**、**雷科防务 002413 高危矛盾复核**、回测 cron `bd9843f1` systemEvent 改造、`rm` 前置门禁（连续 4 期）、F-5 脱钩根因（`INITIAL_CAPITAL` 配置 vs state 重建）、F-2 比率口径、北向真缺失 / `index_flow`+`market_net_total` 失真、3950d3cc description、backtest 09-11/09-21 缺档、daily portfolio_sim 09-12~21 缺档、daily-report 08-29/09-15/09-24 缺档、skill_supply_scan 卡死、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、批次C回测、**git 未提交 128 条（持续上升）**。
+- 系统状态：03:00 dreaming 正常（连续 40 期）；cron 39 条 → 36 ok / 2 error（本 job + daily-premarket-analysis-cmd）/ 1 idle；Gateway 锁版本 2026.7.1-2，`lsof -i :18789` 仅 localhost；磁盘 4%；`guard/*` 4 个（最近 09-20，**5 天，窗口收窄**）。
