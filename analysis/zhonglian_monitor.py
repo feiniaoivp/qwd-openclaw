@@ -370,5 +370,38 @@ def main():
         print(f"总资产: ¥{pp['total_value']:,.2f} (总收益: {pp['total_return_pct']:+.2f}%)")
     print("=====ZHONGLIAN_MONITOR_END=====")
 
+    # 🔧 自推送到 Telegram（绕过 gateway 的 sendRichMessage TLS 问题）
+    try:
+        from send_telegram import send_message
+        # 只在有新信号或显式要求时推送，避免 noise
+        # 这里构建一个简报发送
+        brief_lines = []
+        if msgs:
+            for m in msgs:
+                brief_lines.append(m)
+        s1 = state["strategy1"]
+        s2 = state["strategy2"]
+        s1_status = "📗持仓中" if s1["position"] else "📕空仓"
+        s2_status = "📗持仓中" if s2["position"] else "📕空仓"
+        s1_entry = f"¥{s1['entry_price']}({s1['entry_date']})" if s1["position"] else "-"
+        s2_entry = f"¥{s2['entry_price']}({s2['entry_date']})" if s2["position"] else "-"
+        brief_lines.append(f"\n📊 **中联重科盯盘简报 {today_str}**")
+        brief_lines.append(f"当前价: ¥{signals['price']} ({signals['change_pct']:+.2f}%)")
+        brief_lines.append(f"MACD: {signals['indicators']['MACD_state']} | RSI: {signals['indicators']['RSI14']} | EMA12/26: {signals['indicators']['EMA_state']}")
+        brief_lines.append(f"策略1(MACD+RSI): {s1_status} {s1_entry}")
+        brief_lines.append(f"策略2(综合最优): {s2_status} {s2_entry}")
+        pp = output.get("portfolio", {})
+        if "total_return_pct" in pp:
+            brief_lines.append(f"总资产: ¥{pp['total_value']:,.2f} (总收益: {pp['total_return_pct']:+.2f}%)")
+        brief_text = "\n".join(brief_lines)
+        resp = send_message(brief_text, parse_mode="")
+        if isinstance(resp, dict) and resp.get("ok"):
+            print(f"✅ Telegram 推送成功: message_id={resp['result']['message_id']}")
+        else:
+            print(f"❌ Telegram 推送失败: {resp}", file=sys.stderr)
+    except Exception as e:
+        print(f"❌ Telegram 推送异常: {e}", file=sys.stderr)
+
+
 if __name__ == "__main__":
     main()

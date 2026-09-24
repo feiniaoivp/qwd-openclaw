@@ -72,7 +72,8 @@ def test_arbitration_flag():
         content = f.read()
     
     checks = [
-        ("arbitrate 变量定义", "arbitrate = \"--arbitrate\" in sys.argv"),
+        ("arbitrate 参数定义", "parser.add_argument(\"--arbitrate\", action=\"store_true\")"),
+        ("arbitrate 传给 main", "arbitrate=args.arbitrate"),
         ("写入条件包含 arbitrate", "if write_map or arbitrate:"),
         ("confidence_guard 函数", "def confidence_guard"),
         ("三维显著优势判定", "tune_score > val_score + 10 and tune_sharpe > val_sharpe + 0.1 and tune_trades >= 6"),
@@ -161,9 +162,11 @@ def test_final_map_matches_arbitration():
         final_map = json.load(f)
     
     # 检查关键仲裁决策
+    # 002318(久立特材): 验证=ema_cross(28.85分,过护栏) vs 调优=bollinger(20.75分,未过护栏) -> 仲裁选验证=ema_cross
+    # 002156(通富微电): 验证=ema_obv(62.57分,过护栏) vs 调优=ema_obv(132.45分,过护栏) -> 双方一致=ema_obv
     key_arbitrations = {
-        "002318": "bollinger",   # 验证胜
-        "002156": "ema_obv",     # 验证胜
+        "002318": "ema_cross",   # 验证胜(验证过护栏、调优未过)
+        "002156": "ema_obv",     # 双方一致
     }
     
     all_ok = True

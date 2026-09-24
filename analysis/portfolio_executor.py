@@ -59,6 +59,7 @@ from analysis.portfolio_core import (
     RiskGuard, append_trade, append_equity_snapshot,
     calc_position_value, execute_trade, _check_barbell_constraints,
     generate_human_report,
+    REFERENCE_TOTAL_CAPITAL,
 ) 
 # 权威扫描实现（唯一事实来源）
 from analysis.portfolio_core import run_portfolio_scan as _core_run_portfolio_scan
@@ -512,7 +513,7 @@ class PortfolioExecutor:
                 else:
                     _px = float(_pos.get("entry_price", 0) or 0)
                 total_value += calc_position_value(_pos, _px)
-            total_initial = INITIAL_CAPITAL * len(self.stocks)
+            total_initial = REFERENCE_TOTAL_CAPITAL
             ret = (total_value - total_initial) / total_initial * 100
             pos_cnt = sum(1 for p in self.state["positions"].values() if p.get("position"))
             daily_equity.append({
@@ -537,7 +538,7 @@ class PortfolioExecutor:
                 else:
                     final_equity += pos.get("cash", 0)
 
-        total_initial = INITIAL_CAPITAL * len(self.stocks)
+        total_initial = REFERENCE_TOTAL_CAPITAL
         total_return = (final_equity - total_initial) / total_initial * 100
 
         # ── 绩效统计 ──

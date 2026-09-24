@@ -301,6 +301,42 @@ class DataRouter:
             df = df[df["date"] <= pd.to_datetime(end)]
         return df if len(df) >= 2 else None
 
+    def get_daily_batch(self, symbols: List[str], start_date: str = "20240101",
+                         adjust: str = "qfq") -> Dict[str, pd.DataFrame]:
+        """
+        批量获取多只股票日线（单次会话复用，仅 baostock 支持）
+        返回: {symbol: DataFrame}
+        失败的股票不在返回字典中，调用方需自行降级。
+        """
+        want_adjusted = adjust in ("qfq", "hfq")
+        adjustflag = "1" if adjust == "hfq" else "2"
+        
+        # 先尝试 baostock 批量获取（复权优先）
+        if want_adjusted:
+            try:
+                results = self.baostock.get_daily_batch(symbols, start_date=start_date, adjustflag=adjustflag)
+                if results:
+                    # 标注 provenance
+                    for sym in results:
+                        cache_key = f"daily:{sym}:{start_date}:{adjust}"
+                        self._mark(cache_key, "baostock", adjust, True)
+                    # 缓存每只
+                    for sym, df in results.items():
+                        cache_key = f"daily:{sym}:{start_date}:{adjust}"
+                        self.cache.set(cache_key, df, CACHE_TTL["daily"])
+                    log.info(f"[Router] 批量获取 {len(results)}/{len(symbols)} 只 [baostock {adjust}]")
+                    return results
+            except Exception as e:
+                log.warning(f"[Router] baostock批量获取失败: {e}")
+        
+        # 降级：逐只获取（走原有 get_daily 逻辑含降级链）
+        results = {}
+        for sym in symbols:
+            df = self.get_daily(sym, name="", start_date=start_date, adjust=adjust)
+            if df is not None:
+                results[sym] = df
+        return results
+
     # ══════════════════════════════════════
     # 指数基准 (预加载缓存)
     # ══════════════════════════════════════
@@ -389,12 +425,18 @@ class DataRouter:
         if now - self._last_health_check < self._health_check_interval:
             return getattr(self, "_last_health_result", {})
         
+        # 增加 baostock 会话状态详情
+        bs_status = self.baostock.get_session_status() if hasattr(self.baostock, 'get_session_status') else {}
+        
         result = {
             "sina_realtime": self.sina_realtime.is_healthy(),
             "sina_daily": self.sina_daily.is_healthy(),
             "baostock": self.baostock.is_healthy(),
             "akshare_finance": self.akshare_finance.is_healthy(),
         }
+        if bs_status:
+            result["baostock_session"] = bs_status
+        
         self._last_health_check = now
         self._last_health_result = result
         return result

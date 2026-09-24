@@ -63,7 +63,9 @@ def render_moneyflow(mf: Optional[Dict[str, Any]], top: int = 5) -> str:
 
     # ── 北向 ──
     nb = mf.get("northbound") or {}
-    if nb.get("available"):
+    if nb.get("net_flow_discontinued"):
+        lines.append(f"　北向：{nb.get('note', '净买入已停止披露（2024-08起）')} ")
+    elif nb.get("available"):
         days = nb.get("days") or []
         if days:
             latest = days[0]

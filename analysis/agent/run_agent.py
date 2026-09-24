@@ -109,6 +109,26 @@ def main():
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(final_state, f, ensure_ascii=False, indent=2)
 
+        # 输出结构化 JSON（供 pipeline 解析）
+        print("=====AGENT_RESULT=====")
+        print(json.dumps({
+            "date": final_state.get("date"),
+            "is_trading_day": final_state.get("is_trading_day"),
+            "data_date": final_state.get("data_date"),
+            "market_overview": final_state.get("market_overview"),
+            "signal_summary": final_state.get("signal_summary"),
+            "signals": final_state.get("signals"),
+            "health_score": final_state.get("health_score"),
+            "health_comment": final_state.get("health_comment"),
+            "news_summary": final_state.get("news_summary"),
+            "risk_flag": final_state.get("risk_flag"),
+            "final_advice": final_state.get("final_advice"),
+            "zhonglian": final_state.get("zhonglian"),
+            "trader_picks": final_state.get("trader_picks"),
+            "error_count": final_state.get("error_count", 0),
+        }, ensure_ascii=False, indent=2))
+        print("=====AGENT_END=====")
+
         # 打印到标准输出（cron 会捕获并通过 Telegram 推送）
         print(report)
 

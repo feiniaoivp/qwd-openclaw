@@ -948,8 +948,8 @@ def is_trading_day() -> bool:
 # 主入口
 # ============================================================================
 
-def main():
-    today = datetime.now().strftime("%Y-%m-%d")
+def main(target_date: str = None):
+    today = target_date or datetime.now().strftime("%Y-%m-%d")
     fetcher = get_fetcher()
 
     output = {
@@ -1141,11 +1141,18 @@ def main():
         output["moneyflow"] = {"error": str(e)}
 
     # bs_logout() - DataRouter 内部管理会话，无需手动登出
+    print("=====CLOSE_SCAN_RESULT=====")
     print(json.dumps(output, ensure_ascii=False, indent=2, default=str))
+    print("=====CLOSE_SCAN_END=====")
 
 
 if __name__ == "__main__":
-    if "--intraday" in sys.argv:
+    import argparse
+    parser = argparse.ArgumentParser(description="收盘后全量扫描")
+    parser.add_argument("--intraday", action="store_true", help="盘中预警模式")
+    parser.add_argument("--date", type=str, default=None, help="目标日期 YYYY-MM-DD（默认今天）")
+    args = parser.parse_args()
+    if args.intraday:
         run_intraday_alert_mode()
     else:
-        main()
+        main(args.date)

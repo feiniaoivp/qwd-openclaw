@@ -327,15 +327,23 @@ def format_news_summary(date_str):
 
 
 def main():
-    today = datetime.now().strftime("%Y-%m-%d")
-    print(f"🚀 开始生成 {today} 盘前深度分析报告...")
+    import argparse
+    parser = argparse.ArgumentParser(description="每日盘前深度分析报告生成器")
+    parser.add_argument("--date", type=str, default=None, help="目标日期 YYYY-MM-DD（默认今天）")
+    parser.add_argument("--no-push", action="store_true", help="不推送到 Telegram")
+    args = parser.parse_args()
+
+    target_date = args.date or datetime.now().strftime("%Y-%m-%d")
+    today = datetime.now().strftime("%Y-%m-%d")  # 真实今天，用于生成时间戳
+    
+    print(f"🚀 开始生成 {target_date} 盘前深度分析报告...")
     print("=" * 60)
 
     # 1. 新闻阅读（保存每日 md）
     print("📰 [1/5] 抓取并生成当日新闻...")
     ok, out, err = run_script(
         WORKSPACE / "data" / "news" / "daily_news_reader.py",
-        ["--date", today, "--all-stock-newest", "--save"],
+        ["--date", target_date, "--all-stock-newest", "--save"],
         timeout=60
     )
     if not ok:
@@ -343,7 +351,7 @@ def main():
 
     # 2. 全市场扫描
     print("📊 [2/5] 全市场技术面扫描...")
-    ok, out, err = run_script(WORKSPACE / "analysis" / "close_scan_v2.py", timeout=120)
+    ok, out, err = run_script(WORKSPACE / "analysis" / "close_scan_v2.py", ["--date", target_date], timeout=120)
     scan_data = parse_json_from_output(out) if ok else None
     if not ok:
         print(f"   ⚠️ 扫描失败: {err}")
@@ -351,7 +359,7 @@ def main():
     # 3. 双策略扫描
     print("🎯 [3/5] 双策略最优扫描...")
     # adaptive_dual.py 实测约 200s+（30只串行拉baostock），180s必超时，提至 320s
-    ok, out, err = run_script(WORKSPACE / "analysis" / "adaptive_dual.py", timeout=320)
+    ok, out, err = run_script(WORKSPACE / "analysis" / "adaptive_dual.py", ["--date", target_date], timeout=320)
     dual_data = parse_dual_scan_output(out) if ok else None
     if not ok:
         print(f"   ⚠️ 双策略失败: {err}")
@@ -359,14 +367,14 @@ def main():
     # 4. AI 智能体研判
     print("🤖 [4/5] AI 智能体综合研判...")
     # run_agent.py 含LLM调用较慢，180s易超时，提至 420s
-    ok, out, err = run_script(WORKSPACE / "analysis" / "agent" / "run_agent.py", timeout=420)
+    ok, out, err = run_script(WORKSPACE / "analysis" / "agent" / "run_agent.py", ["--date", target_date], timeout=420)
     agent_data = parse_agent_output(out) if ok else None
     if not ok:
         print(f"   ⚠️ 智能体失败: {err}")
 
     # 5. 信号审计
     print("🔍 [5/5] 信号交叉审计...")
-    ok, out, err = run_script(WORKSPACE / "analysis" / "signal_audit.py", timeout=60)
+    ok, out, err = run_script(WORKSPACE / "analysis" / "signal_audit.py", ["--date", target_date], timeout=60)
     audit_data = parse_signal_audit_output(out) if ok else None
     if not ok:
         print(f"   ⚠️ 审计失败: {err}")
@@ -375,7 +383,7 @@ def main():
     print("\n📝 生成格式化报告...")
 
     md_parts = []
-    md_parts.append(f"# 📊 A股每日盘前深度分析报告 | {today}")
+    md_parts.append(f"# 📊 A股每日盘前深度分析报告 | {target_date}")
     md_parts.append(f"> 生成时间: {datetime.now().strftime('%H:%M:%S')} | 数据基准: 前一交易日收盘")
     md_parts.append("")
 
@@ -401,7 +409,7 @@ def main():
 
     # 新闻摘要
     md_parts.append("## 📰 盘前关键资讯")
-    md_parts.append(format_news_summary(today))
+    md_parts.append(format_news_summary(target_date))
     md_parts.append("")
 
     # 尾部
@@ -413,12 +421,26 @@ def main():
     # 保存报告
     report_dir = WORKSPACE / "analysis" / "daily"
     report_dir.mkdir(parents=True, exist_ok=True)
-    report_file = report_dir / f"{today}_premarket_report.md"
+    report_file = report_dir / f"{target_date}_premarket_report.md"
     report_file.write_text(final_report, encoding="utf-8")
     print(f"✅ 报告已保存: {report_file}")
 
     # 标准输出（被 Telegram announce 捕获）
     print(final_report)
+
+    # 🔧 自推送到 Telegram（绕过 gateway 的 sendRichMessage TLS 问题）
+    if not args.no_push:
+        try:
+            from send_telegram import send_message
+            resp = send_message(final_report, parse_mode="")
+            if isinstance(resp, dict) and resp.get("ok"):
+                print(f"✅ Telegram 推送成功: message_id={resp['result']['message_id']}")
+            else:
+                print(f"❌ Telegram 推送失败: {resp}", file=sys.stderr)
+        except Exception as e:
+            print(f"❌ Telegram 推送异常: {e}", file=sys.stderr)
+    else:
+        print("⏭️ 跳过 Telegram 推送 (--no-push)")
 
     return 0
 

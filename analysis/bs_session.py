@@ -130,4 +130,65 @@ __all__ = [
     "logout",
     "query_history_k_data_plus",
     "query_history_k_data_plus_retry",
+    "get_session_status",
+    "force_relogin",
+    "SessionContext",
 ]
+
+
+# ══════════════════════════════════════
+# 会话上下文管理器（供批量查询显式复用会话）
+# ══════════════════════════════════════
+
+from contextlib import contextmanager
+
+class SessionContext:
+    """
+    会话级上下文管理器：
+    - 进入时确保登录（如需则登录）
+    - 退出时**不**登出（保持会话复用）
+    - 仅在显式调用 logout() 或进程退出时才登出
+    """
+    def __init__(self, auto_login: bool = True):
+        self.auto_login = auto_login
+        self._logged_in_at_entry = False
+    
+    def __enter__(self):
+        if self.auto_login:
+            with _bs_lock:
+                self._logged_in_at_entry = _bs_logged_in
+                if not _bs_logged_in:
+                    _do_login()
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # 故意不登出，保持会话复用
+        pass
+
+
+@contextmanager
+def session_scope(auto_login: bool = True):
+    """便捷函数：with session_scope(): ..."""
+    ctx = SessionContext(auto_login=auto_login)
+    try:
+        yield ctx
+    finally:
+        pass  # 不登出
+
+
+def get_session_status() -> dict:
+    """返回当前会话状态（供健康检查/监控）"""
+    with _bs_lock:
+        return {
+            "logged_in": _bs_logged_in,
+            "last_login_time": _last_login_time,
+            "ttl_remaining_sec": max(0, _LOGIN_TTL - (time.time() - _last_login_time)) if _bs_logged_in else 0,
+        }
+
+
+def force_relogin() -> bool:
+    """强制重新登录（用于连接异常后的恢复）"""
+    with _bs_lock:
+        global _bs_logged_in
+        _bs_logged_in = False
+        return _do_login()

@@ -112,7 +112,8 @@ def main():
     # Cron 时间窗口守卫：防止调度器时区 bug 导致非预期时段执行
     # 配置为 15:40，允许窗口 15:00-16:00
     now = datetime.now()
-    if not (now.weekday() < 5 and dtime(15, 0) <= now.time() <= dtime(16, 0)):
+    import os
+    if not (now.weekday() < 5 and dtime(15, 0) <= now.time() <= dtime(16, 0)) and not os.getenv("FORCE_RUN"):
         print(f"⏭️ 非执行窗口 ({now.strftime('%H:%M')})，退出。配置窗口：工作日 15:00-16:00")
         return
 

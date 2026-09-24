@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import time
 import json
+import threading
 from typing import Dict, List, Optional, Any
 
 try:
@@ -31,8 +32,9 @@ except ImportError as e:  # pragma: no cover
     raise ImportError("需要 curl_cffi: pip install curl_cffi") from e
 
 _IMPERSONATE = "chrome"
-_TIMEOUT = 15
-_RETRY = 4
+_TIMEOUT = 10  # 单次请求超时(秒)
+_RETRY = 2     # 最大重试次数
+_MAX_TOTAL_TIME = 8  # 整个函数最大耗时(秒)
 
 # 🔑 主机回退链（2026-09-17 实测）
 #   push2his / push2 在密集请求后会进入限流冷却（curl 56 Connection closed abruptly），
@@ -62,7 +64,11 @@ def _get(url: str, tries: int = _RETRY) -> Optional[dict]:
     """带指数退避重试的 GET（curl_cffi + Chrome TLS 指纹）
 
     自动在 _FFLOW_HOSTS / _CLIST_HOSTS 之间回退：把 URL 里的主机名替换后重试。
+    整体硬超时 _MAX_TOTAL_TIME 秒，防止长时间卡死。
+    使用 threading 实现跨线程超时（signal 方案在 curl_cffi 子线程不生效）。
     """
+    import threading
+    
     # 构造主机候选列表（保持相对路径与查询串不变）
     hosts: list[str] = []
     for h in (_FFLOW_HOSTS + _CLIST_HOSTS):
@@ -77,22 +83,44 @@ def _get(url: str, tries: int = _RETRY) -> Optional[dict]:
     for attempt in range(tries):
         host = hosts[attempt % len(hosts)]
         cand = f"https://{host}{base_path}"
-        try:
-            r = _cr.get(cand, headers=_HEADERS, impersonate=_IMPERSONATE, timeout=_TIMEOUT)
-            if r.status_code == 200 and r.content:
-                try:
-                    j = r.json()
-                except Exception:  # noqa: BLE001
-                    last = "non-JSON response"
-                    continue
-                # 东财用 {"_error":...} 标记失败；也可能返回 data=null
-                if isinstance(j, dict) and "_error" not in j:
-                    return j
-                last = str(j.get("_error")) if isinstance(j, dict) else "bad payload"
-            else:
-                last = f"HTTP {r.status_code}"
-        except Exception as e:  # noqa: BLE001
-            last = f"{type(e).__name__}: {e}"
+        
+        result_container = [None]
+        exception_container = [None]
+        
+        def do_request():
+            try:
+                r = _cr.get(cand, headers=_HEADERS, impersonate=_IMPERSONATE, timeout=_TIMEOUT)
+                if r.status_code == 200 and r.content:
+                    try:
+                        j = r.json()
+                    except Exception:  # noqa: BLE001
+                        exception_container[0] = Exception("non-JSON response")
+                        return
+                    if isinstance(j, dict) and "_error" not in j:
+                        result_container[0] = j
+                        return
+                    exception_container[0] = Exception(str(j.get("_error")) if isinstance(j, dict) else "bad payload")
+                else:
+                    exception_container[0] = Exception(f"HTTP {r.status_code}")
+            except Exception as e:  # noqa: BLE001
+                exception_container[0] = e
+        
+        thread = threading.Thread(target=do_request)
+        thread.daemon = True
+        thread.start()
+        thread.join(timeout=_MAX_TOTAL_TIME)
+        
+        if thread.is_alive():
+            # 超时了，线程还在跑，记录超时并继续下一个重试
+            last = f"thread_timeout: exceeded {_MAX_TOTAL_TIME}s"
+            # 注意：无法强制杀死线程，只能让它在后台跑完（但我们不再等待）
+        elif result_container[0] is not None:
+            return result_container[0]
+        elif exception_container[0] is not None:
+            last = f"{type(exception_container[0]).__name__}: {exception_container[0]}"
+        else:
+            last = "unknown error"
+        
         time.sleep(0.6 * (attempt + 1))
     return {"_error": str(last)}
 
@@ -139,11 +167,21 @@ def _fflow(secid: str, lmt: int = 5) -> Optional[Dict[str, Any]]:
 def index_flow(index_code: str = "000001", lmt: int = 5) -> Optional[Dict[str, Any]]:
     """指数主力资金流。index_code: 000001上证 399001深成 399006创业板 000688科创50 000300沪深300
 
-    ⚠️ 可靠性警告（2026-09 实测）：该接口对**部分指数**（如上证指数、科创50）
-    返回的量级明显失真（每日仅 ±0.2 亿，量级不合理），仅深证成指/创业板指量级正常。
-    → 需要"全市场主力资金"时，**优先用 market_main_flow()（行业板块聚合）**，
-       它量级合理且可交叉验证。本函数仅作参考。
+    ⚠️ 已知限制（2026-09 实测，固化到代码文档）：
+    - **仅深证成指(399001) / 创业板指(399006) 量级正常**
+    - **上证指数(000001) / 科创50(000688) / 沪深300(000300) 量级失真**（每日仅 ±0.2 亿，不合理）
+    - 原因：东财接口对不同指数的数据口径不一致，非网络/代码问题
+    
+    → 需要"全市场主力资金"时，**必须用 market_main_flow()（行业板块聚合）**，
+       它量级合理且可交叉验证。本函数仅作深成/创业板参考，其余指数慎用。
     """
+    # 运行时守卫：仅允许深成/创业板，其余指数直接返回 None 并打印警告
+    allowed = {"399001": "深证成指", "399006": "创业板指"}
+    clean_code = index_code.lstrip("0")  # 兼容带前导零
+    if clean_code not in allowed:
+        import warnings
+        warnings.warn(f"index_flow: {index_code} 不在可靠白名单 {list(allowed.values())} 中，返回 None。请用 market_main_flow() 获取全市场主力资金。", RuntimeWarning)
+        return None
     return _fflow(_to_secid(index_code), lmt)
 
 
@@ -226,30 +264,15 @@ def industry_flow_rank(top: int = 10, concept: bool = False) -> List[Dict[str, A
 def northbound_summary(days: int = 5) -> Dict[str, Any]:
     """
     北向资金。⚠️ 自 2024-08 起交易所停止实时披露净买入，
-    故 NET_DEAL_AMT / FUND_INFLOW 恒为 None。可用的仅成交额。
+    东财接口已 404 / 返回空数据。
+    仅返回已知的停披露状态，不再尝试网络请求（避免 404 报错污染日志）。
     """
-    url = ("https://datacenter-web.eastmoney.com/api/data/v1/get"
-           "?reportName=RPT_MUTUAL_DEAL_HISTORY&columns=ALL"
-           "&filter=(MUTUAL_TYPE%3D%22001%22)"
-           f"&sortColumns=TRADE_DATE&sortTypes=-1&pageSize={days}&pageNumber=1")
-    d = _get(url)
-    if not d or d.get("_error"):
-        return {"available": False, "reason": str(d.get("_error") if d else "no response")}
-    rows = ((d.get("result") or {}).get("data")) or []
-    out = []
-    for r in rows:
-        out.append({
-            "date": (r.get("TRADE_DATE") or "")[:10],
-            "deal_amt": r.get("DEAL_AMT"),          # 成交额(百万)
-            "net_deal": r.get("NET_DEAL_AMT"),      # 净买入 —— 恒为 None
-            "fund_inflow": r.get("FUND_INFLOW"),    # 恒为 None
-            "lead_stock": r.get("LEAD_STOCKS_NAME"),
-        })
+    # 直接返回已知状态，不发网络请求
     return {
-        "available": True,
+        "available": False,
         "net_flow_discontinued": True,
-        "note": "交易所自2024-08停止实时披露北向净买入；仅成交额可用",
-        "days": out,
+        "note": "交易所自2024-08停止实时披露北向净买入；东财接口已下线（404），仅成交额历史数据可用",
+        "days": [],
     }
 
 
