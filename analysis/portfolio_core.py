@@ -146,11 +146,53 @@ def fetch_today_realtime(symbols):
 # 状态管理
 # ═══════════════════════════════════════════
 def load_state() -> Dict:
-    if os.path.exists(STATE_FILE):
+    """
+    加载模拟盘状态，带完整性校验。
+    - JSON 解析失败：备份损坏文件，返回空 state（不静默重建）
+    - 校验 state 与 equity.csv 最后一行 total_initial 一致，不一致报警
+    - 回测模式下返回空 state，避免污染生产文件
+    """
+    if BACKTEST_MODE:
+        return {"last_signal_date": None, "positions": {}}
+    
+    if not os.path.exists(STATE_FILE):
+        return {"last_signal_date": None, "positions": {}}
+    
+    # 读取并解析 JSON
+    try:
         with open(STATE_FILE) as f:
             state = json.load(f)
-        return state
-    return {"last_signal_date": None, "positions": {}}
+    except json.JSONDecodeError as e:
+        # 备份损坏文件，避免静默重建掩盖问题
+        import shutil
+        from datetime import datetime
+        bak = f"{STATE_FILE}.corrupt.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        shutil.copy2(STATE_FILE, bak)
+        print(f"⚠️ STATE_FILE JSON 解析失败，已备份至 {bak}: {e}")
+        return {"last_signal_date": None, "positions": {}}
+    
+    # 基础结构校验
+    if not isinstance(state, dict) or "positions" not in state:
+        print(f"⚠️ STATE_FILE 结构异常，缺少 'positions' 字段")
+        return {"last_signal_date": None, "positions": {}}
+    
+    # 交叉校验：state 与 equity.csv 最后一行 total_initial 一致性
+    # （仅当 equity.csv 存在且有数据时）
+    if os.path.exists(EQUITY_FILE):
+        try:
+            import csv
+            with open(EQUITY_FILE) as f:
+                reader = list(csv.DictReader(f))
+                if reader:
+                    last_row = reader[-1]
+                    equity_initial = float(last_row.get("total_initial", 0))
+                    expected_initial = REFERENCE_TOTAL_CAPITAL
+                    if equity_initial > 0 and abs(equity_initial - expected_initial) / expected_initial > 0.05:
+                        print(f"⚠️ 口径不一致: equity.csv total_initial={equity_initial:,.0f} vs REFERENCE={expected_initial:,.0f} (偏差 >5%)")
+        except Exception as e:
+            print(f"⚠️ equity.csv 校验读取失败: {e}")
+    
+    return state
 
 
 def save_state(state: Dict):
@@ -221,6 +263,15 @@ def append_equity_snapshot(date: str, portfolio_summary: Dict, core_value: float
         "positions_held": portfolio_summary.get("positions_held", 0),
         "total_initial": portfolio_summary.get("total_initial", 0),
     }
+    
+    # 确保文件以换行符结尾（防止无换行符导致追加行粘连）
+    if file_exists:
+        with open(EQUITY_FILE, "rb") as f:
+            f.seek(-1, os.SEEK_END)
+            last_char = f.read(1)
+            if last_char != b'\n':
+                with open(EQUITY_FILE, "a", newline='') as fw:
+                    fw.write('\n')
     
     with open(EQUITY_FILE, "a", newline='') as f:
         writer = csv.DictWriter(f, fieldnames=row.keys())
