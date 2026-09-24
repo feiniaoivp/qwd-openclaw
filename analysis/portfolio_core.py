@@ -86,6 +86,10 @@ STOCKS = [
 # 注：电网装备/特高压出海8只（600089/600406/000400/601179/002028/002270/002130/600312）
 #     已撤出关注池，需要时用 analysis/fib_extension_scan.py 的独立观察清单。
 
+# 参考总本金：固定为当前关注池股票数 × 单票本金，防止调仓/增减股导致收益率分母跳变
+REFERENCE_STOCK_COUNT = len(STOCKS)  # 当前 27 只
+REFERENCE_TOTAL_CAPITAL = INITIAL_CAPITAL * REFERENCE_STOCK_COUNT
+
 # 030 模块（可选导入）
 try:
     from analysis.fatal_risk_detector import FatalRiskDetector
@@ -514,7 +518,7 @@ class RiskGuard:
             fatal_detector = FatalRiskDetector()
             cls._fatal_risk = fatal_detector.check()
             pos_context = load_position_context()
-            sizer = PositionSizer(total_capital=3_000_000)
+            sizer = PositionSizer(total_capital=REFERENCE_TOTAL_CAPITAL)
             pos_plan_obj = sizer.calculate(
                 market_stage=pos_context["market_stage"],
                 emotion_cycle=pos_context["emotion_cycle"],
@@ -796,7 +800,7 @@ def _check_barbell_constraints(pos: Dict, signal: Dict, position_plan: Dict,
         max_amount = single_cap
     
     # 2. 核心/卫星仓位总上限检查
-    total_initial = INITIAL_CAPITAL * 35  # 35只股票基准
+    total_initial = REFERENCE_TOTAL_CAPITAL
     core_limit = total_initial * 0.80  # 核心仓最多80%
     sat_limit = total_initial * 0.20   # 卫星仓最多20%
     
@@ -1001,7 +1005,7 @@ def run_portfolio_scan(
 
     # 汇总
     total_value = sum(r["value"] for r in results if "value" in r)
-    total_initial = INITIAL_CAPITAL * len(stocks)
+    total_initial = REFERENCE_TOTAL_CAPITAL
     total_return = round((total_value - total_initial) / total_initial * 100, 2)
     pos_count = sum(1 for r in results if r.get("position"))
     buy_qty = sum(1 for r in results if r.get("signal") == "买入")
@@ -1011,12 +1015,12 @@ def run_portfolio_scan(
     sat_positions = [r for r in results if r.get("position") and r.get("bucket") == "satellite"]
     core_value = sum(r["value"] for r in core_positions)
     sat_value = sum(r["value"] for r in sat_positions)
-    core_limit = total_initial * 0.8
-    sat_limit = total_initial * 0.2
+    core_limit = REFERENCE_TOTAL_CAPITAL * 0.8
+    sat_limit = REFERENCE_TOTAL_CAPITAL * 0.2
 
     portfolio = {
         "total_value": round(total_value, 2),
-        "total_initial": total_initial,
+        "total_initial": REFERENCE_TOTAL_CAPITAL,
         "total_return_pct": total_return,
         "positions_held": pos_count,
         "buy_signals_today": buy_qty,
