@@ -11,7 +11,30 @@ set -euo pipefail
 
 TAG="${1:-}"
 WORKSPACE="/Users/duguke/.openclaw/workspace"
+GUARD_HOME="$WORKSPACE/backups"
 PLIST="$HOME/Library/LaunchAgents/ai.openclaw.gateway.plist"
+
+# 防护①: 拒绝空标签
+if [[ -z "${TAG// }" ]]; then
+  echo "❌ 标签为空，拒绝执行（git checkout '' 会静默 no-op，导致'假回滚'）"
+  echo "   可用 guard tag:"; git -C "$WORKSPACE" tag -l 'guard/*' | sort -r | head -20
+  exit 2
+fi
+
+# 防护②: 优先使用 GUARD_HOME 下的归档快照（防止 tag 被删后失效）
+SNAP="$GUARD_HOME/$TAG"
+if [[ -d "$SNAP" ]]; then
+  echo "🛡 使用归档快照: $SNAP"
+  cp -R "$SNAP"/. "$WORKSPACE"/ && echo "✅ 已从归档快照恢复 $TAG" && exit 0
+fi
+
+# 防护③: git tag 存在性校验（防止 checkout 静默 no-op = 假回滚）
+if ! git -C "$WORKSPACE" rev-parse -q --verify "refs/tags/$TAG" >/dev/null 2>&1; then
+  echo "❌ 标签不存在或已被删除: $TAG → 拒绝执行（避免假回滚）"
+  echo "   可用 guard tag:"; git -C "$WORKSPACE" tag -l 'guard/*' | sort -r | head -20
+  echo "   或无 tag 时改用备份恢复: cp -R backups/<date>/... "
+  exit 2
+fi
 
 if [[ -z "$TAG" ]]; then
   echo "❌ 用法: restore_from_snapshot.sh <guard-tag>"
