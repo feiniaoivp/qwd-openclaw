@@ -945,25 +945,6 @@ def run_portfolio_scan(
 
     # Tier3：启动时强制清仓（仅首次）
     _force_liquidate_tier3(state, strategy_map)
-    """
-    统一的组合扫描入口。
-    返回: {portfolio_summary, details, messages, state}
-    """
-    if today_str is None:
-        today_str = datetime.now().strftime("%Y-%m-%d")
-
-    if state is None:
-        state = load_state()
-    if strategy_map is None:
-        strategy_map = load_strategy_map()
-
-    # 刷新 030 风控
-    RiskGuard.refresh()
-    fatal_risk = RiskGuard.get_fatal_risk()
-    position_plan = RiskGuard.get_position_plan()
-
-    # 同步策略映射
-    sync_strategy_map(state, strategy_map, default_strategy)
 
     print(f"📡 组合扫描开始 ({today_str})...")
     all_msgs = []
@@ -1068,7 +1049,25 @@ def run_portfolio_scan(
     save_state(state)
 
     # 汇总
-    total_value = sum(r["value"] for r in results if "value" in r)
+    # 治本（2026-09-25）：total_value / cash_total 改从持久化 state 计算，
+    # 而非当次 results（results 在「某票数据拉取失败」时会缺失该票 cash，
+    # 导致 total_value 断崖暴跌——09-25 曾出现 271 万→31 万假崩）。
+    # 兜底逻辑：成功票用当次 value（含持仓市值），失败票退化为 pos["cash"]（现金口径）。
+    success_syms = {r["symbol"] for r in results if "value" in r and "symbol" in r}
+    _total_value_acc = 0.0
+    _cash_total_acc = 0.0
+    for sym, pos in state["positions"].items():
+        cash = float(pos.get("cash", 0) or 0)
+        if sym in success_syms:
+            r = next(x for x in results if x.get("symbol") == sym)
+            _total_value_acc += float(r.get("value", cash) or 0)
+        else:
+            # 数据失败/未处理票：保守用现金口径（不含未平仓浮盈浮亏）
+            _total_value_acc += cash
+        _cash_total_acc += cash
+    total_value = _total_value_acc
+    cash_total = _cash_total_acc
+
     total_initial = REFERENCE_TOTAL_CAPITAL
     total_return = round((total_value - total_initial) / total_initial * 100, 2)
     pos_count = sum(1 for r in results if r.get("position"))
@@ -1102,7 +1101,7 @@ def run_portfolio_scan(
     }
 
     # 记录每日权益快照（移到循环外，仅记录一次）
-    cash_total = sum(r.get("cash", 0) for r in results if "cash" in r)
+    # cash_total 已在汇总段从 state 完整计算（治本），此处直接用
     try:
         append_equity_snapshot(today_str, portfolio, core_value, sat_value, cash_total)
     except Exception as e:
