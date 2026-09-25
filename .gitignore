@@ -55,6 +55,7 @@ data/cron_runs/
 data/market_health_*.json
 data/next_day_sim_*.json
 data/pipeline_cache/
+data/strategy_map_versions/
 data/news/daily_*.md
 memory/.dreams/
 memory/heartbeat-state.json

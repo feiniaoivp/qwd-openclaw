@@ -118,6 +118,7 @@ STRATEGY_LABELS = {
     "ema_cross": "💹 EMA12/26",
     "macd": "📉 纯MACD",
     "bull_trend": "🐂 牛市趋势跟踪",
+    "ema_adaptive_vol": "⚡ EMA自适应量价",
 }
 
 DEFAULT_STRATEGY = "ema_cross"
@@ -761,6 +762,78 @@ def signal_macd(df: pd.DataFrame, symbol: Optional[str] = None) -> dict:
     }
 
 
+def signal_ema_adaptive_vol(df: pd.DataFrame, symbol: Optional[str] = None) -> dict:
+    """
+    策略：EMA自适应量价 → 白名单映射：EMA8/21/50动态排列 + 成交量相对强度 + MACD动能 + ATR止损
+    买入：EMA8>EMA21 + 成交量>MA20*1.5 + MACD零轴上/金叉 + 价格在EMA8上方
+    卖出：EMA8死叉EMA21 或 缩量破EMA50 或 MACD零轴下死叉
+    """
+    ema_trend = calc_ema_trend(df)
+    vol = calc_volume_analysis(df)
+    macd = calc_macd_signal(df)
+    atr = calc_atr_stops(df)
+    fib = calc_fibonacci_confluence(df, calc_support_resistance(df))
+    
+    # 计算 EMA8/21
+    if HAS_PANDAS_TA:
+        ema8 = ta.ema(df["close"], length=8)
+        ema21 = ta.ema(df["close"], length=21)
+    else:
+        ema8 = df["close"].ewm(span=8, adjust=False).mean()
+        ema21 = df["close"].ewm(span=21, adjust=False).mean()
+    
+    e8 = float(ema8.iloc[-1]) if pd.notna(ema8.iloc[-1]) else 0
+    e21 = float(ema21.iloc[-1]) if pd.notna(ema21.iloc[-1]) else 0
+    cur_price = float(df["close"].iloc[-1])
+    prev_close = float(df["close"].iloc[-2])
+    change_pct = round((cur_price / prev_close - 1) * 100, 2)
+    
+    # 自适应量价条件
+    vol_strong = vol["vol_ratio"] > 1.5  # 放量>1.5倍
+    ema_bull = e8 > e21 and cur_price > e8
+    ema_bear = e8 < e21 or cur_price < e21
+    macd_ok = macd.get("above_zero") or macd.get("cross_up")
+    macd_bad = macd.get("cross_down") or (macd.get("below_zero") and macd.get("bear_divergence"))
+    
+    action, reason = "持有", "无信号"
+    
+    if ema_bull and vol_strong and macd_ok:
+        action = "🟢买入"
+        reason = f"EMA8({e8:.2f})>EMA21({e21:.2f}) + 强放量(ratio={vol['vol_ratio']:.1f}) + MACD{macd.get('zone','-')}"
+    elif ema_bear and (not vol_strong or macd_bad):
+        action = "🔴卖出"
+        reasons = []
+        if ema_bear:
+            reasons.append(f"EMA8({e8:.2f})死叉/价格跌破EMA21({e21:.2f})")
+        if not vol_strong:
+            reasons.append(f"缩量(ratio={vol['vol_ratio']:.1f})")
+        if macd_bad:
+            reasons.append(f"MACD{macd.get('zone','-')}")
+        reason = " | ".join(reasons)
+    
+    atr_stop = atr.get("stop_long")
+    
+    fib_tp = {}
+    if action == "🟢买入" and fib.get("confluence"):
+        sr = calc_support_resistance(df)
+        wave_high = sr["resistance_strong"]
+        wave_low = sr["support_strong"]
+        wave_range = wave_high - wave_low
+        if wave_range > 0:
+            targets = {}
+            for level in [1.0, 1.272, 1.618, 2.618]:
+                targets[f"fib_{level}"] = round(wave_high + wave_range * (level - 1.0), 2)
+            fib_tp = {"entry": round(cur_price, 2), "targets": targets, "alloc": [0.3, 0.4, 0.2, 0.1]}
+    
+    return {
+        "action": action, "reason": reason, "price": round(cur_price, 2),
+        "change_pct": change_pct,
+        "key_indicators": f"EMA8{e8:.2f} EMA21{e21:.2f} VolRatio{vol['vol_ratio']:.1f} MACD{macd.get('zone','-')}",
+        "atr": atr.get("ATR14"), "atr_stop": atr_stop, "fib_tp": fib_tp,
+        "indicators": {"ema": ema_trend, "vol": vol, "macd": macd, "atr": atr, "fib": fib},
+    }
+
+
 SIGNAL_FUNCS = {
     "bollinger": signal_bollinger_atr,
     "kdj_cci": signal_kdj_cci,
@@ -768,6 +841,7 @@ SIGNAL_FUNCS = {
     "ema_cross": signal_ema_cross,
     "macd": signal_macd,
     "bull_trend": signal_bull_trend,
+    "ema_adaptive_vol": signal_ema_adaptive_vol,
 }
 
 
