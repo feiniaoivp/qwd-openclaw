@@ -26,8 +26,8 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 START_DATE = os.environ.get("BT_START", "20240101")
 END_DATE = os.environ.get("BT_END", "20260726")
-INITIAL_CAPITAL = 100_000  # 单策略初始资金（对标现有回测口径）
-TOTAL_CAPITAL = 3_000_000  # 组合总资金（用于ATR仓位计算）
+from analysis.portfolio_core import REFERENCE_TOTAL_CAPITAL, INITIAL_CAPITAL
+# TOTAL_CAPITAL 统一引用 REFERENCE_TOTAL_CAPITAL = 2_700_000
 COMMISSION = 0.0003
 SLIPPAGE = 0.001
 
@@ -67,7 +67,7 @@ STRATEGIES = {
 }
 
 
-def run_simulation_atr_position(df, actions, atr_series, total_capital=TOTAL_CAPITAL):
+def run_simulation_atr_position(df, actions, atr_series, total_capital=REFERENCE_TOTAL_CAPITAL):
     """
     ATR波动率仓位模拟器
     单笔风险 = total_capital × 1%

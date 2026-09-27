@@ -728,7 +728,7 @@ def scan_all():
             fatal_risk = fatal_detector.check()
             
             pos_context = load_position_context()
-            sizer = PositionSizer(total_capital=3_000_000)
+            sizer = PositionSizer(total_capital=REFERENCE_TOTAL_CAPITAL)
             pos_plan_obj = sizer.calculate(
                 market_stage=pos_context["market_stage"],
                 emotion_cycle=pos_context["emotion_cycle"],

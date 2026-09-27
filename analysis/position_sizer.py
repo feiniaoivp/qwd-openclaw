@@ -26,6 +26,12 @@ DATA_DIR = os.path.join(WORKSPACE, "data")
 ADAPTIVE_PARAMS_FILE = os.path.join(WORKSPACE, "data", "adaptive_params.json")
 os.makedirs(DATA_DIR, exist_ok=True)
 
+# 单一事实来源：参考总本金（从 portfolio_core 引入，避免硬编码重复）
+try:
+    from analysis.portfolio_core import REFERENCE_TOTAL_CAPITAL
+except ImportError:
+    REFERENCE_TOTAL_CAPITAL = 2_700_000  # 兜底（与 portfolio_core 单一事实来源一致）
+
 # ═══════════════════════════════════════════════════════════════
 # 030 仓位矩阵（硬编码核心参数，仅允许微调范围内调整）
 # ═══════════════════════════════════════════════════════════════
@@ -217,10 +223,10 @@ class PositionPlan:
 class PositionSizer:
     """030 动态仓位计算器（集成ATR波动率仓位）"""
 
-    def __init__(self, total_capital: float = 3_000_000):
+    def __init__(self, total_capital: float = REFERENCE_TOTAL_CAPITAL):
         """
         Args:
-            total_capital: 总资金（默认300万，对应30只×10万基准）
+            total_capital: 总资金（默认引用 REFERENCE_TOTAL_CAPITAL=270万，统一口径）
         """
         self.total_capital = total_capital
         self.adaptive_params = load_adaptive_params()
@@ -561,7 +567,7 @@ def main():
     context = load_market_context()
     watchlist = list(STOCK_DIRECTION_MAP.keys())
 
-    sizer = PositionSizer(total_capital=3_000_000)
+    sizer = PositionSizer(total_capital=REFERENCE_TOTAL_CAPITAL)
     plan = sizer.calculate(
         market_stage=context["market_stage"],
         emotion_cycle=context["emotion_cycle"],

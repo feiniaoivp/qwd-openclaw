@@ -55,6 +55,10 @@ SLIPPAGE = 0.001
 INITIAL_CAPITAL = 100_000
 ATR_STOP_MULT = 2.0
 
+# 单一事实来源：参考总本金（仓位计算/风控限额/收益率分母统一引用）
+# 注：该值为"参考分母"常量，不随关注池只数自动变动；如需调整须走风控变更流程。
+REFERENCE_TOTAL_CAPITAL = 2_700_000
+
 STRATEGY_LABELS = {
     "bollinger": "📊 布林带+ATR",
     "kdj_cci": "🎯 KDJ+RSI(均值回归)",

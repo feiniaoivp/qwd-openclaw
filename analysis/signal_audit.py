@@ -485,7 +485,8 @@ def audit_position_compliance(position_plan: dict, positions: dict, market_conte
     if not position_plan:
         return findings
     
-    total_capital = position_plan.get("total_capital", 3_000_000)
+    from analysis.portfolio_core import REFERENCE_TOTAL_CAPITAL
+    total_capital = position_plan.get("total_capital", REFERENCE_TOTAL_CAPITAL)
     total_limit_pct = position_plan.get("total_limit_pct", 0)
     total_limit_amt = position_plan.get("total_limit_amount", 0)
     single_max_pct = position_plan.get("single_stock_max_pct", 0)
