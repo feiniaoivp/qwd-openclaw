@@ -162,6 +162,56 @@ cd /Users/duguke/.openclaw/workspace && for f in analysis/*.py scripts/*.py; do 
 
 Add whatever helps you do your job. This is your cheat sheet.
 
+---
+
+## 🔴 关注池口径规则（单一事实来源）
+
+> **为什么强制**：2026-09-27 发现「代码已是 35 只、文档还写 27 只」的静默不一致，
+> 人工按旧清单误判「回测范围有污染」。按 AGENTS.md「教训→三层防线」固化为门禁。
+
+### 单一事实来源（SSOT）
+
+**关注池以 `analysis/fib_extension_scan.py` 的 `WATCHLIST` 为准（当前 35 只）。**
+任何其他位置不得自行维护股票列表。
+
+必须与 WATCHLIST 保持一致的 4 处：
+
+| 位置 | 形式 |
+|---|---|
+| `data/adaptive_strategy_map.json` | key 集合 == WATCHLIST |
+| `analysis_summary_all.md` | 股票集合 == WATCHLIST |
+| `memory/watchlist.md` | 头部「权威清单 N 只」== len(WATCHLIST) |
+| `MEMORY.md` | `Definitive - N stocks` == len(WATCHLIST) |
+
+### 涉及股票列表的脚本必须引用 WATCHLIST
+
+```python
+# ✅ 正确：单一来源
+from analysis.fib_extension_scan import WATCHLIST
+stocks = list(WATCHLIST.keys())
+
+# ❌ 禁止：硬编码/凭记忆拼凑列表（会随关注池变更而静默过时）
+stocks = [("600030", "中信证券"), ...]
+```
+
+### 门禁（自动校验）
+
+```bash
+# 单独跑
+python3 scripts/strategy_map_guard.py        # 违规 exit 1
+# 已接入：每周六 weekly_full_pipeline.py 步骤 0c + 周一 memory-maintenance-monday 审计
+```
+
+### 变更关注池时的标准流程
+
+1. 改 `fib_extension_scan.py` 的 `WATCHLIST`（唯一改动点）
+2. 跑 `python3 scripts/fill_missing_stock_csv.py` 确保 `stock_data` CSV 齐全（若有新增）
+3. 跑 `python3 analyze_all_stocks.py` 重生成 `analysis_summary_all.md`
+4. 更新 `memory/watchlist.md` 分层 + `MEMORY.md` 清单与只数声明
+5. 跑 `python3 scripts/strategy_map_guard.py` 确认退出码 0
+
+---
+
 ## Related
 
 - [Agent workspace](/concepts/agent-workspace)

@@ -1,0 +1,74 @@
+{
+  "000400": {
+    "strategy": "ema_cross",
+    "name": "许继电气",
+    "score": 13.43,
+    "avg_return": 23.4,
+    "avg_sharpe": 0.142,
+    "avg_dd": -27.32,
+    "avg_trades": 10.5,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 13.43,
+        "avg_return": 23.4,
+        "avg_sharpe": 0.142,
+        "avg_dd": -27.32,
+        "avg_trades": 10.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "base_score": 22.55,
+        "dist_score": 4.32,
+        "dist_used": true,
+        "median_ret": -2.79,
+        "p75_ret": 7.87,
+        "p25_ret": -4.47,
+        "n_trades_pooled": 42
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": -12.7,
+        "avg_return": 8.97,
+        "avg_sharpe": -0.333,
+        "avg_dd": -16.97,
+        "avg_trades": 13.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "base_score": -14.58,
+        "dist_score": -10.82,
+        "dist_used": true,
+        "median_ret": -1.8,
+        "p75_ret": 2.35,
+        "p25_ret": -3.23,
+        "n_trades_pooled": 52
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": -13.75,
+        "avg_return": -5.51,
+        "avg_sharpe": -0.253,
+        "avg_dd": -28.17,
+        "avg_trades": 27.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "base_score": -18.47,
+        "dist_score": -9.04,
+        "dist_used": true,
+        "median_ret": -1.7,
+        "p75_ret": -0.31,
+        "p25_ret": -2.56,
+        "n_trades_pooled": 111
+      }
+    ],
+    "distribution": {
+      "median_ret": -2.79,
+      "p75_ret": 7.87,
+      "p25_ret": -4.47,
+      "base_score": 22.55,
+      "dist_score": 4.32,
+      "dist_used": true,
+      "n_trades_pooled": 42
+    }
+  }
+}

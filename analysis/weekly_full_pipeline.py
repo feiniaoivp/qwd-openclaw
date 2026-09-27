@@ -94,6 +94,15 @@ def main():
     if not r["success"]:
         print("⚠️ 供应链扫描发现致命高危，请人工核查（不阻断流水线）...")
 
+    # 步骤 0c: 关注池口径一致性门禁（2026-09-27 新增）
+    # 背景：曾出现「代码已是35只、文档还写27只」的静默不一致，人工按旧清单误判。
+    # 仅在写回映射前校验，失败仅告警不阻断（防误伤主流程）。
+    print("\n🚦 步骤 0c/8: 关注池口径一致性门禁 (strategy_map_guard.py)")
+    r = run_script("../scripts/strategy_map_guard.py", ["--quiet"], timeout=120)
+    results["map_guard"] = r
+    if not r["success"]:
+        print("⚠️ 关注池口径不一致（见上方），请人工核对文档/映射（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = run_script("backtest_strategies.py", timeout=600)  # 10分钟上限，当前约3.5分钟跑完，留足缓冲

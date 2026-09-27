@@ -109,7 +109,7 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **[2026-09-09]:** backtest_strategies.py `preload_index_benchmarks` 传递日期格式 `20240101` 而非 `2024-01-01` 导致指数预加载失败 —— 修复日期格式转换。
 *   **[2026-09-09]:** portfolio_sim 每次 fetch_data 重复 login/logout baostock 导致连接池耗尽 `[Errno 9] Bad file descriptor` —— 改为单次登录复用会话，脚本结束时统一 logout。
 
-## User's Stock Watchlist (Definitive - 30 stocks)
+## User's Stock Watchlist (Definitive - 35 stocks)
 *   **证券/金融:** 中信证券(600030), 中信建投(601066), 招商银行(600036), 中金公司(601995), 越秀资本(000987)
 *   **半导体/TMT:** 长电科技(600584), 中芯国际(688981), 通富微电(002156), 雷科防务(002413)
 *   **新能源/储能:** 亿纬锂能(300014), 天齐锂业(002466)
@@ -118,7 +118,8 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **化工:** 巨化股份(600160), 恒力石化(600346)
 *   **钢铁/特钢:** 中信特钢(000708)
 *   **消费/其他:** 福耀玻璃(600660), 恒生电子(600570), 福莱蒽特(605566), 中联重科(000157), 中信金属(601061)
-*   **Note:** 2026-08-06 撤除机电B股(900925, baostock无数据)与上能电气(300827)，2026-08-30 撤除中船汉光(300847)/奔图科技(002180)/福莱特(601865)，关注池由30只变更为 **27只**。重点关注股的完整分析结果保存在 `analysis_summary_all.md`。当需要分析关注股票时，必须：1) 先读 `skill/stock-daily-report/SKILL.md` 获取分析模板；2) 再读 `analysis_summary_all.md` 获取确切列表。**绝不能凭记忆拼凑。**
+*   **电力出海/电网装备（2026-09-27 纳入操作池）:** 特变电工(600089), 国电南瑞(600406), 许继电气(000400), 中国西电(601179), 平高电气(600312), 思源电气(002028), 华明装备(002270), 沃尔核材(002130)
+*   **Note:** 2026-08-06 撤除机电B股(900925, baostock无数据)与上能电气(300827)，2026-08-30 撤除中船汉光(300847)/奔图科技(002180)/福莱特(601865)。**2026-09-27 口径统一为 35 只：27只核心 + 电力出海/电网装备8只纳入操作池**（与 `data/adaptive_strategy_map.json`、回测范围、`memory/watchlist.md` 四层分层一致）。重点关注股的完整分析结果保存在 `analysis_summary_all.md`。当需要分析关注股票时，必须：1) 先读 `skill/stock-daily-report/SKILL.md` 获取分析模板；2) 再读 `analysis_summary_all.md` 获取确切列表。**绝不能凭记忆拼凑。**
 
 ## Important Events After 2026-06-29
 *   **2026-07-10:** Conducted A-share market news and bulletin analysis using akshare (stock_info_global_em) with user discussing market dynamics. Web search via Tavily was still unavailable.
