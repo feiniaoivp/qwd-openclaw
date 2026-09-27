@@ -72,7 +72,7 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **注意:** 机电B股(900925)在baostock上无数据，已知待处理。
 
 ### Lessons Learned
-*   **[2026-09-25] F-5 口径统一：三套本金共存导致仓位限额偏差。** `INITIAL_CAPITAL=100k`（单票）、`REFERENCE_TOTAL_CAPITAL=2.7M`（27只关注池）、`PositionSizer(total_capital=3_000_000)`（030风控硬编码） → **030限额偏大 11%**。修复：`sizer = PositionSizer(total_capital=REFERENCE_TOTAL_CAPITAL)`，**统一引用单一事实来源**，同步清理 `portfolio_equity.csv` 历史脏数据（保留 09-22 后）。
+*   **[2026-09-25] F-5 口径统一：三套本金共存导致仓位限额偏差。** `INITIAL_CAPITAL=100k`（单票）、`REFERENCE_TOTAL_CAPITAL=2.7M`（参考总本金常量）、`PositionSizer(total_capital=3_000_000)`（030风控硬编码） → **030限额偏大 11%**。修复：`sizer = PositionSizer(total_capital=REFERENCE_TOTAL_CAPITAL)`，**统一引用单一事实来源**，同步清理 `portfolio_equity.csv` 历史脏数据（保留 09-22 后）。**注（2026-09-27 用户确认）：REFERENCE_TOTAL_CAPITAL 固定 270万，是“参考分母”常量，不随关注池只数自动变动；调整须走风控变更流程。**
 *   **[2026-09-23] 账面「留痕」≠「持仓」；发现双侧矛盾先上报、冻结口径改动。** 判断模拟盘真实仓位必须同时核 `position`/`shares` 与资金曲线 `positions_held` —— 任一侧单独读数都得出相反结论（09-23 实证：留痕口径 −0.49% 空仓 vs 资金曲线 +0.48% 持 1 仓）。**未确认前不要自作聪明「修正」本金口径**，以免破坏盘中决策。
 *   **[2026-09-23] 资源口径跳变必须留时序证据链。** `portfolio_equity.csv` 本金多次跳变（350万→09-14 50万→09-16 30万→09-22 270万）是定位「初始本金被重建写入覆盖」的关键线索；**单一快照无法发现，需对同一文件做时序比对**。
 *   **[2026-09-20] 🔴 删除任何文件前先 `git status` 确认跟踪状态。** 误 `rm -rf .learnings/ERRORS.md`（受 git 跟踪），已 `git checkout --` 还原。**近 30 天内已第二次出现同类操作** → 按「教训 → 三层防线」应固化为 preflight 门禁（`git status --porcelain <path>`），否则第三次必然复现。
