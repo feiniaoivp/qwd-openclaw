@@ -27,7 +27,7 @@
   "600584": "macd",
   "600660": "ema_adaptive_vol",
   "601061": "ema_obv",
-  "601066": "macd",
+  "601066": "kdj_cci",
   "601100": "ema_cross",
   "601179": "ema_obv",
   "601995": "macd",
