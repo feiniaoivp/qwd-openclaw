@@ -359,107 +359,30 @@ def _fetch_sina_daily(symbol: str, n: int = 300):
 
 
 def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
-    bs_code = f"sh.{symbol}" if symbol.startswith("6") else f"sz.{symbol}"
-    start_ymd = f"{start[0:4]}-{start[4:6]}-{start[6:8]}"
-    end_ymd = datetime.now().strftime("%Y-%m-%d")
+    """统一走 DataRouter 获取历史日线，自动带降级链；实时补丁仅在交易日补齐当日收盘。"""
+    from analysis.data_layer.router import get_router
+    router = get_router()
     today_str = datetime.now().strftime("%Y-%m-%d")
 
-    # 2026-08-18 优化: baostock 拉历史在网络受限时常卡死(单股30s+，30股串行→200s+)，
-    # 而新浪日K _fetch_sina_daily 每只仅 2.9~4.1s。改为【新浪日K优先】作为主数据源，
-    # baostock 降级为新浪失败时的历史兜底。彻底消除 premarket_report 内 180s 子进程超时。
-    if realtime_fallback:
-        try:
-            df = _fetch_sina_daily(symbol)
-        except Exception as _sina_err:
-            print(f"  [降级] {symbol} 新浪日K异常({_sina_err}) → 尝试baostock")
-            df = None
+    # 主路径：DataRouter（内含 新浪日K/baostock/pytdx/akshare 降级，且有进程级缓存）
+    try:
+        df = router.get_daily(symbol, "", start_date=start)
         if df is not None and len(df) >= 60:
             latest = df["date"].iloc[-1].strftime("%Y-%m-%d")
-            if latest < today_str:
-                rt = fetch_today_realtime([symbol])
-                if symbol in rt:
-                    r = rt[symbol]
-                    new_row = {"date": pd.Timestamp(r["date"]), "open": r["open"],
-                               "close": r["close"], "high": r["high"], "low": r["low"],
-                               "volume": r["volume"]}
-                    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+            if realtime_fallback and latest < today_str:
+                import datetime as dt
+                if dt.date.today().weekday() < 5:
+                    rt = fetch_today_realtime([symbol])
+                    if symbol in rt:
+                        r = rt[symbol]
+                        new_row = {"date": pd.Timestamp(r["date"]), "open": r["open"],
+                                   "close": r["close"], "high": r["high"], "low": r["low"],
+                                   "volume": r["volume"]}
+                        df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
             return df
-
-    for attempt in range(max_retry):
-        try:
-            lg = bs.login()
-            if lg.error_code != "0":
-                raise ConnectionError(lg.error_msg)
-            rs = bs.query_history_k_data_plus(
-                bs_code, "date,open,close,high,low,volume",
-                start_date=start_ymd, end_date=end_ymd,
-                frequency="d", adjustflag="2")
-            data = []
-            while rs.next():
-                data.append(rs.get_row_data())
-            bs.logout()
-            if not data:
-                raise ValueError("空数据")
-            df = pd.DataFrame(data, columns=["date","open","close","high","low","volume"])
-            for c in ["open","close","high","low","volume"]:
-                df[c] = pd.to_numeric(df[c], errors="coerce")
-            df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date").reset_index(drop=True).dropna()
-
-            if realtime_fallback:
-                latest_bs_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
-                if latest_bs_date < today_str:
-                    import datetime as dt
-                    if dt.date.today().weekday() < 5:
-                        rt = fetch_today_realtime([symbol])
-                        if symbol in rt:
-                            r = rt[symbol]
-                            new_row = {
-                                "date": pd.Timestamp(r["date"]),
-                                "open": r["open"], "close": r["close"],
-                                "high": r["high"], "low": r["low"],
-                                "volume": r["volume"],
-                            }
-                            df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-                            print(f"  [补丁] {symbol} baostock最新{latest_bs_date} → 新浪拼接{r['date']} 收盘¥{r['close']:.2f}")
-            return df
-        except Exception:
-            time.sleep(1)
-        finally:
-            try:
-                bs.logout()
-            except:
-                pass
-
-    # baostock彻底失败 → 兜底（先新浪日K历史，能过60门槛+算指标；失败再退回新浪实时单条）
-    if realtime_fallback:
-        try:
-            df = _fetch_sina_daily(symbol)
-        except Exception:
-            df = None
-        if df is not None and len(df) >= 60:
-            # 确保包含当日，若新浪日K不含今日且为交易日，拼一条实时
-            latest = df["date"].iloc[-1].strftime("%Y-%m-%d")
-            if latest < today_str:
-                rt = fetch_today_realtime([symbol])
-                if symbol in rt:
-                    r = rt[symbol]
-                    new_row = {"date": pd.Timestamp(r["date"]), "open": r["open"],
-                               "close": r["close"], "high": r["high"], "low": r["low"],
-                               "volume": r["volume"]}
-                    df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-            print(f"  [兜底] {symbol} baostock失败 → 新浪日K {len(df)}条, 收盘¥{df['close'].iloc[-1]:.2f}")
-            return df
-        rt = fetch_today_realtime([symbol])
-        if symbol in rt:
-            r = rt[symbol]
-            df = pd.DataFrame([{
-                "date": pd.Timestamp(r["date"]), "open": r["open"],
-                "close": r["close"], "high": r["high"], "low": r["low"],
-                "volume": r["volume"],
-            }])
-            print(f"  [兜底] {symbol} baostock失败，纯新浪实时: ¥{r['close']:.2f}")
-            return df
+    except Exception as e:
+        print(f"  [DataRouter] {symbol} 获取失败: {e}")
+    
     return None
 
 

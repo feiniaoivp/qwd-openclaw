@@ -971,19 +971,13 @@ This file serves as your curated long-term memory, storing significant events, d
 *   cron 错误三角定位结论沿用（交付层瞬时失败 + 模型层偶发空响应，已自愈，不改 config）。
 *   git 未提交改动（96~120+ 项）持续累积，待主会话人工批量确认。
 
-## Promoted From Short-Term Memory (2026-09-25)
+## Promoted From Short-Term Memory (2026-09-27)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-09-19-weekly-review.md:3:4 -->
-- 周六复盘 2026-09-19: 📅 周六复盘 2026-09-19 周期: 2026-09-13 ~ 2026-09-19 [score=0.808 recalls=0 avg=0.620 source=memory/2026-09-19-weekly-review.md:3-4]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-20.md:12:12 -->
-- ✅ 关闭 09-19 悬案：strategy_map "null" 虚惊: 09-19 笔记担心 `data/adaptive_strategy_map.json` 8 只电网股值为 `null` 会令执行层静默 fallback。**实查为误报**： [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-20.md:12-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-20.md:13:15 -->
-- ✅ 关闭 09-19 悬案：strategy_map "null" 虚惊: 当前 map 34 条**全为字符串**（旧格式），无 null; `portfolio_core.get_bucket()` 与 `portfolio_executor` 均显式兼容 str/dict 双格式; 结论：无 bug，无需改动。教训——怀疑数据结构问题应先实读文件，勿凭旧快照推断。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-20.md:13-15]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-20.md:18:21 -->
-- ⚠️ Cron 错误三角定位（非阻塞）: 4 个 job 报 error，逐一归因： | Job | 错误 | 归因 | |---|---|---| | daily-premarket-analysis-cmd (5x) | `OutboundDeliveryError: sendRichMessage failed` | **交付层网络瞬时失败**，分析本体产出正常 | [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-20.md:18-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-20.md:22:23 -->
-- ⚠️ Cron 错误三角定位（非阻塞）: | zhonglian-monitor-close (4x) | 同上 | 同上 | | Dreaming Daily Report | `Agent couldn't generate a response` (deepseek-v4-flash) | 模型层偶发空响应 | [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-20.md:22-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-20.md:25:27 -->
-- ⚠️ Cron 错误三角定位（非阻塞）: **验证结果**：手动 curl Telegram API + `sendRichMessage` **均成功**（message_id 2170）； 今日 gateway 日志 `sendRichMessage` 失败计数 = **0** → 为 09-18 及之前的瞬时网络问题，已自愈， **不改 config**（避免为偶发问题引入新风险）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-20.md:25-27]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-20.md:6:9 -->
-- ✅ 安全检查: Gateway `lsof -i :18789` → 仅 `localhost:18789` 监听，无外部暴露；版本锁定 2026.7.1-2 正常; 磁盘 `/` 4% 使用（11Gi/466Gi），健康; 技能供应链扫描 `skill_supply_scan.py --offline`：164 文件 / 0.30s，**0 继命高危**，4 处待确认（均为已知的 pip install / requests 模式）; `script_path_guard.py`：127 脚本 / **0 违规**（sys.path 门禁持续有效） [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-20.md:6-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-22.md:14:17 -->
+- 14:00 心跳巡检: cron 全线 `ok`（40 任务），无 error 态；上一分钟 `特高压出海-海外招标监控`(14:00) 与 `盘中策略实时预警-下午场`(14:00) 正常触发。; 数据新鲜度：`intraday_alert_output.json` 14:00 刷新（27 只扫描，5 条 HIGH 止损告警）；`premarket_outlook_output.json` 08:30 刷新；`portfolio_sim_state.json` 04:57 更新，`last_signal_date` 已推进至 **2026-09-22**（早间 08:00 时为 09-18，T+1 回补已完成）。; ⚠️ 5 条 HIGH 跌破止损告警（应流股份/恒立液压/中联重科/恒力石化/中信特钢）— 属盘中例行预警规则，cron 自身已推送，心跳不重复播报。; 门禁复检：`script_path_guard.py` 扫描 129 脚本，违规 0 ✅。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-22.md:14-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-22.md:18:19 -->
+- 14:00 心跳巡检: 结转待办不变：F-5 口径、3950d3cc 描述、index_flow 失真、北向真缺失、deep 回捞诊断。; 周一 06:00 审计流水线本周尚未运行（下次 09-28）；`security_audit` 28.5h 前、`tg_transport_audit` 123h 前，均未超（周频/门禁任务）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-22.md:18-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-22.md:5:8 -->
+- 08:00 心跳巡检: 今日为交易日（周二），cron 全线 `ok`，无 error 态；下一批任务：08:30 盘前展望/新闻、08:35 新闻阅读。; 数据新鲜度：`premarket_outlook_output.json` 09-21 08:30（昨日，正常，今日 08:30 将刷新）；`intraday_alert_output.json` 09-21 14:30。; 模拟盘 `data/portfolio_sim_state.json`：持仓 27 只，`last_signal_date` = 09-18（T+1 回补，今日 15:40 `portfolio-sim-daily` 更新）。; git 工作区有未提交改动（`portfolio_equity.csv`、`premarket_outlook_output.json` 等数据文件 + 部分 analysis/*.py）。**提交动作交主会话人工确认，心跳不自动清理**。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-22.md:5-8]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-22.md:9:10 -->
+- 08:00 心跳巡检: 昨日（09-21 07:00）记忆维护已完成：MEMORY.md 蒸馏区块写入、Lessons 新增 5 条、ontology error-inject 因 4 条 ErrorPattern count 全为 1（<min-count 2）输出为空 → 非故障。; 结转待办（见 09-21 摘要）：F-5 口径、3950d3cc 描述、index_flow 失真、北向真缺失、deep 回捞诊断。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-22.md:9-10]

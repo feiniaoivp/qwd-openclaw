@@ -1,11 +1,11 @@
 {
   "000157": "ema_cross",
   "000708": "ema_adaptive_vol",
-  "000987": "macd",
+  "000987": "bollinger",
   "002156": "ema_obv",
   "002318": "ema_cross",
   "002335": "macd",
-  "002413": "ema_cross",
+  "002413": "ema_obv",
   "002466": "ema_obv",
   "300014": "bull_trend",
   "300124": "bollinger",
@@ -25,12 +25,12 @@
   "601995": "macd",
   "603308": "ema_cross",
   "605566": "macd",
-  "688981": "kdj_cci",
+  "688981": "macd",
   "600406": "ema_obv",
   "601179": "ema_obv",
   "002028": "ema_cross",
   "002270": "ema_obv",
   "002130": "kdj_cci",
   "600089": "bollinger",
-  "600312": "kdj_cci"
+  "600312": "macd"
 }

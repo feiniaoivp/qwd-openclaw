@@ -47,36 +47,7 @@ def action_type(action):
     return "hold"
 
 
-def load_prev_params():
-    """读上轮参数文件; 缺失则回退 validation 策略级前二+默认参数(旧基线)"""
-    if os.path.exists(PREV_FILE):
-        try:
-            with open(PREV_FILE) as f:
-                prev = json.load(f).get("stocks", {})
-            if prev:
-                return prev, True
-        except Exception:
-            pass
 
-    # 回退: validation 策略级前二 + 默认参数
-    with open(ad.VALIDATION_FILE) as f:
-        val = json.load(f)
-    fallback = {}
-    for sym, info in val.items():
-        details = info.get("details", [])
-        ranked = sorted(details, key=lambda x: x.get("score", 0), reverse=True)
-        top2 = []
-        for d in ranked[:2]:
-            key = ad.VALIDATION_STRAT_MAP.get(d.get("strategy"))
-            if key:
-                top2.append({"strategy": key, "params": None})
-        if top2:
-            fallback[sym] = {"name": info.get("name", sym), "details": {}}
-            for i, t in enumerate(top2):
-                # 存成 details 形式, 便于统一处理
-                fallback[sym]["details"][ad.STRATEGY_LABELS[t["strategy"]].replace("📊 ","").replace("🎯 ","").replace("📈 ","").replace("💹 ","").replace("📉 ","")]
-    # 更简单的方式: 直接返回结构为 {sym: [(strategy, params), ...]} 的简化
-    return {sym: [{"strategy": t["strategy"], "params": None} for t in top2]}, False
 
 
 def params_to_dual_map(params_json):
@@ -126,26 +97,32 @@ def main():
     new_dual = params_to_dual_map(new_raw)
 
     # 读旧参数(上轮) — 可能是 adaptive_params_prev.json, 或回退 baseline
+    # Load validation data for fallback (used when stocks are missing from prev)
+    with open(ad.VALIDATION_FILE) as f:
+        val = json.load(f)
+    validation_fallback = {}
+    for sym, info in val.items():
+        details = info.get("details", [])
+        ranked = sorted(details, key=lambda x: x.get("score", 0), reverse=True)
+        top2 = []
+        for d in ranked[:2]:
+            key = ad.VALIDATION_STRAT_MAP.get(d.get("strategy"))
+            if key:
+                top2.append({"strategy": key, "params": None})
+        if top2:
+            validation_fallback[sym] = top2
+
     if os.path.exists(PREV_FILE):
         with open(PREV_FILE) as f:
             prev_raw = json.load(f)
         prev_dual = params_to_dual_map(prev_raw)
         prev_source = "adaptive_params_prev.json"
+        # Merge validation fallback for stocks missing from prev_dual
+        for sym in validation_fallback:
+            if sym not in prev_dual:
+                prev_dual[sym] = validation_fallback[sym]
     else:
-        # 回退: validation 策略级前二 + 默认参数
-        with open(ad.VALIDATION_FILE) as f:
-            val = json.load(f)
-        prev_dual = {}
-        for sym, info in val.items():
-            details = info.get("details", [])
-            ranked = sorted(details, key=lambda x: x.get("score", 0), reverse=True)
-            top2 = []
-            for d in ranked[:2]:
-                key = ad.VALIDATION_STRAT_MAP.get(d.get("strategy"))
-                if key:
-                    top2.append({"strategy": key, "params": None})
-            if top2:
-                prev_dual[sym] = top2
+        prev_dual = validation_fallback
         prev_source = "validation+默认参数(回退基线)"
 
     today = datetime.now().strftime("%Y-%m-%d")

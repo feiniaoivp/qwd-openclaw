@@ -193,5 +193,16 @@
     "pnl_pct": -2.69,
     "strategy": "macd",
     "note": "午休误触发假金叉修正止损"
+  },
+  {
+    "date": "2026-09-24",
+    "symbol": "002413",
+    "name": "雷科防务",
+    "action": "SELL",
+    "price": 8.97,
+    "shares": 0,
+    "pnl": 1386.2910438000035,
+    "pnl_pct": 9.41,
+    "strategy": "ema_obv"
   }
 ]

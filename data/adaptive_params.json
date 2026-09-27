@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-19",
+  "date": "2026-09-26",
   "mode": "快速",
   "fast": true,
   "incremental": false,
@@ -8,80 +8,79 @@
       "name": "中金公司",
       "strategy": "ema_cross",
       "params": {
-        "fast": 12,
+        "fast": 10,
         "slow": 26
       },
-      "score": -6.08,
-      "avg_return": -2.55,
-      "avg_sharpe": -0.228,
-      "avg_dd": -15.87,
-      "avg_trades": 5.0,
+      "score": -19.39,
+      "avg_return": -5.89,
+      "avg_sharpe": -0.372,
+      "avg_dd": -14.9,
+      "avg_trades": 6.0,
       "details": {
         "bollinger": {
           "pruned": true,
           "default_score": -11.82,
-          "default_sharpe": -0.917
+          "default_sharpe": -0.921
         },
         "kdj_cci": {
           "pruned": true,
           "default_score": -4.84,
-          "default_sharpe": -2.857
+          "default_sharpe": -2.862
         },
         "ema_obv": {
           "pruned": true,
           "default_score": -9.34,
-          "default_sharpe": -0.826
+          "default_sharpe": -0.829
         },
         "ema_cross": {
           "best_params": {
-            "fast": 12,
+            "fast": 10,
             "slow": 26
           },
-          "best_score": -6.08,
+          "best_score": -19.39,
           "best_agg": {
-            "score": -6.08,
-            "avg_return": -2.55,
-            "avg_sharpe": -0.228,
-            "avg_dd": -15.87,
-            "avg_trades": 5.0,
-            "sample_weight": 0.4,
+            "score": -19.39,
+            "avg_return": -5.89,
+            "avg_sharpe": -0.372,
+            "avg_dd": -14.9,
+            "avg_trades": 6.0,
+            "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": -2.55,
-          "avg_sharpe": -0.228
+          "avg_return": -5.89,
+          "avg_sharpe": -0.372
         },
         "macd": {
           "pruned": true,
           "default_score": -11.67,
-          "default_sharpe": -0.684
+          "default_sharpe": -0.687
         }
       },
       "top_k": [
         {
           "strategy": "ema_cross",
           "params": {
-            "fast": 12,
+            "fast": 10,
             "slow": 26
           },
-          "score": -6.08,
-          "avg_return": -2.55,
-          "avg_sharpe": -0.228
+          "score": -19.39,
+          "avg_return": -5.89,
+          "avg_sharpe": -0.372
         }
       ]
     },
     "600036": {
       "name": "招商银行",
-      "strategy": "macd",
+      "strategy": "ema_cross",
       "params": {
         "fast": 12,
-        "slow": 26,
-        "signal": 12
+        "slow": 26
       },
-      "score": 8.7,
-      "avg_return": 4.7,
-      "avg_sharpe": 0.098,
-      "avg_dd": -8.91,
-      "avg_trades": 13.0,
+      "score": 1.62,
+      "avg_return": 3.11,
+      "avg_sharpe": 0.005,
+      "avg_dd": -15.42,
+      "avg_trades": 6.0,
       "details": {
         "bollinger": {
           "pruned": true,
@@ -91,87 +90,86 @@
         "kdj_cci": {
           "best_params": {
             "length": 9,
-            "rsi_threshold": 50
+            "rsi_threshold": 40
           },
-          "best_score": 8.09,
+          "best_score": 0.54,
           "best_agg": {
-            "score": 8.09,
-            "avg_return": 4.18,
-            "avg_sharpe": 0.093,
-            "avg_dd": -14.11,
-            "avg_trades": 13.0,
-            "sample_weight": 1.0,
+            "score": 0.54,
+            "avg_return": 2.96,
+            "avg_sharpe": -0.007,
+            "avg_dd": -4.53,
+            "avg_trades": 5.0,
+            "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 4.18,
-          "avg_sharpe": 0.093
+          "avg_return": 2.96,
+          "avg_sharpe": -0.007
         },
         "ema_obv": {
           "best_params": {
             "length": 20
           },
-          "best_score": -25.49,
+          "best_score": -29.92,
           "best_agg": {
-            "score": -25.49,
-            "avg_return": -2.38,
-            "avg_sharpe": -0.401,
+            "score": -29.92,
+            "avg_return": -3.26,
+            "avg_sharpe": -0.466,
             "avg_dd": -15.77,
-            "avg_trades": 21.0,
+            "avg_trades": 23.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": -2.38,
-          "avg_sharpe": -0.401
+          "avg_return": -3.26,
+          "avg_sharpe": -0.466
         },
         "ema_cross": {
           "best_params": {
-            "fast": 10,
+            "fast": 12,
             "slow": 26
           },
-          "best_score": -7.38,
+          "best_score": 1.62,
           "best_agg": {
-            "score": -7.38,
-            "avg_return": 0.21,
-            "avg_sharpe": -0.166,
-            "avg_dd": -16.82,
-            "avg_trades": 7.0,
+            "score": 1.62,
+            "avg_return": 3.11,
+            "avg_sharpe": 0.005,
+            "avg_dd": -15.42,
+            "avg_trades": 6.0,
             "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": 0.21,
-          "avg_sharpe": -0.166
+          "avg_return": 3.11,
+          "avg_sharpe": 0.005
         },
         "macd": {
           "best_params": {
             "fast": 12,
             "slow": 26,
-            "signal": 12
+            "signal": 9
           },
-          "best_score": 8.7,
+          "best_score": -2.53,
           "best_agg": {
-            "score": 8.7,
-            "avg_return": 4.7,
-            "avg_sharpe": 0.098,
-            "avg_dd": -8.91,
+            "score": -2.53,
+            "avg_return": 1.99,
+            "avg_sharpe": -0.062,
+            "avg_dd": -12.52,
             "avg_trades": 13.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 4.7,
-          "avg_sharpe": 0.098
+          "avg_return": 1.99,
+          "avg_sharpe": -0.062
         }
       },
       "top_k": [
         {
-          "strategy": "macd",
+          "strategy": "ema_cross",
           "params": {
             "fast": 12,
-            "slow": 26,
-            "signal": 12
+            "slow": 26
           },
-          "score": 8.7,
-          "avg_return": 4.7,
-          "avg_sharpe": 0.098
+          "score": 1.62,
+          "avg_return": 3.11,
+          "avg_sharpe": 0.005
         }
       ]
     },
@@ -235,18 +233,18 @@
             "fast": 12,
             "slow": 26
           },
-          "best_score": -2.82,
+          "best_score": 7.5,
           "best_agg": {
-            "score": -2.82,
-            "avg_return": 1.14,
-            "avg_sharpe": -0.074,
-            "avg_dd": -15.31,
+            "score": 7.5,
+            "avg_return": 5.86,
+            "avg_sharpe": 0.108,
+            "avg_dd": -15.28,
             "avg_trades": 6.0,
             "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": 1.14,
-          "avg_sharpe": -0.074
+          "avg_return": 5.86,
+          "avg_sharpe": 0.108
         },
         "macd": {
           "best_params": {
@@ -316,22 +314,9 @@
           "avg_sharpe": 0.175
         },
         "kdj_cci": {
-          "best_params": {
-            "length": 9,
-            "rsi_threshold": 40
-          },
-          "best_score": -15.13,
-          "best_agg": {
-            "score": -15.13,
-            "avg_return": -0.33,
-            "avg_sharpe": -0.333,
-            "avg_dd": -10.32,
-            "avg_trades": 9.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": -0.33,
-          "avg_sharpe": -0.333
+          "pruned": true,
+          "default_score": -2.2,
+          "default_sharpe": -0.599
         },
         "ema_obv": {
           "best_params": {
@@ -352,21 +337,21 @@
         },
         "ema_cross": {
           "best_params": {
-            "fast": 12,
+            "fast": 10,
             "slow": 26
           },
-          "best_score": 6.1,
+          "best_score": 9.59,
           "best_agg": {
-            "score": 6.1,
-            "avg_return": 5.65,
-            "avg_sharpe": 0.079,
-            "avg_dd": -19.99,
+            "score": 9.59,
+            "avg_return": 7.61,
+            "avg_sharpe": 0.137,
+            "avg_dd": -19.05,
             "avg_trades": 6.0,
             "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": 5.65,
-          "avg_sharpe": 0.079
+          "avg_return": 7.61,
+          "avg_sharpe": 0.137
         },
         "macd": {
           "best_params": {
@@ -410,10 +395,10 @@
         "slow": 26,
         "signal": 9
       },
-      "score": 86.86,
-      "avg_return": 48.37,
-      "avg_sharpe": 0.964,
-      "avg_dd": -17.46,
+      "score": 85.57,
+      "avg_return": 47.62,
+      "avg_sharpe": 0.95,
+      "avg_dd": -17.43,
       "avg_trades": 11.0,
       "details": {
         "bollinger": {
@@ -447,21 +432,21 @@
         },
         "ema_cross": {
           "best_params": {
-            "fast": 12,
+            "fast": 10,
             "slow": 26
           },
-          "best_score": 16.12,
+          "best_score": 17.16,
           "best_agg": {
-            "score": 16.12,
-            "avg_return": 22.5,
-            "avg_sharpe": 0.455,
-            "avg_dd": -30.98,
-            "avg_trades": 5.0,
-            "sample_weight": 0.4,
+            "score": 17.16,
+            "avg_return": 14.27,
+            "avg_sharpe": 0.272,
+            "avg_dd": -34.0,
+            "avg_trades": 8.0,
+            "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": 22.5,
-          "avg_sharpe": 0.455
+          "avg_return": 14.27,
+          "avg_sharpe": 0.272
         },
         "macd": {
           "best_params": {
@@ -469,18 +454,18 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": 86.86,
+          "best_score": 85.57,
           "best_agg": {
-            "score": 86.86,
-            "avg_return": 48.37,
-            "avg_sharpe": 0.964,
-            "avg_dd": -17.46,
+            "score": 85.57,
+            "avg_return": 47.62,
+            "avg_sharpe": 0.95,
+            "avg_dd": -17.43,
             "avg_trades": 11.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 48.37,
-          "avg_sharpe": 0.964
+          "avg_return": 47.62,
+          "avg_sharpe": 0.95
         }
       },
       "top_k": [
@@ -491,9 +476,9 @@
             "slow": 26,
             "signal": 9
           },
-          "score": 86.86,
-          "avg_return": 48.37,
-          "avg_sharpe": 0.964
+          "score": 85.57,
+          "avg_return": 47.62,
+          "avg_sharpe": 0.95
         }
       ]
     },
@@ -505,10 +490,10 @@
         "slow": 26,
         "signal": 9
       },
-      "score": 177.22,
-      "avg_return": 121.87,
-      "avg_sharpe": 1.735,
-      "avg_dd": -21.56,
+      "score": 161.89,
+      "avg_return": 110.71,
+      "avg_sharpe": 1.591,
+      "avg_dd": -25.84,
       "avg_trades": 11.0,
       "details": {
         "bollinger": {
@@ -517,17 +502,17 @@
             "std": 2.0,
             "atr_mult": 1.5
           },
-          "best_score": 43.29,
+          "best_score": 43.28,
           "best_agg": {
-            "score": 43.29,
-            "avg_return": 72.59,
+            "score": 43.28,
+            "avg_return": 72.54,
             "avg_sharpe": 1.078,
-            "avg_dd": -24.58,
+            "avg_dd": -24.57,
             "avg_trades": 5.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 72.59,
+          "avg_return": 72.54,
           "avg_sharpe": 1.078
         },
         "kdj_cci": {
@@ -535,53 +520,53 @@
             "length": 9,
             "rsi_threshold": 40
           },
-          "best_score": 32.2,
+          "best_score": 21.24,
           "best_agg": {
-            "score": 32.2,
-            "avg_return": 23.48,
-            "avg_sharpe": 1.107,
-            "avg_dd": -4.89,
+            "score": 21.24,
+            "avg_return": 16.99,
+            "avg_sharpe": 0.715,
+            "avg_dd": -5.71,
             "avg_trades": 4.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 23.48,
-          "avg_sharpe": 1.107
+          "avg_return": 16.99,
+          "avg_sharpe": 0.715
         },
         "ema_obv": {
           "best_params": {
             "length": 20
           },
-          "best_score": 14.51,
+          "best_score": 32.68,
           "best_agg": {
-            "score": 14.51,
-            "avg_return": 11.34,
-            "avg_sharpe": 0.209,
-            "avg_dd": -15.83,
-            "avg_trades": 9.0,
-            "sample_weight": 0.75,
+            "score": 32.68,
+            "avg_return": 18.77,
+            "avg_sharpe": 0.357,
+            "avg_dd": -18.06,
+            "avg_trades": 10.0,
+            "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 11.34,
-          "avg_sharpe": 0.209
+          "avg_return": 18.77,
+          "avg_sharpe": 0.357
         },
         "ema_cross": {
           "best_params": {
             "fast": 10,
             "slow": 26
           },
-          "best_score": 79.46,
+          "best_score": 74.92,
           "best_agg": {
-            "score": 79.46,
-            "avg_return": 151.27,
-            "avg_sharpe": 1.798,
-            "avg_dd": -27.55,
-            "avg_trades": 3.0,
+            "score": 74.92,
+            "avg_return": 142.35,
+            "avg_sharpe": 1.698,
+            "avg_dd": -27.56,
+            "avg_trades": 4.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 151.27,
-          "avg_sharpe": 1.798
+          "avg_return": 142.35,
+          "avg_sharpe": 1.698
         },
         "macd": {
           "best_params": {
@@ -589,18 +574,18 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": 177.22,
+          "best_score": 161.89,
           "best_agg": {
-            "score": 177.22,
-            "avg_return": 121.87,
-            "avg_sharpe": 1.735,
-            "avg_dd": -21.56,
+            "score": 161.89,
+            "avg_return": 110.71,
+            "avg_sharpe": 1.591,
+            "avg_dd": -25.84,
             "avg_trades": 11.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 121.87,
-          "avg_sharpe": 1.735
+          "avg_return": 110.71,
+          "avg_sharpe": 1.591
         }
       },
       "top_k": [
@@ -611,24 +596,25 @@
             "slow": 26,
             "signal": 9
           },
-          "score": 177.22,
-          "avg_return": 121.87,
-          "avg_sharpe": 1.735
+          "score": 161.89,
+          "avg_return": 110.71,
+          "avg_sharpe": 1.591
         }
       ]
     },
     "688981": {
       "name": "中芯国际",
-      "strategy": "kdj_cci",
+      "strategy": "macd",
       "params": {
-        "length": 9,
-        "rsi_threshold": 50
+        "fast": 12,
+        "slow": 26,
+        "signal": 12
       },
-      "score": 60.86,
-      "avg_return": 31.84,
-      "avg_sharpe": 0.696,
-      "avg_dd": -23.75,
-      "avg_trades": 12.0,
+      "score": 45.33,
+      "avg_return": 33.74,
+      "avg_sharpe": 0.498,
+      "avg_dd": -39.58,
+      "avg_trades": 10.0,
       "details": {
         "bollinger": {
           "best_params": {
@@ -654,53 +640,53 @@
             "length": 9,
             "rsi_threshold": 50
           },
-          "best_score": 60.86,
+          "best_score": 31.33,
           "best_agg": {
-            "score": 60.86,
-            "avg_return": 31.84,
-            "avg_sharpe": 0.696,
-            "avg_dd": -23.75,
-            "avg_trades": 12.0,
+            "score": 31.33,
+            "avg_return": 12.82,
+            "avg_sharpe": 0.394,
+            "avg_dd": -13.33,
+            "avg_trades": 11.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 31.84,
-          "avg_sharpe": 0.696
+          "avg_return": 12.82,
+          "avg_sharpe": 0.394
         },
         "ema_obv": {
           "best_params": {
             "length": 20
           },
-          "best_score": -30.89,
+          "best_score": -32.19,
           "best_agg": {
-            "score": -30.89,
-            "avg_return": -13.39,
-            "avg_sharpe": -0.381,
+            "score": -32.19,
+            "avg_return": -14.05,
+            "avg_sharpe": -0.396,
             "avg_dd": -26.51,
-            "avg_trades": 26.0,
+            "avg_trades": 27.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": -13.39,
-          "avg_sharpe": -0.381
+          "avg_return": -14.05,
+          "avg_sharpe": -0.396
         },
         "ema_cross": {
           "best_params": {
             "fast": 10,
             "slow": 26
           },
-          "best_score": 35.97,
+          "best_score": 30.63,
           "best_agg": {
-            "score": 35.97,
-            "avg_return": 64.79,
-            "avg_sharpe": 0.851,
-            "avg_dd": -21.73,
-            "avg_trades": 3.0,
+            "score": 30.63,
+            "avg_return": 54.34,
+            "avg_sharpe": 0.733,
+            "avg_dd": -21.33,
+            "avg_trades": 4.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 64.79,
-          "avg_sharpe": 0.851
+          "avg_return": 54.34,
+          "avg_sharpe": 0.733
         },
         "macd": {
           "best_params": {
@@ -708,30 +694,31 @@
             "slow": 26,
             "signal": 12
           },
-          "best_score": 49.27,
+          "best_score": 45.33,
           "best_agg": {
-            "score": 49.27,
-            "avg_return": 35.96,
-            "avg_sharpe": 0.533,
-            "avg_dd": -38.58,
+            "score": 45.33,
+            "avg_return": 33.74,
+            "avg_sharpe": 0.498,
+            "avg_dd": -39.58,
             "avg_trades": 10.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 35.96,
-          "avg_sharpe": 0.533
+          "avg_return": 33.74,
+          "avg_sharpe": 0.498
         }
       },
       "top_k": [
         {
-          "strategy": "kdj_cci",
+          "strategy": "macd",
           "params": {
-            "length": 9,
-            "rsi_threshold": 50
+            "fast": 12,
+            "slow": 26,
+            "signal": 12
           },
-          "score": 60.86,
-          "avg_return": 31.84,
-          "avg_sharpe": 0.696
+          "score": 45.33,
+          "avg_return": 33.74,
+          "avg_sharpe": 0.498
         }
       ]
     },
@@ -741,9 +728,9 @@
       "params": {
         "length": 20
       },
-      "score": 132.45,
-      "avg_return": 85.55,
-      "avg_sharpe": 1.352,
+      "score": 130.36,
+      "avg_return": 84.47,
+      "avg_sharpe": 1.328,
       "avg_dd": -20.73,
       "avg_trades": 10.0,
       "details": {
@@ -767,44 +754,57 @@
           "avg_sharpe": 1.374
         },
         "kdj_cci": {
-          "pruned": true,
-          "default_score": -2.22,
-          "default_sharpe": -0.679
+          "best_params": {
+            "length": 9,
+            "rsi_threshold": 40
+          },
+          "best_score": -2.74,
+          "best_agg": {
+            "score": -2.74,
+            "avg_return": 0.73,
+            "avg_sharpe": -0.312,
+            "avg_dd": -2.92,
+            "avg_trades": 2.0,
+            "sample_weight": 0.15,
+            "windows": 1
+          },
+          "avg_return": 0.73,
+          "avg_sharpe": -0.312
         },
         "ema_obv": {
           "best_params": {
             "length": 20
           },
-          "best_score": 132.45,
+          "best_score": 130.36,
           "best_agg": {
-            "score": 132.45,
-            "avg_return": 85.55,
-            "avg_sharpe": 1.352,
+            "score": 130.36,
+            "avg_return": 84.47,
+            "avg_sharpe": 1.328,
             "avg_dd": -20.73,
             "avg_trades": 10.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 85.55,
-          "avg_sharpe": 1.352
+          "avg_return": 84.47,
+          "avg_sharpe": 1.328
         },
         "ema_cross": {
           "best_params": {
             "fast": 10,
             "slow": 26
           },
-          "best_score": 59.62,
+          "best_score": 54.64,
           "best_agg": {
-            "score": 59.62,
-            "avg_return": 119.02,
-            "avg_sharpe": 1.294,
-            "avg_dd": -28.96,
-            "avg_trades": 3.0,
+            "score": 54.64,
+            "avg_return": 108.56,
+            "avg_sharpe": 1.191,
+            "avg_dd": -28.88,
+            "avg_trades": 4.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 119.02,
-          "avg_sharpe": 1.294
+          "avg_return": 108.56,
+          "avg_sharpe": 1.191
         },
         "macd": {
           "best_params": {
@@ -812,18 +812,18 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": 77.02,
+          "best_score": 75.12,
           "best_agg": {
-            "score": 77.02,
-            "avg_return": 60.01,
-            "avg_sharpe": 0.801,
-            "avg_dd": -44.09,
+            "score": 75.12,
+            "avg_return": 58.86,
+            "avg_sharpe": 0.781,
+            "avg_dd": -44.12,
             "avg_trades": 13.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 60.01,
-          "avg_sharpe": 0.801
+          "avg_return": 58.86,
+          "avg_sharpe": 0.781
         }
       },
       "top_k": [
@@ -832,24 +832,23 @@
           "params": {
             "length": 20
           },
-          "score": 132.45,
-          "avg_return": 85.55,
-          "avg_sharpe": 1.352
+          "score": 130.36,
+          "avg_return": 84.47,
+          "avg_sharpe": 1.328
         }
       ]
     },
     "002413": {
       "name": "雷科防务",
-      "strategy": "ema_cross",
+      "strategy": "ema_obv",
       "params": {
-        "fast": 12,
-        "slow": 26
+        "length": 20
       },
-      "score": 63.14,
-      "avg_return": 129.79,
-      "avg_sharpe": 1.426,
-      "avg_dd": -41.16,
-      "avg_trades": 3.0,
+      "score": 61.74,
+      "avg_return": 39.6,
+      "avg_sharpe": 0.676,
+      "avg_dd": -35.16,
+      "avg_trades": 10.0,
       "details": {
         "bollinger": {
           "best_params": {
@@ -857,18 +856,18 @@
             "std": 2.0,
             "atr_mult": 1.5
           },
-          "best_score": 13.11,
+          "best_score": 12.87,
           "best_agg": {
-            "score": 13.11,
-            "avg_return": 19.73,
-            "avg_sharpe": 0.238,
-            "avg_dd": -56.01,
-            "avg_trades": 10.0,
+            "score": 12.87,
+            "avg_return": 19.58,
+            "avg_sharpe": 0.236,
+            "avg_dd": -56.07,
+            "avg_trades": 11.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 19.73,
-          "avg_sharpe": 0.238
+          "avg_return": 19.58,
+          "avg_sharpe": 0.236
         },
         "kdj_cci": {
           "best_params": {
@@ -892,174 +891,66 @@
           "best_params": {
             "length": 20
           },
-          "best_score": 46.52,
+          "best_score": 61.74,
           "best_agg": {
-            "score": 46.52,
-            "avg_return": 39.78,
-            "avg_sharpe": 0.679,
+            "score": 61.74,
+            "avg_return": 39.6,
+            "avg_sharpe": 0.676,
             "avg_dd": -35.16,
-            "avg_trades": 9.0,
-            "sample_weight": 0.75,
+            "avg_trades": 10.0,
+            "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 39.78,
-          "avg_sharpe": 0.679
+          "avg_return": 39.6,
+          "avg_sharpe": 0.676
         },
         "ema_cross": {
           "best_params": {
             "fast": 12,
             "slow": 26
           },
-          "best_score": 63.14,
+          "best_score": 59.98,
           "best_agg": {
-            "score": 63.14,
-            "avg_return": 129.79,
-            "avg_sharpe": 1.426,
-            "avg_dd": -41.16,
-            "avg_trades": 3.0,
+            "score": 59.98,
+            "avg_return": 123.69,
+            "avg_sharpe": 1.366,
+            "avg_dd": -42.47,
+            "avg_trades": 5.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 129.79,
-          "avg_sharpe": 1.426
+          "avg_return": 123.69,
+          "avg_sharpe": 1.366
         },
         "macd": {
           "best_params": {
             "fast": 12,
             "slow": 26,
-            "signal": 9
+            "signal": 12
           },
-          "best_score": -3.33,
+          "best_score": 21.38,
           "best_agg": {
-            "score": -3.33,
-            "avg_return": 10.83,
-            "avg_sharpe": 0.112,
-            "avg_dd": -63.1,
-            "avg_trades": 13.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": 10.83,
-          "avg_sharpe": 0.112
-        }
-      },
-      "top_k": [
-        {
-          "strategy": "ema_cross",
-          "params": {
-            "fast": 12,
-            "slow": 26
-          },
-          "score": 63.14,
-          "avg_return": 129.79,
-          "avg_sharpe": 1.426
-        }
-      ]
-    },
-    "300285": {
-      "name": "国瓷材料",
-      "strategy": "macd",
-      "params": {
-        "fast": 12,
-        "slow": 26,
-        "signal": 9
-      },
-      "score": 298.44,
-      "avg_return": 262.9,
-      "avg_sharpe": 2.345,
-      "avg_dd": -24.89,
-      "avg_trades": 12.0,
-      "details": {
-        "bollinger": {
-          "best_params": {
-            "length": 20,
-            "std": 2.0,
-            "atr_mult": 1.5
-          },
-          "best_score": 94.32,
-          "best_agg": {
-            "score": 94.32,
-            "avg_return": 105.59,
-            "avg_sharpe": 1.102,
-            "avg_dd": -37.42,
-            "avg_trades": 7.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": 105.59,
-          "avg_sharpe": 1.102
-        },
-        "kdj_cci": {
-          "pruned": true,
-          "default_score": -1.97,
-          "default_sharpe": -2.196
-        },
-        "ema_obv": {
-          "best_params": {
-            "length": 20
-          },
-          "best_score": 152.41,
-          "best_agg": {
-            "score": 152.41,
-            "avg_return": 114.72,
-            "avg_sharpe": 1.393,
-            "avg_dd": -25.45,
-            "avg_trades": 13.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": 114.72,
-          "avg_sharpe": 1.393
-        },
-        "ema_cross": {
-          "best_params": {
-            "fast": 10,
-            "slow": 26
-          },
-          "best_score": 113.59,
-          "best_agg": {
-            "score": 113.59,
-            "avg_return": 142.08,
-            "avg_sharpe": 1.255,
-            "avg_dd": -48.19,
-            "avg_trades": 6.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": 142.08,
-          "avg_sharpe": 1.255
-        },
-        "macd": {
-          "best_params": {
-            "fast": 12,
-            "slow": 26,
-            "signal": 9
-          },
-          "best_score": 298.44,
-          "best_agg": {
-            "score": 298.44,
-            "avg_return": 262.9,
-            "avg_sharpe": 2.345,
-            "avg_dd": -24.89,
+            "score": 21.38,
+            "avg_return": 27.83,
+            "avg_sharpe": 0.345,
+            "avg_dd": -62.03,
             "avg_trades": 12.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 262.9,
-          "avg_sharpe": 2.345
+          "avg_return": 27.83,
+          "avg_sharpe": 0.345
         }
       },
       "top_k": [
         {
-          "strategy": "macd",
+          "strategy": "ema_obv",
           "params": {
-            "fast": 12,
-            "slow": 26,
-            "signal": 9
+            "length": 20
           },
-          "score": 298.44,
-          "avg_return": 262.9,
-          "avg_sharpe": 2.345
+          "score": 61.74,
+          "avg_return": 39.6,
+          "avg_sharpe": 0.676
         }
       ]
     },
@@ -1069,10 +960,10 @@
       "params": {
         "length": 20
       },
-      "score": 40.95,
-      "avg_return": 55.13,
-      "avg_sharpe": 1.155,
-      "avg_dd": -16.01,
+      "score": 37.17,
+      "avg_return": 50.17,
+      "avg_sharpe": 1.047,
+      "avg_dd": -18.7,
       "avg_trades": 4.0,
       "details": {
         "bollinger": {
@@ -1099,53 +990,53 @@
             "length": 9,
             "rsi_threshold": 50
           },
-          "best_score": 32.5,
+          "best_score": 19.34,
           "best_agg": {
-            "score": 32.5,
-            "avg_return": 16.66,
-            "avg_sharpe": 0.375,
+            "score": 19.34,
+            "avg_return": 10.83,
+            "avg_sharpe": 0.214,
             "avg_dd": -20.42,
             "avg_trades": 15.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 16.66,
-          "avg_sharpe": 0.375
+          "avg_return": 10.83,
+          "avg_sharpe": 0.214
         },
         "ema_obv": {
           "best_params": {
             "length": 20
           },
-          "best_score": 40.95,
+          "best_score": 37.17,
           "best_agg": {
-            "score": 40.95,
-            "avg_return": 55.13,
-            "avg_sharpe": 1.155,
-            "avg_dd": -16.01,
+            "score": 37.17,
+            "avg_return": 50.17,
+            "avg_sharpe": 1.047,
+            "avg_dd": -18.7,
             "avg_trades": 4.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 55.13,
-          "avg_sharpe": 1.155
+          "avg_return": 50.17,
+          "avg_sharpe": 1.047
         },
         "ema_cross": {
           "best_params": {
-            "fast": 12,
+            "fast": 10,
             "slow": 26
           },
-          "best_score": 3.99,
+          "best_score": 3.68,
           "best_agg": {
-            "score": 3.99,
-            "avg_return": 8.33,
-            "avg_sharpe": 0.093,
-            "avg_dd": -40.52,
-            "avg_trades": 6.0,
+            "score": 3.68,
+            "avg_return": 8.8,
+            "avg_sharpe": 0.1,
+            "avg_dd": -42.76,
+            "avg_trades": 7.0,
             "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": 8.33,
-          "avg_sharpe": 0.093
+          "avg_return": 8.8,
+          "avg_sharpe": 0.1
         },
         "macd": {
           "best_params": {
@@ -1153,18 +1044,18 @@
             "slow": 26,
             "signal": 12
           },
-          "best_score": 8.96,
+          "best_score": -0.75,
           "best_agg": {
-            "score": 8.96,
-            "avg_return": 7.94,
-            "avg_sharpe": 0.096,
-            "avg_dd": -33.13,
-            "avg_trades": 10.0,
+            "score": -0.75,
+            "avg_return": 3.02,
+            "avg_sharpe": 0.0,
+            "avg_dd": -35.12,
+            "avg_trades": 11.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 7.94,
-          "avg_sharpe": 0.096
+          "avg_return": 3.02,
+          "avg_sharpe": 0.0
         }
       },
       "top_k": [
@@ -1173,9 +1064,9 @@
           "params": {
             "length": 20
           },
-          "score": 40.95,
-          "avg_return": 55.13,
-          "avg_sharpe": 1.155
+          "score": 37.17,
+          "avg_return": 50.17,
+          "avg_sharpe": 1.047
         }
       ]
     },
@@ -1215,18 +1106,18 @@
             "length": 9,
             "rsi_threshold": 40
           },
-          "best_score": -15.93,
+          "best_score": -25.42,
           "best_agg": {
-            "score": -15.93,
-            "avg_return": -4.39,
-            "avg_sharpe": -0.31,
+            "score": -25.42,
+            "avg_return": -8.6,
+            "avg_sharpe": -0.479,
             "avg_dd": -22.71,
             "avg_trades": 6.0,
             "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": -4.39,
-          "avg_sharpe": -0.31
+          "avg_return": -8.6,
+          "avg_sharpe": -0.479
         },
         "ema_obv": {
           "best_params": {
@@ -1250,18 +1141,18 @@
             "fast": 12,
             "slow": 26
           },
-          "best_score": 47.18,
+          "best_score": 50.79,
           "best_agg": {
-            "score": 47.18,
-            "avg_return": 78.97,
-            "avg_sharpe": 1.176,
-            "avg_dd": -26.28,
+            "score": 50.79,
+            "avg_return": 85.14,
+            "avg_sharpe": 1.265,
+            "avg_dd": -26.23,
             "avg_trades": 3.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 78.97,
-          "avg_sharpe": 1.176
+          "avg_return": 85.14,
+          "avg_sharpe": 1.265
         },
         "macd": {
           "best_params": {
@@ -1292,6 +1183,126 @@
           "score": 65.34,
           "avg_return": 40.4,
           "avg_sharpe": 1.048
+        }
+      ]
+    },
+    "300285": {
+      "name": "国瓷材料",
+      "strategy": "macd",
+      "params": {
+        "fast": 12,
+        "slow": 26,
+        "signal": 9
+      },
+      "score": 288.12,
+      "avg_return": 252.8,
+      "avg_sharpe": 2.274,
+      "avg_dd": -24.87,
+      "avg_trades": 12.0,
+      "details": {
+        "bollinger": {
+          "best_params": {
+            "length": 20,
+            "std": 2.0,
+            "atr_mult": 1.5
+          },
+          "best_score": 94.32,
+          "best_agg": {
+            "score": 94.32,
+            "avg_return": 105.59,
+            "avg_sharpe": 1.102,
+            "avg_dd": -37.42,
+            "avg_trades": 7.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": 105.59,
+          "avg_sharpe": 1.102
+        },
+        "kdj_cci": {
+          "best_params": {
+            "length": 9,
+            "rsi_threshold": 50
+          },
+          "best_score": 53.92,
+          "best_agg": {
+            "score": 53.92,
+            "avg_return": 37.22,
+            "avg_sharpe": 0.826,
+            "avg_dd": -11.4,
+            "avg_trades": 7.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": 37.22,
+          "avg_sharpe": 0.826
+        },
+        "ema_obv": {
+          "best_params": {
+            "length": 20
+          },
+          "best_score": 152.41,
+          "best_agg": {
+            "score": 152.41,
+            "avg_return": 114.72,
+            "avg_sharpe": 1.393,
+            "avg_dd": -25.45,
+            "avg_trades": 13.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": 114.72,
+          "avg_sharpe": 1.393
+        },
+        "ema_cross": {
+          "best_params": {
+            "fast": 12,
+            "slow": 26
+          },
+          "best_score": 128.23,
+          "best_agg": {
+            "score": 128.23,
+            "avg_return": 160.72,
+            "avg_sharpe": 1.4,
+            "avg_dd": -48.93,
+            "avg_trades": 6.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": 160.72,
+          "avg_sharpe": 1.4
+        },
+        "macd": {
+          "best_params": {
+            "fast": 12,
+            "slow": 26,
+            "signal": 9
+          },
+          "best_score": 288.12,
+          "best_agg": {
+            "score": 288.12,
+            "avg_return": 252.8,
+            "avg_sharpe": 2.274,
+            "avg_dd": -24.87,
+            "avg_trades": 12.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": 252.8,
+          "avg_sharpe": 2.274
+        }
+      },
+      "top_k": [
+        {
+          "strategy": "macd",
+          "params": {
+            "fast": 12,
+            "slow": 26,
+            "signal": 9
+          },
+          "score": 288.12,
+          "avg_return": 252.8,
+          "avg_sharpe": 2.274
         }
       ]
     },
@@ -1387,18 +1398,18 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": 20.99,
+          "best_score": 0.69,
           "best_agg": {
-            "score": 20.99,
-            "avg_return": 16.97,
-            "avg_sharpe": 0.232,
-            "avg_dd": -36.22,
+            "score": 0.69,
+            "avg_return": 5.78,
+            "avg_sharpe": 0.047,
+            "avg_dd": -41.2,
             "avg_trades": 17.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 16.97,
-          "avg_sharpe": 0.232
+          "avg_return": 5.78,
+          "avg_sharpe": 0.047
         }
       },
       "top_k": [
@@ -1422,11 +1433,11 @@
         "fast": 12,
         "slow": 26
       },
-      "score": 12.43,
-      "avg_return": 18.89,
-      "avg_sharpe": 0.329,
-      "avg_dd": -17.37,
-      "avg_trades": 5.0,
+      "score": 12.36,
+      "avg_return": 11.06,
+      "avg_sharpe": 0.164,
+      "avg_dd": -18.37,
+      "avg_trades": 6.0,
       "details": {
         "bollinger": {
           "pruned": true,
@@ -1473,18 +1484,18 @@
             "fast": 12,
             "slow": 26
           },
-          "best_score": 12.43,
+          "best_score": 12.36,
           "best_agg": {
-            "score": 12.43,
-            "avg_return": 18.89,
-            "avg_sharpe": 0.329,
-            "avg_dd": -17.37,
-            "avg_trades": 5.0,
-            "sample_weight": 0.4,
+            "score": 12.36,
+            "avg_return": 11.06,
+            "avg_sharpe": 0.164,
+            "avg_dd": -18.37,
+            "avg_trades": 6.0,
+            "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": 18.89,
-          "avg_sharpe": 0.329
+          "avg_return": 11.06,
+          "avg_sharpe": 0.164
         },
         "macd": {
           "pruned": true,
@@ -1499,74 +1510,9 @@
             "fast": 12,
             "slow": 26
           },
-          "score": 12.43,
-          "avg_return": 18.89,
-          "avg_sharpe": 0.329
-        }
-      ]
-    },
-    "300719": {
-      "name": "安达维尔",
-      "strategy": "ema_cross",
-      "params": {
-        "fast": 12,
-        "slow": 26
-      },
-      "score": -25.93,
-      "avg_return": -16.22,
-      "avg_sharpe": -0.414,
-      "avg_dd": -25.42,
-      "avg_trades": 7.0,
-      "details": {
-        "bollinger": {
-          "pruned": true,
-          "default_score": -19.5,
-          "default_sharpe": -0.788
-        },
-        "kdj_cci": {
-          "pruned": true,
-          "default_score": -11.49,
-          "default_sharpe": -0.619
-        },
-        "ema_obv": {
-          "pruned": true,
-          "default_score": -34.55,
-          "default_sharpe": -1.816
-        },
-        "ema_cross": {
-          "best_params": {
-            "fast": 12,
-            "slow": 26
-          },
-          "best_score": -25.93,
-          "best_agg": {
-            "score": -25.93,
-            "avg_return": -16.22,
-            "avg_sharpe": -0.414,
-            "avg_dd": -25.42,
-            "avg_trades": 7.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": -16.22,
-          "avg_sharpe": -0.414
-        },
-        "macd": {
-          "pruned": true,
-          "default_score": -33.71,
-          "default_sharpe": -1.014
-        }
-      },
-      "top_k": [
-        {
-          "strategy": "ema_cross",
-          "params": {
-            "fast": 12,
-            "slow": 26
-          },
-          "score": -25.93,
-          "avg_return": -16.22,
-          "avg_sharpe": -0.414
+          "score": 12.36,
+          "avg_return": 11.06,
+          "avg_sharpe": 0.164
         }
       ]
     },
@@ -1578,10 +1524,10 @@
         "std": 2.0,
         "atr_mult": 1.5
       },
-      "score": 12.3,
-      "avg_return": 14.17,
-      "avg_sharpe": 0.371,
-      "avg_dd": -14.09,
+      "score": 12.03,
+      "avg_return": 13.91,
+      "avg_sharpe": 0.362,
+      "avg_dd": -14.12,
       "avg_trades": 5.0,
       "details": {
         "bollinger": {
@@ -1590,36 +1536,36 @@
             "std": 2.0,
             "atr_mult": 1.5
           },
-          "best_score": 12.3,
+          "best_score": 12.03,
           "best_agg": {
-            "score": 12.3,
-            "avg_return": 14.17,
-            "avg_sharpe": 0.371,
-            "avg_dd": -14.09,
+            "score": 12.03,
+            "avg_return": 13.91,
+            "avg_sharpe": 0.362,
+            "avg_dd": -14.12,
             "avg_trades": 5.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 14.17,
-          "avg_sharpe": 0.371
+          "avg_return": 13.91,
+          "avg_sharpe": 0.362
         },
         "kdj_cci": {
           "best_params": {
             "length": 9,
             "rsi_threshold": 40
           },
-          "best_score": -20.34,
+          "best_score": -19.3,
           "best_agg": {
-            "score": -20.34,
-            "avg_return": -3.9,
-            "avg_sharpe": -0.413,
-            "avg_dd": -14.17,
-            "avg_trades": 8.0,
+            "score": -19.3,
+            "avg_return": -3.7,
+            "avg_sharpe": -0.392,
+            "avg_dd": -14.01,
+            "avg_trades": 7.0,
             "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": -3.9,
-          "avg_sharpe": -0.413
+          "avg_return": -3.7,
+          "avg_sharpe": -0.392
         },
         "ema_obv": {
           "best_params": {
@@ -1643,37 +1589,23 @@
             "fast": 12,
             "slow": 26
           },
-          "best_score": -0.03,
+          "best_score": 8.93,
           "best_agg": {
-            "score": -0.03,
-            "avg_return": 2.27,
-            "avg_sharpe": -0.024,
-            "avg_dd": -17.73,
-            "avg_trades": 4.0,
+            "score": 8.93,
+            "avg_return": 11.2,
+            "avg_sharpe": 0.26,
+            "avg_dd": -17.76,
+            "avg_trades": 3.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 2.27,
-          "avg_sharpe": -0.024
+          "avg_return": 11.2,
+          "avg_sharpe": 0.26
         },
         "macd": {
-          "best_params": {
-            "fast": 12,
-            "slow": 26,
-            "signal": 12
-          },
-          "best_score": -19.25,
-          "best_agg": {
-            "score": -19.25,
-            "avg_return": -5.88,
-            "avg_sharpe": -0.262,
-            "avg_dd": -28.37,
-            "avg_trades": 11.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": -5.88,
-          "avg_sharpe": -0.262
+          "pruned": true,
+          "default_score": -15.4,
+          "default_sharpe": -0.543
         }
       },
       "top_k": [
@@ -1684,9 +1616,74 @@
             "std": 2.0,
             "atr_mult": 1.5
           },
-          "score": 12.3,
-          "avg_return": 14.17,
-          "avg_sharpe": 0.371
+          "score": 12.03,
+          "avg_return": 13.91,
+          "avg_sharpe": 0.362
+        }
+      ]
+    },
+    "300719": {
+      "name": "安达维尔",
+      "strategy": "ema_cross",
+      "params": {
+        "fast": 12,
+        "slow": 26
+      },
+      "score": -24.16,
+      "avg_return": -15.08,
+      "avg_sharpe": -0.386,
+      "avg_dd": -27.37,
+      "avg_trades": 7.0,
+      "details": {
+        "bollinger": {
+          "pruned": true,
+          "default_score": -19.5,
+          "default_sharpe": -0.788
+        },
+        "kdj_cci": {
+          "pruned": true,
+          "default_score": -11.49,
+          "default_sharpe": -0.619
+        },
+        "ema_obv": {
+          "pruned": true,
+          "default_score": -35.78,
+          "default_sharpe": -1.872
+        },
+        "ema_cross": {
+          "best_params": {
+            "fast": 12,
+            "slow": 26
+          },
+          "best_score": -24.16,
+          "best_agg": {
+            "score": -24.16,
+            "avg_return": -15.08,
+            "avg_sharpe": -0.386,
+            "avg_dd": -27.37,
+            "avg_trades": 7.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": -15.08,
+          "avg_sharpe": -0.386
+        },
+        "macd": {
+          "pruned": true,
+          "default_score": -32.81,
+          "default_sharpe": -0.988
+        }
+      },
+      "top_k": [
+        {
+          "strategy": "ema_cross",
+          "params": {
+            "fast": 12,
+            "slow": 26
+          },
+          "score": -24.16,
+          "avg_return": -15.08,
+          "avg_sharpe": -0.386
         }
       ]
     },
@@ -1728,18 +1725,18 @@
             "length": 9,
             "rsi_threshold": 50
           },
-          "best_score": 12.73,
+          "best_score": 14.89,
           "best_agg": {
-            "score": 12.73,
-            "avg_return": 7.01,
-            "avg_sharpe": 0.142,
+            "score": 14.89,
+            "avg_return": 7.82,
+            "avg_sharpe": 0.17,
             "avg_dd": -15.21,
             "avg_trades": 15.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 7.01,
-          "avg_sharpe": 0.142
+          "avg_return": 7.82,
+          "avg_sharpe": 0.17
         },
         "ema_obv": {
           "pruned": true,
@@ -1770,18 +1767,18 @@
             "slow": 26,
             "signal": 12
           },
-          "best_score": -31.37,
+          "best_score": -32.59,
           "best_agg": {
-            "score": -31.37,
-            "avg_return": -11.27,
-            "avg_sharpe": -0.388,
-            "avg_dd": -32.66,
-            "avg_trades": 12.0,
+            "score": -32.59,
+            "avg_return": -11.81,
+            "avg_sharpe": -0.403,
+            "avg_dd": -32.65,
+            "avg_trades": 13.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": -11.27,
-          "avg_sharpe": -0.388
+          "avg_return": -11.81,
+          "avg_sharpe": -0.403
         }
       },
       "top_k": [
@@ -1800,21 +1797,22 @@
     },
     "002335": {
       "name": "科华数据",
-      "strategy": "kdj_cci",
+      "strategy": "macd",
       "params": {
-        "length": 9,
-        "rsi_threshold": 40
+        "fast": 12,
+        "slow": 26,
+        "signal": 9
       },
-      "score": -1.24,
-      "avg_return": 2.04,
-      "avg_sharpe": -0.072,
-      "avg_dd": -10.43,
-      "avg_trades": 3.0,
+      "score": -0.8,
+      "avg_return": 1.46,
+      "avg_sharpe": -0.028,
+      "avg_dd": -29.14,
+      "avg_trades": 16.0,
       "details": {
         "bollinger": {
           "pruned": true,
-          "default_score": -26.21,
-          "default_sharpe": -0.79
+          "default_score": -28.01,
+          "default_sharpe": -0.84
         },
         "kdj_cci": {
           "best_params": {
@@ -1835,14 +1833,26 @@
           "avg_sharpe": -0.072
         },
         "ema_obv": {
-          "pruned": true,
-          "default_score": -14.68,
-          "default_sharpe": -0.617
+          "best_params": {
+            "length": 20
+          },
+          "best_score": -32.42,
+          "best_agg": {
+            "score": -32.42,
+            "avg_return": -10.34,
+            "avg_sharpe": -0.437,
+            "avg_dd": -20.25,
+            "avg_trades": 14.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": -10.34,
+          "avg_sharpe": -0.437
         },
         "ema_cross": {
           "pruned": true,
-          "default_score": -37.17,
-          "default_sharpe": -0.733
+          "default_score": -30.25,
+          "default_sharpe": -0.603
         },
         "macd": {
           "best_params": {
@@ -1850,95 +1860,31 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": -18.32,
+          "best_score": -0.8,
           "best_agg": {
-            "score": -18.32,
-            "avg_return": -8.64,
-            "avg_sharpe": -0.219,
-            "avg_dd": -29.13,
-            "avg_trades": 17.0,
+            "score": -0.8,
+            "avg_return": 1.46,
+            "avg_sharpe": -0.028,
+            "avg_dd": -29.14,
+            "avg_trades": 16.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": -8.64,
-          "avg_sharpe": -0.219
+          "avg_return": 1.46,
+          "avg_sharpe": -0.028
         }
       },
       "top_k": [
         {
-          "strategy": "kdj_cci",
-          "params": {
-            "length": 9,
-            "rsi_threshold": 40
-          },
-          "score": -1.24,
-          "avg_return": 2.04,
-          "avg_sharpe": -0.072
-        }
-      ]
-    },
-    "000708": {
-      "name": "中信特钢",
-      "strategy": "ema_cross",
-      "params": {
-        "fast": 12,
-        "slow": 26
-      },
-      "score": 12.54,
-      "avg_return": 9.16,
-      "avg_sharpe": 0.187,
-      "avg_dd": -22.37,
-      "avg_trades": 6.0,
-      "details": {
-        "bollinger": {
-          "pruned": true,
-          "default_score": -10.41,
-          "default_sharpe": -0.564
-        },
-        "kdj_cci": {
-          "pruned": true,
-          "default_score": -0.77,
-          "default_sharpe": -0.886
-        },
-        "ema_obv": {
-          "pruned": true,
-          "default_score": -11.86,
-          "default_sharpe": -0.671
-        },
-        "ema_cross": {
-          "best_params": {
-            "fast": 12,
-            "slow": 26
-          },
-          "best_score": 12.54,
-          "best_agg": {
-            "score": 12.54,
-            "avg_return": 9.16,
-            "avg_sharpe": 0.187,
-            "avg_dd": -22.37,
-            "avg_trades": 6.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": 9.16,
-          "avg_sharpe": 0.187
-        },
-        "macd": {
-          "pruned": true,
-          "default_score": -14.96,
-          "default_sharpe": -0.678
-        }
-      },
-      "top_k": [
-        {
-          "strategy": "ema_cross",
+          "strategy": "macd",
           "params": {
             "fast": 12,
-            "slow": 26
+            "slow": 26,
+            "signal": 9
           },
-          "score": 12.54,
-          "avg_return": 9.16,
-          "avg_sharpe": 0.187
+          "score": -0.8,
+          "avg_return": 1.46,
+          "avg_sharpe": -0.028
         }
       ]
     },
@@ -1948,10 +1894,10 @@
       "params": {
         "length": 20
       },
-      "score": 47.8,
-      "avg_return": 27.12,
-      "avg_sharpe": 0.536,
-      "avg_dd": -31.27,
+      "score": 48.0,
+      "avg_return": 27.32,
+      "avg_sharpe": 0.539,
+      "avg_dd": -31.46,
       "avg_trades": 15.0,
       "details": {
         "bollinger": {
@@ -1960,58 +1906,58 @@
             "std": 2.0,
             "atr_mult": 2.0
           },
-          "best_score": 13.6,
+          "best_score": 13.62,
           "best_agg": {
-            "score": 13.6,
-            "avg_return": 11.68,
+            "score": 13.62,
+            "avg_return": 11.6,
             "avg_sharpe": 0.198,
-            "avg_dd": -31.52,
+            "avg_dd": -31.37,
             "avg_trades": 9.0,
             "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": 11.68,
+          "avg_return": 11.6,
           "avg_sharpe": 0.198
         },
         "kdj_cci": {
           "pruned": true,
-          "default_score": -5.92,
-          "default_sharpe": -0.954
+          "default_score": -8.28,
+          "default_sharpe": -1.14
         },
         "ema_obv": {
           "best_params": {
             "length": 20
           },
-          "best_score": 47.8,
+          "best_score": 48.0,
           "best_agg": {
-            "score": 47.8,
-            "avg_return": 27.12,
-            "avg_sharpe": 0.536,
-            "avg_dd": -31.27,
+            "score": 48.0,
+            "avg_return": 27.32,
+            "avg_sharpe": 0.539,
+            "avg_dd": -31.46,
             "avg_trades": 15.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 27.12,
-          "avg_sharpe": 0.536
+          "avg_return": 27.32,
+          "avg_sharpe": 0.539
         },
         "ema_cross": {
           "best_params": {
             "fast": 10,
             "slow": 26
           },
-          "best_score": 23.84,
+          "best_score": 23.86,
           "best_agg": {
-            "score": 23.84,
-            "avg_return": 34.02,
-            "avg_sharpe": 0.653,
-            "avg_dd": -24.39,
+            "score": 23.86,
+            "avg_return": 34.23,
+            "avg_sharpe": 0.652,
+            "avg_dd": -24.84,
             "avg_trades": 4.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 34.02,
-          "avg_sharpe": 0.653
+          "avg_return": 34.23,
+          "avg_sharpe": 0.652
         },
         "macd": {
           "best_params": {
@@ -2019,18 +1965,18 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": 23.86,
+          "best_score": 19.72,
           "best_agg": {
-            "score": 23.86,
-            "avg_return": 14.86,
-            "avg_sharpe": 0.249,
-            "avg_dd": -26.87,
+            "score": 19.72,
+            "avg_return": 12.56,
+            "avg_sharpe": 0.203,
+            "avg_dd": -26.96,
             "avg_trades": 16.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 14.86,
-          "avg_sharpe": 0.249
+          "avg_return": 12.56,
+          "avg_sharpe": 0.203
         }
       },
       "top_k": [
@@ -2039,9 +1985,9 @@
           "params": {
             "length": 20
           },
-          "score": 47.8,
-          "avg_return": 27.12,
-          "avg_sharpe": 0.536
+          "score": 48.0,
+          "avg_return": 27.32,
+          "avg_sharpe": 0.539
         }
       ]
     },
@@ -2052,9 +1998,9 @@
         "length": 9,
         "rsi_threshold": 50
       },
-      "score": 95.77,
-      "avg_return": 40.12,
-      "avg_sharpe": 1.195,
+      "score": 94.58,
+      "avg_return": 39.73,
+      "avg_sharpe": 1.179,
       "avg_dd": -11.82,
       "avg_trades": 10.0,
       "details": {
@@ -2082,18 +2028,18 @@
             "length": 9,
             "rsi_threshold": 50
           },
-          "best_score": 95.77,
+          "best_score": 94.58,
           "best_agg": {
-            "score": 95.77,
-            "avg_return": 40.12,
-            "avg_sharpe": 1.195,
+            "score": 94.58,
+            "avg_return": 39.73,
+            "avg_sharpe": 1.179,
             "avg_dd": -11.82,
             "avg_trades": 10.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 40.12,
-          "avg_sharpe": 1.195
+          "avg_return": 39.73,
+          "avg_sharpe": 1.179
         },
         "ema_obv": {
           "best_params": {
@@ -2136,18 +2082,18 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": -25.51,
+          "best_score": -28.24,
           "best_agg": {
-            "score": -25.51,
-            "avg_return": -9.91,
-            "avg_sharpe": -0.227,
+            "score": -28.24,
+            "avg_return": -11.56,
+            "avg_sharpe": -0.256,
             "avg_dd": -41.88,
-            "avg_trades": 12.0,
+            "avg_trades": 13.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": -9.91,
-          "avg_sharpe": -0.227
+          "avg_return": -11.56,
+          "avg_sharpe": -0.256
         }
       },
       "top_k": [
@@ -2157,9 +2103,88 @@
             "length": 9,
             "rsi_threshold": 50
           },
-          "score": 95.77,
-          "avg_return": 40.12,
-          "avg_sharpe": 1.195
+          "score": 94.58,
+          "avg_return": 39.73,
+          "avg_sharpe": 1.179
+        }
+      ]
+    },
+    "000708": {
+      "name": "中信特钢",
+      "strategy": "ema_cross",
+      "params": {
+        "fast": 12,
+        "slow": 26
+      },
+      "score": 10.76,
+      "avg_return": 8.21,
+      "avg_sharpe": 0.157,
+      "avg_dd": -22.43,
+      "avg_trades": 6.0,
+      "details": {
+        "bollinger": {
+          "pruned": true,
+          "default_score": -10.41,
+          "default_sharpe": -0.564
+        },
+        "kdj_cci": {
+          "pruned": true,
+          "default_score": -0.77,
+          "default_sharpe": -0.886
+        },
+        "ema_obv": {
+          "pruned": true,
+          "default_score": -11.86,
+          "default_sharpe": -0.671
+        },
+        "ema_cross": {
+          "best_params": {
+            "fast": 12,
+            "slow": 26
+          },
+          "best_score": 10.76,
+          "best_agg": {
+            "score": 10.76,
+            "avg_return": 8.21,
+            "avg_sharpe": 0.157,
+            "avg_dd": -22.43,
+            "avg_trades": 6.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": 8.21,
+          "avg_sharpe": 0.157
+        },
+        "macd": {
+          "best_params": {
+            "fast": 12,
+            "slow": 26,
+            "signal": 12
+          },
+          "best_score": 2.95,
+          "best_agg": {
+            "score": 2.95,
+            "avg_return": 3.42,
+            "avg_sharpe": 0.015,
+            "avg_dd": -27.27,
+            "avg_trades": 12.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": 3.42,
+          "avg_sharpe": 0.015
+        }
+      },
+      "top_k": [
+        {
+          "strategy": "ema_cross",
+          "params": {
+            "fast": 12,
+            "slow": 26
+          },
+          "score": 10.76,
+          "avg_return": 8.21,
+          "avg_sharpe": 0.157
         }
       ]
     },
@@ -2201,18 +2226,18 @@
             "length": 9,
             "rsi_threshold": 40
           },
-          "best_score": -8.74,
+          "best_score": -5.38,
           "best_agg": {
-            "score": -8.74,
-            "avg_return": -1.4,
-            "avg_sharpe": -0.35,
-            "avg_dd": -9.1,
-            "avg_trades": 5.0,
+            "score": -5.38,
+            "avg_return": 0.17,
+            "avg_sharpe": -0.226,
+            "avg_dd": -9.0,
+            "avg_trades": 4.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": -1.4,
-          "avg_sharpe": -0.35
+          "avg_return": 0.17,
+          "avg_sharpe": -0.226
         },
         "ema_obv": {
           "pruned": true,
@@ -2278,11 +2303,11 @@
         "fast": 10,
         "slow": 26
       },
-      "score": 4.08,
-      "avg_return": 6.22,
-      "avg_sharpe": 0.108,
-      "avg_dd": -14.47,
-      "avg_trades": 5.0,
+      "score": 8.04,
+      "avg_return": 9.99,
+      "avg_sharpe": 0.235,
+      "avg_dd": -14.51,
+      "avg_trades": 4.0,
       "details": {
         "bollinger": {
           "pruned": true,
@@ -2304,23 +2329,23 @@
             "fast": 10,
             "slow": 26
           },
-          "best_score": 4.08,
+          "best_score": 8.04,
           "best_agg": {
-            "score": 4.08,
-            "avg_return": 6.22,
-            "avg_sharpe": 0.108,
-            "avg_dd": -14.47,
-            "avg_trades": 5.0,
+            "score": 8.04,
+            "avg_return": 9.99,
+            "avg_sharpe": 0.235,
+            "avg_dd": -14.51,
+            "avg_trades": 4.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 6.22,
-          "avg_sharpe": 0.108
+          "avg_return": 9.99,
+          "avg_sharpe": 0.235
         },
         "macd": {
           "pruned": true,
-          "default_score": -12.19,
-          "default_sharpe": -0.519
+          "default_score": -11.98,
+          "default_sharpe": -0.512
         }
       },
       "top_k": [
@@ -2330,9 +2355,9 @@
             "fast": 10,
             "slow": 26
           },
-          "score": 4.08,
-          "avg_return": 6.22,
-          "avg_sharpe": 0.108
+          "score": 8.04,
+          "avg_return": 9.99,
+          "avg_sharpe": 0.235
         }
       ]
     },
@@ -2344,11 +2369,11 @@
         "slow": 26,
         "signal": 12
       },
-      "score": 9.38,
-      "avg_return": 5.54,
-      "avg_sharpe": 0.101,
-      "avg_dd": -24.15,
-      "avg_trades": 12.0,
+      "score": 17.53,
+      "avg_return": 8.22,
+      "avg_sharpe": 0.21,
+      "avg_dd": -23.99,
+      "avg_trades": 11.0,
       "details": {
         "bollinger": {
           "best_params": {
@@ -2356,46 +2381,46 @@
             "std": 2.0,
             "atr_mult": 1.5
           },
-          "best_score": 3.12,
+          "best_score": 2.79,
           "best_agg": {
-            "score": 3.12,
-            "avg_return": 4.4,
-            "avg_sharpe": 0.086,
-            "avg_dd": -10.25,
+            "score": 2.79,
+            "avg_return": 4.21,
+            "avg_sharpe": 0.074,
+            "avg_dd": -10.19,
             "avg_trades": 4.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 4.4,
-          "avg_sharpe": 0.086
+          "avg_return": 4.21,
+          "avg_sharpe": 0.074
         },
         "kdj_cci": {
           "pruned": true,
-          "default_score": -3.76,
-          "default_sharpe": -0.741
+          "default_score": -3.62,
+          "default_sharpe": -0.714
         },
         "ema_obv": {
           "pruned": true,
-          "default_score": -19.42,
-          "default_sharpe": -1.176
+          "default_score": -20.93,
+          "default_sharpe": -1.267
         },
         "ema_cross": {
           "best_params": {
             "fast": 12,
             "slow": 26
           },
-          "best_score": -11.08,
+          "best_score": -14.18,
           "best_agg": {
-            "score": -11.08,
-            "avg_return": -2.12,
-            "avg_sharpe": -0.225,
-            "avg_dd": -17.25,
-            "avg_trades": 7.0,
+            "score": -14.18,
+            "avg_return": -2.92,
+            "avg_sharpe": -0.286,
+            "avg_dd": -17.09,
+            "avg_trades": 6.0,
             "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": -2.12,
-          "avg_sharpe": -0.225
+          "avg_return": -2.92,
+          "avg_sharpe": -0.286
         },
         "macd": {
           "best_params": {
@@ -2403,18 +2428,18 @@
             "slow": 26,
             "signal": 12
           },
-          "best_score": 9.38,
+          "best_score": 17.53,
           "best_agg": {
-            "score": 9.38,
-            "avg_return": 5.54,
-            "avg_sharpe": 0.101,
-            "avg_dd": -24.15,
-            "avg_trades": 12.0,
+            "score": 17.53,
+            "avg_return": 8.22,
+            "avg_sharpe": 0.21,
+            "avg_dd": -23.99,
+            "avg_trades": 11.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 5.54,
-          "avg_sharpe": 0.101
+          "avg_return": 8.22,
+          "avg_sharpe": 0.21
         }
       },
       "top_k": [
@@ -2425,9 +2450,9 @@
             "slow": 26,
             "signal": 12
           },
-          "score": 9.38,
-          "avg_return": 5.54,
-          "avg_sharpe": 0.101
+          "score": 17.53,
+          "avg_return": 8.22,
+          "avg_sharpe": 0.21
         }
       ]
     },
@@ -2438,11 +2463,11 @@
         "fast": 10,
         "slow": 26
       },
-      "score": 9.71,
-      "avg_return": 12.84,
-      "avg_sharpe": 0.276,
+      "score": 5.13,
+      "avg_return": 7.89,
+      "avg_sharpe": 0.135,
       "avg_dd": -23.92,
-      "avg_trades": 4.0,
+      "avg_trades": 5.0,
       "details": {
         "bollinger": {
           "best_params": {
@@ -2468,41 +2493,41 @@
             "length": 9,
             "rsi_threshold": 40
           },
-          "best_score": -8.01,
+          "best_score": -9.67,
           "best_agg": {
-            "score": -8.01,
-            "avg_return": -1.98,
-            "avg_sharpe": -0.314,
-            "avg_dd": -11.11,
+            "score": -9.67,
+            "avg_return": -2.99,
+            "avg_sharpe": -0.373,
+            "avg_dd": -12.03,
             "avg_trades": 4.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": -1.98,
-          "avg_sharpe": -0.314
+          "avg_return": -2.99,
+          "avg_sharpe": -0.373
         },
         "ema_obv": {
           "pruned": true,
-          "default_score": -8.43,
-          "default_sharpe": -0.724
+          "default_score": -8.67,
+          "default_sharpe": -0.79
         },
         "ema_cross": {
           "best_params": {
             "fast": 10,
             "slow": 26
           },
-          "best_score": 9.71,
+          "best_score": 5.13,
           "best_agg": {
-            "score": 9.71,
-            "avg_return": 12.84,
-            "avg_sharpe": 0.276,
+            "score": 5.13,
+            "avg_return": 7.89,
+            "avg_sharpe": 0.135,
             "avg_dd": -23.92,
-            "avg_trades": 4.0,
+            "avg_trades": 5.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 12.84,
-          "avg_sharpe": 0.276
+          "avg_return": 7.89,
+          "avg_sharpe": 0.135
         },
         "macd": {
           "best_params": {
@@ -2510,18 +2535,18 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": -12.55,
+          "best_score": -16.47,
           "best_agg": {
-            "score": -12.55,
-            "avg_return": -3.52,
-            "avg_sharpe": -0.174,
-            "avg_dd": -29.23,
+            "score": -16.47,
+            "avg_return": -5.25,
+            "avg_sharpe": -0.222,
+            "avg_dd": -29.2,
             "avg_trades": 12.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": -3.52,
-          "avg_sharpe": -0.174
+          "avg_return": -5.25,
+          "avg_sharpe": -0.222
         }
       },
       "top_k": [
@@ -2531,9 +2556,9 @@
             "fast": 10,
             "slow": 26
           },
-          "score": 9.71,
-          "avg_return": 12.84,
-          "avg_sharpe": 0.276
+          "score": 5.13,
+          "avg_return": 7.89,
+          "avg_sharpe": 0.135
         }
       ]
     },
@@ -2545,11 +2570,11 @@
         "slow": 26,
         "signal": 9
       },
-      "score": 72.81,
-      "avg_return": 46.05,
-      "avg_sharpe": 0.753,
-      "avg_dd": -28.87,
-      "avg_trades": 12.0,
+      "score": 65.87,
+      "avg_return": 41.98,
+      "avg_sharpe": 0.678,
+      "avg_dd": -28.88,
+      "avg_trades": 14.0,
       "details": {
         "bollinger": {
           "best_params": {
@@ -2557,18 +2582,18 @@
             "std": 2.0,
             "atr_mult": 1.5
           },
-          "best_score": 8.54,
+          "best_score": 13.8,
           "best_agg": {
-            "score": 8.54,
-            "avg_return": 8.07,
-            "avg_sharpe": 0.109,
-            "avg_dd": -21.75,
-            "avg_trades": 7.0,
+            "score": 13.8,
+            "avg_return": 11.87,
+            "avg_sharpe": 0.188,
+            "avg_dd": -21.86,
+            "avg_trades": 8.0,
             "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": 8.07,
-          "avg_sharpe": 0.109
+          "avg_return": 11.87,
+          "avg_sharpe": 0.188
         },
         "kdj_cci": {
           "best_params": {
@@ -2592,36 +2617,36 @@
           "best_params": {
             "length": 20
           },
-          "best_score": -3.45,
+          "best_score": 15.64,
           "best_agg": {
-            "score": -3.45,
-            "avg_return": 0.95,
-            "avg_sharpe": -0.067,
-            "avg_dd": -23.73,
-            "avg_trades": 13.0,
+            "score": 15.64,
+            "avg_return": 8.67,
+            "avg_sharpe": 0.174,
+            "avg_dd": -23.83,
+            "avg_trades": 14.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 0.95,
-          "avg_sharpe": -0.067
+          "avg_return": 8.67,
+          "avg_sharpe": 0.174
         },
         "ema_cross": {
           "best_params": {
             "fast": 10,
             "slow": 26
           },
-          "best_score": 25.6,
+          "best_score": -0.32,
           "best_agg": {
-            "score": 25.6,
-            "avg_return": 48.73,
-            "avg_sharpe": 0.671,
-            "avg_dd": -41.01,
+            "score": -0.32,
+            "avg_return": 4.49,
+            "avg_sharpe": 0.031,
+            "avg_dd": -40.73,
             "avg_trades": 4.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 48.73,
-          "avg_sharpe": 0.671
+          "avg_return": 4.49,
+          "avg_sharpe": 0.031
         },
         "macd": {
           "best_params": {
@@ -2629,18 +2654,18 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": 72.81,
+          "best_score": 65.87,
           "best_agg": {
-            "score": 72.81,
-            "avg_return": 46.05,
-            "avg_sharpe": 0.753,
-            "avg_dd": -28.87,
-            "avg_trades": 12.0,
+            "score": 65.87,
+            "avg_return": 41.98,
+            "avg_sharpe": 0.678,
+            "avg_dd": -28.88,
+            "avg_trades": 14.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 46.05,
-          "avg_sharpe": 0.753
+          "avg_return": 41.98,
+          "avg_sharpe": 0.678
         }
       },
       "top_k": [
@@ -2651,9 +2676,9 @@
             "slow": 26,
             "signal": 9
           },
-          "score": 72.81,
-          "avg_return": 46.05,
-          "avg_sharpe": 0.753
+          "score": 65.87,
+          "avg_return": 41.98,
+          "avg_sharpe": 0.678
         }
       ]
     },
@@ -2693,18 +2718,18 @@
             "length": 9,
             "rsi_threshold": 50
           },
-          "best_score": 19.61,
+          "best_score": 19.58,
           "best_agg": {
-            "score": 19.61,
-            "avg_return": 13.67,
-            "avg_sharpe": 0.299,
-            "avg_dd": -19.04,
-            "avg_trades": 9.0,
-            "sample_weight": 0.75,
+            "score": 19.58,
+            "avg_return": 10.83,
+            "avg_sharpe": 0.218,
+            "avg_dd": -18.98,
+            "avg_trades": 11.0,
+            "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 13.67,
-          "avg_sharpe": 0.299
+          "avg_return": 10.83,
+          "avg_sharpe": 0.218
         },
         "ema_obv": {
           "best_params": {
@@ -2724,22 +2749,9 @@
           "avg_sharpe": 1.238
         },
         "ema_cross": {
-          "best_params": {
-            "fast": 10,
-            "slow": 26
-          },
-          "best_score": 22.37,
-          "best_agg": {
-            "score": 22.37,
-            "avg_return": 22.46,
-            "avg_sharpe": 0.38,
-            "avg_dd": -42.91,
-            "avg_trades": 6.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": 22.46,
-          "avg_sharpe": 0.38
+          "pruned": true,
+          "default_score": -33.36,
+          "default_sharpe": -1.192
         },
         "macd": {
           "best_params": {
@@ -2770,6 +2782,97 @@
           "score": 104.78,
           "avg_return": 50.83,
           "avg_sharpe": 1.238
+        }
+      ]
+    },
+    "000400": {
+      "name": "许继电气",
+      "strategy": "ema_cross",
+      "params": {
+        "fast": 10,
+        "slow": 26
+      },
+      "score": 15.82,
+      "avg_return": 20.82,
+      "avg_sharpe": 0.451,
+      "avg_dd": -15.59,
+      "avg_trades": 5.0,
+      "details": {
+        "bollinger": {
+          "pruned": true,
+          "default_score": -20.62,
+          "default_sharpe": -0.803
+        },
+        "kdj_cci": {
+          "pruned": true,
+          "default_score": -10.6,
+          "default_sharpe": -0.871
+        },
+        "ema_obv": {
+          "best_params": {
+            "length": 20
+          },
+          "best_score": -16.57,
+          "best_agg": {
+            "score": -16.57,
+            "avg_return": -3.82,
+            "avg_sharpe": -0.33,
+            "avg_dd": -22.38,
+            "avg_trades": 8.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": -3.82,
+          "avg_sharpe": -0.33
+        },
+        "ema_cross": {
+          "best_params": {
+            "fast": 10,
+            "slow": 26
+          },
+          "best_score": 15.82,
+          "best_agg": {
+            "score": 15.82,
+            "avg_return": 20.82,
+            "avg_sharpe": 0.451,
+            "avg_dd": -15.59,
+            "avg_trades": 5.0,
+            "sample_weight": 0.4,
+            "windows": 1
+          },
+          "avg_return": 20.82,
+          "avg_sharpe": 0.451
+        },
+        "macd": {
+          "best_params": {
+            "fast": 12,
+            "slow": 26,
+            "signal": 12
+          },
+          "best_score": 8.3,
+          "best_agg": {
+            "score": 8.3,
+            "avg_return": 6.03,
+            "avg_sharpe": 0.078,
+            "avg_dd": -29.79,
+            "avg_trades": 12.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": 6.03,
+          "avg_sharpe": 0.078
+        }
+      },
+      "top_k": [
+        {
+          "strategy": "ema_cross",
+          "params": {
+            "fast": 10,
+            "slow": 26
+          },
+          "score": 15.82,
+          "avg_return": 20.82,
+          "avg_sharpe": 0.451
         }
       ]
     },
@@ -2807,22 +2910,9 @@
           "avg_sharpe": 0.996
         },
         "kdj_cci": {
-          "best_params": {
-            "length": 9,
-            "rsi_threshold": 40
-          },
-          "best_score": -17.36,
-          "best_agg": {
-            "score": -17.36,
-            "avg_return": -3.87,
-            "avg_sharpe": -0.347,
-            "avg_dd": -14.06,
-            "avg_trades": 6.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": -3.87,
-          "avg_sharpe": -0.347
+          "pruned": true,
+          "default_score": -7.75,
+          "default_sharpe": -0.538
         },
         "ema_obv": {
           "best_params": {
@@ -2843,21 +2933,21 @@
         },
         "ema_cross": {
           "best_params": {
-            "fast": 12,
+            "fast": 10,
             "slow": 26
           },
-          "best_score": 68.08,
+          "best_score": 67.74,
           "best_agg": {
-            "score": 68.08,
-            "avg_return": 110.36,
-            "avg_sharpe": 1.733,
-            "avg_dd": -24.41,
+            "score": 67.74,
+            "avg_return": 110.03,
+            "avg_sharpe": 1.722,
+            "avg_dd": -23.51,
             "avg_trades": 4.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 110.36,
-          "avg_sharpe": 1.733
+          "avg_return": 110.03,
+          "avg_sharpe": 1.722
         },
         "macd": {
           "best_params": {
@@ -2865,18 +2955,18 @@
             "slow": 26,
             "signal": 12
           },
-          "best_score": 43.13,
+          "best_score": 41.38,
           "best_agg": {
-            "score": 43.13,
-            "avg_return": 25.49,
-            "avg_sharpe": 0.464,
-            "avg_dd": -25.15,
-            "avg_trades": 13.0,
+            "score": 41.38,
+            "avg_return": 24.56,
+            "avg_sharpe": 0.444,
+            "avg_dd": -25.28,
+            "avg_trades": 14.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 25.49,
-          "avg_sharpe": 0.464
+          "avg_return": 24.56,
+          "avg_sharpe": 0.444
         }
       },
       "top_k": [
@@ -2893,108 +2983,17 @@
         }
       ]
     },
-    "000400": {
-      "name": "许继电气",
-      "strategy": "ema_cross",
-      "params": {
-        "fast": 10,
-        "slow": 26
-      },
-      "score": 16.21,
-      "avg_return": 21.23,
-      "avg_sharpe": 0.463,
-      "avg_dd": -15.61,
-      "avg_trades": 5.0,
-      "details": {
-        "bollinger": {
-          "pruned": true,
-          "default_score": -20.62,
-          "default_sharpe": -0.803
-        },
-        "kdj_cci": {
-          "pruned": true,
-          "default_score": -6.96,
-          "default_sharpe": -0.662
-        },
-        "ema_obv": {
-          "best_params": {
-            "length": 20
-          },
-          "best_score": -16.57,
-          "best_agg": {
-            "score": -16.57,
-            "avg_return": -3.82,
-            "avg_sharpe": -0.33,
-            "avg_dd": -22.38,
-            "avg_trades": 8.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": -3.82,
-          "avg_sharpe": -0.33
-        },
-        "ema_cross": {
-          "best_params": {
-            "fast": 10,
-            "slow": 26
-          },
-          "best_score": 16.21,
-          "best_agg": {
-            "score": 16.21,
-            "avg_return": 21.23,
-            "avg_sharpe": 0.463,
-            "avg_dd": -15.61,
-            "avg_trades": 5.0,
-            "sample_weight": 0.4,
-            "windows": 1
-          },
-          "avg_return": 21.23,
-          "avg_sharpe": 0.463
-        },
-        "macd": {
-          "best_params": {
-            "fast": 12,
-            "slow": 26,
-            "signal": 12
-          },
-          "best_score": 8.3,
-          "best_agg": {
-            "score": 8.3,
-            "avg_return": 6.03,
-            "avg_sharpe": 0.078,
-            "avg_dd": -29.79,
-            "avg_trades": 12.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": 6.03,
-          "avg_sharpe": 0.078
-        }
-      },
-      "top_k": [
-        {
-          "strategy": "ema_cross",
-          "params": {
-            "fast": 10,
-            "slow": 26
-          },
-          "score": 16.21,
-          "avg_return": 21.23,
-          "avg_sharpe": 0.463
-        }
-      ]
-    },
     "600406": {
       "name": "国电南瑞",
       "strategy": "ema_obv",
       "params": {
         "length": 20
       },
-      "score": 40.13,
-      "avg_return": 15.78,
-      "avg_sharpe": 0.511,
-      "avg_dd": -10.12,
-      "avg_trades": 13.0,
+      "score": 26.28,
+      "avg_return": 11.3,
+      "avg_sharpe": 0.325,
+      "avg_dd": -11.68,
+      "avg_trades": 14.0,
       "details": {
         "bollinger": {
           "best_params": {
@@ -3020,40 +3019,40 @@
             "length": 9,
             "rsi_threshold": 40
           },
-          "best_score": -12.15,
+          "best_score": -9.04,
           "best_agg": {
-            "score": -12.15,
-            "avg_return": -1.12,
-            "avg_sharpe": -0.495,
+            "score": -9.04,
+            "avg_return": -0.16,
+            "avg_sharpe": -0.375,
             "avg_dd": -5.45,
             "avg_trades": 5.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": -1.12,
-          "avg_sharpe": -0.495
+          "avg_return": -0.16,
+          "avg_sharpe": -0.375
         },
         "ema_obv": {
           "best_params": {
             "length": 20
           },
-          "best_score": 40.13,
+          "best_score": 26.28,
           "best_agg": {
-            "score": 40.13,
-            "avg_return": 15.78,
-            "avg_sharpe": 0.511,
-            "avg_dd": -10.12,
-            "avg_trades": 13.0,
+            "score": 26.28,
+            "avg_return": 11.3,
+            "avg_sharpe": 0.325,
+            "avg_dd": -11.68,
+            "avg_trades": 14.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 15.78,
-          "avg_sharpe": 0.511
+          "avg_return": 11.3,
+          "avg_sharpe": 0.325
         },
         "ema_cross": {
           "pruned": true,
-          "default_score": -11.56,
-          "default_sharpe": -0.551
+          "default_score": -13.98,
+          "default_sharpe": -0.639
         },
         "macd": {
           "best_params": {
@@ -3061,18 +3060,18 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": -17.73,
+          "best_score": -18.28,
           "best_agg": {
-            "score": -17.73,
-            "avg_return": -4.05,
-            "avg_sharpe": -0.255,
-            "avg_dd": -21.81,
-            "avg_trades": 14.0,
+            "score": -18.28,
+            "avg_return": -4.27,
+            "avg_sharpe": -0.262,
+            "avg_dd": -21.89,
+            "avg_trades": 15.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": -4.05,
-          "avg_sharpe": -0.255
+          "avg_return": -4.27,
+          "avg_sharpe": -0.262
         }
       },
       "top_k": [
@@ -3081,9 +3080,9 @@
           "params": {
             "length": 20
           },
-          "score": 40.13,
-          "avg_return": 15.78,
-          "avg_sharpe": 0.511
+          "score": 26.28,
+          "avg_return": 11.3,
+          "avg_sharpe": 0.325
         }
       ]
     },
@@ -3133,23 +3132,23 @@
             "fast": 10,
             "slow": 26
           },
-          "best_score": 0.3,
+          "best_score": -11.05,
           "best_agg": {
-            "score": 0.3,
-            "avg_return": 2.25,
-            "avg_sharpe": -0.015,
-            "avg_dd": -30.09,
+            "score": -11.05,
+            "avg_return": -6.03,
+            "avg_sharpe": -0.177,
+            "avg_dd": -30.99,
             "avg_trades": 7.0,
             "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": 2.25,
-          "avg_sharpe": -0.015
+          "avg_return": -6.03,
+          "avg_sharpe": -0.177
         },
         "macd": {
           "pruned": true,
-          "default_score": -25.58,
-          "default_sharpe": -0.618
+          "default_score": -25.46,
+          "default_sharpe": -0.616
         }
       },
       "top_k": [
@@ -3165,6 +3164,122 @@
         }
       ]
     },
+    "601179": {
+      "name": "中国西电",
+      "strategy": "ema_obv",
+      "params": {
+        "length": 20
+      },
+      "score": 114.31,
+      "avg_return": 73.61,
+      "avg_sharpe": 1.169,
+      "avg_dd": -29.01,
+      "avg_trades": 17.0,
+      "details": {
+        "bollinger": {
+          "best_params": {
+            "length": 20,
+            "std": 2.0,
+            "atr_mult": 1.5
+          },
+          "best_score": 55.46,
+          "best_agg": {
+            "score": 55.46,
+            "avg_return": 88.29,
+            "avg_sharpe": 1.428,
+            "avg_dd": -22.16,
+            "avg_trades": 5.0,
+            "sample_weight": 0.4,
+            "windows": 1
+          },
+          "avg_return": 88.29,
+          "avg_sharpe": 1.428
+        },
+        "kdj_cci": {
+          "best_params": {
+            "length": 9,
+            "rsi_threshold": 40
+          },
+          "best_score": -11.26,
+          "best_agg": {
+            "score": -11.26,
+            "avg_return": -1.82,
+            "avg_sharpe": -0.232,
+            "avg_dd": -11.03,
+            "avg_trades": 6.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": -1.82,
+          "avg_sharpe": -0.232
+        },
+        "ema_obv": {
+          "best_params": {
+            "length": 20
+          },
+          "best_score": 114.31,
+          "best_agg": {
+            "score": 114.31,
+            "avg_return": 73.61,
+            "avg_sharpe": 1.169,
+            "avg_dd": -29.01,
+            "avg_trades": 17.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": 73.61,
+          "avg_sharpe": 1.169
+        },
+        "ema_cross": {
+          "best_params": {
+            "fast": 10,
+            "slow": 26
+          },
+          "best_score": 44.56,
+          "best_agg": {
+            "score": 44.56,
+            "avg_return": 78.49,
+            "avg_sharpe": 1.117,
+            "avg_dd": -35.44,
+            "avg_trades": 5.0,
+            "sample_weight": 0.4,
+            "windows": 1
+          },
+          "avg_return": 78.49,
+          "avg_sharpe": 1.117
+        },
+        "macd": {
+          "best_params": {
+            "fast": 12,
+            "slow": 26,
+            "signal": 12
+          },
+          "best_score": 62.79,
+          "best_agg": {
+            "score": 62.79,
+            "avg_return": 44.34,
+            "avg_sharpe": 0.683,
+            "avg_dd": -39.58,
+            "avg_trades": 13.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": 44.34,
+          "avg_sharpe": 0.683
+        }
+      },
+      "top_k": [
+        {
+          "strategy": "ema_obv",
+          "params": {
+            "length": 20
+          },
+          "score": 114.31,
+          "avg_return": 73.61,
+          "avg_sharpe": 1.169
+        }
+      ]
+    },
     "002028": {
       "name": "思源电气",
       "strategy": "ema_cross",
@@ -3172,10 +3287,10 @@
         "fast": 10,
         "slow": 26
       },
-      "score": 75.01,
-      "avg_return": 67.07,
-      "avg_sharpe": 1.046,
-      "avg_dd": -35.99,
+      "score": 74.94,
+      "avg_return": 67.03,
+      "avg_sharpe": 1.045,
+      "avg_dd": -36.0,
       "avg_trades": 8.0,
       "details": {
         "bollinger": {
@@ -3199,8 +3314,8 @@
         },
         "kdj_cci": {
           "pruned": true,
-          "default_score": -3.35,
-          "default_sharpe": -2.004
+          "default_score": -10.07,
+          "default_sharpe": -1.35
         },
         "ema_obv": {
           "best_params": {
@@ -3224,18 +3339,18 @@
             "fast": 10,
             "slow": 26
           },
-          "best_score": 75.01,
+          "best_score": 74.94,
           "best_agg": {
-            "score": 75.01,
-            "avg_return": 67.07,
-            "avg_sharpe": 1.046,
-            "avg_dd": -35.99,
+            "score": 74.94,
+            "avg_return": 67.03,
+            "avg_sharpe": 1.045,
+            "avg_dd": -36.0,
             "avg_trades": 8.0,
             "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": 67.07,
-          "avg_sharpe": 1.046
+          "avg_return": 67.03,
+          "avg_sharpe": 1.045
         },
         "macd": {
           "best_params": {
@@ -3243,18 +3358,18 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": 4.24,
+          "best_score": -2.41,
           "best_agg": {
-            "score": 4.24,
-            "avg_return": 5.18,
-            "avg_sharpe": 0.041,
-            "avg_dd": -32.65,
-            "avg_trades": 19.0,
+            "score": -2.41,
+            "avg_return": 2.87,
+            "avg_sharpe": -0.003,
+            "avg_dd": -37.9,
+            "avg_trades": 18.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 5.18,
-          "avg_sharpe": 0.041
+          "avg_return": 2.87,
+          "avg_sharpe": -0.003
         }
       },
       "top_k": [
@@ -3264,125 +3379,9 @@
             "fast": 10,
             "slow": 26
           },
-          "score": 75.01,
-          "avg_return": 67.07,
-          "avg_sharpe": 1.046
-        }
-      ]
-    },
-    "601179": {
-      "name": "中国西电",
-      "strategy": "ema_obv",
-      "params": {
-        "length": 20
-      },
-      "score": 114.0,
-      "avg_return": 73.3,
-      "avg_sharpe": 1.167,
-      "avg_dd": -28.97,
-      "avg_trades": 17.0,
-      "details": {
-        "bollinger": {
-          "best_params": {
-            "length": 20,
-            "std": 2.0,
-            "atr_mult": 1.5
-          },
-          "best_score": 55.57,
-          "best_agg": {
-            "score": 55.57,
-            "avg_return": 88.65,
-            "avg_sharpe": 1.429,
-            "avg_dd": -22.22,
-            "avg_trades": 5.0,
-            "sample_weight": 0.4,
-            "windows": 1
-          },
-          "avg_return": 88.65,
-          "avg_sharpe": 1.429
-        },
-        "kdj_cci": {
-          "best_params": {
-            "length": 9,
-            "rsi_threshold": 40
-          },
-          "best_score": -1.52,
-          "best_agg": {
-            "score": -1.52,
-            "avg_return": 1.92,
-            "avg_sharpe": -0.053,
-            "avg_dd": -11.04,
-            "avg_trades": 6.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": 1.92,
-          "avg_sharpe": -0.053
-        },
-        "ema_obv": {
-          "best_params": {
-            "length": 20
-          },
-          "best_score": 114.0,
-          "best_agg": {
-            "score": 114.0,
-            "avg_return": 73.3,
-            "avg_sharpe": 1.167,
-            "avg_dd": -28.97,
-            "avg_trades": 17.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": 73.3,
-          "avg_sharpe": 1.167
-        },
-        "ema_cross": {
-          "best_params": {
-            "fast": 10,
-            "slow": 26
-          },
-          "best_score": 44.35,
-          "best_agg": {
-            "score": 44.35,
-            "avg_return": 78.15,
-            "avg_sharpe": 1.112,
-            "avg_dd": -35.47,
-            "avg_trades": 5.0,
-            "sample_weight": 0.4,
-            "windows": 1
-          },
-          "avg_return": 78.15,
-          "avg_sharpe": 1.112
-        },
-        "macd": {
-          "best_params": {
-            "fast": 12,
-            "slow": 26,
-            "signal": 12
-          },
-          "best_score": 76.12,
-          "best_agg": {
-            "score": 76.12,
-            "avg_return": 52.01,
-            "avg_sharpe": 0.803,
-            "avg_dd": -36.53,
-            "avg_trades": 12.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": 52.01,
-          "avg_sharpe": 0.803
-        }
-      },
-      "top_k": [
-        {
-          "strategy": "ema_obv",
-          "params": {
-            "length": 20
-          },
-          "score": 114.0,
-          "avg_return": 73.3,
-          "avg_sharpe": 1.167
+          "score": 74.94,
+          "avg_return": 67.03,
+          "avg_sharpe": 1.045
         }
       ]
     },
@@ -3392,11 +3391,11 @@
       "params": {
         "length": 20
       },
-      "score": 132.76,
-      "avg_return": 78.27,
-      "avg_sharpe": 1.43,
-      "avg_dd": -15.98,
-      "avg_trades": 16.0,
+      "score": 134.94,
+      "avg_return": 79.4,
+      "avg_sharpe": 1.455,
+      "avg_dd": -16.07,
+      "avg_trades": 15.0,
       "details": {
         "bollinger": {
           "best_params": {
@@ -3439,18 +3438,18 @@
           "best_params": {
             "length": 20
           },
-          "best_score": 132.76,
+          "best_score": 134.94,
           "best_agg": {
-            "score": 132.76,
-            "avg_return": 78.27,
-            "avg_sharpe": 1.43,
-            "avg_dd": -15.98,
-            "avg_trades": 16.0,
+            "score": 134.94,
+            "avg_return": 79.4,
+            "avg_sharpe": 1.455,
+            "avg_dd": -16.07,
+            "avg_trades": 15.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 78.27,
-          "avg_sharpe": 1.43
+          "avg_return": 79.4,
+          "avg_sharpe": 1.455
         },
         "ema_cross": {
           "pruned": true,
@@ -3463,18 +3462,18 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": 7.05,
+          "best_score": 0.81,
           "best_agg": {
-            "score": 7.05,
-            "avg_return": 10.64,
-            "avg_sharpe": 0.147,
-            "avg_dd": -46.3,
-            "avg_trades": 15.0,
+            "score": 0.81,
+            "avg_return": 7.03,
+            "avg_sharpe": 0.078,
+            "avg_dd": -46.18,
+            "avg_trades": 16.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 10.64,
-          "avg_sharpe": 0.147
+          "avg_return": 7.03,
+          "avg_sharpe": 0.078
         }
       },
       "top_k": [
@@ -3483,24 +3482,25 @@
           "params": {
             "length": 20
           },
-          "score": 132.76,
-          "avg_return": 78.27,
-          "avg_sharpe": 1.43
+          "score": 134.94,
+          "avg_return": 79.4,
+          "avg_sharpe": 1.455
         }
       ]
     },
     "600312": {
       "name": "平高电气",
-      "strategy": "kdj_cci",
+      "strategy": "macd",
       "params": {
-        "length": 9,
-        "rsi_threshold": 50
+        "fast": 12,
+        "slow": 26,
+        "signal": 12
       },
-      "score": 30.78,
-      "avg_return": 13.8,
-      "avg_sharpe": 0.375,
-      "avg_dd": -18.32,
-      "avg_trades": 14.0,
+      "score": 29.41,
+      "avg_return": 16.12,
+      "avg_sharpe": 0.329,
+      "avg_dd": -24.64,
+      "avg_trades": 12.0,
       "details": {
         "bollinger": {
           "pruned": true,
@@ -3512,18 +3512,18 @@
             "length": 9,
             "rsi_threshold": 50
           },
-          "best_score": 30.78,
+          "best_score": 21.82,
           "best_agg": {
-            "score": 30.78,
-            "avg_return": 13.8,
-            "avg_sharpe": 0.375,
+            "score": 21.82,
+            "avg_return": 10.47,
+            "avg_sharpe": 0.259,
             "avg_dd": -18.32,
             "avg_trades": 14.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 13.8,
-          "avg_sharpe": 0.375
+          "avg_return": 10.47,
+          "avg_sharpe": 0.259
         },
         "ema_obv": {
           "best_params": {
@@ -3544,21 +3544,21 @@
         },
         "ema_cross": {
           "best_params": {
-            "fast": 10,
+            "fast": 12,
             "slow": 26
           },
-          "best_score": 0.27,
+          "best_score": -3.72,
           "best_agg": {
-            "score": 0.27,
-            "avg_return": 2.29,
-            "avg_sharpe": -0.017,
-            "avg_dd": -24.79,
-            "avg_trades": 6.0,
-            "sample_weight": 0.75,
+            "score": -3.72,
+            "avg_return": -2.5,
+            "avg_sharpe": -0.13,
+            "avg_dd": -25.54,
+            "avg_trades": 5.0,
+            "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": 2.29,
-          "avg_sharpe": -0.017
+          "avg_return": -2.5,
+          "avg_sharpe": -0.13
         },
         "macd": {
           "best_params": {
@@ -3566,30 +3566,31 @@
             "slow": 26,
             "signal": 12
           },
-          "best_score": 24.51,
+          "best_score": 29.41,
           "best_agg": {
-            "score": 24.51,
-            "avg_return": 13.75,
-            "avg_sharpe": 0.271,
-            "avg_dd": -24.69,
+            "score": 29.41,
+            "avg_return": 16.12,
+            "avg_sharpe": 0.329,
+            "avg_dd": -24.64,
             "avg_trades": 12.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 13.75,
-          "avg_sharpe": 0.271
+          "avg_return": 16.12,
+          "avg_sharpe": 0.329
         }
       },
       "top_k": [
         {
-          "strategy": "kdj_cci",
+          "strategy": "macd",
           "params": {
-            "length": 9,
-            "rsi_threshold": 50
+            "fast": 12,
+            "slow": 26,
+            "signal": 12
           },
-          "score": 30.78,
-          "avg_return": 13.8,
-          "avg_sharpe": 0.375
+          "score": 29.41,
+          "avg_return": 16.12,
+          "avg_sharpe": 0.329
         }
       ]
     }

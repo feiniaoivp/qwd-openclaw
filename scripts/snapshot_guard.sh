@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# snapshot_guard.sh — 重大变更前自动创建 Time Machine 本地快照 + Git tag
+# snapshot_guard.sh — 重大变更前自动创建 Time Machine 本地快照 + Git tag + backups/ 同步
 # 用法: snapshot_guard.sh "<变更描述>" [--dry-run]
 # 依赖: macOS tmutil, git, op (1Password CLI)
 
@@ -10,6 +10,7 @@ DRY_RUN="${2:-}"
 WORKSPACE="/Users/duguke/.openclaw/workspace"
 RETENTION_DAYS=30
 MAX_SNAPSHOTS=30
+BACKUPS_DIR="$WORKSPACE/backups"
 
 cd "$WORKSPACE"
 
@@ -37,7 +38,20 @@ else
   echo "[dry-run] Would run: tmutil localsnapshot /"
 fi
 
-# 4. 清理旧快照（保留最近 MAX_SNAPSHOTS 个 openclaw-guard-* 快照）
+# 4. 同步工作区关键文件到 backups/<tag>/（防护② 前向兼容）
+if [[ -z "$DRY_RUN" ]]; then
+  TAG_DIR="$BACKUPS_DIR/${TAG#guard/}"
+  mkdir -p "$TAG_DIR"
+  # 同步核心配置与状态文件（排除 .git, __pycache__, data_cache, node_modules 等）
+  rsync -a --delete \
+    --exclude='.git' --exclude='__pycache__' --exclude='data_cache' --exclude='node_modules' --exclude='.venv' --exclude='venv' --exclude='backups' \
+    --include='analysis/' --include='scripts/' --include='data/' --include='*.py' --include='*.sh' --include='*.md' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.toml' --include='*.txt' \
+    --exclude='*' \
+    "$WORKSPACE/" "$TAG_DIR/"
+  echo "✅ Backups synced to: $TAG_DIR"
+fi
+
+# 5. 清理旧快照（保留最近 MAX_SNAPSHOTS 个 openclaw-guard-* 快照）
 if [[ -z "$DRY_RUN" ]]; then
   tmutil listlocalsnapshots / | grep 'openclaw-guard-' | sort -r | tail -n +$((MAX_SNAPSHOTS+1)) | while read -r snap; do
     tmutil deletelocalsnapshots "$(echo "$snap" | awk '{print $NF}')"
@@ -45,6 +59,8 @@ if [[ -z "$DRY_RUN" ]]; then
   done
   # 同步清理对应 Git tag
   git tag -l 'guard/*' | sort -r | tail -n +$((MAX_SNAPSHOTS+1)) | xargs -r git tag -d
+  # 同步清理 backups/ 旧目录
+  ls -1d "$BACKUPS_DIR"/guard-* 2>/dev/null | sort -r | tail -n +$((MAX_SNAPSHOTS+1)) | xargs -r rm -rf
   echo "✅ Retention policy applied (keep last $MAX_SNAPSHOTS)"
 fi
 
