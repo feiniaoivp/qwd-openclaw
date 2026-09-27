@@ -1,0 +1,92 @@
+{
+  "_comment": "AMD Radeon (amd-radeon) provider 模型配置留档 — 2026-09-27 修复版。密钥已脱敏为占位符，实际值见 ~/.openclaw/openclaw.json 的 models.providers.amd-radeon.apiKey。",
+  "baseUrl": "https://developer.amd.com.cn/radeon/api/v1",
+  "apiKey": "<REDACTED — see ~/.openclaw/openclaw.json>",
+  "api": "openai-completions",
+  "_note_maxTokens": "maxTokens 必须 < contextWindow，且需按 API /v1/models 的真实 context_length 逐个校准，不可跨模型复制。",
+  "models": [
+    {
+      "id": "DeepSeek-V4.1-Flash",
+      "name": "AMD DeepSeek V4.1 Flash",
+      "reasoning": false,
+      "input": ["text", "image"],
+      "contextWindow": 1048576,
+      "maxTokens": 384000,
+      "compat": {"supportsReasoningEffort": true, "maxTokensField": "max_tokens"},
+      "_api_status_20260927": "上游 504 Gateway Timeout (call_upstream_timeout) — AMD 端未就绪"
+    },
+    {
+      "id": "DeepSeek-V4-Flash",
+      "name": "AMD DeepSeek V4 Flash",
+      "reasoning": false,
+      "input": ["text"],
+      "contextWindow": 1048576,
+      "maxTokens": 384000,
+      "compat": {"supportsReasoningEffort": true, "maxTokensField": "max_tokens"},
+      "_api_status_20260927": "OK"
+    },
+    {
+      "id": "DeepSeek-V4-Flash-Vision-Exp",
+      "name": "AMD DeepSeek V4 Flash Vision",
+      "reasoning": false,
+      "input": ["text", "image"],
+      "contextWindow": 1048576,
+      "maxTokens": 384000,
+      "compat": {"supportsReasoningEffort": true, "maxTokensField": "max_tokens"},
+      "_api_status_20260927": "OK"
+    },
+    {
+      "id": "GLM-5.3-Flash",
+      "name": "AMD GLM 5.3 Flash",
+      "reasoning": false,
+      "input": ["text"],
+      "contextWindow": 262144,
+      "maxTokens": 131072,
+      "compat": {"supportsReasoningEffort": true, "maxTokensField": "max_tokens"},
+      "_api_status_20260927": "OK"
+    },
+    {
+      "id": "MiMo-V2.6-Flash",
+      "name": "AMD MiMo V2.6 Flash",
+      "reasoning": false,
+      "input": ["text", "image"],
+      "contextWindow": 1048576,
+      "maxTokens": 384000,
+      "compat": {"supportsReasoningEffort": true, "maxTokensField": "max_tokens"},
+      "_api_status_20260927": "上游 RemoteDisconnected — AMD 端未就绪"
+    },
+    {
+      "id": "MiniCPM5-2B",
+      "name": "AMD MiniCPM5 2B",
+      "reasoning": false,
+      "input": ["text"],
+      "contextWindow": 131072,
+      "maxTokens": 65536,
+      "compat": {"supportsReasoningEffort": true, "maxTokensField": "max_tokens"},
+      "_api_status_20260927": "OK（原配置误写为 MiniCPM5-1B，API 不存在，已修正）"
+    },
+    {
+      "id": "Qwen3.8-27B",
+      "name": "AMD Qwen3.8 27B",
+      "reasoning": false,
+      "input": ["text", "image"],
+      "contextWindow": 262144,
+      "maxTokens": 131072,
+      "compat": {"supportsReasoningEffort": true, "maxTokensField": "max_tokens"},
+      "_api_status_20260927": "OK"
+    },
+    {
+      "id": "Qwen3.8-Flash-Next",
+      "name": "AMD Qwen3.8 Flash Next",
+      "reasoning": false,
+      "input": ["text", "image"],
+      "contextWindow": 262144,
+      "maxTokens": 131072,
+      "compat": {"supportsReasoningEffort": true, "maxTokensField": "max_tokens"},
+      "_api_status_20260927": "OK（修复：原 maxTokens=384000 > context 262144 导致溢出）"
+    }
+  ],
+  "_excluded": {
+    "MinerU2.5-Pro": "API 报 context_length=0，触发 OpenClaw schema 校验 'contextWindow expected >0' 导致 Gateway 启动被拦；非 chat 模型，不配置。"
+  }
+}
