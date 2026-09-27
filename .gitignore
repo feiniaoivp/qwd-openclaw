@@ -69,6 +69,10 @@ analysis/premarket_pipeline.py
 # ── 备份文件 ──
 *.bak.*
 MEMORY.md.bak.*
+# 快照备份目录（snapshot_guard.sh 生成的全量副本，回滚用；体积大且含运行时数据，不入库）
+backups/*-*/
+backups/guard-*/
+# 但保留人工整理的”小体积单文件备份”（已在库中的继续跟踪）
 
 # ── 自动生成脚本 ──
 scripts/cron_health_check.py

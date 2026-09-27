@@ -59,8 +59,11 @@ if [[ -z "$DRY_RUN" ]]; then
   done
   # 同步清理对应 Git tag
   git tag -l 'guard/*' | sort -r | tail -n +$((MAX_SNAPSHOTS+1)) | xargs -r git tag -d
-  # 同步清理 backups/ 旧目录
-  ls -1d "$BACKUPS_DIR"/guard-* 2>/dev/null | sort -r | tail -n +$((MAX_SNAPSHOTS+1)) | xargs -r rm -rf
+  # 同步清理 backups/ 旧快照目录
+  # 注：步骤4 生成的目录名为 "<YYYYMMDD-HHMMSS>-<描述>"（无 guard- 前缀），
+  # 旧版清理用 guard-* 匹配不到 → 备份只增不减。修正为按“疑似快照目录”匹配。
+  ls -1d "$BACKUPS_DIR"/[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-*/ 2>/dev/null \
+    | sort -r | tail -n +$((MAX_SNAPSHOTS+1)) | xargs -r rm -rf
   echo "✅ Retention policy applied (keep last $MAX_SNAPSHOTS)"
 fi
 
