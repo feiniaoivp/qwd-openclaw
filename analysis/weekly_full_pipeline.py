@@ -35,6 +35,33 @@ os.makedirs(ANALYSIS_DIR, exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)
 
 
+def _emit_dual_output(text: str):
+    """双版本输出：纯文本给 Telegram + Markdown 给 WebChat/存档。"""
+    today = datetime.now().strftime("%Y-%m-%d")
+    daily_dir = os.path.join(ANALYSIS_DIR, "daily")
+    os.makedirs(daily_dir, exist_ok=True)
+    # 1) 纯文本版（Telegram 用）
+    tg_path = os.path.join(daily_dir, f"{today}_brief.txt")
+    # 2) Markdown 版（WebChat/存档用）
+    md_path = os.path.join(daily_dir, f"{today}_brief.md")
+    try:
+        with open(tg_path, "w", encoding="utf-8") as f:
+            f.write(text)
+        # Markdown 版：把 " · " 分隔的表格行转成合法 Markdown 表格
+        md_rows = []
+        for ln in text.splitlines():
+            if " · " in ln:
+                cells = [c.strip() for c in ln.split(" · ")]
+                md_rows.append("| " + " | ".join(cells) + " |")
+            else:
+                md_rows.append(ln)
+        md_body = "\n".join(md_rows)
+        with open(md_path, "w", encoding="utf-8") as f:
+            f.write(md_body)
+    except Exception as e:
+        print(f"[weekly pipeline] 双版本输出失败: {e}")
+
+
 def run_script(script: str, args: List[str] = None, timeout: int = 600) -> Dict[str, Any]:
     """运行脚本并返回结果"""
     cmd = [sys.executable, os.path.join(ANALYSIS_DIR, script)]
@@ -97,11 +124,29 @@ def main():
     # 步骤 0c: 关注池口径一致性门禁（2026-09-27 新增）
     # 背景：曾出现「代码已是35只、文档还写27只」的静默不一致，人工按旧清单误判。
     # 仅在写回映射前校验，失败仅告警不阻断（防误伤主流程）。
-    print("\n🚦 步骤 0c/8: 关注池口径一致性门禁 (strategy_map_guard.py)")
+    print("\n🚦 步骤 0c/9: 关注池口径一致性门禁 (strategy_map_guard.py)")
     r = run_script("../scripts/strategy_map_guard.py", ["--quiet"], timeout=120)
     results["map_guard"] = r
     if not r["success"]:
         print("⚠️ 关注池口径不一致（见上方），请人工核对文档/映射（不阻断流水线）...")
+
+    # 步骤 0d: 市场数据引用验证门禁（2026-09-28 新增）
+    # 背景：曾出现「编造 9/27 成交额 1.45 万亿、北向 8129 亿」的先写后验事故。
+    # 强制验证：引用日期为交易日、来源在授权清单、字段匹配。
+    print("\n🚦 步骤 0d/9: 市场数据引用验证门禁 (verify_market_data.py)")
+    r = run_script("../scripts/verify_market_data.py", ["--report", f"../analysis/daily/{today}_dual.md"], timeout=60)
+    results["market_data_verify"] = r
+    if not r["success"]:
+        print("⚠️ 最新日报存在未验证的市场数据引用（见上方），请人工核对（不阻断流水线）...")
+
+    # 步骤 0e: 数据新鲜度门禁（2026-09-28 新增）
+    # 背景：日报「现价」实为上一交易日收盘（上游 baostock/新浪日K 滞后），
+    # 报告未标注数据日期 → 消费方静默使用滞后数据（前视偏差）。
+    print("\n🚦 步骤 0e/9: 数据新鲜度门禁 (data_freshness_guard.py)")
+    r = run_script("../scripts/data_freshness_guard.py", ["--quiet"], timeout=60)
+    results["data_freshness"] = r
+    if not r["success"]:
+        print("⚠️ 日报数据新鲜度未通过（见上方），请人工核查数据日期标注（不阻断流水线）...")
 
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
@@ -226,7 +271,6 @@ def build_brief(results=None):
     lines.append("")
 
     # 一、策略回测（从 backtest 报告提炼策略榜，去 markdown 符号）
-    lines.append("一、五策略全量回测")
     bt_path = os.path.join(ANALYSIS_DIR, "backtest", today + ".md")
     try:
         if os.path.exists(bt_path):
@@ -239,6 +283,15 @@ def build_brief(results=None):
                 ln = ln.strip()
                 if ln.startswith("|") and "平均收益" not in ln and "指标" not in ln and ln.replace("|", "").replace("-", "").strip():
                     rows.append("  " + ln.strip(" |").replace("|", " · "))
+            # 从表头行推导策略数（排除 '指标' 列）
+            strategy_count = 0
+            for ln in seg.splitlines():
+                ln = ln.strip()
+                if ln.startswith("|") and "指标" in ln:
+                    strategy_count = len([c for c in ln.split("|") if c.strip()]) - 2  # 减去首尾空列
+                    break
+            if strategy_count:
+                lines[1] = f"一、{strategy_count}策略全量回测"  # 修正标题
             lines.append("\n".join(rows[:9]) if rows else "(无策略榜行)")
         else:
             lines.append("(backtest 报告未生成)")
@@ -311,7 +364,9 @@ def build_brief(results=None):
     lines.append("")
 
     lines.append("—— 由 weekly_full_pipeline.py 自动生成（command cron 直跑，不经 LLM）")
-    return "\n".join(lines)
+    text = "\n".join(lines)
+    _emit_dual_output(text)
+    return text
 
 
 def push_brief(brief_text):
