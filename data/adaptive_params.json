@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-27",
+  "date": "2026-09-28",
   "mode": "快速",
   "fast": true,
   "incremental": false,
@@ -66,71 +66,6 @@
           "score": -19.39,
           "avg_return": -5.89,
           "avg_sharpe": -0.372
-        }
-      ]
-    },
-    "601066": {
-      "name": "中信建投",
-      "strategy": "kdj_cci",
-      "params": {
-        "length": 9,
-        "rsi_threshold": 40
-      },
-      "score": 25.45,
-      "avg_return": 11.92,
-      "avg_sharpe": 0.305,
-      "avg_dd": -19.94,
-      "avg_trades": 11.0,
-      "details": {
-        "bollinger": {
-          "pruned": true,
-          "default_score": -19.04,
-          "default_sharpe": -1.388
-        },
-        "kdj_cci": {
-          "best_params": {
-            "length": 9,
-            "rsi_threshold": 40
-          },
-          "best_score": 25.45,
-          "best_agg": {
-            "score": 25.45,
-            "avg_return": 11.92,
-            "avg_sharpe": 0.305,
-            "avg_dd": -19.94,
-            "avg_trades": 11.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": 11.92,
-          "avg_sharpe": 0.305
-        },
-        "ema_obv": {
-          "pruned": true,
-          "default_score": -21.15,
-          "default_sharpe": -0.927
-        },
-        "ema_cross": {
-          "pruned": true,
-          "default_score": -30.97,
-          "default_sharpe": -1.666
-        },
-        "macd": {
-          "pruned": true,
-          "default_score": -37.47,
-          "default_sharpe": -1.284
-        }
-      },
-      "top_k": [
-        {
-          "strategy": "kdj_cci",
-          "params": {
-            "length": 9,
-            "rsi_threshold": 40
-          },
-          "score": 25.45,
-          "avg_return": 11.92,
-          "avg_sharpe": 0.305
         }
       ]
     },
@@ -342,6 +277,113 @@
           "score": 33.44,
           "avg_return": 13.84,
           "avg_sharpe": 0.419
+        }
+      ]
+    },
+    "601066": {
+      "name": "中信建投",
+      "strategy": "bollinger",
+      "params": {
+        "length": 20,
+        "std": 2.0,
+        "atr_mult": 2.0
+      },
+      "score": 11.57,
+      "avg_return": 8.21,
+      "avg_sharpe": 0.175,
+      "avg_dd": -10.03,
+      "avg_trades": 6.0,
+      "details": {
+        "bollinger": {
+          "best_params": {
+            "length": 20,
+            "std": 2.0,
+            "atr_mult": 2.0
+          },
+          "best_score": 11.57,
+          "best_agg": {
+            "score": 11.57,
+            "avg_return": 8.21,
+            "avg_sharpe": 0.175,
+            "avg_dd": -10.03,
+            "avg_trades": 6.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": 8.21,
+          "avg_sharpe": 0.175
+        },
+        "kdj_cci": {
+          "pruned": true,
+          "default_score": -2.2,
+          "default_sharpe": -0.599
+        },
+        "ema_obv": {
+          "best_params": {
+            "length": 20
+          },
+          "best_score": -4.17,
+          "best_agg": {
+            "score": -4.17,
+            "avg_return": 0.95,
+            "avg_sharpe": -0.079,
+            "avg_dd": -14.38,
+            "avg_trades": 11.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": 0.95,
+          "avg_sharpe": -0.079
+        },
+        "ema_cross": {
+          "best_params": {
+            "fast": 10,
+            "slow": 26
+          },
+          "best_score": 9.59,
+          "best_agg": {
+            "score": 9.59,
+            "avg_return": 7.61,
+            "avg_sharpe": 0.137,
+            "avg_dd": -19.05,
+            "avg_trades": 6.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": 7.61,
+          "avg_sharpe": 0.137
+        },
+        "macd": {
+          "best_params": {
+            "fast": 12,
+            "slow": 26,
+            "signal": 9
+          },
+          "best_score": 6.12,
+          "best_agg": {
+            "score": 6.12,
+            "avg_return": 4.7,
+            "avg_sharpe": 0.055,
+            "avg_dd": -18.04,
+            "avg_trades": 12.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": 4.7,
+          "avg_sharpe": 0.055
+        }
+      },
+      "top_k": [
+        {
+          "strategy": "bollinger",
+          "params": {
+            "length": 20,
+            "std": 2.0,
+            "atr_mult": 2.0
+          },
+          "score": 11.57,
+          "avg_return": 8.21,
+          "avg_sharpe": 0.175
         }
       ]
     },
@@ -1384,6 +1426,96 @@
         }
       ]
     },
+    "601100": {
+      "name": "恒立液压",
+      "strategy": "ema_cross",
+      "params": {
+        "fast": 12,
+        "slow": 26
+      },
+      "score": 12.36,
+      "avg_return": 11.06,
+      "avg_sharpe": 0.164,
+      "avg_dd": -18.37,
+      "avg_trades": 6.0,
+      "details": {
+        "bollinger": {
+          "pruned": true,
+          "default_score": -30.12,
+          "default_sharpe": -1.14
+        },
+        "kdj_cci": {
+          "best_params": {
+            "length": 9,
+            "rsi_threshold": 50
+          },
+          "best_score": 3.68,
+          "best_agg": {
+            "score": 3.68,
+            "avg_return": 3.74,
+            "avg_sharpe": 0.024,
+            "avg_dd": -16.92,
+            "avg_trades": 12.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": 3.74,
+          "avg_sharpe": 0.024
+        },
+        "ema_obv": {
+          "best_params": {
+            "length": 20
+          },
+          "best_score": -32.29,
+          "best_agg": {
+            "score": -32.29,
+            "avg_return": -12.01,
+            "avg_sharpe": -0.418,
+            "avg_dd": -25.9,
+            "avg_trades": 24.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": -12.01,
+          "avg_sharpe": -0.418
+        },
+        "ema_cross": {
+          "best_params": {
+            "fast": 12,
+            "slow": 26
+          },
+          "best_score": 12.36,
+          "best_agg": {
+            "score": 12.36,
+            "avg_return": 11.06,
+            "avg_sharpe": 0.164,
+            "avg_dd": -18.37,
+            "avg_trades": 6.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": 11.06,
+          "avg_sharpe": 0.164
+        },
+        "macd": {
+          "pruned": true,
+          "default_score": -35.08,
+          "default_sharpe": -1.03
+        }
+      },
+      "top_k": [
+        {
+          "strategy": "ema_cross",
+          "params": {
+            "fast": 12,
+            "slow": 26
+          },
+          "score": 12.36,
+          "avg_return": 11.06,
+          "avg_sharpe": 0.164
+        }
+      ]
+    },
     "300124": {
       "name": "汇川技术",
       "strategy": "bollinger",
@@ -1487,96 +1619,6 @@
           "score": 12.03,
           "avg_return": 13.91,
           "avg_sharpe": 0.362
-        }
-      ]
-    },
-    "601100": {
-      "name": "恒立液压",
-      "strategy": "ema_cross",
-      "params": {
-        "fast": 12,
-        "slow": 26
-      },
-      "score": 12.36,
-      "avg_return": 11.06,
-      "avg_sharpe": 0.164,
-      "avg_dd": -18.37,
-      "avg_trades": 6.0,
-      "details": {
-        "bollinger": {
-          "pruned": true,
-          "default_score": -30.12,
-          "default_sharpe": -1.14
-        },
-        "kdj_cci": {
-          "best_params": {
-            "length": 9,
-            "rsi_threshold": 50
-          },
-          "best_score": 3.68,
-          "best_agg": {
-            "score": 3.68,
-            "avg_return": 3.74,
-            "avg_sharpe": 0.024,
-            "avg_dd": -16.92,
-            "avg_trades": 12.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": 3.74,
-          "avg_sharpe": 0.024
-        },
-        "ema_obv": {
-          "best_params": {
-            "length": 20
-          },
-          "best_score": -32.29,
-          "best_agg": {
-            "score": -32.29,
-            "avg_return": -12.01,
-            "avg_sharpe": -0.418,
-            "avg_dd": -25.9,
-            "avg_trades": 24.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": -12.01,
-          "avg_sharpe": -0.418
-        },
-        "ema_cross": {
-          "best_params": {
-            "fast": 12,
-            "slow": 26
-          },
-          "best_score": 12.36,
-          "best_agg": {
-            "score": 12.36,
-            "avg_return": 11.06,
-            "avg_sharpe": 0.164,
-            "avg_dd": -18.37,
-            "avg_trades": 6.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": 11.06,
-          "avg_sharpe": 0.164
-        },
-        "macd": {
-          "pruned": true,
-          "default_score": -35.08,
-          "default_sharpe": -1.03
-        }
-      },
-      "top_k": [
-        {
-          "strategy": "ema_cross",
-          "params": {
-            "fast": 12,
-            "slow": 26
-          },
-          "score": 12.36,
-          "avg_return": 11.06,
-          "avg_sharpe": 0.164
         }
       ]
     },
@@ -1846,124 +1888,6 @@
         }
       ]
     },
-    "300748": {
-      "name": "金力永磁",
-      "strategy": "kdj_cci",
-      "params": {
-        "length": 9,
-        "rsi_threshold": 50
-      },
-      "score": 94.58,
-      "avg_return": 39.73,
-      "avg_sharpe": 1.179,
-      "avg_dd": -11.82,
-      "avg_trades": 10.0,
-      "details": {
-        "bollinger": {
-          "best_params": {
-            "length": 20,
-            "std": 2.0,
-            "atr_mult": 1.5
-          },
-          "best_score": -15.46,
-          "best_agg": {
-            "score": -15.46,
-            "avg_return": -8.51,
-            "avg_sharpe": -0.238,
-            "avg_dd": -32.46,
-            "avg_trades": 7.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": -8.51,
-          "avg_sharpe": -0.238
-        },
-        "kdj_cci": {
-          "best_params": {
-            "length": 9,
-            "rsi_threshold": 50
-          },
-          "best_score": 94.58,
-          "best_agg": {
-            "score": 94.58,
-            "avg_return": 39.73,
-            "avg_sharpe": 1.179,
-            "avg_dd": -11.82,
-            "avg_trades": 10.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": 39.73,
-          "avg_sharpe": 1.179
-        },
-        "ema_obv": {
-          "best_params": {
-            "length": 20
-          },
-          "best_score": -30.07,
-          "best_agg": {
-            "score": -30.07,
-            "avg_return": -11.82,
-            "avg_sharpe": -0.291,
-            "avg_dd": -41.03,
-            "avg_trades": 18.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": -11.82,
-          "avg_sharpe": -0.291
-        },
-        "ema_cross": {
-          "best_params": {
-            "fast": 12,
-            "slow": 26
-          },
-          "best_score": 19.57,
-          "best_agg": {
-            "score": 19.57,
-            "avg_return": 36.53,
-            "avg_sharpe": 0.494,
-            "avg_dd": -35.25,
-            "avg_trades": 4.0,
-            "sample_weight": 0.4,
-            "windows": 1
-          },
-          "avg_return": 36.53,
-          "avg_sharpe": 0.494
-        },
-        "macd": {
-          "best_params": {
-            "fast": 12,
-            "slow": 26,
-            "signal": 9
-          },
-          "best_score": -28.24,
-          "best_agg": {
-            "score": -28.24,
-            "avg_return": -11.56,
-            "avg_sharpe": -0.256,
-            "avg_dd": -41.88,
-            "avg_trades": 13.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": -11.56,
-          "avg_sharpe": -0.256
-        }
-      },
-      "top_k": [
-        {
-          "strategy": "kdj_cci",
-          "params": {
-            "length": 9,
-            "rsi_threshold": 50
-          },
-          "score": 94.58,
-          "avg_return": 39.73,
-          "avg_sharpe": 1.179
-        }
-      ]
-    },
     "600160": {
       "name": "巨化股份",
       "strategy": "ema_obv",
@@ -2146,6 +2070,124 @@
         }
       ]
     },
+    "300748": {
+      "name": "金力永磁",
+      "strategy": "kdj_cci",
+      "params": {
+        "length": 9,
+        "rsi_threshold": 50
+      },
+      "score": 94.58,
+      "avg_return": 39.73,
+      "avg_sharpe": 1.179,
+      "avg_dd": -11.82,
+      "avg_trades": 10.0,
+      "details": {
+        "bollinger": {
+          "best_params": {
+            "length": 20,
+            "std": 2.0,
+            "atr_mult": 1.5
+          },
+          "best_score": -15.46,
+          "best_agg": {
+            "score": -15.46,
+            "avg_return": -8.51,
+            "avg_sharpe": -0.238,
+            "avg_dd": -32.46,
+            "avg_trades": 7.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": -8.51,
+          "avg_sharpe": -0.238
+        },
+        "kdj_cci": {
+          "best_params": {
+            "length": 9,
+            "rsi_threshold": 50
+          },
+          "best_score": 94.58,
+          "best_agg": {
+            "score": 94.58,
+            "avg_return": 39.73,
+            "avg_sharpe": 1.179,
+            "avg_dd": -11.82,
+            "avg_trades": 10.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": 39.73,
+          "avg_sharpe": 1.179
+        },
+        "ema_obv": {
+          "best_params": {
+            "length": 20
+          },
+          "best_score": -30.07,
+          "best_agg": {
+            "score": -30.07,
+            "avg_return": -11.82,
+            "avg_sharpe": -0.291,
+            "avg_dd": -41.03,
+            "avg_trades": 18.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": -11.82,
+          "avg_sharpe": -0.291
+        },
+        "ema_cross": {
+          "best_params": {
+            "fast": 12,
+            "slow": 26
+          },
+          "best_score": 19.57,
+          "best_agg": {
+            "score": 19.57,
+            "avg_return": 36.53,
+            "avg_sharpe": 0.494,
+            "avg_dd": -35.25,
+            "avg_trades": 4.0,
+            "sample_weight": 0.4,
+            "windows": 1
+          },
+          "avg_return": 36.53,
+          "avg_sharpe": 0.494
+        },
+        "macd": {
+          "best_params": {
+            "fast": 12,
+            "slow": 26,
+            "signal": 9
+          },
+          "best_score": -28.24,
+          "best_agg": {
+            "score": -28.24,
+            "avg_return": -11.56,
+            "avg_sharpe": -0.256,
+            "avg_dd": -41.88,
+            "avg_trades": 13.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": -11.56,
+          "avg_sharpe": -0.256
+        }
+      },
+      "top_k": [
+        {
+          "strategy": "kdj_cci",
+          "params": {
+            "length": 9,
+            "rsi_threshold": 50
+          },
+          "score": 94.58,
+          "avg_return": 39.73,
+          "avg_sharpe": 1.179
+        }
+      ]
+    },
     "600346": {
       "name": "恒力石化",
       "strategy": "macd",
@@ -2254,6 +2296,71 @@
         }
       ]
     },
+    "000157": {
+      "name": "中联重科",
+      "strategy": "ema_cross",
+      "params": {
+        "fast": 10,
+        "slow": 26
+      },
+      "score": 8.04,
+      "avg_return": 9.99,
+      "avg_sharpe": 0.235,
+      "avg_dd": -14.51,
+      "avg_trades": 4.0,
+      "details": {
+        "bollinger": {
+          "pruned": true,
+          "default_score": -11.32,
+          "default_sharpe": -0.615
+        },
+        "kdj_cci": {
+          "pruned": true,
+          "default_score": -8.64,
+          "default_sharpe": -1.468
+        },
+        "ema_obv": {
+          "pruned": true,
+          "default_score": -11.65,
+          "default_sharpe": -0.668
+        },
+        "ema_cross": {
+          "best_params": {
+            "fast": 10,
+            "slow": 26
+          },
+          "best_score": 8.04,
+          "best_agg": {
+            "score": 8.04,
+            "avg_return": 9.99,
+            "avg_sharpe": 0.235,
+            "avg_dd": -14.51,
+            "avg_trades": 4.0,
+            "sample_weight": 0.4,
+            "windows": 1
+          },
+          "avg_return": 9.99,
+          "avg_sharpe": 0.235
+        },
+        "macd": {
+          "pruned": true,
+          "default_score": -11.98,
+          "default_sharpe": -0.512
+        }
+      },
+      "top_k": [
+        {
+          "strategy": "ema_cross",
+          "params": {
+            "fast": 10,
+            "slow": 26
+          },
+          "score": 8.04,
+          "avg_return": 9.99,
+          "avg_sharpe": 0.235
+        }
+      ]
+    },
     "600660": {
       "name": "福耀玻璃",
       "strategy": "macd",
@@ -2346,71 +2453,6 @@
           "score": 17.53,
           "avg_return": 8.22,
           "avg_sharpe": 0.21
-        }
-      ]
-    },
-    "000157": {
-      "name": "中联重科",
-      "strategy": "ema_cross",
-      "params": {
-        "fast": 10,
-        "slow": 26
-      },
-      "score": 8.04,
-      "avg_return": 9.99,
-      "avg_sharpe": 0.235,
-      "avg_dd": -14.51,
-      "avg_trades": 4.0,
-      "details": {
-        "bollinger": {
-          "pruned": true,
-          "default_score": -11.32,
-          "default_sharpe": -0.615
-        },
-        "kdj_cci": {
-          "pruned": true,
-          "default_score": -8.64,
-          "default_sharpe": -1.468
-        },
-        "ema_obv": {
-          "pruned": true,
-          "default_score": -11.65,
-          "default_sharpe": -0.668
-        },
-        "ema_cross": {
-          "best_params": {
-            "fast": 10,
-            "slow": 26
-          },
-          "best_score": 8.04,
-          "best_agg": {
-            "score": 8.04,
-            "avg_return": 9.99,
-            "avg_sharpe": 0.235,
-            "avg_dd": -14.51,
-            "avg_trades": 4.0,
-            "sample_weight": 0.4,
-            "windows": 1
-          },
-          "avg_return": 9.99,
-          "avg_sharpe": 0.235
-        },
-        "macd": {
-          "pruned": true,
-          "default_score": -11.98,
-          "default_sharpe": -0.512
-        }
-      },
-      "top_k": [
-        {
-          "strategy": "ema_cross",
-          "params": {
-            "fast": 10,
-            "slow": 26
-          },
-          "score": 8.04,
-          "avg_return": 9.99,
-          "avg_sharpe": 0.235
         }
       ]
     },
@@ -2947,10 +2989,10 @@
       "params": {
         "length": 20
       },
-      "score": 26.53,
-      "avg_return": 11.52,
-      "avg_sharpe": 0.327,
-      "avg_dd": -11.97,
+      "score": 26.28,
+      "avg_return": 11.3,
+      "avg_sharpe": 0.325,
+      "avg_dd": -11.68,
       "avg_trades": 14.0,
       "details": {
         "bollinger": {
@@ -2959,58 +3001,58 @@
             "std": 2.0,
             "atr_mult": 1.5
           },
-          "best_score": 7.75,
+          "best_score": 7.67,
           "best_agg": {
-            "score": 7.75,
-            "avg_return": 5.93,
-            "avg_sharpe": 0.113,
-            "avg_dd": -16.25,
+            "score": 7.67,
+            "avg_return": 5.84,
+            "avg_sharpe": 0.112,
+            "avg_dd": -16.0,
             "avg_trades": 7.0,
             "sample_weight": 0.75,
             "windows": 1
           },
-          "avg_return": 5.93,
-          "avg_sharpe": 0.113
+          "avg_return": 5.84,
+          "avg_sharpe": 0.112
         },
         "kdj_cci": {
           "best_params": {
             "length": 9,
             "rsi_threshold": 40
           },
-          "best_score": -8.82,
+          "best_score": -9.04,
           "best_agg": {
-            "score": -8.82,
-            "avg_return": -0.14,
-            "avg_sharpe": -0.366,
-            "avg_dd": -5.53,
+            "score": -9.04,
+            "avg_return": -0.16,
+            "avg_sharpe": -0.375,
+            "avg_dd": -5.45,
             "avg_trades": 5.0,
             "sample_weight": 0.4,
             "windows": 1
           },
-          "avg_return": -0.14,
-          "avg_sharpe": -0.366
+          "avg_return": -0.16,
+          "avg_sharpe": -0.375
         },
         "ema_obv": {
           "best_params": {
             "length": 20
           },
-          "best_score": 26.53,
+          "best_score": 26.28,
           "best_agg": {
-            "score": 26.53,
-            "avg_return": 11.52,
-            "avg_sharpe": 0.327,
-            "avg_dd": -11.97,
+            "score": 26.28,
+            "avg_return": 11.3,
+            "avg_sharpe": 0.325,
+            "avg_dd": -11.68,
             "avg_trades": 14.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": 11.52,
-          "avg_sharpe": 0.327
+          "avg_return": 11.3,
+          "avg_sharpe": 0.325
         },
         "ema_cross": {
           "pruned": true,
-          "default_score": -14.25,
-          "default_sharpe": -0.636
+          "default_score": -13.98,
+          "default_sharpe": -0.639
         },
         "macd": {
           "best_params": {
@@ -3018,18 +3060,18 @@
             "slow": 26,
             "signal": 9
           },
-          "best_score": -17.98,
+          "best_score": -18.28,
           "best_agg": {
-            "score": -17.98,
-            "avg_return": -4.26,
-            "avg_sharpe": -0.257,
-            "avg_dd": -22.06,
+            "score": -18.28,
+            "avg_return": -4.27,
+            "avg_sharpe": -0.262,
+            "avg_dd": -21.89,
             "avg_trades": 15.0,
             "sample_weight": 1.0,
             "windows": 1
           },
-          "avg_return": -4.26,
-          "avg_sharpe": -0.257
+          "avg_return": -4.27,
+          "avg_sharpe": -0.262
         }
       },
       "top_k": [
@@ -3038,114 +3080,9 @@
           "params": {
             "length": 20
           },
-          "score": 26.53,
-          "avg_return": 11.52,
-          "avg_sharpe": 0.327
-        }
-      ]
-    },
-    "002028": {
-      "name": "思源电气",
-      "strategy": "ema_cross",
-      "params": {
-        "fast": 12,
-        "slow": 26
-      },
-      "score": 60.62,
-      "avg_return": 52.67,
-      "avg_sharpe": 0.875,
-      "avg_dd": -36.54,
-      "avg_trades": 7.0,
-      "details": {
-        "bollinger": {
-          "best_params": {
-            "length": 20,
-            "std": 2.0,
-            "atr_mult": 1.5
-          },
-          "best_score": 49.06,
-          "best_agg": {
-            "score": 49.06,
-            "avg_return": 39.03,
-            "avg_sharpe": 0.7,
-            "avg_dd": -26.68,
-            "avg_trades": 8.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": 39.03,
-          "avg_sharpe": 0.7
-        },
-        "kdj_cci": {
-          "pruned": true,
-          "default_score": -10.07,
-          "default_sharpe": -1.35
-        },
-        "ema_obv": {
-          "best_params": {
-            "length": 20
-          },
-          "best_score": 39.14,
-          "best_agg": {
-            "score": 39.14,
-            "avg_return": 23.84,
-            "avg_sharpe": 0.414,
-            "avg_dd": -25.59,
-            "avg_trades": 25.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": 23.84,
-          "avg_sharpe": 0.414
-        },
-        "ema_cross": {
-          "best_params": {
-            "fast": 12,
-            "slow": 26
-          },
-          "best_score": 60.62,
-          "best_agg": {
-            "score": 60.62,
-            "avg_return": 52.67,
-            "avg_sharpe": 0.875,
-            "avg_dd": -36.54,
-            "avg_trades": 7.0,
-            "sample_weight": 0.75,
-            "windows": 1
-          },
-          "avg_return": 52.67,
-          "avg_sharpe": 0.875
-        },
-        "macd": {
-          "best_params": {
-            "fast": 12,
-            "slow": 26,
-            "signal": 9
-          },
-          "best_score": -3.55,
-          "best_agg": {
-            "score": -3.55,
-            "avg_return": 2.26,
-            "avg_sharpe": -0.014,
-            "avg_dd": -38.13,
-            "avg_trades": 18.0,
-            "sample_weight": 1.0,
-            "windows": 1
-          },
-          "avg_return": 2.26,
-          "avg_sharpe": -0.014
-        }
-      },
-      "top_k": [
-        {
-          "strategy": "ema_cross",
-          "params": {
-            "fast": 12,
-            "slow": 26
-          },
-          "score": 60.62,
-          "avg_return": 52.67,
-          "avg_sharpe": 0.875
+          "score": 26.28,
+          "avg_return": 11.3,
+          "avg_sharpe": 0.325
         }
       ]
     },
@@ -3340,6 +3277,111 @@
           "score": 114.31,
           "avg_return": 73.61,
           "avg_sharpe": 1.169
+        }
+      ]
+    },
+    "002028": {
+      "name": "思源电气",
+      "strategy": "ema_cross",
+      "params": {
+        "fast": 10,
+        "slow": 26
+      },
+      "score": 74.94,
+      "avg_return": 67.03,
+      "avg_sharpe": 1.045,
+      "avg_dd": -36.0,
+      "avg_trades": 8.0,
+      "details": {
+        "bollinger": {
+          "best_params": {
+            "length": 20,
+            "std": 2.0,
+            "atr_mult": 1.5
+          },
+          "best_score": 48.37,
+          "best_agg": {
+            "score": 48.37,
+            "avg_return": 38.48,
+            "avg_sharpe": 0.69,
+            "avg_dd": -26.69,
+            "avg_trades": 8.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": 38.48,
+          "avg_sharpe": 0.69
+        },
+        "kdj_cci": {
+          "pruned": true,
+          "default_score": -10.07,
+          "default_sharpe": -1.35
+        },
+        "ema_obv": {
+          "best_params": {
+            "length": 20
+          },
+          "best_score": 38.44,
+          "best_agg": {
+            "score": 38.44,
+            "avg_return": 23.47,
+            "avg_sharpe": 0.406,
+            "avg_dd": -25.61,
+            "avg_trades": 25.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": 23.47,
+          "avg_sharpe": 0.406
+        },
+        "ema_cross": {
+          "best_params": {
+            "fast": 10,
+            "slow": 26
+          },
+          "best_score": 74.94,
+          "best_agg": {
+            "score": 74.94,
+            "avg_return": 67.03,
+            "avg_sharpe": 1.045,
+            "avg_dd": -36.0,
+            "avg_trades": 8.0,
+            "sample_weight": 0.75,
+            "windows": 1
+          },
+          "avg_return": 67.03,
+          "avg_sharpe": 1.045
+        },
+        "macd": {
+          "best_params": {
+            "fast": 12,
+            "slow": 26,
+            "signal": 9
+          },
+          "best_score": -2.41,
+          "best_agg": {
+            "score": -2.41,
+            "avg_return": 2.87,
+            "avg_sharpe": -0.003,
+            "avg_dd": -37.9,
+            "avg_trades": 18.0,
+            "sample_weight": 1.0,
+            "windows": 1
+          },
+          "avg_return": 2.87,
+          "avg_sharpe": -0.003
+        }
+      },
+      "top_k": [
+        {
+          "strategy": "ema_cross",
+          "params": {
+            "fast": 10,
+            "slow": 26
+          },
+          "score": 74.94,
+          "avg_return": 67.03,
+          "avg_sharpe": 1.045
         }
       ]
     },
