@@ -195,7 +195,33 @@ def load_state() -> Dict:
                         print(f"⚠️ 口径不一致: equity.csv total_initial={equity_initial:,.0f} vs REFERENCE={expected_initial:,.0f} (偏差 >5%)")
         except Exception as e:
             print(f"⚠️ equity.csv 校验读取失败: {e}")
-    
+
+    # 单票账本一致性自检 (2026-09-28, F-5 根因门禁)
+    # 语义: total_pl = 累计已实现盈亏; cash = 现金余额。
+    # 空仓时应满足: cash - INITIAL_CAPITAL == total_pl (差值为手续费/滑点尾差, 容忍 50 元)。
+    # 违反 => 单票 cash 与 total_pl 双账静默脱钩 (历史 F-5: 8/27 票不一致, 含符号相反)。
+    # 失败仅告警不阻断主流程 (防误伤盘中决策)。
+    try:
+        _bad = []
+        for _sym, _p in state.get("positions", {}).items():
+            if not isinstance(_p, dict):
+                continue
+            _cash = float(_p.get("cash", 0) or 0)
+            _tpl = float(_p.get("total_pl", 0) or 0)
+            _realized = _cash - INITIAL_CAPITAL
+            if not _p.get("position"):  # 空仓时可直接比对
+                if abs(_realized - _tpl) > 50.0:
+                    _bad.append((_sym, round(_realized, 2), round(_tpl, 2)))
+        if _bad:
+            print(f"⚠️ 单票账本不一致 (F-5口径): {len(_bad)}/{len(state.get('positions', {}))} 票 "
+                  f"cash-本金 != total_pl (容忍50元):")
+            for _s, _r, _t in _bad[:10]:
+                print(f"     {_s}: cash-本金={_r:,.2f} vs total_pl={_t:,.2f}")
+            if len(_bad) > 10:
+                print(f"     ... 及其他 {len(_bad)-10} 票")
+    except Exception as e:
+        print(f"⚠️ 单票账本自检失败: {e}")
+
     return state
 
 

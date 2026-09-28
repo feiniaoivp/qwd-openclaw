@@ -296,11 +296,11 @@ def gen_kdj_cci(df, kdj_len, kdj_signal, rsi_len, rsi_buy):
     return actions
 
 
-def gen_bull_trend(df, ema_s, ema_m, ema_l, obv_ma):
+def gen_bull_trend(df, ema_short, ema_mid, ema_long, obv_ma):
     df = df.copy()
-    df["EMA_s"] = ta.ema(df["close"], length=ema_s)
-    df["EMA_m"] = ta.ema(df["close"], length=ema_m)
-    df["EMA_l"] = ta.ema(df["close"], length=ema_l)
+    df["EMA_s"] = ta.ema(df["close"], length=ema_short)
+    df["EMA_m"] = ta.ema(df["close"], length=ema_mid)
+    df["EMA_l"] = ta.ema(df["close"], length=ema_long)
     df["OBV"] = ta.obv(df["close"], df["volume"])
     df["OBV_MA"] = ta.sma(df["OBV"], length=obv_ma)
     actions = []

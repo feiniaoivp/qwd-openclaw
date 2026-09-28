@@ -856,6 +856,7 @@ def scan_all() -> dict:
     sell_count = 0
     error_count = 0
     strategy_actions = {k: {"total": 0, "buy": 0, "sell": 0} for k in STRATEGY_LABELS}
+    _bar_dates = []  # 各股实际行情 bar 日期，用于报告数据日期标注
     
     for symbol, name in STOCKS:
         sname = BEST_STRATEGY_MAP.get(symbol, DEFAULT_STRATEGY)
@@ -898,6 +899,12 @@ def scan_all() -> dict:
             "atr_stop": signal.get("atr_stop"),
             "fib_tp": signal.get("fib_tp", {}),
         }
+        try:
+            _dc = _pick_col(df, "date", "day")
+            if _dc:
+                _bar_dates.append(pd.to_datetime(df[_dc].iloc[-1]).strftime("%Y-%m-%d"))
+        except Exception as _e:
+            log.warning(f"{name}({symbol}) bar 日期提取失败: {_e}")
         results.append(result)
         
         strategy_actions[sname]["total"] += 1
@@ -908,8 +915,13 @@ def scan_all() -> dict:
             strategy_actions[sname]["sell"] += 1
             sell_count += 1
     
+    _data_date = today
+    if _bar_dates:
+        from collections import Counter as _Counter
+        _data_date = _Counter(_bar_dates).most_common(1)[0][0]
     return {
         "date": today,
+        "data_date": _data_date,
         "stock_count": len(STOCKS),
         "summary": {
             "buy": buy_count,
@@ -1017,8 +1029,13 @@ def main():
     # ⑤ 保存日报
     today = datetime.now().strftime("%Y-%m-%d")
     report_path = os.path.join(OUTPUT_DIR, f"{today}_adaptive.md")
+    _dd = (output or {}).get("data_date", today) if isinstance(output, dict) else today
     with open(report_path, "w") as f:
         f.write(f"# 自适应策略日报 {today}\n\n")
+        # 🔴 数据新鲜度标注（供 scripts/data_freshness_guard.py 门禁校验）
+        f.write(f"数据日期: {_dd}\n\n")
+        if _dd < today:
+            f.write(f"> ⚠️ **数据滞后**：日K 最新 bar = {_dd}，报告内价格/指标基于该日。\n\n")
         f.write(format_brief(output))
     print(f"📄 日报已保存: {report_path}")
 

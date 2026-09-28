@@ -317,8 +317,13 @@ def main():
 
     today = datetime.now().strftime("%Y-%m-%d")
     os.makedirs(DAILY_DIR, exist_ok=True)
+    # 🔴 数据新鲜度标注（供 scripts/data_freshness_guard.py 门禁校验）
+    # 本报告评估的是模拟盘成交（截至今日），基准日 since 为调参生效日
+    data_date = today
     with open(os.path.join(DAILY_DIR, f"{today}_param_eval.md"), "w") as f:
         f.write(f"# 调参赛后验证 {today}\n\n")
+        f.write(f"数据日期: {data_date}\n")
+        f.write(f"> 口径：模拟盘成交截至 {data_date}；`{out['since']}` 为调参基准日（评估起点），非数据日期。\n\n")
         f.write(report)
     print(f"\n📄 评估报告已保存: {os.path.join(DAILY_DIR, f'{today}_param_eval.md')}")
 

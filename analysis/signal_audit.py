@@ -740,7 +740,8 @@ def main():
         print("=====SIGNAL_AUDIT_END=====")
         os.makedirs(DAILY_DIR, exist_ok=True)
         with open(os.path.join(DAILY_DIR, f"{date}_signal_audit.md"), "w") as f:
-            f.write(f"# 信号交叉审计 {date}\n\n")
+            f.write(f"# 信号交叉审计 {date}\n")
+            f.write(f"数据日期: {date}（非交易日，未获取行情）\n\n")
             f.write(report)
         print(f"\n📄 审计报告已保存: {os.path.join(DAILY_DIR, f'{date}_signal_audit.md')}")
         return
@@ -833,8 +834,22 @@ def main():
 
     # 落盘
     os.makedirs(DAILY_DIR, exist_ok=True)
+    # 🔴 数据新鲜度标注：审计对象为上游 dual 报告，数据日期取自其头部标注
+    data_date = date
+    try:
+        if os.path.exists(dual_path):
+            with open(dual_path) as _f:
+                _m = re.search(r"数据日期\s*[:：]\s*(20\d{2}-\d{2}-\d{2})", _f.read())
+            if _m:
+                data_date = _m.group(1)
+    except Exception as _e:
+        print(f"⚠️ 无法从 {dual_path} 解析数据日期: {_e}")
     with open(os.path.join(DAILY_DIR, f"{date}_signal_audit.md"), "w") as f:
-        f.write(f"# 信号交叉审计 {date}\n\n")
+        f.write(f"# 信号交叉审计 {date}\n")
+        f.write(f"数据日期: {data_date}\n")
+        if data_date < date:
+            f.write(f"> ⚠️ 审计对象（dual 报告）数据日期 = {data_date}，滞后于报告日，结论据此降权。\n")
+        f.write("\n")
         f.write(report)
     print(f"\n📄 审计报告已保存: {os.path.join(DAILY_DIR, f'{date}_signal_audit.md')}")
 

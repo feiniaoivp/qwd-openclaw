@@ -384,6 +384,14 @@ def main():
 
     md_parts = []
     md_parts.append(f"# 📊 A股每日盘前深度分析报告 | {target_date}")
+    # 🔴 数据新鲜度标注（供 scripts/data_freshness_guard.py 门禁校验）
+    _dd = (dual_data or {}).get("data_date") if isinstance(dual_data, dict) else None
+    if _dd:
+        md_parts.append(f"数据日期: {_dd}")
+        if _dd < target_date:
+            md_parts.append(f"> ⚠️ **数据滞后**：日K 最新 bar = {_dd}，报告内价格/指标基于该日，**非前一交易日**。")
+    else:
+        md_parts.append("数据日期: 未获取")
     md_parts.append(f"> 生成时间: {datetime.now().strftime('%H:%M:%S')} | 数据基准: 前一交易日收盘")
     md_parts.append("")
 

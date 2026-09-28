@@ -72,6 +72,7 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **注意:** 机电B股(900925)在baostock上无数据，已知待处理。
 
 ### Lessons Learned
+*   **[2026-09-28] 🔴 「except Exception 静默」第三次复现 → 监控全盲 10 天还报"正常"。** `cron_health_check.py` 的 `_gateway_request()` 调 `POST /api/cron/{action}`（**实测 404，端点不存在**），异常被 `except Exception: log.debug` 静默吞掉 → 回退本地 jsonl（gateway 09-18 起 404 后停更）→ 7天窗口滑出后全部 `no_data` → `should_alert` 不认 no_data → 报"0 告警正常"。期间真实任务大多正常跑（gateway list 权威数据），真正异常的反被隐瞒（盘前深度分析连败 4 次 timeout、quant-backtest 推送配置错）。**修复**：①改用 `openclaw cron list --json`/`cron runs --id`（CLI 走 WS，实测可用，重试 2 次+结构校验，旧 HTTP 降级兜底）②fallback 失败全部 log.warning 可见 ③用 gateway list 的 lastRunAtMs/nextRunAtMs 独立判陈旧度（不依赖 runs 历史），no_data 拆分为 partial_data/调度未推进/真无运行。**三层防线**：新门禁 `scripts/silent_except_guard.py`（AST，棘轮模式：存量 115 处仅报告、新增 exit 1，基线只降不升）接入周流水线步骤 0f。**函数重写铁律**：apply_patch 插入新版函数后旧定义必须删除（本次旧 cron_list 遮蔽新版，表现为"CLI 全败且无告警"），改完 `grep -c` 确认唯一定义；验证退出码必须重定向到文件再 echo（`cmd | tail; $?` 取的是 tail）。
 *   **[2026-09-25] F-5 口径统一：三套本金共存导致仓位限额偏差。** `INITIAL_CAPITAL=100k`（单票）、`REFERENCE_TOTAL_CAPITAL=2.7M`（参考总本金常量）、`PositionSizer(total_capital=3_000_000)`（030风控硬编码） → **030限额偏大 11%**。修复：`sizer = PositionSizer(total_capital=REFERENCE_TOTAL_CAPITAL)`，**统一引用单一事实来源**，同步清理 `portfolio_equity.csv` 历史脏数据（保留 09-22 后）。**注（2026-09-27 用户确认）：REFERENCE_TOTAL_CAPITAL 固定 270万，是“参考分母”常量，不随关注池只数自动变动；调整须走风控变更流程。**
 *   **[2026-09-23] 账面「留痕」≠「持仓」；发现双侧矛盾先上报、冻结口径改动。** 判断模拟盘真实仓位必须同时核 `position`/`shares` 与资金曲线 `positions_held` —— 任一侧单独读数都得出相反结论（09-23 实证：留痕口径 −0.49% 空仓 vs 资金曲线 +0.48% 持 1 仓）。**未确认前不要自作聪明「修正」本金口径**，以免破坏盘中决策。
 *   **[2026-09-23] 资源口径跳变必须留时序证据链。** `portfolio_equity.csv` 本金多次跳变（350万→09-14 50万→09-16 30万→09-22 270万）是定位「初始本金被重建写入覆盖」的关键线索；**单一快照无法发现，需对同一文件做时序比对**。
@@ -972,13 +973,84 @@ This file serves as your curated long-term memory, storing significant events, d
 *   cron 错误三角定位结论沿用（交付层瞬时失败 + 模型层偶发空响应，已自愈，不改 config）。
 *   git 未提交改动（96~120+ 项）持续累积，待主会话人工批量确认。
 
-## Promoted From Short-Term Memory (2026-09-27)
+## 2026-09-25~28 重大事件：NVIDIA 模型配置闭环 + 关注池口径 27→35 统一 + 数据新鲜度缺失（memory-maintenance-check 蒸馏）
 
-<!-- openclaw-memory-promotion:memory:memory/2026-09-22.md:14:17 -->
-- 14:00 心跳巡检: cron 全线 `ok`（40 任务），无 error 态；上一分钟 `特高压出海-海外招标监控`(14:00) 与 `盘中策略实时预警-下午场`(14:00) 正常触发。; 数据新鲜度：`intraday_alert_output.json` 14:00 刷新（27 只扫描，5 条 HIGH 止损告警）；`premarket_outlook_output.json` 08:30 刷新；`portfolio_sim_state.json` 04:57 更新，`last_signal_date` 已推进至 **2026-09-22**（早间 08:00 时为 09-18，T+1 回补已完成）。; ⚠️ 5 条 HIGH 跌破止损告警（应流股份/恒立液压/中联重科/恒力石化/中信特钢）— 属盘中例行预警规则，cron 自身已推送，心跳不重复播报。; 门禁复检：`script_path_guard.py` 扫描 129 脚本，违规 0 ✅。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-22.md:14-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-22.md:18:19 -->
-- 14:00 心跳巡检: 结转待办不变：F-5 口径、3950d3cc 描述、index_flow 失真、北向真缺失、deep 回捞诊断。; 周一 06:00 审计流水线本周尚未运行（下次 09-28）；`security_audit` 28.5h 前、`tg_transport_audit` 123h 前，均未超（周频/门禁任务）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-22.md:18-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-22.md:5:8 -->
-- 08:00 心跳巡检: 今日为交易日（周二），cron 全线 `ok`，无 error 态；下一批任务：08:30 盘前展望/新闻、08:35 新闻阅读。; 数据新鲜度：`premarket_outlook_output.json` 09-21 08:30（昨日，正常，今日 08:30 将刷新）；`intraday_alert_output.json` 09-21 14:30。; 模拟盘 `data/portfolio_sim_state.json`：持仓 27 只，`last_signal_date` = 09-18（T+1 回补，今日 15:40 `portfolio-sim-daily` 更新）。; git 工作区有未提交改动（`portfolio_equity.csv`、`premarket_outlook_output.json` 等数据文件 + 部分 analysis/*.py）。**提交动作交主会话人工确认，心跳不自动清理**。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-22.md:5-8]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-22.md:9:10 -->
-- 08:00 心跳巡检: 昨日（09-21 07:00）记忆维护已完成：MEMORY.md 蒸馏区块写入、Lessons 新增 5 条、ontology error-inject 因 4 条 ErrorPattern count 全为 1（<min-count 2）输出为空 → 非故障。; 结转待办（见 09-21 摘要）：F-5 口径、3950d3cc 描述、index_flow 失真、北向真缺失、deep 回捞诊断。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-22.md:9-10]
+> 全部源自 `memory/2026-09-25.md` / `2026-09-26.md` / `2026-09-27.md` / `2026-09-27-2000.md` / `2026-09-27-2114.md` / `2026-09-28.md` 已落盘事实。
+
+### 🔧 NVIDIA NIM 模型「不可用」根治（09-27 21:40，用户选方案B）
+*   **起因**：用户报告 Minimax / Kimi / GLM 三个模型不可用。**真实根因推翻了先前所有假设** —— 这三个模型**从未配置**在 `openclaw.json`（`models.providers.nvidia.models` 只有 2 个 Nemotron）。「不可用」= 未配置，不是 ID 错 / maxTokens 溢出。
+*   **NIM 端真实清单核对**（`GET /v1/models`，82 个模型）：
+    *   Kimi → `moonshotai/kimi-k3` ✅ 可用；`moonshotai/kimi-k2.6` ❌ 404「not found for account」（**列表有但本账号无权限**）
+    *   GLM → `z-ai/glm-5.3` ✅ / `z-ai/glm-5.3-flash` ✅
+    *   **Minimax → NIM 全库无任何 minimax 模型**，配置不了 → **无解**（需另寻供应商）
+*   **上下文长度**（Prismfy 查 build.nvidia.com modelcard）：kimi-k3 = 1,048,576；glm-5.3 = 1M（753B MoE）；glm-5.3-flash = 1,048,576（320B/18B，Text+Image）。
+*   **写入配置**（nvidia + nvidia-2 两 provider 同步）：3 模型 contextWindow=1048576、maxTokens=65536（≤50% ctx）、reasoning=true、cost 全 0、`compat.requiresStringContent=true`；glm-5.3-flash input=[text,image]。备份 `openclaw.json.bak.20260927_212902`。
+*   **验证**：JSON 合法 ✅ → `openclaw gateway restart`（Runtime running / Connectivity ok）→ `openclaw models list` 显示 1049k 上下文 → 子代理端到端实测：glm-5.3 ✅（240s，慢）、glm-5.3-flash ✅（36s）、kimi-k3 首测短暂 `terminated`（**上游流中断，非配置错**）裸 SSE 复测 + 二次子代理复验 ✅（18s）。**三模型全部可用**，建议作为 fallback 链成员。
+
+### 🔧 AMD Radeon 模型修复 + 完整对齐 8 模型（09-27 19:3x~19:4x，用户选方案B）
+*   **AMD Qwen 溢出根因**：`maxTokens=384000` 但 Qwen `context_length` 仅 262144 → 输入+maxTokens 超限被端拒绝（`Context overflow` → 重试3次全败 → blocked）。根因追溯：上午给4模型批量套 DeepSeek 的 compat 值，**未逐模型核对真实 context_length**。
+*   **修复表**（按 API 真实 context 校准）：DeepSeek-V4-Flash / Vision-Exp 保持 384000（1M）；Qwen3.8-Flash-Next 384000→**131072**（256K）；MiniCPM5-1B 384000→**65536**（131K）。备份 `openclaw.json.bak.20260927_193050`。
+*   **双向验证**：新值 131072 → ✅ finish=stop；旧值 384000 → ❌ HTTP400 溢出（印证根因）。
+*   **完整对齐（8 个 chat 模型）**：`MiniCPM5-1B`（API 不存在）→ `MiniCPM5-2B`；Qwen3.8-Flash-Next 补 vision；**移除 `MinerU2.5-Pro`**（context_length=0 触发 schema 校验 `expected >0` → **Gateway 启动被拦**；MinerU 是文档解析模型非 chat）。API 实测 6 个正常、2 个上游故障（DeepSeek-V4.1-Flash HTTP500/504、MiMo-V2.6-Flash RemoteDisconnected —— **非我方配置问题**）。备份 `openclaw.json.bak.20260927_193050` / `_193830`。
+
+### 📌 关注池口径 27→35 统一 + 三层防线门禁（09-27，用户确认选B）
+*   **事故**：用户发现「每日量化回测」报告覆盖 35 只，但 MEMORY.md/watchlist.md 写 27 只。根因：**代码侧早已是 35 只**（`fib_extension_scan.WATCHLIST`=35 含电网8股），**只有文档残留 27 只** → 非污染，是文档未追平代码。
+*   **已执行 4 项改动**：① `memory/watchlist.md` 头部改 35 只 + 新增 **Tier 4 电力出海/电网装备（8只）**；② `MEMORY.md` 标题 30→**35 stocks** + 新增电网8股分行；③ `analyze_all_stocks.py` 硬编码 25 只 → **35 只完整池**；④ `analysis_summary_all.md` 重生成 **35/35**。
+*   **补齐动作**：`/Users/duguke/stock_data` 缺 10 只 CSV（电网8+中信特钢000708+金力永磁300748）→ 新建 `scripts/fill_missing_stock_csv.py`（baostock 前复权，2025-06-30 起，305行/只）补齐。
+*   **映射补齐**：`adaptive_strategy_map.json` 原 34 只缺许继电气(000400) → **未凭猜写**，跑 `validate_strategies.py --stocks 000400` 得最优 EMA12/26金叉（得分13.43/夏普0.142，**未过护栏25**），按数据结论写入 `ema_cross` → 现 35 只完全一致。
+*   **三层防线（缺一不可）**：① `TOOLS.md` 新增「🔴 关注池口径规则（SSOT）」；② `scripts/strategy_map_guard.py`（退出码 0/1）；③ 接入周六 `weekly_full_pipeline.py` **步骤0c**（键名 `map_guard`）+ 周一审计。
+*   **门禁升级（对抗性验证驱动）**：初版 C/D 项只校验「声明只数==WATCHLIST」有软肋 → 升级为**集合校验**（提取文档清单行 6 位代码集合），并**排除 Note 与含「撤除|移除|清空」的历史说明行**（修 MEMORY.md 历史代码误报）。**6 条对抗性测试全通过**，正常态 exit=0 无误报。
+*   **实战验证（09-27 18:35~18:47）**：`weekly_full_pipeline.py` 完整跑通 **EXIT_CODE=0 / 626.3s**，步骤0c `map_guard` ✅ 0.63s，产物 `data/weekly_pipeline_2026-09-27.json`（86KB, all_success=true）。跑完后 `adaptive_strategy_map.json` 仍 35 只/0 空值，门禁仍 exit 0。
+*   **仓位口径决策（用户确认）**：**`REFERENCE_TOTAL_CAPITAL` 保持 270 万不变** —— 它是固定「参考分母」常量，**不随关注池只数自动变动**；关注池 27→35 **不触发**调整；任何调整须走独立风控变更流程（请示+快照+复核）。与 35 只池名义总本金不匹配一事**已归档为「有意保持」而非待修 bug**（模拟盘实际资金固定，变动会放大仓位限额）。
+
+### 🔴 新发现：数据源滞后 + 缺新鲜度门禁（09-28 06:21 心跳）
+*   `2026-09-28` 盘前报告 `数据日期 = 2026-09-24`，而最近交易日应为 **2026-09-25（周五）** → **缺一个交易日**。
+*   **根因已实测隔离**：baostock 上游未发布 09-25 数据（`query_history_k_data_plus(sh.600030, 09-20..09-28)` 只返回到 09-24；`600030`/`000001` 最新 bar 均 09-24）→ **上游滞后，非我方代码/缓存 bug**。
+*   **影响**：所有基于日线的最新价/指标/信号滞后一个交易日；若 09-25 有大幅波动，盘前结论会失真。
+*   **待办**：① 09-29 观察是否补齐 09-25；② 若仍缺 → 检查是否需换源或补 akshare/新浪日K 兜底；③ **加「数据日期 vs 应有最近交易日」新鲜度门禁**（前视偏差防线），落后即在报告头部显式告警，**不得静默使用**。
+
+### ⚠️ Cron 健康度（09-28 心跳）
+*   3 个任务 error(4x)：`b5943dcf` Cron健康度检查、`a8c18aed` Dreaming Daily Report（均 `FallbackSummaryError: All models failed (5) Connection error (timeout)`，基础设施层）、`87c6b7f9` 每日盘前深度分析（`job execution timed out`）。
+*   **LLM 端点实测可达**（api.deepseek.com→401、integrate.api.nvidia.com→404、generativelanguage.googleapis.com→404，均 TLS 正常仅未鉴权）→ 判定 **provider 侧瞬时超时**，非配置错。
+*   **盘前 Pipeline 手动复跑 ✅**（exit 0，~7min）：news 0.13s / scan 57.2s / dual 60.9s / **agent 282.2s** / audit 2.9s → 报告已生成 `analysis/daily/2026-09-28_premarket_report.md`。实跑远低于 900s，**证明 cron timeout 是包装层预算问题**（09-26 已定位根因＝脚本末尾 `print(整份报告)` 流式回灌 → 计时器不重置）。
+*   09-26 报告 cron 五连败**已自愈**（09-25 04:00 恢复 ok，`consecutiveErrors=0`）→ 一次性网络层风暴，**不追加 fallback 链改造**；`daily-report-2026-09-24.md` 缺档**接受**（关键事件已在 09-25 报告归档，双轨冗余生效）。
+
+### 🛠 新增教训（09-25~09-28）
+*   **[09-27] 「模型不可用」优先先查「是否配置」** —— 不要直接假设 ID/参数写错。本轮三模型其实**完全未配置**，此前 ID 不匹配/maxTokens 溢出假设全部落空。**先看 `models list` 与 config 实际内容。**
+*   **[09-27] NIM `/v1/models` 列出 ≠ 本账号有权限。** `kimi-k2.6` 在列表但调用 404「not found for account」；必须**逐个实测**区分「列出但无权限」与「真可用」。
+*   **[09-27] NIM 端点不返回 context_length**（`/v1/models` 与 `/v1/models/{id}` 只有 id/object/owned_by），上限需查 build.nvidia.com modelcard（Prismfy）获知。
+*   **[09-27] 模型调用报「timeout / terminated」≠ 配置错。** 需分开看两阶段：①HTTP 建连（`status=200`）②SSE 流是否跑完。本轮 kimi-k3 是 200 + SSE 建连成功后才 terminated → **上游流中断**。**必须裸 SSE 复测 + 二次复验**，避免误删其实可用的模型配置。（应对：NIM 模型配进 fallback 链而非 primary。）
+*   **[09-27] `maxTokens` 必须 < `contextWindow` 且配前核对端上真实 `context_length`**（建议 ≤50% ctx），禁止跨模型复制统一值（256K vs 1M 差异极大）。
+*   **[09-27] 配置项必须通过 schema 校验**：`contextWindow` 要求 >0，填 0（如 MinerU2.5-Pro）会导致 **Gateway 启动被拦**，重启时才暴露；API 返回 context=0 的模型应直接不配。模型 ID 必须与 `/v1/models` 逐一核对。
+*   **[09-27] 门禁写完必须做对抗性验证** —— 不只测「正确输入通过」，更要测「各类错误输入被抓住」，并**检查正常态无误报**。初版两类问题（软不一致漏报 + 历史代码误报）都是对抗测试才暴露的，纯「跑一遍通过」发现不了。
+*   **[09-27] 不得把「代码写入某步骤」等同于「该步骤已实战运行」。** mtime 区分二者——代码就绪 ≠ 运行验证。本轮若不实地跑 `weekly_full_pipeline.py`，就会把「代码就绪」误报为「已验证」。
+*   **[09-27] pipeline JSON 步骤键名与脚本名不同名**（`strategy_map_guard` → **`map_guard`**），核验时须读实际键而非猜名。
+*   **[09-26] 回滚脚本「假回滚」漏洞（已修，高严重度）**：`restore_from_snapshot.sh` 的 `TAG` 未校验 → `git checkout` 静默 no-op（退出码仍 0），而它是 AGENTS.md「一键回滚」最后防线 → **安全兜底机制假阳性（比没有更危险）**。修复三重防护（空标签拒绝 exit 2 / 归档快照优先 `cp -R` / `git rev-parse --verify` 校验）。**遗留**：`snapshot_guard.sh` 需同步快照到 `backups/<tag>/`。
+
+### 📋 待办结转（09-25~09-28）
+*   ✅ ~~数据新鲜度门禁~~（09-28 已落地：`data_freshness_guard.py` 接入周流水线步骤 0e）。
+*   ✅ ~~cron-health-check 全盲~~（09-28 晚已修：CLI 权威路径+权威陈旧度校验+no_data 拆分；实测盘前深度分析正确报 degraded）。
+*   🟡 **静默异常存量清理**（115 处，AST 门禁基线在 `data/silent_except_baseline.json`；数据获取路径优先，新增已阻）。
+*   🔴 `87c6b7f9` timeout 修复三方案（①停 print 整份 ②timeoutSeconds 下调 ③推送前移）—— **待批**（09-24 起连续 4 次 error）。
+*   🔴 `snapshot_guard.sh` 快照同步到 `backups/<tag>/`；⚠️ `guard/*` 快照窗口已收窄至 **6 天**（最近 09-20）。
+*   🟡 `quant-backtest-daily`（bd9843f1）今晚报 "Delivering to Telegram requires target <chatId>" 推送配置错（与 systemEvent 改造同源）。
+*   🟡 沿用：F-5 脱钩根因（最高优先）、回测 cron `bd9843f1` systemEvent 改造、`rm` 前置门禁（连续 5 期）、F-2 比率口径、北向真缺失 / `index_flow`+`market_net_total` 失真、3950d3cc description、backtest 09-11/09-21 缺档、daily portfolio_sim 09-12~21 缺档、daily-report 08-29/09-15/09-24 缺档、skill_supply_scan 卡死、op CLI 未登录、auction-feed-0915、§5 三疑点、mapping(002318/002156)、批次C回测、恒立液压分歧、⑫回测闭环。
+*   🟡 **Minimax 无解**（NIM 无此模型）；用户如确需 Minimax 需另找供应商（如官方 API）。
+*   🟡 `param_tune` 单窗口候选（`windows: 1`）可覆盖跨窗口稳健策略 → **既有设计隐患，待独立评估**（是否要求 `windows >= 2`）。
+*   🟡 投资理念台账：电力设备出海 + ⑭半导体设备卖铲人 → 合并「卖铲人观察池」；⑧RSI定位/⑩RVI/⑪涡流VI+布林挤压 三者同型 → 维持白名单简化（**不引入新震荡指标**）；⑫（MACD多周期+动能分离+裸K）仍标「须回测」。
+*   09-26 有 5 项待办已关闭（报告 cron 五连败归因 / daily-report-09-24 缺档 / 002413 现价 ¥0.0 异常 / 理由模板化 / deep 回捞疑点维持已知特性）。
+
+## Promoted From Short-Term Memory (2026-09-29)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-09-24.md:10:13 -->
+- 蒸馏写入 MEMORY.md: 🔴 **模拟盘账本双侧静默不一致**（09-23 发现）：持仓侧 8 条留痕但 `position` 全 false / `shares` 全 0（实际空仓，留痕 −0.49%）；资金曲线侧 total_initial 270 万 / +0.48% / positions_held=1 → 本金口径、持仓数、收益率方向三者互不自洽 → 资金曲线与信号账本脱钩。; 证据链：`portfolio_equity.csv` 本金跳变（3,500,000 → 09-14 500,000 → 09-16 300,000 → 09-22 2,700,000）→ 疑似 `portfolio_core` 初始本金被重建写入覆盖。; **处置：未经确认不擅自改本金口径**，待人工确认根因归属。; 前置关联：`last_signal_date` 推进史（09-16 卡住 → 09-18 → 09-22）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-24.md:10-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-24.md:14:15 -->
+- 蒸馏写入 MEMORY.md: 心跳巡检常态全绿（09-21~09-23）：cron 41~42 ok、`script_path_guard.py` 129 脚本 0 违规、数据新鲜度核对通过、09-23 预警 7 条/5 HIGH+2 LOW、交叉审计 0 异常。; 投资理念归档（09-23 19:30）：24h 窗口三方 vault 0 篇 → 投资层 no-op，自 09-16 连续第 7 日静默。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-24.md:14-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-24.md:17:17 -->
+- 蒸馏写入 MEMORY.md: `Lessons Learned` 段新增 2 条：[2026-09-23] 留痕≠持仓、双侧矛盾先上报冻结口径；[2026-09-23] 资源口径跳变须留时序证据链。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-24.md:17-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-24.md:19:19 -->
+- 蒸馏写入 MEMORY.md: 备份：`MEMORY.md.bak.20260924_0700`（写前）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-24.md:19-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-24.md:6:6 -->
+- 阅读范围: `memory/2026-09-21.md`（上次维护摘要）、`memory/2026-09-22.md`、`memory/2026-09-23.md`，`memory/dreaming/daily-report-2026-09-21.md`、`daily-report-2026-09-22.md`，及 MEMORY.md 现有结构（937 行，末尾为 09-24 promoted 段）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-24.md:6-6]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-24.md:9:9 -->
+- 蒸馏写入 MEMORY.md: 新增区块：`## 2026-09-21~23 重大事件：模拟盘账本双侧脱钩（待确认）+ 心跳巡检常态（memory-maintenance-check 蒸馏）`，含： [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-24.md:9-9]

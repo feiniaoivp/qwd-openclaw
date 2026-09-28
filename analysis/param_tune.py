@@ -398,6 +398,8 @@ def tune_single_stock(symbol: str, name: str, df: pd.DataFrame,
         "avg_sharpe": best_agg["avg_sharpe"],
         "avg_dd": best_agg["avg_dd"],
         "avg_trades": best_agg["avg_trades"],
+        # 窗口数：写回护栏用（防单窗口候选覆盖跨窗口稳健策略）
+        "windows": best_agg.get("windows", 0),
         "details": stock_detail,
         "top_k": [
             {"strategy": s, "params": p, "score": sc, "avg_return": a["avg_return"], "avg_sharpe": a["avg_sharpe"]}
@@ -492,6 +494,12 @@ def main():
     write = args.write
     top_k = args.top_k
     workers = min(args.workers, os.cpu_count() or 4)
+
+    # 2026-09-28：--fast 只有单窗口，写回会违反跨窗口护栏 → 直接拒绝组合
+    if fast_mode and write:
+        print("❌ --fast 与 --write 不可同时使用：快速模式仅 [W3] 单窗口，"
+              "写回会覆盖跨窗口稳健策略。请用全量模式或改由 validate_strategies.py --arbitrate 写回。")
+        return
     
     grids = FAST_GRIDS if fast_mode else PARAM_GRIDS
     mode_label = "快速" if fast_mode else "全量"
@@ -582,6 +590,13 @@ def main():
             old_s = cur_map.get(symbol)
             # 置信度护栏
             ok, reason = confidence_guard(info["score"], info["avg_sharpe"], info["avg_trades"])
+            # 跨窗口护栏 (2026-09-28)：禁止单窗口候选写回。
+            # 背景：--fast 模式 windows_to_run=[FAST_WINDOW] → aggregate_score 的 windows==1，
+            # 此时单窗口候选可能覆盖跨窗口稳健策略（历史教训：小样本/单窗口结论无统计显著性）。
+            # 全量模式天然 4 窗口，不受影响。
+            win = info.get("windows", 0)
+            if ok and win < 2:
+                ok, reason = False, f"单窗口候选(windows={win})禁止写回，需跨窗口验证"
             if old_s != new_s and ok:
                 print(f"  📝 策略变更 {old_s} -> {new_s} {info['name']}({symbol}) score={info['score']} ({reason})")
                 cur_map[symbol] = new_s

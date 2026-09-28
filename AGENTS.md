@@ -299,6 +299,7 @@ echo "✅ 已回滚到 $TAG"
 | `script_path_guard.py` | `scripts/` | 脚本 sys.path 样板缺失 | 周流水线步骤 0 |
 | `skill_supply_scan.py --offline` | `scripts/` | 新技能供应链高危模式(纯静态,秒级) | 装新技能前 + 周一审计 |
 | `snapshot_guard.sh` | `scripts/` | 变更前快照 | 重大变更 SOP |
+| `silent_except_guard.py` | `scripts/` | 新增静默异常吞噬（AST，棘轮模式：存量仅报告、新增 exit 1） | 周流水线步骤 0f（2026-09-28 新增） |
 
 ### 新增门禁时必做
 

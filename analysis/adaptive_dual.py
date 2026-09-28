@@ -754,6 +754,7 @@ def scan_all():
     results = []
     stats = {"buy": 0, "sell": 0, "hold": 0, "agree": 0, "disagree": 0, "error": 0}
     strat_usage = {k: 0 for k in STRATEGY_LABELS}
+    _bar_dates = []  # 各股实际行情 bar 日期，用于报告数据日期标注
 
     for idx, (symbol, name) in enumerate(STOCKS):
         top2 = dual_map.get(symbol)
@@ -774,6 +775,10 @@ def scan_all():
 
         change_pct = calc_change_pct(df)
         cur_price = float(df.iloc[-1]["close"])
+        try:
+            _bar_dates.append(df["date"].iloc[-1].strftime("%Y-%m-%d"))
+        except Exception as _e:
+            print(f"  ⚠️ {symbol} bar 日期提取失败: {_e}")
         
         # 🔄 P1: 检测市场政权并获取自适应参数
         regime_params = {}
@@ -983,7 +988,13 @@ def scan_all():
             },
         })
 
-    return {"date": today, "stock_count": len(STOCKS), "stats": stats,
+    # 数据日期 = 众数 bar 日期（多数股票所属的最新交易日）；无则回退报告日期
+    data_date = today
+    if _bar_dates:
+        from collections import Counter
+        data_date = Counter(_bar_dates).most_common(1)[0][0]
+    return {"date": today, "data_date": data_date,
+            "stock_count": len(STOCKS), "stats": stats,
             "dual_strategy_map": dual_map, "strategy_usage": strat_usage,
             "details": results}
 
@@ -1189,8 +1200,14 @@ def main():
     print("\n" + format_brief(output))
 
     report_path = os.path.join(OUTPUT_DIR, f"{today}_dual.md")
+    data_date = output.get("data_date", today)
     with open(report_path, "w") as f:
         f.write(f"# 双策略最优扫描日报 {today}\n\n")
+        # 🔴 数据新鲜度标注（供 scripts/data_freshness_guard.py 门禁校验）
+        f.write(f"数据日期: {data_date}\n\n")
+        if data_date < today:
+            f.write(f"> ⚠️ **数据滞后**：日K 最新 bar = {data_date}，"
+                    f"以下「现价」为 {data_date} 收盘价，**非当日行情**。\n\n")
         f.write(format_brief(output))
         # 每只股票的详细信号
         f.write("\n---\n\n## 逐股双策略信号详情\n")

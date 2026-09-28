@@ -148,6 +148,16 @@ def main():
     if not r["success"]:
         print("⚠️ 日报数据新鲜度未通过（见上方），请人工核查数据日期标注（不阻断流水线）...")
 
+    # 步骤 0f: 静默异常吞噬门禁（2026-09-28 新增，AST 静态秒级，棘轮模式）
+    # 背景：cron_health_check.py 的 `except Exception` 只走 log.debug，
+    # 把 gateway HTTP API 404 静默吞掉 10 天，监控全盲还报"正常"。
+    # 棘轮：存量静默仅报告（历史债务不阻断），新增静默才 fail。
+    print("\n🚦 步骤 0f/9: 静默异常吞噬门禁 (silent_except_guard.py)")
+    r = run_script("../scripts/silent_except_guard.py", timeout=120)
+    results["silent_except"] = r
+    if not r["success"]:
+        print("⚠️ 新增静默异常吞噬（见上方），请人工修复（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = run_script("backtest_strategies.py", timeout=600)  # 10分钟上限，当前约3.5分钟跑完，留足缓冲

@@ -85,9 +85,16 @@ def check_report(path: str):
     if not is_trading_day(report_date):
         return True, [f"{report_date} 非交易日，跳过新鲜度校验（预期产出空/免责报告）"]
 
-    # 优先读取显式标注 `数据日期: YYYY-MM-DD`（新规范）
+    # 优先读取显式标注的数据日期（支持多种格式）
+    #   ① `数据日期: YYYY-MM-DD` / `数据日期：YYYY-MM-DD`
+    #   ② Markdown 表格 `| 数据日期 | YYYY-MM-DD |`
+    #   ③ `数据日期：YYYY-MM-DD |` 等混合
+    # (2026-09-28 修复：旧版只支持冒号式，导致表格型报告被误报为「未标注」)
     data_date = None
-    dm = re.search(r"数据日期\s*[:：]\s*(20\d{2}-\d{2}-\d{2})", text)
+    dm = re.search(
+        r"数据日期[\s:：|]+(20\d{2}-\d{2}-\d{2})",
+        text,
+    )
     if dm:
         data_date = datetime.date.fromisoformat(dm.group(1))
     else:
