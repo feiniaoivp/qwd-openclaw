@@ -1027,14 +1027,25 @@ def run_portfolio_scan(
         signal = RiskGuard.check_strategy_switch(signal, pos)
         # 重复 BUY 钝化
         signal, should_exec = RiskGuard.apply_buy_streak_dampening(signal, pos)
-        # 去重
+        # 去重（统一用真实交易日 today_str；data_date 仅用于诊断/滞后检测）
         data_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
-        if not RiskGuard.check_dedup(signal, pos, data_date):
+        if not RiskGuard.check_dedup(signal, pos, today_str):
             should_exec = False
 
-        # 仅新交易日执行
-        if should_exec and state.get("last_signal_date") is not None and data_date != state.get("last_signal_date"):
-            action, msg = execute_trade(pos, signal, data_date, strategy=strat, position_plan=position_plan)
+        # 🔴 数据滞后守卫（2026-09-29 新增）：
+        # 成交日期必须 == 真实交易日 today_str。若拉到的数据最新日期滞后于今天
+        # （跨交易日），说明日线源没更新到今天，此时基于过期数据执行会「无中生有」
+        # 回填历史成交（实证：09-27 回补出 09-24 雷科防务涨停价卖出，详见记忆）。
+        data_stale = data_date < today_str
+        if data_stale:
+            stale_reason = f"数据滞后 {data_date} < {today_str}，跳过执行"
+            if should_exec:
+                errors.append(f"{name}({sym}) {stale_reason}（原信号:{signal['action']}）")
+            should_exec = False
+
+        # 仅新交易日执行（成交日期统一用 today_str，绝不回填历史日期）
+        if should_exec and state.get("last_signal_date") is not None and today_str != state.get("last_signal_date"):
+            action, msg = execute_trade(pos, signal, today_str, strategy=strat, position_plan=position_plan)
             if action:
                 trade_count += 1
                 all_msgs.append(msg)
