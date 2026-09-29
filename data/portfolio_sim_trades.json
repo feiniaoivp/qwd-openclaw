@@ -203,6 +203,7 @@
     "shares": 0,
     "pnl": 1386.2910438000035,
     "pnl_pct": 9.41,
-    "strategy": "ema_obv"
+    "strategy": "ema_obv",
+    "note": "⚠️回补伪造：09-27口径重建时由 data_date/today_str 错位补出的虚假成交，非09-24当天真实卖出（详见 memory/2026-09-29.md，待人工确认）"
   }
 ]
