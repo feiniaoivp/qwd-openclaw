@@ -108,6 +108,85 @@ def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
     return None
 
 
+# ═══════════════════════════════════════════
+# 成交即通知（2026-09-29 新增）
+# 背景：此前卖出成交只落盘/写日报，无任何即时推送 →
+#   用户「雷科防务 09-24 卖出」事后才知道。补上卖出/买入成交通知。
+# ═══════════════════════════════════════════
+
+_NOTIFY_STATE_FILE = os.path.join(WORKSPACE, "data", "portfolio_trade_notified.json")
+
+
+def _load_notified() -> dict:
+    """读取「已推送成交」幂等状态：{date: {msg_hash: True}}"""
+    if os.path.exists(_NOTIFY_STATE_FILE):
+        try:
+            with open(_NOTIFY_STATE_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+
+def _save_notified(data: dict):
+    with open(_NOTIFY_STATE_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def notify_trades(today_str: str, messages: list, portfolio: dict) -> int:
+    """成交即通知：把当日成交（买入/卖出）单独推送到 Telegram。
+
+    幂等：同名/同日/同内容消息不重复推送。
+    返回：实际推送的成交条数（0 表示无成交或均已推送过）。
+    """
+    import hashlib
+    if not messages:
+        return 0
+
+    try:
+        from send_telegram import send_with_retry
+    except Exception as e:
+        print(f"⚠️ 成交通知：导入 send_telegram 失败: {e}")
+        return 0
+
+    notified = _load_notified()
+    day_state = notified.setdefault(today_str, {})
+
+    new_msgs = []
+    for m in messages:
+        h = hashlib.sha1(m.encode("utf-8")).hexdigest()[:16]
+        if h in day_state:
+            continue
+        day_state[h] = True
+        new_msgs.append(m)
+
+    if not new_msgs:
+        return 0
+
+    t = portfolio or {}
+    lines = [
+        f"💼 **模拟盘成交通知** 🕒 {today_str}",
+        f"组合总资产 ¥{t.get('total_value', 0):,.0f} ({t.get('total_return_pct', 0):+.2f}%)",
+        "",
+    ]
+    lines.extend(f"• {m}" for m in new_msgs)
+    text = "\n".join(lines)
+
+    ok = send_with_retry(text, parse_mode="")  # 纯文本，避免 Markdown 实体解析 400
+    if ok.get("ok"):
+        _save_notified(notified)
+        print(f"🔔 成交通知已推送：{len(new_msgs)} 笔")
+    else:
+        # 推送失败则回滚幂等状态，下次重试
+        for m in new_msgs:
+            day_state.pop(hashlib.sha1(m.encode("utf-8")).hexdigest()[:16], None)
+        if day_state:
+            _save_notified(notified)
+        print(f"⚠️ 成交通知推送失败: {ok.get('error')}")
+
+    return len(new_msgs)
+
+
 def main():
     # Cron 时间窗口守卫：防止调度器时区 bug 导致非预期时段执行
     # 配置为 15:40，允许窗口 15:00-16:00
@@ -148,6 +227,14 @@ def main():
         f.write(f"# 全组合模拟盘日报 {today_str}\n\n")
         f.write(report)
     print(f"\n📄 日报已保存: {report_path}")
+
+    # 成交即通知（卖出/买入推送 Telegram）
+    try:
+        n = notify_trades(today_str, result.get("messages", []), result.get("portfolio", {}))
+        if n == 0 and result.get("messages"):
+            print("🔕 无新成交（或已推送过），跳过成交通知")
+    except Exception as e:
+        print(f"⚠️ 成交通知异常: {e}")
 
 
 if __name__ == "__main__":
