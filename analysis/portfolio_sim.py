@@ -80,9 +80,57 @@ def get_router_instance():
     return _router_instance
 
 
+def _backfill_today(symbol: str, df):
+    """当日数据补录 + 新鲜度告警（2026-09-29 新增）
+
+    背景：模拟盘默认请求前复权数据 → 走 baostock → baostock 当日滞后
+    一个交易日（MEMORY [2026-07-28]），导致 09-24 拿到的还是 09-23 收盘价
+    8.15，EMA+OBV 误判「跌破EMA20」在涨停价 8.97 卖飞雷科防务。
+
+    修复：若最新日线日期 < 最近交易日（今天/上周五），说明历史源滞后，
+    用新浪日K（当日收盘后即时可查、稳定）补上缺失的交易日 K 线。
+    补录成功回写/追加当日行；失败则显式告警（不静默）。
+
+    返回: (df, 是否补录成功)
+    """
+    if df is None or len(df) < 2:
+        return df, False
+
+    today = pd.Timestamp(datetime.now().date())
+    # 最近一个应收到的交易日：今天若为周末则上移至上个周五
+    last_td = today
+    while last_td.weekday() >= 5:  # 周六(5)/周日(6) 上移
+        last_td -= pd.Timedelta(days=1)
+
+    latest = pd.Timestamp(df["date"].max())
+    if latest >= last_td:
+        return df, True  # 数据已是最新，无需补录
+
+    # 滞后：用新浪日K补当日（代码内真实接口 money.finance.sina.com.cn，已验证可查当日）
+    try:
+        from analysis.data_layer.providers.sina_daily import get_provider as _get_sina_daily
+        sina = _get_sina_daily().get_daily(symbol, n=300)
+        if sina is not None and len(sina) >= 2:
+            sina_latest = pd.Timestamp(sina["date"].max())
+            if sina_latest > latest:
+                # 取 sina 中晚于当前历史源的交易日，按日期合并（去重，新记录覆盖）
+                new_rows = sina[sina["date"] > latest]
+                merged = pd.concat([df, new_rows], ignore_index=True)
+                merged = merged.drop_duplicates(subset="date", keep="last")
+                merged = merged.sort_values("date").reset_index(drop=True)
+                print(f"  ✅ {symbol} 数据滞后补录：历史源最新 {latest.date()} → 新浪补录 {sina_latest.date()}")
+                return merged, True
+    except Exception as e:
+        print(f"  ⚠️ {symbol} 新浪日K补录异常: {e}")
+
+    print(f"  ⚠️ {symbol} 数据滞后：最新 {latest.date()} < 交易日 {last_td.date()}，且补录失败 —— 当日信号可能基于过期数据")
+    return df, False
+
+
 def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
     """
     统一历史日K获取 - 走 DataRouter (内含降级链: 新浪日K -> pytdx -> baostock -> akshare)
+    + 当日数据补录(_backfill_today)
     实时行情回补 - 走 DataRouter.get_spot()
     """
     router = get_router_instance()
@@ -91,6 +139,7 @@ def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
     try:
         df = router.get_daily(symbol, "", start_date=start)
         if df is not None and len(df) >= 2:
+            df, _ = _backfill_today(symbol, df)
             return df
     except Exception as e:
         print(f"  ⚠️ {symbol} DataRouter历史获取失败: {e}")
