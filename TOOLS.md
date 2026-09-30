@@ -160,6 +160,16 @@ cd /Users/duguke/.openclaw/workspace && for f in analysis/*.py scripts/*.py; do 
 
 ---
 
+## 🔍 Prismfy 搜索（正确用法 2026-09-29 更新）
+
+- **命令入口：`~/.prismfy/bin/prismfy-search`**（会自动加载 `~/.prismfy/.env`）
+- ❌ 不要用 `skills/prismfy-search/search.sh`：旧版脚本不加载 .env，会误报 "Invalid API key"
+- Key 存放：`~/.prismfy/.env` 的 `PRISMFY_API_KEY`（权限 600）
+- 自检：`~/.prismfy/bin/prismfy-search --quota`
+- 套餐：FREE 1000 次/月
+
+---
+
 Add whatever helps you do your job. This is your cheat sheet.
 
 ---

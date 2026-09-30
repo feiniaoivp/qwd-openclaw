@@ -28,3 +28,25 @@ Corrections, insights, and knowledge gaps captured during development.
 - 中间态：同一 workspace 的未提交 diff 可能是半成品，审计时应视为「待验证假设」而非既成事实。
 
 ---
+
+## 2026-09-29 — cron `lastStatus=ok` 可能是空转假成功（必须看 lastDurationMs）
+
+**What happened**
+3 个新闻 cron job 静默停摆 **21 天**（新闻归档断在 09-08），
+但 `openclaw cron list` 一直显示 `ok`，cron 健康巡检完全没报警。
+
+**Root cause**
+这 3 个 job 是 `sessionTarget: main` + `payload.kind: systemEvent`：
+只把命令文本注入长驻主会话当系统事件，**不执行**；主会话模型回合失败
+（`[assistant turn failed before producing content]`）后无人消费注入事件，
+静默丢弃。runner 认为投递完成即 `ok`，`lastDurationMs` 仅 **2–5ms**
+（对照组正常的 isolated+agentTurn 是 **9548ms**）。
+
+**What to do differently**
+1. **判定 cron 真健康 = `lastStatus==ok` AND `lastDurationMs` 合理**。
+   当 payload 需要跑脚本，若 `lastDurationMs < 100ms` → 标记"空转假成功"并告警。
+2. **需要真执行命令的 cron 一律用 `isolated` + `agentTurn`（或 `--command` 直跑）**，
+   不要用 `main` + `systemEvent` 来"跑脚本"。
+3. 巡检脚本（`cron_health_check.py`）需新增该判据。
+
+**Pattern-Key:** cron.silent-noop-fake-ok

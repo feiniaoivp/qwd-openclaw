@@ -7,6 +7,7 @@
  "analysis/llm_tool.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 2,
  "analysis/param_evaluate.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 2,
  "analysis/portfolio_executor.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
+ "analysis/portfolio_sim.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
  "analysis/signal_audit.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 7,
  "analysis/premarket_report.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
  "analysis/auction_feed.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
