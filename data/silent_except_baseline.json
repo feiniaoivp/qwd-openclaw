@@ -3,7 +3,7 @@
  "analysis/fib_track.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 2,
  "analysis/factor_engine.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 3,
  "analysis/regime_filter.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
- "analysis/service.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 3,
+ "analysis/service.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 2,
  "analysis/llm_tool.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 2,
  "analysis/param_evaluate.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 2,
  "analysis/portfolio_executor.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
