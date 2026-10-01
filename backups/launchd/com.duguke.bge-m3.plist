@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>com.duguke.bge-m3</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/duguke/hf_env/bin/python</string>
+		<string>/Users/duguke/start.py</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/Users/duguke/Library/Logs/bge-m3.err</string>
+	<key>StandardOutPath</key>
+	<string>/Users/duguke/Library/Logs/bge-m3.log</string>
+	<key>ThrottleInterval</key>
+	<integer>30</integer>
+	<key>WorkingDirectory</key>
+	<string>/Users/duguke</string>
+</dict>
+</plist>

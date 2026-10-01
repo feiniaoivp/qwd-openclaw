@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.duguke.hfapi</string>
+    <key>ProgramArguments</key>
+    <array>
+        <!-- 强制指定虚拟环境内的 Python 解释器 -->
+        <string>/Users/duguke/hf_env/bin/python</string>
+        <!-- 强制指定你的启动脚本路径 -->
+        <string>/Users/duguke/start.py</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>WorkingDirectory</key>
+    <string>/Users/duguke</string>
+    <key>StandardOutPath</key>
+    <string>/Users/duguke/hf_api_output.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/duguke/hf_api_error.log</string>
+</dict>
+</plist>

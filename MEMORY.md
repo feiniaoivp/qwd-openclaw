@@ -1123,7 +1123,7 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **影响面**：`close_scan_v2.py::collect_moneyflow` 个股段 → `analysis_summary_all.md` 资金流 TOP 榜与日报资金流维度**已静默失效多日**（日报正文不含该段故未暴露）；行业/北向走 `market_main_flow`（clist，另一链路）**未受影响**。
 *   **修复待 `/approve`（核心数据路径）**：a) `_get()` 增「HTTP200 但 `data` 为空 → 视为失败并换 host/指纹重试」；b) `_fflow()` 主源改 `push2 klt=1`、`push2delay` 移出 `_FFLOW_HOSTS`；c) `_MAX_TOTAL_TIME ≥ _TIMEOUT + 余量`；d) 改后跑 `close_scan_v2.py` 验证 ≥25/27 只成功 + diff 前后产物。
 
-### 🔴 新闻流水线「假 ok 陷阱」根因锁定（09-29 发现 ~ 09-30 复现，修复待批）
+### 🔴→✅ 新闻流水线「假 ok 陷阱」（09-29 发现 ~ 10-01 已修复并实战验证）
 *   **症状**：`data/news/raw/` 冻结在 **2026-09-13**（长期空转），每日 `daily_YYYY-MM-DD.md` 全是 319 字节空壳「0 条宏观 / 命中 0 只」，但 `openclaw cron list` 显示 3 个 job **全部 ok、0 error**。
 *   **根因（确证）**：3 个 job 配置为 `payload.kind = "systemEvent"` + `sessionTarget: "main"` → **只把命令文本注入 main 会话并立即返回（实测 1-5ms），从不执行命令**；runner 认为投递完成即记 `ok`（物理上不可能真跑脚本）。主会话 `agent:main:main` 最后活跃 **09-27 19:42** 且末条为回合失败 → 注入的系统事件无人消费，静默丢弃。
     | job | name | target | kind | lastDurationMs |
@@ -1134,7 +1134,13 @@ This file serves as your curated long-term memory, storing significant events, d
     | 537eb1ff | daily-news-reading-push（对照，正常） | isolated | agentTurn | 9548-9803 ms ✅ |
 *   **为什么门禁没抓到**：`verify_market_data.py` / `cron_health_check.py` 只看 `lastStatus`，而此故障恰恰表现为 `lastStatus=ok`。**判据必须加 `lastDurationMs` 异常小（<100ms 而 payload 需跑脚本）= 空转假成功**。
 *   **当日人工补救**：手跑 `news_monitor.py --mode 盘前`（写 `data/news/raw/2026-09-30_盘前.json`，182KB）+ `daily_news_reader.py --save` → `daily_2026-09-30.md` 恢复真实内容。
-*   **修复方案就绪（待批）**：已实测 `openclaw cron edit <id> --command <shell> --session isolated --no-deliver` 可建真正 `kind:"command"` payload（临时 job 实测 `exitCode:0` / `durationMs:154`，后已 `cron rm` 清理）；3 条待批命令见 `memory/2026-09-30.md` 08:36 段。
+*   **修复已落地并实战验证（10-01 07:31~07:37，用户 /approve，先快照 guard/20261001-073154 再逐条执行）**：3 条 `openclaw cron edit <id> --command <shell> --session isolated --no-deliver` 全部成功 → payload 变为 `kind:"command"`（argv 真命令，`$(date +%F)` 字面量正确保留）、调度不变。逐条强触发验证：
+    | job | 修复前 durationMs | 修复后 | exitCode | 产物 |
+    |---|---|---|---|---|
+    | 40731f98 盘前新闻快讯 | 4 | **73159ms** | 0 | raw/2026-10-01_盘前.json 174.9KB + TG True ✅ |
+    | 917a20ef 盘前新闻阅读 | 1 | **341ms** | 0 | daily_2026-10-01.md 319B空壳→1539B真实内容（宏观6/公告3/个股3）✅ |
+    | 7e0dc37b 盘后归档 | 2 | **3589ms** | 0 | raw/2026-10-01_盘后.json 174.9KB + TG True ✅ |
+    注：917a20ef 的 341ms 偏小但属正常——它是轻量本地 reader（读 JSON+保存），空壳→真实内容的产物变化才是判据。回滚：`cron edit` 改回 systemEvent 或 `git checkout guard/20261001-073154`。raw 缺口 09-14~09-29 仍在（历史归档回填待办）。
 
 ### 🟢 盘前 Pipeline 三处修复实战验证通过（09-30 07:02，昨日落地项）
 *   06:00 `87c6b7f9` 正常产出 `analysis/daily/2026-09-30_premarket_report.md`（06:09, 9.9KB）。
