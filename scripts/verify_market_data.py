@@ -82,13 +82,17 @@ def is_trading_day_check(target_date: date = None) -> tuple[bool, str]:
         # 复用 close_scan_v2 的逻辑但支持指定日期
         import akshare as ak
         from datetime import datetime
+        # CLI --date 传的是 str，先统一转 datetime（否则 strftime 会 AttributeError）
+        if isinstance(target_date, str):
+            target_date = datetime.strptime(target_date, "%Y-%m-%d")
         try:
             trade_cal = ak.tool_trade_date_hist_sina()
+            # trade_date 列是 datetime.date 对象，必须统一转字符串后匹配
+            # （旧代码字符串直接匹配永远失败 -> 把真实交易日也误判为非交易日，2026-10-01 修复）
             target_str = target_date.strftime("%Y-%m-%d")
-            if target_str in trade_cal["trade_date"].values:
-                row = trade_cal[trade_cal["trade_date"] == target_str]
-                if not row.empty and row.iloc[0]["is_open"] == 1:
-                    return True, f"{target_str} 为交易日（akshare 交易日历确认）"
+            cal_dates = set(trade_cal["trade_date"].astype(str))
+            if target_str in cal_dates:
+                return True, f"{target_str} 为交易日（akshare 交易日历确认）"
             return False, f"{target_str} 非交易日（akshare 交易日历确认）"
         except Exception as e:
             return False, f"交易日历接口异常: {e}"

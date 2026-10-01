@@ -67,11 +67,16 @@ def is_trading_day(check_date=None) -> bool:
         return False
     try:
         cal = ak.tool_trade_date_hist_sina()
+        # 注意：trade_date 列是 datetime.date 对象（非字符串），必须统一转字符串后匹配，
+        # 否则永远匹配不上 -> 误放行节假日（2026-10-01 修复）
         date_str = check_date.strftime("%Y-%m-%d")
-        if date_str in cal["trade_date"].values:
-            return cal[cal["trade_date"] == date_str].iloc[0]["is_open"] == 1
-    except Exception:
-        pass
+        cal_dates = set(cal["trade_date"].astype(str))
+        if date_str in cal_dates:
+            return True  # 在交易日历中 = 开市
+        return False
+    except Exception as e:
+        # 异常必须可见（silent_except 铁律）：交易日判定失效会让节假日拦截全废
+        logging.getLogger(__name__).warning(f"交易日历接口异常: {e}，默认放行")
     return True
 
 # -------------------- 新浪 hq 实时行情 --------------------
