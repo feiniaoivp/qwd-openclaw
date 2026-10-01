@@ -222,6 +222,31 @@ python3 scripts/strategy_map_guard.py        # 违规 exit 1
 
 ---
 
+## 🔴 交易日判定口径规则（单一事实来源，2026-10-01 立项）
+
+> **为什么强制**：2026-10-01 一天内 3 个文件踩同一个坑（`trade_date` 列是 date 对象、字符串匹配永假 → 节假日误放行/交易日误判非交易日），根因是 `is_trading_day` 三份实现互不复用。
+
+### 单一事实来源（SSOT）
+
+**交易日判定以 `analysis/service.py` 的 `is_trading_day(check_date=None)` 为准**（支持 str/date 输入与任意日期，异常可见告警）。
+
+当前已收敛 6 处：close_scan_v2 / verify_market_data（薄包装） / auction_feed / premarket_pipeline / signal_audit / trader_stock_picks。
+
+**唯一例外**：`scripts/data_freshness_guard.py` 保留本地静态 HOLIDAYS 表（freshness 门禁不能依赖网络，有意离线设计）——新离线脚本如需同样例外，须注明理由。
+
+### 涉及交易日判定的脚本必须引用 SSOT
+
+```python
+# ✅ 正确：单一来源
+from analysis.service import is_trading_day
+if not is_trading_day(): ...
+
+# ❌ 禁止：自持日历实现（会随时间静默过时，复现同款坑）
+def is_trading_day(): ...
+```
+
+---
+
 ## 🔴 交互态市场数据引用红线（2026-09-28 新增，零容忍）
 
 > **背景**：2026-09-28 早盘，我在未跑任何验证工具的情况下，编造了「9/27 成交额 1.45 万亿、北向 8129 亿」两个关键数字，且无法给出原始出处。这是典型的「先写后验」事故，违反了 [2026-09-16] 教训固化的三层防线。现有流水线门禁（`verify_market_data.py`）仅覆盖 cron 任务，**不覆盖聊天时的即时输出**，故须在行为层加红线。
