@@ -34,7 +34,8 @@ except ImportError as e:  # pragma: no cover
 _IMPERSONATE = "chrome"
 _TIMEOUT = 10  # 单次请求超时(秒)
 _RETRY = 2     # 最大重试次数
-_MAX_TOTAL_TIME = 8  # 整个函数最大耗时(秒)
+_MAX_TOTAL_TIME = _TIMEOUT + 5  # 整个函数单次重试最大耗时(秒)；必须 >= _TIMEOUT，
+# 否则慢路径会线程超时导致整只失败（2026-09-30 静默失效根因之一）
 
 # 🔑 主机回退链（2026-09-17 实测）
 #   push2his / push2 在密集请求后会进入限流冷却（curl 56 Connection closed abruptly），
@@ -97,6 +98,13 @@ def _get(url: str, tries: int = _RETRY) -> Optional[dict]:
                         exception_container[0] = Exception("non-JSON response")
                         return
                     if isinstance(j, dict) and "_error" not in j:
+                        # 2026-09-30 静默失效根因：HTTP200+rc==0 但 data 为空/缺失时，
+                        # 旧逻辑直接返回给上层被当作"上游缺失"静默跳过。
+                        # 修复：空 data 视为失败，换下一 host 重试。
+                        if "data" in j and not j.get("data"):
+                            exception_container[0] = Exception(
+                                f"empty data payload (rc={j.get('rc')})")
+                            return
                         result_container[0] = j
                         return
                     exception_container[0] = Exception(str(j.get("_error")) if isinstance(j, dict) else "bad payload")
