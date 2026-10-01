@@ -21,7 +21,12 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
 fi
 
 # 2. 创建 Git tag（语义化：guard/YYYYMMDD-HHMMSS-short-desc）
-TAG="guard/$(date +%Y%m%d-%H%M%S)-$(echo "$DESC" | tr ' ' '-' | cut -c1-30)"
+# 注意：cut 在 C/POSIX locale 下按字节计数，直接截断多字节字符（中文）会产生
+# 非法 UTF-8 -> git tag 报 Illegal byte sequence -> 脚本中断（2026-10-01 修复）。
+# 先用 tr -cd 消毒为 ASCII（locale 无关），空则回退 snapshot。
+_tag_suffix="$(echo "$DESC" | tr ' ' '-' | tr -cd 'A-Za-z0-9_-' | cut -c1-30)"
+[[ -z "$_tag_suffix" ]] && _tag_suffix="snapshot"
+TAG="guard/$(date +%Y%m%d-%H%M%S)-${_tag_suffix}"
 if [[ -z "$DRY_RUN" ]]; then
   git tag -a "$TAG" -m "Guard snapshot: $DESC"
   echo "✅ Git tag created: $TAG"
