@@ -65,6 +65,8 @@ WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 sys.path.insert(0, WORKSPACE)
 from analysis.data_layer.router import get_router
 from analysis.fib_extension_scan import compute_fib_time_targets
+# 交易日判定收敛到 service 单一来源（2026-10-01 立项）：本文件不再自持实现
+from analysis.service import is_trading_day
 
 # ============================================================================
 # 配置常量
@@ -920,29 +922,7 @@ def collect_moneyflow(codes: list[str], name_map: dict[str, str], days: int = 3)
 # ============================================================================
 # 交易日判断
 # ============================================================================
-
-def is_trading_day() -> bool:
-    today = datetime.now()
-    if today.weekday() >= 5:
-        log.info("今天是周末，非交易日。")
-        return False
-    if not HAS_AKSHARE:
-        log.warning("akshare 不可用，默认放行。")
-        return True
-    try:
-        trade_cal = ak.tool_trade_date_hist_sina()
-        # 注意：trade_date 列是 datetime.date 对象（非字符串），
-        # 必须统一转字符串后再匹配，否则永远匹配不上 -> 误放行节假日
-        today_str = today.strftime("%Y-%m-%d")
-        cal_dates = set(trade_cal["trade_date"].astype(str))
-        if today_str in cal_dates:
-            return True  # 在交易日历中 = 开市
-        log.info(f"{today_str} 非交易日（周末或节假日休市）。")
-        return False
-    except Exception as e:
-        log.warning(f"交易日历接口异常: {e}，默认放行。")
-        return True
-
+# （交易日判定已收敛到 analysis.service.is_trading_day 单一来源，2026-10-01 立项）
 
 # ============================================================================
 # 主入口

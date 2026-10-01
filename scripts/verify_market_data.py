@@ -74,33 +74,20 @@ AUTHORIZED_SOURCES = {
 # ============================================================================
 
 def is_trading_day_check(target_date: date = None) -> tuple[bool, str]:
-    """验证目标日期是否为交易日"""
-    from analysis.close_scan_v2 import is_trading_day
-    
-    # 如果指定了日期，需要临时修改检查逻辑
-    if target_date:
-        # 复用 close_scan_v2 的逻辑但支持指定日期
-        import akshare as ak
-        from datetime import datetime
-        # CLI --date 传的是 str，先统一转 datetime（否则 strftime 会 AttributeError）
-        if isinstance(target_date, str):
-            target_date = datetime.strptime(target_date, "%Y-%m-%d")
-        try:
-            trade_cal = ak.tool_trade_date_hist_sina()
-            # trade_date 列是 datetime.date 对象，必须统一转字符串后匹配
-            # （旧代码字符串直接匹配永远失败 -> 把真实交易日也误判为非交易日，2026-10-01 修复）
-            target_str = target_date.strftime("%Y-%m-%d")
-            cal_dates = set(trade_cal["trade_date"].astype(str))
-            if target_str in cal_dates:
-                return True, f"{target_str} 为交易日（akshare 交易日历确认）"
-            return False, f"{target_str} 非交易日（akshare 交易日历确认）"
-        except Exception as e:
-            return False, f"交易日历接口异常: {e}"
-    
-    # 使用现有函数检查今天
-    result = is_trading_day()
-    today_str = datetime.now().strftime("%Y-%m-%d")
-    return result, f"{today_str} {'是' if result else '非'}交易日（close_scan_v2.is_trading_day() 判定）"
+    """验证目标日期是否为交易日。
+
+    交易日判定已收敛到 analysis.service.is_trading_day 单一来源（2026-10-01 立项），
+    本函数仅保留 tuple[bool, str] 返回签名，不再自持日历逻辑。
+    service 版支持 str/date 输入与任意日期。
+    """
+    from analysis.service import is_trading_day
+
+    # CLI --date 传的是 str，先统一转 datetime
+    if isinstance(target_date, str):
+        target_date = datetime.strptime(target_date, "%Y-%m-%d")
+    result = is_trading_day(target_date)
+    target_str = (target_date or datetime.now()).strftime("%Y-%m-%d")
+    return result, f"{target_str} {'是' if result else '非'}交易日（analysis.service.is_trading_day 判定）"
 
 
 def verify_data_point(
