@@ -931,14 +931,14 @@ def is_trading_day() -> bool:
         return True
     try:
         trade_cal = ak.tool_trade_date_hist_sina()
+        # 注意：trade_date 列是 datetime.date 对象（非字符串），
+        # 必须统一转字符串后再匹配，否则永远匹配不上 -> 误放行节假日
         today_str = today.strftime("%Y-%m-%d")
-        if today_str in trade_cal["trade_date"].values:
-            row = trade_cal[trade_cal["trade_date"] == today_str]
-            if not row.empty and row.iloc[0]["is_open"] == 1:
-                return True
-            log.info(f"{today_str} 非交易日。")
-            return False
-        return True
+        cal_dates = set(trade_cal["trade_date"].astype(str))
+        if today_str in cal_dates:
+            return True  # 在交易日历中 = 开市
+        log.info(f"{today_str} 非交易日（周末或节假日休市）。")
+        return False
     except Exception as e:
         log.warning(f"交易日历接口异常: {e}，默认放行。")
         return True
