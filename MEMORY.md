@@ -1161,6 +1161,7 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **[09-30] `apply_patch`/`edit` 参数勿包多余 `arguments` 层**；改完必须**语法自检 + 读回关键段**（本轮曾插出悬空 `else` 才发现）。
 
 ### 📋 待办结转（09-29~09-30）
+*   🔴 **待批（新增）**：④ 「每日A股收盘推送」daily-a-share-telegram-push(3950d3cc) 也是假 ok 陷阱（近 8 次全 1-13ms，systemEvent+main 从不执行）→ 待 /approve 改 command/isolated（同新闻管道模式，命令已备好）。
 *   🔴 **待批（3 组，均涉核心数据路径/cron 配置，需显式 `/approve`）**：① 新闻管道 3 job 改 `command`/`isolated`（命令已备好）；② moneyflow 结构性修复（主源改 `push2 klt=1` + 空 data 判失败 + 超时对齐）；③ 「先写后验」市场数据门禁立项（`verify_market_data.py` 仅覆盖 cron，不含聊天即时输出）。
 *   🔴 **门禁升级待立项**：cron 巡检加「`lastDurationMs` 过小且 payload 需跑脚本 = 空转假成功」检测。
 *   🟡 **静默异常存量清理**：基线 115 处（`data/silent_except_baseline.json`）；本轮 `silent_except_guard.py` 报 **新增 1 处**（`analysis/portfolio_sim.py` 宽泛 except 仅 log.debug）→ 待修。
