@@ -7,7 +7,7 @@ What to do differently: Investigate the `analysis/weekly_full_pipeline.py` scrip
 
 **Logged**: 2026-09-27T12:00:56.623Z
 **Priority**: medium
-**Status**: pending
+**Status**: resolved (2026-10-01 triage)
 **Area**: config
 
 ### Summary
@@ -30,6 +30,11 @@ Session-end sweep detected 5 possible errors in the previous OpenClaw session.
 
 ### Suggested Fix
 Triage this entry: if the error was real and non-obvious, keep it and fill in the fix; otherwise mark it resolved or delete it. Before keeping it, grep for its Pattern-Key(s) and fold recurrences into the existing entry (bump Recurrence-Count) instead of duplicating.
+
+### Triage Outcome (2026-10-01)
+已分诊关闭：① filesystem MCP 启动失败为**一次性事件**——本会话 filesystem 工具全程正常可用，
+`openclaw mcp doctor --probe` 实测 filesystem/tradingwizard 双 ok，无复现；② dreaming-narrative
+LLM timeout 为模型侧瞬时故障，非代码问题。无需行动。
 
 ### Metadata
 - Source: openclaw-error-sweep
