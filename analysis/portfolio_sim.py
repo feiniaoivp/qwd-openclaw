@@ -172,8 +172,9 @@ def _load_notified() -> dict:
         try:
             with open(_NOTIFY_STATE_FILE, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except Exception:
-            pass
+        except Exception as e:
+            # 2026-10-01 去静默（silent_except_guard 存量清理）：本模块无 logger，用 print 保证可见
+            print(f"[portfolio_sim] WARN: 读取已推送幂等状态失败，重置为空: {type(e).__name__}: {e}", file=sys.stderr)
     return {}
 
 
