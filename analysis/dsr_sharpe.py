@@ -163,22 +163,34 @@ def load_returns_csv(path):
 
 
 def run_batch(validation_path, annual, out_path):
-    """批量模式:读 validation JSON,每只票出 best-of-N 运气基线体检。"""
+    """批量模式:读 validation JSON,每只票出 best-of-N 运气基线体检。
+    优先 dsr_trials(逐策略×逐窗口,N=实际评估次数);旧文件无该字段时
+    退化到 details 均值近似(N=策略数,SR0 偏低/DSR 偏高,逐票标注 mode)。"""
     d = json.load(open(validation_path, encoding="utf-8"))
     rows, n_sig, n_weak, n_insig, n_skip = [], 0, 0, 0, 0
     for symbol, v in d.items():
         details = v.get("details") or []
-        trials = [x.get("avg_sharpe") for x in details if x.get("avg_sharpe") is not None]
         selected = v.get("strategy")
         sel_display = next((x.get("strategy") for x in details
                             if KEY_MAP.get(x.get("strategy")) == selected), None)
         sel_sharpe = next((x.get("avg_sharpe") for x in details if x.get("strategy") == sel_display),
                           None) if sel_display else None
         n_windows = int((v.get("windows_used") or 0) or (details[0].get("windows") if details else 0) or 0)
+        # 精确口径优先:dsr_trials 拉平后 >=2 个样本才启用
+        trials, precise = None, False
+        dsr_trials = v.get("dsr_trials") or []
+        if dsr_trials:
+            flat = [x for item in dsr_trials for x in (item.get("sharpes") or [])
+                    if x is not None and np.isfinite(x)]
+            if len(flat) >= 2:
+                trials, precise = flat, True
+        if trials is None:
+            trials = [x.get("avg_sharpe") for x in details if x.get("avg_sharpe") is not None]
+        mode = "precise" if precise else "approx(偏乐观)"
         row = {"symbol": symbol, "name": v.get("name"), "selected": selected,
                "selected_display": sel_display, "selected_sharpe": sel_sharpe,
-               "n_strategy_trials": len(trials), "windows_per_strategy": n_windows,
-               "n_evals_actual": len(trials) * (n_windows or 1)}
+               "mode": mode, "windows_per_strategy": n_windows,
+               "n_evals_actual": len(trials) if precise else len(trials) * (n_windows or 1)}
         if len(trials) < 2:
             row["status"] = "skip:trials<2"
             n_skip += 1
@@ -192,6 +204,7 @@ def run_batch(validation_path, annual, out_path):
             rows.append(row)
             continue
         row.update(out)
+        row["mode"] = mode
         row["status"] = "ok"
         if "显著" in out["verdict"] and "不显著" not in out["verdict"]:
             n_sig += 1
@@ -203,23 +216,24 @@ def run_batch(validation_path, annual, out_path):
 
     L = ["# Deflated Sharpe 全池体检(best-of-N 运气基线)", "",
          f"> 生成: 本脚本 dsr_sharpe.py ｜ 输入: {validation_path}",
-         f"> 口径: trials=每策略跨窗口均值 avg_sharpe(N=策略数);实际评估次数=策略数×窗口数",
-         "> ⚠️ 本口径的运气基线偏乐观(均值化抹掉窗口间噪声 → SR0 偏低 → DSR 偏高)。", "",
-         "| 股票 | 选中策略 | N(trials) | 实际评估数 | 观测夏普 | 运气基线SR0 | DSR | 判定 |",
+         f"> 口径: 优先 dsr_trials(逐策略×逐窗口,N=实际评估次数);无该字段的旧文件退化为策略均值近似(逐票标注 mode)。",
+         "> ⚠️ approx 口径的运气基线偏乐观(均值化抹掉窗口间噪声 → SR0 偏低 → DSR 偏高)。", "",
+         "| 股票 | 选中策略 | N(trials) | 口径 | 观测夏普 | 运气基线SR0 | DSR | 判定 |",
          "|---|---|---|---|---|---|---|---|"]
     for r in rows:
         if r["status"] != "ok":
             L.append(f"| {r['symbol']} {r.get('name','')} | {r.get('selected','')} | — | — | — | — | — | {r['status']} |")
             continue
         L.append(f"| {r['symbol']} {r.get('name','')} | {r.get('selected_display') or r.get('selected')} "
-                 f"| {r['n_trials']} | {r['n_evals_actual']} | {r['observed_sharpe_annual']} "
+                 f"| {r['n_trials']} | {r['mode']} | {r['observed_sharpe_annual']} "
                  f"| {r['expected_max_sharpe_annual_by_luck']} | {r['DSR']} | {r['verdict']} |")
     L += ["", f"## 汇总",
           f"- 有效体检: {n_sig + n_weak + n_insig} 只(跳过 {n_skip} 只)",
           f"- 显著(DSR≥0.95): {n_sig} 只 ｜ 偏弱(0.9~0.95): {n_weak} 只 ｜ 不显著: {n_insig} 只",
           "", "## 读法",
           "- DSR 高只说明「在 N 次挑选里这个夏普不全是运气」,不构成对该策略真实期望收益的背书。",
-          "- 被判「不显著」的票,其选中策略的历史夏普与随机挑一次不可区分,换策略/调参需额外谨慎。"]
+          "- 被判「不显著」的票,其选中策略的历史夏普与随机挑一次不可区分,换策略/调参需额外谨慎。",
+          "- approx 票的「显著」在精确口径下可能降级;2026-10-05 起 validate_strategies.py 已落盘 dsr_trials 字段。"]
     txt = "\n".join(L) + "\n"
     print(txt)
     if out_path:

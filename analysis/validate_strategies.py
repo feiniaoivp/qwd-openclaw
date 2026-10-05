@@ -251,6 +251,9 @@ def main(stocks=None, write_map=False, arbitrate=False):
                 "avg_trades": round(avg_trades, 1),
                 "sample_weight": sample_weight,
                 "windows": pts["cnt"],
+                # 逐窗口夏普明细（2026-10-05 新增）：供 dsr_sharpe.py 精确计算 best-of-N 运气基线
+                # （N=策略数×窗口数，不再被均值化抹平窗口间噪声）。只增字段，不动评分逻辑。
+                "sharpes_by_window": [round(float(x), 3) for x in pts["sharpes"]],
                 # 分布明细（审计/对照用）
                 "base_score": round(base_raw, 2),
                 "dist_score": round(dist_raw, 2),
@@ -286,6 +289,10 @@ def main(stocks=None, write_map=False, arbitrate=False):
             "avg_dd": best["avg_dd"], "avg_trades": best["avg_trades"],
             "windows_used": best["windows"],
             "details": scored[:3],
+            # DSR 精确口径输入（2026-10-05）：全部策略×全部窗口的逐次夏普，
+            # 不受 details 只留 top3 的限制。消费端: analysis/dsr_sharpe.py --validation
+            "dsr_trials": [{"strategy": s["strategy"], "sharpes": s.get("sharpes_by_window", [])}
+                           for s in scored],
             # 持有期收益分布（新评分口径明细）
             "distribution": {
                 "median_ret": best.get("median_ret"),
