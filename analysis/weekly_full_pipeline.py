@@ -183,11 +183,30 @@ def main():
         print("⚠️ 参数调优失败，继续后续步骤...")
     
     # 步骤 3: 跨周期验证 — 最后跑，带置信度仲裁写回（拥有最终决定权）
-    print("\n🔍 步骤 3/8: 跨周期验证 + 置信度仲裁 (validate_strategies.py --write-map --arbitrate)")
+    print("\n🔍 步骤 3/9: 跨周期验证 + 置信度仲裁 (validate_strategies.py --write-map --arbitrate)")
     r = run_script("validate_strategies.py", ["--write-map", "--arbitrate"], timeout=1800)
     results["validate"] = r
     if not r["success"]:
         print("⚠️ 验证失败，继续后续步骤...")
+
+    # 步骤 3b: DSR 运气基线体检（2026-10-05 新增，接自 frank-quant EP007 方法论）
+    # 背景：「得分高≠可用」已固化为护栏，但护栏不看「best-of-N 里有多少是运气」。
+    # 本步读步骤 3 刚产出的 validation_*.json（含 dsr_trials 逐窗口夏普），
+    # 全池出 DSR 体检报告到 analysis/dsr_audit_<date>.md，不显著票数进周报。
+    # 失败仅告警不阻断（防误伤主流程）。
+    print("\n🎲 步骤 3b/9: DSR 运气基线体检 (dsr_sharpe.py)")
+    val_file = os.path.join(ANALYSIS_DIR, f"validation_{today}.json")
+    if os.path.exists(val_file):
+        r = run_script("dsr_sharpe.py",
+                       ["--validation", val_file,
+                        "--out", os.path.join(ANALYSIS_DIR, f"dsr_audit_{today}.md")],
+                       timeout=300)
+        results["dsr_audit"] = r
+        if not r["success"]:
+            print("⚠️ DSR 体检失败（不阻断流水线）...")
+    else:
+        print(f"⚠️ 未找到 {val_file}（步骤 3 未产出？），跳过 DSR 体检")
+        results["dsr_audit"] = {"success": False, "stdout": "", "stderr": "validation 文件缺失", "elapsed": 0}
     
     # 步骤 4: 调参差异榜
     print("\n⚖️ 步骤 4/8: 调参差异榜 (param_signal_diff.py)")
