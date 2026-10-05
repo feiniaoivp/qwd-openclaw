@@ -402,6 +402,33 @@ def build_brief(results=None):
         lines.append("(param_eval 未生成)")
     lines.append("")
 
+    # 五、DSR 显著名单（2026-10-05 新增；读步骤 3b 产出的 dsr_audit_<date>.json）
+    # 意义：这些票的「最优策略历史夏普」高过「同池 N 次挑选纯运气的最高值」，
+    # 策略信号与个股特质匹配是真实的；未上榜 ≠ 废票，只是策略选择环节 ≈ 随机。
+    lines.append("五、DSR显著名单(历史夏普≠挑选运气)")
+    dsr_path = os.path.join(ANALYSIS_DIR, f"dsr_audit_{today}.json")
+    try:
+        if os.path.exists(dsr_path):
+            with open(dsr_path, encoding="utf-8") as f:
+                dsr_rows = json.load(f)
+            sig = [r for r in dsr_rows
+                   if r.get("status") == "ok" and "不显著" not in r.get("verdict", "") and "显著" in r.get("verdict", "")]
+            n_ok = sum(1 for r in dsr_rows if r.get("status") == "ok")
+            if sig:
+                sig.sort(key=lambda x: -x.get("DSR", 0))
+                for r in sig:
+                    lines.append(f"  {r['name']}({r['symbol']}) {r.get('selected_display') or r.get('selected')}"
+                                 f" 夏普{r['observed_sharpe_annual']} vs 运气基线{r['expected_max_sharpe_annual_by_luck']}"
+                                 f" DSR={r['DSR']}")
+                lines.append(f"  共 {len(sig)}/{n_ok} 只显著;未上榜≠废票,仅策略选择≈随机,信号降权看待")
+            else:
+                lines.append(f"  本轮 0/{n_ok} 只显著(全池最优策略均无法与运气区分,重要信号)")
+        else:
+            lines.append("(dsr_audit 未生成,检查步骤 3b)")
+    except Exception as e:
+        lines.append(f"(DSR名单读取失败: {e})")
+    lines.append("")
+
     lines.append("—— 由 weekly_full_pipeline.py 自动生成（command cron 直跑，不经 LLM）")
     text = "\n".join(lines)
     _emit_dual_output(text)
