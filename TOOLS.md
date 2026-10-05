@@ -222,6 +222,27 @@ python3 scripts/strategy_map_guard.py        # 违规 exit 1
 
 ---
 
+## 🔴 记忆 promote 区口径（2026-10-05 源码坐实，正式采纳）
+
+**MEMORY.md 的 `## Promoted From Short-Term Memory` 区 = 易失缓冲，不是长期存储。**
+
+根因（已读插件 dist 源码坐实）：memory-core 的 `compactMemoryForBudget()` 默认预算
+`DEFAULT_MEMORY_FILE_MAX_CHARS=1e4`（1万字符）；人写区已 ~117KB 远超预算 → 每次 promote 写入前
+按日期升序丢弃最老 promote 区块，且 journal（`memory/.dreams/events.jsonl`）**无 dropped 字段**，
+66 次全报 success。无法通过配置止血：全部 2 处调用点均不传 `memoryFileMaxChars`，插件 schema 无此键。
+
+**行为规范**：需要长期保留的教训 → 必须人工/会话写入 MEMORY.md 人写区（Lessons Learned 等，
+无条件保留）。发现重要 promote 条目时，顺手将其精华并入人写区，不要指望 promote 区隔日还在。
+
+**门禁**：`scripts/promotion_guard.py`（退出码 0/1；棘轮：连续 ≥2 次 promote 零存活才 exit 1，
+避免被设计误伤）已接入周流水线步骤 0g（失败仅告警不阻断）。待办：周一审计 job 文案补充该检查项
+（cron 配置变更，需 /approve）。
+
+**上游反馈草稿**（待用户确认后提交 openclaw 仓库 issue）：
+`memory.promotion.applied` 事件应记录 `droppedDates`/`budgetChars`，否则预算淘汰永远不可观测。
+
+---
+
 ## 🔴 交易日判定口径规则（单一事实来源，2026-10-01 立项）
 
 > **为什么强制**：2026-10-01 一天内 3 个文件踩同一个坑（`trade_date` 列是 date 对象、字符串匹配永假 → 节假日误放行/交易日误判非交易日），根因是 `is_trading_day` 三份实现互不复用。

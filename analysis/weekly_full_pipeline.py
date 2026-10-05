@@ -158,6 +158,16 @@ def main():
     if not r["success"]:
         print("⚠️ 新增静默异常吞噬（见上方），请人工修复（不阻断流水线）...")
 
+    # 步骤 0g: promote 预算淘汰门禁（2026-10-05 新增）
+    # 背景：memory-core 插件 compactMemoryForBudget() 默认 1e4 字符预算，
+    # 超预算时按日期静默丢弃最老 promote 区块且 journal 无 dropped 字段。
+    # 口径：promote=易失缓冲，长期保留靠人工写入人写区；本门禁监测通道异常中断。
+    print("\n🚦 步骤 0g/9: promote 淘汰门禁 (promotion_guard.py)")
+    r = run_script("../scripts/promotion_guard.py", timeout=120)
+    results["promotion_guard"] = r
+    if not r["success"]:
+        print("⚠️ promote 通道异常（见上方），需人工将关键教训写入 MEMORY.md 人写区（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = run_script("backtest_strategies.py", timeout=600)  # 10分钟上限，当前约3.5分钟跑完，留足缓冲

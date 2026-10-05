@@ -72,6 +72,7 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **注意:** 机电B股(900925)在baostock上无数据，已知待处理。
 
 ### Lessons Learned
+*   **[2026-10-05] 批量名单交叉比对必须「下载落盘→脚本逐名 grep→上下文人工判读」，禁止目测拼读。** 券商10月金股×35只关注池交叉时用 WATCHLIST 对全部已下载 HTML/TXT 回扫，抓出 1 处假阳性（新浪页面**侧栏相关文章标题**《中信证券：积极迎接…》被误当金股推荐）——目测 reading 必漏。配套教训：①新闻页正文表格常是图片，需抽图 OCR 并**二次定向复核**关键行（兴业/银河行复读确认福耀玻璃）；②web_fetch 因 IP 解析拦截失败时 curl+UA 是可靠兜底；③报告须声明覆盖率（本次可见样本 94/154≈61%，Wind 全量为付费口径），「未命中≠未推荐」。
 *   **[2026-10-01] 🔴 工具调用全部报「must have required properties」→ 先怀疑当前模型发坏了参数，不是工具坏了。** `amd-radeon/DeepSeek-V4-Flash-Vision-Exp` 当主模型时，read/edit/exec 参数被多包一层 `arguments` 导致连续多轮全部校验失败（session_status 类简单参数工具不受影响）。会话内切模型是死循环（改配置需工具），只能由用户在对话外切换会话模型解锁。**规约：多轮工具链任务不要拿 Vision-Exp 当主模型**；模型链已改为 AMD 免费快速模型优先（实测 2.7~4.7s，DeepSeek 付费退备份，GLM-5.3-Flash 实测 26s 超时已排除），源于 09-24 nvidia 免费端点「All models failed (5)」超时事故链的治理。
 *   **[2026-10-01] 🔴 is_trading_day() 节假日拦截完全失效（字符串 vs date 对象错配）。** `ak.tool_trade_date_hist_sina()` 的 `trade_date` 列是 **datetime.date 对象**，旧代码用字符串 `today_str` 匹配 → 永远 False → 末尾 `return True` 默认放行，国庆休市日照跑流水线。修复：`astype(str)` 统一后匹配。教训：**pandas 列元素类型必须 repr() 实测，不能假设与字面量同类型**（日期列 date vs str 错配高发）。
 *   **[2026-09-28] 🔴 「except Exception 静默」第三次复现 → 监控全盲 10 天还报"正常"。** `cron_health_check.py` 的 `_gateway_request()` 调 `POST /api/cron/{action}`（**实测 404，端点不存在**），异常被 `except Exception: log.debug` 静默吞掉 → 回退本地 jsonl（gateway 09-18 起 404 后停更）→ 7天窗口滑出后全部 `no_data` → `should_alert` 不认 no_data → 报"0 告警正常"。期间真实任务大多正常跑（gateway list 权威数据），真正异常的反被隐瞒（盘前深度分析连败 4 次 timeout、quant-backtest 推送配置错）。**修复**：①改用 `openclaw cron list --json`/`cron runs --id`（CLI 走 WS，实测可用，重试 2 次+结构校验，旧 HTTP 降级兜底）②fallback 失败全部 log.warning 可见 ③用 gateway list 的 lastRunAtMs/nextRunAtMs 独立判陈旧度（不依赖 runs 历史），no_data 拆分为 partial_data/调度未推进/真无运行。**三层防线**：新门禁 `scripts/silent_except_guard.py`（AST，棘轮模式：存量 115 处仅报告、新增 exit 1，基线只降不升）接入周流水线步骤 0f。**函数重写铁律**：apply_patch 插入新版函数后旧定义必须删除（本次旧 cron_list 遮蔽新版，表现为"CLI 全败且无告警"），改完 `grep -c` 确认唯一定义；验证退出码必须重定向到文件再 echo（`cmd | tail; $?` 取的是 tail）。
@@ -388,7 +389,7 @@ This file serves as your curated long-term memory, storing significant events, d
 ### 2026-08-09 技能库真实变更（skill-version-watcher 捕获）
 *   **self-improving v1.2.16 → self-improving-agent v4.0.2**（升级+改名, 08-08 21:27 更新）; **hf-mem v1.0.10** 新增(08-08 21:20 安装)。baseline memory/skill-versions.json 已更新。
 
-## 投资理念归纳（每日同步，最新 2026-09-30）
+## 投资理念归纳（每日同步，最新 2026-10-02）
 > 完整可检索历史见 `wiki/sources/investment-philosophy-YYYY-MM-DD.md`；本区块为蒸馏要点。
 > 注：09-01~04 无增量空跑；09-07(周一)24h 0 篇但补录 09-05/06 周末 4 篇方法论(见 09-07 节)；**09-08(周二)24h 新增 9 篇、打破连续 6 日空跑；09-09(周三)新增 2 篇(1 投资+RVI方法论 + 1 爬虫教程非投资)、RSI 主线续作；09-10(周四)新增 1 篇「涡流+布林带」突破系统；**09-11(周五)新增 3 篇方法论(MACD进阶/RSI压缩剥头皮/斐波那契时间预测)、连续第 4 日真实增量**(见 09-11 节)。；09-12~09-15 连续 no-op（投资层 0 篇）；**09-16 投资类语料静默 18 天后恢复**——新增 1 篇半导体设备行业深度（投资相关，应用型素材非方法论），体系 head 不变、「卖铲人范式」证据 +1（见 09-16 节）。
 > 注：**09-17 严格 24h no-op**（09-16 19:30→09-17 19:30 命中 0 篇 .md），投资层无增量，体系 head 与量化参数均不变（见 09-17 节）。
@@ -399,6 +400,7 @@ This file serves as your curated long-term memory, storing significant events, d
 > 注：**09-24 严格 24h no-op**（09-23 19:30→09-24 19:30 命中 0 篇 .md），投资层无增量，体系 head 与量化参数均不变（见 09-24 节）。投资类语料自 09-16 后**连续 8 日静默**。
 > 注：**09-29 积压补录 → 投资层真实增量 2 篇**（严格 24h 命中 0，但发现 09-27 两篇未归档；09-25~09-28 报告缺失本次代偿）。存储行业「硬核猪周期+HBM 挤占效应」与 TQQQ「200MA 牛熊闸门+40–50% 胜率高盈亏比」。**体系 head 不变，证据 +2**（卖铲人范式上游扩展、选择性入场纪律跨市场印证）。
 > 注：**09-30 严格 24h no-op**（09-29 19:30→09-30 19:30 全 Vault 命中 0 篇 .md；主源 63 篇最新 mtime 仍为 09-27 08:50，已在 09-29 代偿归档）。投资层无增量，体系 head 与量化参数均不变。投资类语料自 09-27 后**连续 3 日静默**（见 09-30 节）。
+> 注：**10-02 积压补录 → 投资层真实增量 2 篇**（严格 24h 命中 0；发现 10-01 两篇未归档，09-30 报告窗口未覆盖）。RSI 深度教学（延续 ⑧ 张力）+ DeltaFlow Volume Profile/Delta/POC（**新增候选⑮：量价分布结构定位**）。**体系 head 不变**，新增 1 项待复核候选，印证 3 处（背离=动能衰竭 / 长周定方向短周找点 / 量价共振）。
 
 ### 2026-09-30 要点（严格 24h no-op · 0 篇新笔记 · 体系 head 不变）
 > **24h 判定**：严格 24h 窗口（09-29 19:30→09-30 19:30）**全 Vault 命中 0 篇** .md。
@@ -410,6 +412,18 @@ This file serves as your curated long-term memory, storing significant events, d
 - **待人工复核台账**：延续无新增（①⑭已合并「卖铲人观察池」；⑧⑩⑪白名单简化；观察项 O1 存储/HBM、O2 杠杆ETF 继续仅记不动作）。
 - **门禁自检**：`scripts/script_path_guard.py` → 139 脚本违规 0 ✅。
 - **补记**：投资类语料自 09-27 后**连续 3 日静默**（09-28 / 09-29 / 09-30）。
+
+### 2026-10-02 要点（积压补录 · 2 篇新笔记 · 投资层真实增量 · 新增候选⑮）
+> **24h 判定**：严格 24h 窗口（10-01 19:30→10-02 19:30）**命中 0 篇** .md；但发现 **10-01 新增 2 篇尚未归档**（09-30 报告窗口止于 09-30 19:30，未覆盖 10-01 早晨）。判定：**投资层真实增量 2 篇**（均交易方法论/技术指标），**无 head 级新规则、无修正**；新增 1 项待复核候选 ⑮，延续 1 项冲突（⑧ RSI）。体系 head 不变。
+- **笔记 A｜RSI 深度教学**（10-01 07:25）：RSI 0–100，70/30 超买卖、50 中轴；**强趋势中 RSI 钝化**，仅凭 70/30 入场危险。改进：**RSI+RSI-MA 交叉**、**双 RSI 趋势过滤**（长周期 RSI150 定方向、短周期 RSI7 找点）、**RSI 背离**（价格新低但 RSI 抬高低点=看涨背离）。心法：RSI 不可孤立用，须趋势过滤+MA 确认+背离结合。**延续 ⑧ 张力**（方法论持续加码 RSI vs 08-24 白名单黑名单 + 09-10 回测实证 RSI/RVI/VI 跑输基准 → 维持简化、不引入，仅台账记录）。
+- **笔记 B｜DeltaFlow Volume Profile**（10-01 08:14）：BigBeluga TradingView 指标，按价位拆分看涨/看跌成交量 + **Delta 百分比**（买卖压力净差）；**POC**（控制点/成交最密集带）= 机构活跃区，具强支撑阻力 + **磁石效应**。做多：上涨结构 → 高成交量节点 + 正 Delta → 回测 + 吞没确认入场，止损平台下方，**盈亏比 1.5:1**；做空对称。参数：回溯 200 / Row 30 / 关热力图。原文警示：Delta 系 **K线内估算非真实订单流**，须结合结构 + 回测。
+- **对比判定**：新增 head 规则 **0**；修正 **0**；**新增待复核候选 1 项（⑮）**；**冲突 1 项（⑧ 延续）**；**印证 +3**（背离=动能衰竭与 MACD 同型 / 长周定方向短周找点 / 量价共振入场）。
+- **体系 head（不变）**：纯MACD优选 / CCI聚簇退潮 / 030裁决分级 / 三因素共振门控(ResonanceGate) / 斐波那契扩展止盈 / 波动率仓位(ATR/1%风险) / 选择性入场纪律(1:2盈亏比+40%胜率) / 结构点止损+S/R Flip / 产业链卡位·卖铲人范式。
+- **量化参数**：`adaptive_dual`（`analysis/adaptive_dual.py` mtime 09-28 13:33）/ `auction_analyze`（09-17）/ `data/adaptive_params.json`（09-28 06:31）**均未因笔记改动**。
+- **本期新增观察项（仅记，不自动动作）**：**⑮ Volume Profile/POC 结构定位** —— 是否将「价格分层成交量（POC + 高成交量节点 + Delta）」纳入 `close_scan_v2` 支撑压力计算，作为现「成交密集区」启发式的量化替代/增强。**须回测**，注意 Delta 为估算值。
+- **待人工复核台账（更新）**：新增⑮；①⑭→「卖铲人观察池」已合并；⑧⑩⑪→白名单简化（09-25 决策态，本日 RSI 深度教学延续⑧张力仅台账记录）；②ATR止损/仓位 ③斐波扩展止盈 ④MACD权重微调 ⑤历史重复BUY钝化 ⑥000987缺止损 ⑦「核心产品+出海资质」因子 ⑨均线/指标参数自适应 ⑫MACD多周期+动能分离+裸K(须回测) ⑬斐波时间线(仅辅助)；观察项 O1 存储/HBM、O2 杠杆ETF 继续仅记不动作。
+- **门禁自检**：`scripts/script_path_guard.py` → 扫描 **141** 脚本，**语法级违规 1 项**（❌ `scripts/decode_gnews_link.py` SyntaxError，未跟踪新增文件、非本期引入，建议人工修复/移除）；其余 32 项为已知非致命告警。
+- **补记**：09-30 报告窗口止于 09-30 19:30，未覆盖 10-01 早晨两篇，本报告补录；投资类语料静默期（09-28~09-30）后于 **10-01 恢复增量**。
 
 ### 2026-09-29 要点（积压补录 · 2 篇新笔记 · 投资层真实增量 · 证据 +2）
 > **24h 判定**：严格 24h 窗口（09-28 19:30→09-29 19:30）命中 **0 篇** .md；但发现 **09-27 新增 2 篇尚未归档**（09-25~09-28 共 4 日报告缺失，本报告代偿）。判定：**投资层真实增量 2 篇**，均为美股/半导体行业素材，**无 head 级新规则、无修正、无冲突**，体系 head 不变。
@@ -1067,29 +1081,6 @@ This file serves as your curated long-term memory, storing significant events, d
 *   🟡 投资理念台账：电力设备出海 + ⑭半导体设备卖铲人 → 合并「卖铲人观察池」；⑧RSI定位/⑩RVI/⑪涡流VI+布林挤压 三者同型 → 维持白名单简化（**不引入新震荡指标**）；⑫（MACD多周期+动能分离+裸K）仍标「须回测」。
 *   09-26 有 5 项待办已关闭（报告 cron 五连败归因 / daily-report-09-24 缺档 / 002413 现价 ¥0.0 异常 / 理由模板化 / deep 回捞疑点维持已知特性）。
 
-## Promoted From Short-Term Memory (2026-10-01)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-09-26-weekly-review.md:11:12 -->
-- 周六复盘 2026-09-26: 📊 本周成交: 买入 2 笔 | 卖出 2 笔 卖出盈亏: ¥+11,640 | 胜率 1/2 (50%) [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-26-weekly-review.md:11-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-26-weekly-review.md:14:17 -->
-- 周六复盘 2026-09-26: 📋 近期日报文件: overseas_dual_factor_2026-09-02.md 2026-09-25_signal_audit.md 2026-09-25_premarket_report.md [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-26-weekly-review.md:14-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-26-weekly-review.md:19:22 -->
-- 周六复盘 2026-09-26: 🔔 盘中预警记录: 36 条 break_below:600584: 66.0 break_below:605566: 25.1 break_below:002180: 16.75 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-26-weekly-review.md:19-22]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-26-weekly-review.md:6:6 -->
-- 周六复盘 2026-09-26: 💼 模拟盘持仓: 1/27 只 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-26-weekly-review.md:6-6]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-26-weekly-review.md:8:9 -->
-- 周六复盘 2026-09-26: 📈 持仓明细 (按收益率): 雷科防务(002413): 盈亏 ¥+0 (+0.00%) 策略:ema_cross [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-26-weekly-review.md:8-9]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-26.md:13:14 -->
-- ✅ 看板头条：报告 cron 已自愈: 09-24 五连败（跨厂商 5 模型全不可达）→ **09-25 04:00 恢复 ok**（`lastDurationMs=93.9s`、`consecutiveErrors=0`）→ 确认为**一次性网络层风暴**，非配置缺陷 → **不追加 fallback 链改造**。; `daily-report-2026-09-24.md` 缺档**接受**（关键事件已在 09-25 报告 §3/§4 归档，双轨冗余生效），不再单独补写。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-26.md:13-14]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-26.md:18:21 -->
-- 📌 09-25 当日高价值事件（deep 未收录，此处归档）: 🔴 **回滚脚本 `restore_from_snapshot.sh`「假回滚」漏洞（已修，高严重度）**：`TAG` 未校验 → `git checkout` 静默 no-op（退出码仍 0），而它是 AGENTS.md「一键回滚」最后防线 → **安全兜底机制假阳性（比没有更危险）**。修复三重防护（空标签拒绝 exit 2 / 归档快照优先 `cp -R` / tag 存在性校验 `git rev-parse --verify`）。**遗留**：`snapshot_guard.sh` 需同步快照到 `backups/<tag>/`（防护② 目前前向兼容）。; 🔴 **daily-premarket cron 超时归因已定位**：`87c6b7f9` timeout 1800s（consecutiveErrors 2→3），**但报告其实成功生成**（`2026-09-25_premarket_report.md` 06:28，9251B）。根因＝脚本末尾 `print(整份报告)` 流式回灌上下文 → 模型空轮转不再调工具 → 计时器不重置 → 30:00 被 timeout 杀；**责任在 cron 任务形态，不在脚本逻辑**。修复三方案**待批**（①停 print 整份 ②timeoutSeconds 下调 ③推送前移）；`next` 已跳 **09-28 周一**。; 🟡... [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-26.md:18-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-26.md:22:25 -->
-- 📌 09-25 当日高价值事件（deep 未收录，此处归档）: 🟡 **挑战质疑审查 5 项**（1 中危/0 高危，Run `20260925064847_9c9f63`）：🟡 招商银行 600036 `historical_judgment_review` 待观察；⚪ 4 项风控主动降级（雷科防务/国瓷材料/安达维尔/福莱蒽特），**理由已个股化**（安达维尔含因子分解 `buy_score=49.7 = 技术90×0.45+基本面13×0.3+情绪21×0.25`）→ **理由模板化连续 2 期未再现**。; 🟡 **盘中预警 5 条 HIGH + 1 低吸**（`intraday_alert_output.json` 09:00 快照，扫描 27 只）：中信证券 26.29/天齐锂业 40.90/应流股份 38.95/汇川技术 51.88/**恒立液压 92.30**/福耀玻璃 52.47/恒生电子 19.94 等跌停止损；buy_zone 安达维尔 11.97。**恒立液压连续第 5 期在告警区** → 多空分歧未收敛，人工复核优先级再提。; ✅ **盘面（09-25 收盘）**：全线跌破 MA20 普跌 —— 上证 3888.37（−1.22%，RSI 44.8）/ 深成 13316.97（−2.34%）/ 创业板 3288.95（−2.68%）/ 沪深300 4439.14（−1.73%）。030 风控健康度... [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-26.md:22-25]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-26.md:29:30 -->
-- 🔴 F-5 账本脱钩出现新证据（最高优先）: `portfolio_sim_state.last_signal_date` 推进至 **2026-09-25** ✅（T+1 连续回补），positions 27。; 但 ① state **首次出现真实持仓**（002413 雷科防务 position=True / 1800 股），与 09-24 记录「`position` 全 false / `shares` 全 0」**矛盾** → state 各次运行间**不自洽**； [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-26.md:29-30]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-26.md:5:8 -->
-- 04:00 Dreaming Daily Report (cron a8c18aed) ✅: 03:00 dreaming pipeline 正常完成 light/REM/deep 三阶段 → **连续第 41 期无回归**。; deep `Repaired recall artifacts: rewrote recall store`（连续第 11 夜）+ `Ranked 6` / **`Promoted 6`** → MEMORY.md 新区块 **line 974** `## Promoted From Short-Term Memory (2026-09-26)`，6 条实存已核对（与 `memory/.dreams/events.jsonl` `applied=6` 一致）；**6 条全部来自 `memory/2026-09-21.md`，滞后 5 天 → 落在「已知特性 3~6 天」预期区间**；MEMORY.md **987 行**（+6 纯 promoted 增量）。; REM `No strong patterns surfaced`（**0 真实主题 + 3 旧回声**，安静夜）。; light 110 行，当日素材为主，**首条即捕获 09-24 五连败事件** → 信息无损。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-26.md:5-8]
-
 ## 2026-09-29~30 重大事件：launchd 34 万次崩溃循环根治 + 模拟盘 data_date 错位修复 + 资金流结构性失效 + 新闻 cron 假 ok（memory-maintenance-check 蒸馏）
 
 > 全部源自 `memory/2026-09-29.md` / `memory/2026-09-29-2142.md` / `memory/2026-09-30.md` 已落盘事实。deep dreaming 本轮首次出现真实强主题（heartbeat/根因），但 10-01 批次仍 promote 09-26 旧素材（滞后 4 天，落在「已知特性 3~6 天」区间），故仍人工蒸馏 09-29~30。
@@ -1170,3 +1161,18 @@ This file serves as your curated long-term memory, storing significant events, d
 *   🟡 `snapshot_guard.sh` 快照同步到 `backups/<tag>/`（防护②前向兼容）；`guard/*` 快照窗口健康（最近 09-29 18:34）。
 *   🟡 `data/news/` 历史归档回填（09-09~09-29 缺失，若源仍可取）。
 *   🟡 沿用：`rm` 前置门禁（连续 8 期）、F-5 脱钩观察（`data_date` 修复已为核心突破）、F-2 比率口径、北向真缺失 / `index_flow`+`market_net_total` 失真、3950d3cc description、backtest 09-11/09-21 缺档、daily portfolio_sim 09-12~21 缺档、daily-report 08-29/09-15/09-24 缺档、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、批次C回测、恒立液压分歧、⑫回测闭环、Minimax 无解、`param_tune` 单窗口隐患、`REFERENCE_TOTAL_CAPITAL` 保持 270 万（有意保持非 bug）。
+
+## Promoted From Short-Term Memory (2026-10-05)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-09-30.md:13:13 -->
+- ⚠️ 遗留问题（非回归，已连续 ≥2 日）: **新闻阅读产出为空**：`data/news/daily_2026-09-30.md` 与 `daily_2026-09-29.md` 内容完全相同——均为 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-30.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-30.md:14:15 -->
+- ⚠️ 遗留问题（非回归，已连续 ≥2 日）: 「宏观/行业要点（0条）(目标日期无宏观快照)」+「个股新闻与解读（命中 0 只）」。 `premarket_pipeline` 的 news 阶段耗时仅 0.13s，等于空跑。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-30.md:14-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-30.md:16:17 -->
+- ⚠️ 遗留问题（非回归，已连续 ≥2 日）: **判断**：稳态故障，非今日新增。需排查 `daily_news_reader.py` 的宏观快照来源与个股新闻抓取是否已断。; **优先级**：中（不阻断主流程，但盘前报告缺新闻维度）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-30.md:16-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-30.md:20:20 -->
+- 08:00 Heartbeat — 新闻流水线空跑根因定位 + 当日修复 ✅🔍: **根因（终于抓到，连续 ≥2 日空跑）**：3 个新闻 cron 全部用 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-30.md:20-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-30.md:4:7 -->
+- 07:02 Heartbeat — 盘前 Pipeline 修复实战验证（昨日遗留项）✅: **结论：昨夜 3 处修复在生产环境验证通过。**; 06:00 `每日盘前深度分析报告(命令模式)` 87c6b7f9 正常产出 `analysis/daily/2026-09-30_premarket_report.md` (06:09, 9.9KB)。; **超时放宽验证**：`scan 127s / dual 105s / agent 248s` —— 全部落在放宽后阈值内（240/240/600）；修复前 timeout 集中在这两阶段，本次零超时。; **推送重试验证**：无 `*_push_alert.md` 告警文件、无 `[[PUSH_FAILED]]` 标记 → 推送成功送达。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-30.md:4-7]
+<!-- openclaw-memory-promotion:memory:memory/2026-09-30.md:8:10 -->
+- 07:02 Heartbeat — 盘前 Pipeline 修复实战验证（昨日遗留项）✅: **降级显式化验证**：报告头部无「⚠️ 降级数据标注」，各阶段无降级 → 全链路正常。; 信号交叉审计：0 项冲突（高危0/中危0/低危0）。; 全 cron 列表无 error/fail。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-30.md:8-10]
