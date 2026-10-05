@@ -40,51 +40,69 @@ def _akshare_call(func, *args, **kwargs):
         return None
 
 def get_fundamentals(symbol: str) -> Dict[str, float]:
-    """Fetch PE, PB, etc. Returns dict with keys pe, pb, roe, etc."""
-    if not _HAS_AKSHARE:
-        return {}
-    # Try multiple akshare fundamentals interfaces
-    # 1. stock_financial_analysis_indicator
-    df = _akshare_call(ak.stock_financial_analysis_indicator, symbol=symbol)
-    if df is not None and not df.empty:
-        # Get latest row
-        latest = df.iloc[-1]
-        return {
-            "pe": float(latest.get("市盈率", 0)) if latest.get("市盈率") else 0,
-            "pb": float(latest.get("市净率", 0)) if latest.get("市净率") else 0,
-            "roe": float(latest.get("净资产收益率", 0)) if latest.get("净资产收益率") else 0,
-            "profit": float(latest.get("销售净利率", 0)) if latest.get("销售净利率") else 0,
-        }
-    # 2. stock_a_indicator_lg may not exist in some versions; try but ignore errors
+    """Fetch PE/PB/ROE etc.
+    2026-10-05 改：akshare 新浪财务接口已退化（返回 0 行）且 stock_a_indicator_lg 已被新版移除；
+    改用 baostock：peTTM/pbMRQ 来自日K扩展字段，roe/profit 来自 query_profit_data（最近季度）。
+    """
     try:
-        df = _akshare_call(ak.stock_a_indicator_lg, symbol=symbol)
-        if df is not None and not df.empty:
-            latest = df.iloc[-1]
-            return {
-                "pe": float(latest.get("市盈率", 0)) if latest.get("市盈率") else 0,
-                "pb": float(latest.get("市净率", 0)) if latest.get("市净率") else 0,
-                "roe": float(latest.get("净资产收益率", 0)) if latest.get("净资产收益率") else 0,
-            }
-    except AttributeError:
-        pass
-    return {}
+        import baostock as bs
+    except ImportError:
+        return {}
+    code = ("sh." + symbol) if symbol.startswith(("600", "601", "603", "605", "688")) else ("sz." + symbol)
+    out: Dict[str, float] = {}
+    lg = bs.login()
+    if lg.error_code != "0":
+        return {}
+    try:
+        rs = bs.query_history_k_data_plus(
+            code, "date,close,peTTM,pbMRQ,psTTM",
+            start_date="2026-06-01", end_date="2026-12-31",
+            frequency="d", adjustflag="2")
+        last = None
+        while rs.error_code == "0" and rs.next():
+            last = rs.get_row_data()
+        if last and last[2] not in ("", "0.0000"):
+            out["pe"] = float(last[2])
+            out["pb"] = float(last[3])
+        rs2 = bs.query_profit_data(code=code, year=2026, quarter=2)
+        prow = rs2.get_row_data() if rs2.error_code == "0" and rs2.next() else None
+        if not prow:  # 部分标的 Q2 未披露，回退 Q1
+            rs2 = bs.query_profit_data(code=code, year=2026, quarter=1)
+            prow = rs2.get_row_data() if rs2.error_code == "0" and rs2.next() else None
+        if prow:
+            # fields: code,pubDate,statDate,roeAvg,npMargin,gpMargin,netProfit,epsTTM,MBRevenue,totalShare,liqaShare
+            if prow[3] not in ("", None):
+                out["roe"] = float(prow[3]) * 100
+            if prow[4] not in ("", None):
+                out["profit"] = float(prow[4]) * 100
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"get_fundamentals({symbol}) baostock 失败: {e}")
+    finally:
+        bs.logout()
+    return out
 
 def get_fund_flow(symbol: str) -> Dict[str, float]:
-    """Fetch main force net inflow, etc."""
-    if not _HAS_AKSHARE:
-        return {}
-    # stock_individual_fund_flow
-    df = _akshare_call(ak.stock_individual_fund_flow, symbol=symbol)
-    if df is not None and not df.empty:
-        latest = df.iloc[-1]
-        return {
-            "main_net_in": float(latest.get("主力净流入-净额", 0)) if latest.get("主力净流入-净额") else 0,
-            "main_net_in_rate": float(latest.get("主力净流入-净占比", 0)) if latest.get("主力净流入-净占比") else 0,
-            "super_net_in": float(latest.get("超大单净流入-净额", 0)) if latest.get("超大单净流入-净额") else 0,
-            "big_net_in": float(latest.get("大单净流入-净额", 0)) if latest.get("大单净流入-净额") else 0,
-            "medium_net_in": float(latest.get("中单净流入-净额", 0)) if latest.get("中单净流入-净额") else 0,
-            "small_net_in": float(latest.get("小单净流入-净额", 0)) if latest.get("小单净流入-净额") else 0,
-        }
+    """Fetch main force net inflow, etc.
+    2026-10-05 改：akshare stock_individual_fund_flow（东财）在本机被 TLS 指纹拦截；
+    改用 moneyflow_em（curl_cffi Chrome 指纹 + push2delay 回退链，已实战验证可用）。
+    """
+    try:
+        from analysis.moneyflow_em import stock_flow
+        r = stock_flow(symbol, lmt=5)
+        if r and r.get("days"):
+            latest = r["days"][-1]
+            return {
+                "main_net_in": latest.get("main", 0) or 0,
+                "main_net_in_rate": latest.get("main_pct", 0) or 0,
+                "super_net_in": latest.get("xlarge", 0) or 0,
+                "big_net_in": latest.get("large", 0) or 0,
+                "medium_net_in": latest.get("medium", 0) or 0,
+                "small_net_in": latest.get("small", 0) or 0,
+            }
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"get_fund_flow({symbol}) moneyflow_em 失败: {e}")
     return {}
 
 def get_technical_from_hist(symbol: str, name: str) -> Dict[str, Any]:
