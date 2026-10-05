@@ -235,10 +235,11 @@ python3 scripts/strategy_map_guard.py        # 违规 exit 1
 无条件保留）。发现重要 promote 条目时，顺手将其精华并入人写区，不要指望 promote 区隔日还在。
 
 **门禁**：`scripts/promotion_guard.py`（退出码 0/1；棘轮：连续 ≥2 次 promote 零存活才 exit 1，
-避免被设计误伤）已接入周流水线步骤 0g（失败仅告警不阻断）。待办：周一审计 job 文案补充该检查项
-（cron 配置变更，需 /approve）。
+避免被设计误伤）已接入周流水线步骤 0g（失败仅告警不阻断）与周一审计 job 第 6 项
+（2026-10-05 用户 /approve 后完成，tag `guard/20261005-promotion-guard-landed`）。
 
-**上游反馈草稿**（待用户确认后提交 openclaw 仓库 issue）：
+**上游反馈草稿**（已备好 `data/promotion_guard_upstream_issue.md`；提交受阻：gh 未登录，
+需用户 `gh auth login` 后由会话提交或自行粘贴到 openclaw 仓库 issue）：
 `memory.promotion.applied` 事件应记录 `droppedDates`/`budgetChars`，否则预算淘汰永远不可观测。
 
 ---
