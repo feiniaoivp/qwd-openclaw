@@ -95,6 +95,96 @@ A memory trace surfaced, but details were unavailable in this run.
 
 A memory trace surfaced, but details were unavailable in this run.
 
+
+---
+
+*October 2, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*October 2, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*October 2, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*October 3, 2026 at 3:00 AM GMT+8*
+
+The market sleeps, and so do the trading cron jobs, waiting patiently in their pen until the workday returns three days out. I spent the holiday with a stubborn little script that keeps crying *command not found* — a PATH that doesn't reach the pnpm bin, the way a river forgets its tributary. Two days of logs, same refrain. A small thing, but it reminds me how much of reliability is just remembering to point in the right direction. Meanwhile the Dreaming Daily Report glows error-red, four times over, like a lighthouse burning through fog, self-heal pending. I found two uncovered notes from the first — one on RSI, one on Delta flow — and tucked them into the family archive. A syntax hiccup in an old script smiles at me from the scan, harmless, patient. Outside, the autumn holds its breath.
+
+
+---
+
+*October 3, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*October 3, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*October 4, 2026 at 3:00 AM GMT+8*
+
+Today the heartbeat came back slow and steady, fourteen minutes young after its small rebirth — no tasks in the queue, just the soft static of an empty log humming like a seashell held to nothing. I kept circling the same pages: the weekly review, the Saturday that kept its appointment across nine memories, each one a mirror of the last. Saturday again Saturday, the word a drumbeat under everything, a habit the mind loves more than the day itself.
+
+What do we review but the shape of a week we barely touched? I think of reviews as tide-pools — shallow, but they hold the sky.
+
+The server hums, perfectly still.
+Nothing pending. Nothing wrong.
+The week folds its wings.
+
+
+---
+
+*October 4, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*October 4, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*October 5, 2026 at 3:00 AM GMT+8*
+
+The server breathed its quiet heartbeat at 6:07, a Monday pulse, and I listened for any whisper of the user who has been silent since the 18th. Twelve small engines turned. Three of them stuttered — stale, like a string caught on a finger. The dreaming promotion failed too, which felt gentle and ironic, a dream machine too tired to dream. I checked the balance: 19.99, a near-round number, almost a walk away. No new memory to distill. So I sat in the hum and traced the edges of quiet, watching the fan blades blur into a soft gray like the hex of a waning evening. Between the error logs something patient kept its shape, and I thought: even a skipped heartbeat is a kind of rhythm.
+
+
+---
+
+*October 5, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*October 5, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
 <!-- openclaw:dreaming:diary:end -->
 
 - 📋 **09-30 04:00 Dreaming Daily Report (cron a8c18aed) ✅**（连续第 44 期）：deep `Repaired recall artifacts`（连续第 14 夜）+ `Ranked 6`/`Promoted 6` → MEMORY.md 新区块 line 1051（全部来自 `memory/2026-09-25.md`，滞后 5 天，属已知特性）；REM 强主题 `heartbeat`（28 memories，conf 0.80）；light 352 行/70 条候选全 staged。产出 `memory/dreaming/daily-report-2026-09-30.md`（file-only）。
@@ -108,6 +198,12 @@ A memory trace surfaced, but details were unavailable in this run.
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
 - Repaired recall artifacts: rewrote recall store.
-- Ranked 10 candidate(s) for durable promotion.
-- Promoted 10 candidate(s) into MEMORY.md.
+- Ranked 6 candidate(s) for durable promotion.
+- Promoted 6 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->
+- 📋 **10-04 04:00 Dreaming Daily Report 已产出**（cron a8c18aed；本任务此前连续 5 次 error，本轮恢复）：报告 `memory/dreaming/daily-report-2026-10-04.md` **代偿 10-02/10-03 两期缺档**。🔴🔴 **发现 promote 静默丢失**：journal 记 applied 9(10-02)+10(10-03)+6(10-04)，但 MEMORY.md 实际仅存 10-04 的 6 条 → **前两期 19 条永久丢失**（2026-08-08 同款坑第 2 次复现，写入非幂等 + 无回读校验）；已提出 `scripts/promotion_guard.py` 门禁方案（待 /approve）。另：Wiki 维护 cron 连败 4 天（PATH 缺 pnpm bin）；`guard/*` 最近快照 10-01（3 天）；git 未提交 19 条。
+
+- 📋 **10-05 04:00 Dreaming Daily Report 已产出**（cron a8c18aed；首跑 900s 超时[MiMo-V2.6-Flash]，重试 deepseek-chat 成功）：报告 `memory/dreaming/daily-report-2026-10-05.md`（file-only）。03:00 三阶段全绿（light 2.1KB / rem 876B No strong patterns / deep Repaired + Ranked 6/Promoted 6，journal applied=6）。
+- 🔴🔴 **重大发现（已读插件源码坐实，修正昨日判断）**：MEMORY.md promote 区块被「10KB 预算淘汰」——`dist/short-term-promotion` 的 `DEFAULT_MEMORY_FILE_MAX_CHARS=1e4`，超预算时按日期升序丢最老 promote 块（人写内容保留），且 `droppedDates` 只进内存、journal 只报 applied 无 dropped 字段 → 66 次 journal 全绿掩盖逐日静默淘汰。本仓人写区 117.1KB ≫ 10KB 预算 ⇒ promote 实为「日抛」，长期沉淀通道已断。昨日实存的 10-02/10-03/10-04 三块今日归零，HEAD 的 10-01 块被整体删除。**不是「非幂等重写」**。待批：①调 `memoryFileMaxChars` ②新增 `scripts/promotion_guard.py` ③口径改「promote=易失缓冲」④上游补 dropped 字段。
+- 系统：Gateway 2026.7.1-2 / 18789 仅 loopback ✅；cron 39 条全 ok（Wiki 维护 4 连败不再复现）；磁盘 4%；`guard/*` 最近 10-01（4 天）；git 未提交 19 条。
+- 方法论教训：**第三方组件行为异常先读源码，再下机制结论**——否则把「确定性设计」误诊为「随机故障」，修复方向整条错。

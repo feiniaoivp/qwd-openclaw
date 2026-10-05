@@ -1,4 +1,4 @@
-# Upstream issue draft (openclaw repo) — 待 gh auth login 后提交
+# Upstream issue draft (openclaw repo) — 2026-10-05 已核实/可加粗提交流程
 
 **Title**: memory.promotion.applied event should record droppedDates/budgetChars (budget compaction is unobservable)
 

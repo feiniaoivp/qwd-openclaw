@@ -980,13 +980,23 @@ def main(target_date: str = None):
     if use_full:
         log.info("✅ 历史接口可用，进行完整技术指标扫描...")
         output["data_source"] = "hist_scan"
+        
+        # 批量获取历史数据（使用 DataRouter 批量接口，单会话复用）
+        symbols = [item["symbol"] for item in spot_results if "error" not in item]
+        if symbols:
+            log.info(f"📦 批量获取 {len(symbols)} 只历史数据...")
+            daily_data = fetcher._router.get_daily_batch(symbols, start_date="20240101", adjust="qfq")
+            log.info(f"  ✅ 批量获取完成: {len(daily_data)}/{len(symbols)} 只")
+        else:
+            daily_data = {}
+        
         for item in spot_results:
             if "error" in item:
                 output["watchlist_scan"].append(item)
                 output["summary"]["fail_count"] += 1
                 continue
             sym = item["symbol"]
-            df = fetcher.get_daily_hist(sym, item["name"])
+            df = daily_data.get(sym)
             if df is not None and len(df) >= 60:
                 try:
                     sig = calc_full_signal_whitelist(df)

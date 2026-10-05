@@ -33,23 +33,28 @@ log = logging.getLogger(__name__)
 _bs_lock = threading.Lock()
 _bs_logged_in = False
 _last_login_time = 0.0
+_LAST_LOGIN_FAIL_TIME = 0.0
+_LOGIN_FAIL_COOLDOWN = 300  # 登录失败后 5 分钟内不再重试（2026-10-02：baostock 服务端不可用时每次失败登录要 ~60s，无负缓存会把整个回测拖死）
 _LOGIN_TTL = 1800  # 30 分钟重新登录一次
 
 
 def _do_login() -> bool:
     """内部登录函数"""
-    global _bs_logged_in, _last_login_time
+    global _bs_logged_in, _last_login_time, _LAST_LOGIN_FAIL_TIME
     try:
         lg = bs.login()
         if lg.error_code != "0":
             log.error(f"[BS] 登录失败: {lg.error_msg}")
+            _LAST_LOGIN_FAIL_TIME = time.time()
             return False
         _bs_logged_in = True
         _last_login_time = time.time()
+        _LAST_LOGIN_FAIL_TIME = 0.0
         log.info("[BS] 登录成功")
         return True
     except Exception as e:
         log.error(f"[BS] 登录异常: {e}")
+        _LAST_LOGIN_FAIL_TIME = time.time()
         return False
 
 
@@ -64,6 +69,9 @@ def ensure_login() -> bool:
     with _bs_lock:
         if _bs_logged_in and (time.time() - _last_login_time < _LOGIN_TTL):
             return True
+        # 负缓存：失败冷却期内直接返回，不重复发起 ~60s 的失败登录
+        if time.time() - _LAST_LOGIN_FAIL_TIME < _LOGIN_FAIL_COOLDOWN:
+            return False
         return _do_login()
 
 

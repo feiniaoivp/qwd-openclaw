@@ -716,6 +716,23 @@ def fetch_index_data(index_code, start_date, end_date, max_retry=3):
             print(f"  ⚠️ 指数 {index_code} 获取失败(尝试{attempt+1}/{max_retry}): {e}")
             time.sleep(1)
 
+    # 2026-10-02 新增：akshare 指数日线兜底（baostock 服务端不可用时）
+    try:
+        import akshare as ak
+        ak_symbol = index_code.replace("sh.", "sh").replace("sz.", "sz")
+        df = ak.stock_zh_index_daily(symbol=ak_symbol)
+        df = df.rename(columns={"date": "date"})
+        df["date"] = pd.to_datetime(df["date"])
+        df = df[(df["date"] >= pd.to_datetime(start_date)) & (df["date"] <= pd.to_datetime(end_date))]
+        for col in ["open", "close", "high", "low", "volume"]:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+        df = df.sort_values("date").reset_index(drop=True).dropna()
+        if len(df) >= 2:
+            print(f"  ✅ 指数 {index_code}: {len(df)}条 [akshare 兜底]")
+            return df
+    except Exception as e:
+        print(f"  ⚠️ 指数 {index_code} akshare兜底失败: {e}")
+
     print(f"  ❌ 指数 {index_code} 所有尝试均失败")
     return None
 
@@ -806,9 +823,10 @@ def main():
     today = datetime.now().strftime("%Y-%m-%d")
 
     # 确保 baostock 登录（单例）
+    # 2026-10-02 修复：登录失败不再整体中止 —— DataRouter 有 akshare/新浪 降级链，
+    # 只有全部数据源不可用时才真正无法回测（此前 baostock 服务端抖动会整晚杀掉推送）。
     if not ensure_login():
-        print(f"❌ baostock登录失败")
-        return
+        print("⚠️ baostock登录失败，降级到 akshare/新浪 数据源继续回测")
 
     # 预加载指数基准数据（一次性拉取，避免逐股循环内重复查询）
     print("📊 预加载指数基准数据...")

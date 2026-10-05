@@ -22,7 +22,7 @@ def run_and_push():
         cwd=WORKSPACE,
         capture_output=True,
         text=True,
-        timeout=600  # 回测可能需要较长时间
+        timeout=1800  # 回测可能需要较长时间（2026-10-02: 600s 在 akshare 降级链下不够用）
     )
     
     if result.returncode != 0:
