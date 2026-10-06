@@ -60,21 +60,31 @@ _HEADERS = {
 _FFLOW_FIELDS = "f51,f52,f53,f54,f55,f56,f57,f58"
 _UT = "b2884a393a59ad64002292a3e90d46a5"
 
+# 🔑 当日实时快照主机链（2026-10-06 改造，用户批准 09-30 对照实验结论）
+#   背景：push2his/fflow/daykline 现网结构性退化（≤50% 成功，curl:28）；
+#   push2 的 fflow/kline?klt=1（分钟级**累计**快照，末行=全天累计）实测 7/8 成功。
+#   push2delay 对 fflow 类接口是**诱饵**（HTTP200 + data:null），故实时链单独走
+#   push2 → push2his，不进 _FFLOW_HOSTS 轮转（避免被短路）。
+#   注意：klt=1 仅返当日（实测 lmt=1000 也只有当日 240 根），历史多日仍需 daykline。
+_FF_RT_HOSTS = ["push2.eastmoney.com", "push2his.eastmoney.com"]
 
-def _get(url: str, tries: int = _RETRY) -> Optional[dict]:
+
+def _get(url: str, tries: int = _RETRY, hosts: Optional[List[str]] = None) -> Optional[dict]:
     """带指数退避重试的 GET（curl_cffi + Chrome TLS 指纹）
 
-    自动在 _FFLOW_HOSTS / _CLIST_HOSTS 之间回退：把 URL 里的主机名替换后重试。
+    自动在主机候选间回退：把 URL 里的主机名替换后重试。
+    hosts=None 时用 _FFLOW_HOSTS + _CLIST_HOSTS；实时快照等专用接口传自己的 host 链。
     整体硬超时 _MAX_TOTAL_TIME 秒，防止长时间卡死。
     使用 threading 实现跨线程超时（signal 方案在 curl_cffi 子线程不生效）。
     """
     import threading
-    
+
     # 构造主机候选列表（保持相对路径与查询串不变）
-    hosts: list[str] = []
-    for h in (_FFLOW_HOSTS + _CLIST_HOSTS):
-        if h not in hosts:
-            hosts.append(h)
+    if hosts is None:
+        hosts = []
+        for h in (_FFLOW_HOSTS + _CLIST_HOSTS):
+            if h not in hosts:
+                hosts.append(h)
     # 用第一个主机作为基准模板
     import re as _re
     m = _re.match(r"https?://([^/]+)(/.*)$", url)
@@ -147,28 +157,92 @@ def _to_secid(code: str) -> str:
 # 指数 / 个股 主力资金流
 # ────────────────────────────────────────────
 
+def _fflow_realtime(secid: str) -> Optional[Dict[str, Any]]:
+    """当日主力资金流（push2 fflow/kline?klt=1 分钟级累计快照，末行=全天累计）。
+
+    字段与 daykline 对齐（f52=主力净额 f53=小单 f54=中单 f55=大单 f56=超大单）；
+    实测校验 main = large + xlarge ✓。返回 {code,name,day:{...}} 或 None。
+    """
+    url = (f"https://push2.eastmoney.com/api/qt/stock/fflow/kline/get"
+           f"?lmt=0&klt=1&secid={secid}"
+           f"&fields1=f1,f2,f3,f7&fields2=f51,f52,f53,f54,f55,f56,f57&ut={_UT}")
+    d = _get(url, hosts=_FF_RT_HOSTS)
+    if not d or d.get("_error") or not d.get("data"):
+        return None
+    klines = d["data"].get("klines") or []
+    if not klines:
+        return None
+    p = klines[-1].split(",")
+    if len(p) < 6:
+        return None
+    try:
+        return {
+            "code": d["data"].get("code"),
+            "name": d["data"].get("name"),
+            "day": {
+                "date": p[0].split(" ")[0],  # "2026-09-30 15:00" → "2026-09-30"
+                "main": float(p[1]),
+                "small": float(p[2]),
+                "medium": float(p[3]),
+                "large": float(p[4]),
+                "xlarge": float(p[5]),
+                "main_pct": float(p[6]) if len(p) > 6 and p[6] not in ("", "-") else None,
+                "_source": "rt_klt1",
+            },
+        }
+    except ValueError:
+        return None
+
+
 def _fflow(secid: str, lmt: int = 5) -> Optional[Dict[str, Any]]:
+    """主力资金流（对外结构不变：{code,name,days:[{date,main,small,medium,large,xlarge,main_pct}]}）。
+
+    2026-10-06 改造（用户批准，09-30 对照实验结论落地）：
+    1. 当日行：push2 klt=1 实时快照（主源，现网高成功率）
+    2. 历史行：push2his daykline（结构性退化≤50%，能拉到则拼接，拉不到降级仅当日）
+    3. 两路全失败才返回 None（旧版 daykline 单点失败即整单 None → 静默失效多日的根因）。
+    """
+    rt = _fflow_realtime(secid)
+
+    # 历史 daykline（失败只降级不报错）
+    hist_days: List[Dict[str, Any]] = []
+    hist_meta: Dict[str, Any] = {}
     url = (f"https://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get"
            f"?lmt={lmt}&klt=101&secid={secid}"
            f"&fields1=f1,f2,f3,f7&fields2={_FFLOW_FIELDS}&ut={_UT}")
     d = _get(url)
-    if not d or d.get("_error") or not d.get("data"):
+    if d and not d.get("_error") and d.get("data"):
+        hist_meta = {"code": d["data"].get("code"), "name": d["data"].get("name")}
+        # f51=日期 f52=主力净额 f53=小单 f54=中单 f55=大单 f56=超大单 f57=主力净占比 f58=?
+        for line in d["data"].get("klines", []):
+            p = line.split(",")
+            if len(p) < 7:
+                continue
+            hist_days.append({
+                "date": p[0],
+                "main": float(p[1]),          # 主力净额(元)
+                "small": float(p[2]),
+                "medium": float(p[3]),
+                "large": float(p[4]),
+                "xlarge": float(p[5]),
+                "main_pct": float(p[6]) if p[6] not in ("", "-") else None,
+                "_source": "daykline",
+            })
+
+    if not rt and not hist_days:
         return None
-    out = {"code": d["data"].get("code"), "name": d["data"].get("name"), "days": []}
-    # f51=日期 f52=主力净额 f53=小单 f54=中单 f55=大单 f56=超大单 f57=主力净占比 f58=?
-    for line in d["data"].get("klines", []):
-        p = line.split(",")
-        if len(p) < 7:
-            continue
-        out["days"].append({
-            "date": p[0],
-            "main": float(p[1]),          # 主力净额(元)
-            "small": float(p[2]),
-            "medium": float(p[3]),
-            "large": float(p[4]),
-            "xlarge": float(p[5]),
-            "main_pct": float(p[6]) if p[6] not in ("", "-") else None,
-        })
+
+    out = {"code": (rt or {}).get("code") or hist_meta.get("code"),
+           "name": (rt or {}).get("name") or hist_meta.get("name"),
+           "days": []}
+    if rt:
+        rt_date = rt["day"]["date"]
+        # 拼接：历史中丢掉与实时同日（盘后 daykline 也会含当日，避免重复），实时行放最后一行
+        out["days"] = [h for h in hist_days if h["date"] != rt_date] + [rt["day"]]
+    else:
+        out["days"] = hist_days
+    if not out["days"]:
+        return None
     return out
 
 
