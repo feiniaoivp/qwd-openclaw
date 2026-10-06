@@ -25,7 +25,9 @@ def run_and_push():
         cwd=WORKSPACE,
         capture_output=True,
         text=True,
-        timeout=120
+        # 2026-10-06: 实测 close_scan_v2 全池扫描 363.7s（资金流占 2m18s），
+        # 原写死 120s 导致 command cron 必超时。720s 留足余量且低于 job 级 900s。
+        timeout=720
     )
     
     if result.returncode != 0:
@@ -34,18 +36,21 @@ def run_and_push():
         send_with_retry(error_msg, parse_mode='')
         return False
     
-    # 提取 JSON (在 =====PORTFOLIO_SIM_RESULT===== 和 =====PORTFOLIO_SIM_END===== 之间，或直接是整个输出)
-    output = result.stdout.strip()
-    
-    # 尝试解析 JSON
+    # 提取 JSON：close_scan_v2 在 =====CLOSE_SCAN_RESULT===== 与 =====CLOSE_SCAN_END===== 之间输出主体 JSON，
+    # 后续还可能拼接其他结果块，不能用 find('{') 取到末尾（会 Extra data）。
+    output = result.stdout
+    marker_re = r"=====CLOSE_SCAN_RESULT=====(.*?)=====CLOSE_SCAN_END====="
+    m = __import__("re").search(marker_re, output, __import__("re").DOTALL)
     try:
-        # 查找 JSON 开始位置
-        start = output.find('{')
-        if start >= 0:
-            json_str = output[start:]
-            data = json.loads(json_str)
+        if m:
+            data = json.loads(m.group(1).strip())
         else:
-            raise ValueError("输出中未找到 JSON")
+            # 兼容旧格式：单 JSON 块直接截到末尾
+            start = output.find('{')
+            if start >= 0:
+                data = json.loads(output[start:].strip())
+            else:
+                raise ValueError("输出中未找到 JSON 或 CLOSE_SCAN 标记")
     except json.JSONDecodeError as e:
         error_msg = f"❌ JSON 解析失败: {e}\n输出前500字符: {output[:500]}"
         print(error_msg)
