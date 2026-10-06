@@ -168,6 +168,16 @@ def main():
     if not r["success"]:
         print("⚠️ promote 通道异常（见上方），需人工将关键教训写入 MEMORY.md 人写区（不阻断流水线）...")
 
+    # 步骤 0h: cron 空转假成功门禁（2026-10-06 新增，直读 sqlite，0.13s）
+    # 背景：3950d3cc 长期 status=ok 但毫秒返回、脚本从未执行（main+systemEvent 注入即 ok）。
+    # cron_health_check 只看成功率，毫秒级 ok 永远"健康"——结构性盲区。棘轮基线：
+    # 存量 9 个已入 data/cron_noop_baseline.json 仅报告，基线外新增才 exit 1。
+    print("\n🚦 步骤 0h/9: cron 空转假成功门禁 (cron_noop_guard.py)")
+    r = run_script("../scripts/cron_noop_guard.py", timeout=60)
+    results["cron_noop_guard"] = r
+    if not r["success"]:
+        print("⚠️ 发现基线外新增空转假成功 cron 任务（见上方），需人工改 command+isolated 或清理（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = run_script("backtest_strategies.py", timeout=600)  # 10分钟上限，当前约3.5分钟跑完，留足缓冲

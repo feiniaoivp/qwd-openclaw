@@ -274,6 +274,7 @@ echo "✅ 已回滚到 $TAG"
 - [ ] `scripts/skill_supply_scan.py --offline` 扫描新增技能无高危模式
 - [ ] `python3 scripts/script_path_guard.py` 确认无缺失 sys.path 样板的脚本
 - [ ] `python3 scripts/promotion_guard.py` 确认 promote 通道未断（2026-10-05 新增；退出码 1 = 自动晋升失效，需人工并入人写区）
+- [ ] `python3 scripts/cron_noop_guard.py` 确认无基线外新增空转假成功 cron（2026-10-06 新增；退出码 1 = 有 job 注入即 ok、脚本未跑，需改 command+isolated）
 
 ---
 
@@ -302,6 +303,7 @@ echo "✅ 已回滚到 $TAG"
 | `snapshot_guard.sh` | `scripts/` | 变更前快照 | 重大变更 SOP |
 | `silent_except_guard.py` | `scripts/` | 新增静默异常吞噬（AST，棘轮模式：存量仅报告、新增 exit 1） | 周流水线步骤 0f（2026-09-28 新增） |
 | `promotion_guard.py` | `scripts/` | promote 预算淘汰致自动晋升断（棘轮：连续 ≥2 次零存活 exit 1） | 周流水线步骤 0g + 周一审计第 6 项（2026-10-05 新增） |
+| `cron_noop_guard.py` | `scripts/` | cron 任务 status=ok 但毫秒级返回（空转假成功，脚本从未执行；直读 sqlite，棘轮基线 `data/cron_noop_baseline.json`） | 周流水线步骤 0h（2026-10-06 新增；源起 3950d3cc 假 ok 事故，存量 9 个待逐个改造） |
 
 ### 新增门禁时必做
 
