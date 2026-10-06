@@ -1,0 +1,128 @@
+{
+ "net_total": 46819386136.0,
+ "board_count": 100,
+ "inflow_top": [
+  {
+   "code": "BK1216",
+   "name": "医药生物",
+   "main_net": 6190539776.0,
+   "main_pct": 4.44,
+   "xlarge_net": 3485894656.0,
+   "change_pct": 2.03
+  },
+  {
+   "code": "BK0727",
+   "name": "医疗服务",
+   "main_net": 2603071648.0,
+   "main_pct": 6.95,
+   "xlarge_net": 1331170208.0,
+   "change_pct": 3.09
+  },
+  {
+   "code": "BK1600",
+   "name": "医疗研发外包",
+   "main_net": 2228100720.0,
+   "main_pct": 7.39,
+   "xlarge_net": 995245424.0,
+   "change_pct": 4.22
+  },
+  {
+   "code": "BK0465",
+   "name": "化学制药",
+   "main_net": 1945034624.0,
+   "main_pct": 4.03,
+   "xlarge_net": 1281703552.0,
+   "change_pct": 2.1
+  },
+  {
+   "code": "BK1015",
+   "name": "能源金属",
+   "main_net": 1570977520.0,
+   "main_pct": 11.27,
+   "xlarge_net": 385862432.0,
+   "change_pct": 0.19
+  },
+  {
+   "code": "BK1622",
+   "name": "镍",
+   "main_net": 1565337557.0,
+   "main_pct": 16.12,
+   "xlarge_net": 379585557.0,
+   "change_pct": 2.85
+  },
+  {
+   "code": "BK0438",
+   "name": "食品饮料",
+   "main_net": 1420744880.0,
+   "main_pct": 5.57,
+   "xlarge_net": 1055400368.0,
+   "change_pct": 1.51
+  },
+  {
+   "code": "BK1594",
+   "name": "化学制剂",
+   "main_net": 1356723936.0,
+   "main_pct": 3.59,
+   "xlarge_net": 974387168.0,
+   "change_pct": 2.25
+  },
+  {
+   "code": "BK1044",
+   "name": "生物制品",
+   "main_net": 1351955984.0,
+   "main_pct": 5.74,
+   "xlarge_net": 740231952.0,
+   "change_pct": 4.53
+  },
+  {
+   "code": "BK1211",
+   "name": "汽车",
+   "main_net": 1031911680.0,
+   "main_pct": 1.79,
+   "xlarge_net": 729875712.0,
+   "change_pct": 0.1
+  }
+ ],
+ "outflow_top": [
+  {
+   "name": "电子",
+   "main_net": -15022330112.0,
+   "main_pct": -4.23
+  },
+  {
+   "name": "半导体",
+   "main_net": -10191719424.0,
+   "main_pct": -5.73
+  },
+  {
+   "name": "数字芯片设计",
+   "main_net": -5174259968.0,
+   "main_pct": -6.85
+  },
+  {
+   "name": "元件",
+   "main_net": -3932953088.0,
+   "main_pct": -5.3
+  },
+  {
+   "name": "印制电路板",
+   "main_net": -3161845248.0,
+   "main_pct": -5.05
+  },
+  {
+   "name": "计算机",
+   "main_net": -2932669952.0,
+   "main_pct": -4.47
+  },
+  {
+   "name": "机械设备",
+   "main_net": -1876355072.0,
+   "main_pct": -1.79
+  },
+  {
+   "name": "集成电路封测",
+   "main_net": -1705674224.0,
+   "main_pct": -12.08
+  }
+ ]
+}
