@@ -1172,7 +1172,8 @@ This file serves as your curated long-term memory, storing significant events, d
 *   ✅ **[10-06 闭环] 静默异常「新增 1 处」**：今日 guard exit 0（存量 114 仅报告，portfolio_sim 那处已不在违规名单）。
 *   ✅ **[10-06 闭环] 临时探针产物**：`boss_warning*.png`/`gen_boss_fun.py` → `archive/2026-09-probes/`，commit 7004270。
 *   ✅ **[10-06 闭环] `per-job 模型覆盖`根因**：40 个 job 全量扫，7 个带失效 `deepseek-v4-flash`/`thinking` 字段全部 `--clear-model/--clear-thinking`，备份 `data/cron-backup/20261006-*.json`，6/7 force 实测 ok。
-*   ✅ **[10-06 闭环] ① moneyflow 结构性修复**：`_fflow` 主源改 `push2 klt=1` 实时快照（`_fflow_realtime`），主源失败回落 daykline，两路全失败才 None（旧版单点失败即整单静默）。实测 6/6 返回数据（601995 旧版 None→已修复），guards 双过，commit `d230f48`。② cron 巡检「空转假成功」门禁仍待批。
+*   ✅ **[10-06 闭环] ① moneyflow 结构性修复**：`_fflow` 主源改 `push2 klt=1` 实时快照（`_fflow_realtime`），主源失败回落 daykline，两路全失败才 None（旧版单点失败即整单静默）。实测 6/6 返回数据（601995 旧版 None→已修复），guards 双过，commit `d230f48`。
+*   ✅ **[10-06 闭环] ② cron 空转假成功门禁**：新 `scripts/cron_noop_guard.py`（直读 sqlite，0.13s；ok+毫秒返回=假成功；棘轮基线 `data/cron_noop_baseline.json` 存量 9 个仅报告、新增 exit 1）；接入周流水线步骤 0h + 周一审计。首次扫描揪出 9 个存量空转 job（SHELL-type×6 应改 command+isolated + INSTRUCTION×3），待逐批改造（涉 cron 配置需 /approve）。commit `2e28808`。
 *   🟡 09-30 遗留 error job：`quant-backtest-daily`(bd9843f1) 推送已 `--no-deliver` 临时修，正式「systemEvent 改造」仍待办。
 *   🟡 `data/news/` 历史归档回填（09-09~09-29 缺失，若源仍可取）。
 *   🟡 沿用：`rm` 前置门禁（连续 8 期）、F-5 脱钩观察、F-2 比率口径、北向真缺失 / `index_flow`+`market_net_total` 失真、backtest 09-11/09-21 缺档、daily portfolio_sim 09-12~21 缺档、daily-report 08-29/09-15/09-24 缺档、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、批次C回测、恒立液压分歧、⑫回测闭环、Minimax 无解、`param_tune` 单窗口隐患、`REFERENCE_TOTAL_CAPITAL` 保持 270 万（有意保持非 bug）。
