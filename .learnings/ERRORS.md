@@ -95,3 +95,30 @@ cron `zhonglian-monitor-morning-cmd` 运行 `analysis/zhonglian_monitor.py` 时�
 - 考虑给该 cron 加重试或在脚本内 catch 后改用本地缓存数据出一份简报。
 
 **Pattern-Key**: data.sina-ssl-handshake-failure
+
+---
+
+## [ERR-20261006-PM] premarket-pipeline 被误判"卡死"而误杀两次
+
+**Logged**: 2026-10-06 06:10 (Asia/Shanghai)
+**Priority**: medium
+**Status**: resolved (2026-10-06, 第三次运行成功)
+**Area**: ops/misjudgment
+
+### Summary
+cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。前两次尝试中，我看到 process poll 长时间无输出，误判为进程卡死，先后 kill 了两次（gentle-ember、lucky-cedar），并在错误时机用 `pkill`/`kill -9` 杀掉了仍在正常运行的 python 子进程。
+
+### Root cause
+- premarket_pipeline.py 是**静默编排器**：5 个阶段全部通过 `subprocess.run(capture_output=True)` 运行，stdout 被捕获不透传，只有**全部阶段跑完后**才一次性 `print(final_report)`。运行期间零输出是**正常设计**，不是卡死。
+- 阶段总耗时（scan ~214s + dual ~69s + news + audit + agent 降级跳过 ≈ 10-13 分钟）远超我当时的耐心阈值。
+- 期间我错误地用了 `pkill -f`/`kill -9` 直接杀 python 进程，破坏了正在跑的任务。
+
+### Fix applied
+第三次以 background 方式启动，另起一个 `while kill -0 <pid>; do sleep 5; done` 监听进程等退出码；期间用 `ps -o ppid/etime` + `ls data/pipeline_cache/*.json` 的 mtime 变化来观测各阶段进展（scan_last.json/dual_last.json 更新说明阶段在推进），耐心等待直至 `PIPELINE_EXITED`。最终退出码 0，报告 `analysis/daily/2026-10-06_premarket_report.md` 生成，Telegram 推送成功（无 push_alert 文件）。
+
+### What to do differently
+- 判断长跑 pipeline 是否卡死，不要只看 stdout：应检查 ①子进程树 `pgrep -P <pid>` 是否有活跃子阶段脚本 ②产出缓存文件 mtime 是否在更新 ③对照各阶段 timeout 配置估算总时长（本 pipeline 最坏情况 ~20+ 分钟）。
+- 永远不要对疑似卡死的长跑任务直接 `kill -9`，先确认阶段进展。
+- 静默编排器（capture_output 模式）"无输出"是常态，需按预期总时长耐心等待。
+
+**Pattern-Key**: ops.silent-orchestrator-misjudged-as-hang

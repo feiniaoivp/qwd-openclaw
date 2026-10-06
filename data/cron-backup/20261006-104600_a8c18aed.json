@@ -1,0 +1,41 @@
+{
+  "id": "a8c18aed-8916-4afa-82e7-2b6501dcbfcf",
+  "name": "Dreaming Daily Report",
+  "description": "[managed-by=memory-lancedb-dreaming] daily-report Daily report (file-only, cron=0 4 * * *).",
+  "enabled": true,
+  "deleteAfterRun": false,
+  "createdAtMs": 1786101083798,
+  "updatedAtMs": 1791243083273,
+  "schedule": {
+    "kind": "cron",
+    "expr": "0 4 * * *",
+    "tz": "Asia/Shanghai"
+  },
+  "sessionTarget": "isolated",
+  "wakeMode": "now",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "__openclaw_memory_lancedb_dreaming_daily_report__",
+    "thinking": "medium",
+    "timeoutSeconds": 900
+  },
+  "delivery": {
+    "mode": "none"
+  },
+  "state": {
+    "nextRunAtMs": 1791316800000,
+    "lastRunAtMs": 1791242577305,
+    "lastRunStatus": "ok",
+    "lastStatus": "ok",
+    "lastDurationMs": 505968,
+    "lastDeliveryStatus": "not-requested",
+    "lastFailureNotificationDeliveryStatus": "not-requested",
+    "consecutiveErrors": 0,
+    "consecutiveSkipped": 0
+  },
+  "nextRunAtMs": 1791316800000,
+  "lastRunAtMs": 1791242577305,
+  "lastRunStatus": "ok",
+  "lastDeliveryStatus": "not-requested",
+  "lastFailureNotificationDeliveryStatus": "not-requested"
+}

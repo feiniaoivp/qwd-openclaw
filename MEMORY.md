@@ -1175,17 +1175,17 @@ This file serves as your curated long-term memory, storing significant events, d
 *   🟡 `data/news/` 历史归档回填（09-09~09-29 缺失，若源仍可取）。
 *   🟡 沿用：`rm` 前置门禁（连续 8 期）、F-5 脱钩观察（`data_date` 修复已为核心突破）、F-2 比率口径、北向真缺失 / `index_flow`+`market_net_total` 失真、3950d3cc description、backtest 09-11/09-21 缺档、daily portfolio_sim 09-12~21 缺档、daily-report 08-29/09-15/09-24 缺档、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、批次C回测、恒立液压分歧、⑫回测闭环、Minimax 无解、`param_tune` 单窗口隐患、`REFERENCE_TOTAL_CAPITAL` 保持 270 万（有意保持非 bug）。
 
-## Promoted From Short-Term Memory (2026-10-05)
+## Promoted From Short-Term Memory (2026-10-06)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-09-30.md:13:13 -->
-- ⚠️ 遗留问题（非回归，已连续 ≥2 日）: **新闻阅读产出为空**：`data/news/daily_2026-09-30.md` 与 `daily_2026-09-29.md` 内容完全相同——均为 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-30.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-30.md:14:15 -->
-- ⚠️ 遗留问题（非回归，已连续 ≥2 日）: 「宏观/行业要点（0条）(目标日期无宏观快照)」+「个股新闻与解读（命中 0 只）」。 `premarket_pipeline` 的 news 阶段耗时仅 0.13s，等于空跑。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-30.md:14-15]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-30.md:16:17 -->
-- ⚠️ 遗留问题（非回归，已连续 ≥2 日）: **判断**：稳态故障，非今日新增。需排查 `daily_news_reader.py` 的宏观快照来源与个股新闻抓取是否已断。; **优先级**：中（不阻断主流程，但盘前报告缺新闻维度）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-30.md:16-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-30.md:20:20 -->
-- 08:00 Heartbeat — 新闻流水线空跑根因定位 + 当日修复 ✅🔍: **根因（终于抓到，连续 ≥2 日空跑）**：3 个新闻 cron 全部用 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-30.md:20-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-30.md:4:7 -->
-- 07:02 Heartbeat — 盘前 Pipeline 修复实战验证（昨日遗留项）✅: **结论：昨夜 3 处修复在生产环境验证通过。**; 06:00 `每日盘前深度分析报告(命令模式)` 87c6b7f9 正常产出 `analysis/daily/2026-09-30_premarket_report.md` (06:09, 9.9KB)。; **超时放宽验证**：`scan 127s / dual 105s / agent 248s` —— 全部落在放宽后阈值内（240/240/600）；修复前 timeout 集中在这两阶段，本次零超时。; **推送重试验证**：无 `*_push_alert.md` 告警文件、无 `[[PUSH_FAILED]]` 标记 → 推送成功送达。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-30.md:4-7]
-<!-- openclaw-memory-promotion:memory:memory/2026-09-30.md:8:10 -->
-- 07:02 Heartbeat — 盘前 Pipeline 修复实战验证（昨日遗留项）✅: **降级显式化验证**：报告头部无「⚠️ 降级数据标注」，各阶段无降级 → 全链路正常。; 信号交叉审计：0 项冲突（高危0/中危0/低危0）。; 全 cron 列表无 error/fail。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-09-30.md:8-10]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-01.md:11:13 -->
+- 同类坑排查（第二、第三处同款 bug 一并修复）: **`analysis/service.py` is_trading_day（同款确证）**：字符串匹配 date 对象失败 → 永远 return True 放行节假日；且 `except Exception: pass` 静默吞噬。**premarket_pipeline.py:457 import 的就是这个函数** → 解释了为何今早 06:08 流水线在国庆日照跑。修复：astype(str) 匹配 + 异常改 log.warning 可见。; **`scripts/verify_market_data.py` is_trading_day_check（同款但方向相反）**：字符串匹配永远失败 → **永远返回 False（把真实交易日也误判为非交易日）**，日期校验全废；且 CLI --date 传 str 而 target_date.strftime 会 AttributeError。修复：str→date 兼容 + astype(str) 匹配。; **自检全过**：service 国庆 False/交易日 True；verify_market_data 国庆 (False,...)/交易日 (True,...) 字符串传参路径 OK。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-01.md:11-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-01.md:16:19 -->
+- 🟢 cron 运行级 timeout 上限提升（17:49~17:56，先快照 guard/20261001-174913）: **背景**：用户指令「如果 agents.defaults.timeoutSeconds 或特定于运行的超时较低，也请提高该上限；provider 超时不能延长整个代理运行时间」（出自 docs/local-models.md:175 同款规则）。; **主会话层无需改**：agents.defaults.timeoutSeconds 未设置时源码内置默认就是 600s（dist/agent-via-gateway:109 `timeoutSeconds ?? 600`）> provider 300s（openclaw.json 的 3 处 300 全是 models.providers.* HTTP 超时，不是运行超时）。; **实测方法**：`state/openclaw.sqlite` 的 cron_jobs.payload_timeout_seconds 关联 cron_run_logs 的 duration_ms，对比 max/avg vs 上限，找出踩线/超限任务。; **12 项提升全部落地**（CLI `openclaw cron edit <id> --timeout-seconds <n>`，payload message 完整性抽查全过）： [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-01.md:16-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-01.md:20:23 -->
+- 🟢 cron 运行级 timeout 上限提升（17:49~17:56，先快照 guard/20261001-174913）: | 任务 | 旧→新 | 依据(max duration) | |---|---|---| | quant-backtest-daily | 1800→3600 | 3160s 超限 | | weekly-backtest-pipeline | 1800→3600 | 1701s 贴线 | [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-01.md:20-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-01.md:24:27 -->
+- 🟢 cron 运行级 timeout 上限提升（17:49~17:56，先快照 guard/20261001-174913）: | memory-maintenance-check | 900→1800 | 920s 超限 | | daily-premarket-analysis-cmd | 900→1800 | 1800s 超限（「连败4次timeout」） | | Dreaming Daily Report | NULL(600)→900 | 601s 踩线 | | daily-supervision-review | 300→900 | 1131s 超限 | [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-01.md:24-27]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-01.md:4:7 -->
+- 🔴 发现并修复 is_trading_day() 节假日拦截失效 bug: **症状**：用户会话中调用 `is_trading_day()` 对 2026-10-01（国庆）返回 True。; **根因（实测确证）**：`ak.tool_trade_date_hist_sina()` 的 `trade_date` 列是 **datetime.date 对象**（非字符串），`close_scan_v2.py` 旧代码用字符串 `today_str` 去匹配 → 永远 False → 走到函数末尾 `return True` 默认放行。**节假日拦截完全失效**（仅剩周末 weekday 检查在工作），今早 06:00 流水线因此照跑"10-01"报告。; **修复**：`cal_dates = set(trade_cal["trade_date"].astype(str))` 统一转字符串后匹配；在日历中 = 开市 True，不在 = 休市 False。修复后验证：今天返回 False ✅; **验证数据源**：sina 交易日历显示 09-30 之后直接跳 10-08（国庆休市 10-01~10-07）；新浪实时行情 sh000001 报价日期停在 2026-09-30 16:19。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-01.md:4-7]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-01.md:8:8 -->
+- 🔴 发现并修复 is_trading_day() 节假日拦截失效 bug: **教训**：与 08-02「新浪日K接口」不同，这是新坑：**pandas 列元素类型必须实测 repr() 确认，不能假设与字面量同类型**。日期列尤其常见 date vs str 错配。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-01.md:8-8]

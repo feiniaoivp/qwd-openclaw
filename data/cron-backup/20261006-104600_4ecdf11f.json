@@ -1,0 +1,54 @@
+{
+  "id": "4ecdf11f-7b93-4d53-83f2-4536c007e8a5",
+  "displayName": "集合竞价决策分析(09:26推送)",
+  "owner": {
+    "agentId": "main",
+    "sessionKey": "agent:main:dashboard:d8af573c-f9d6-47de-ba0e-46be71a0489d"
+  },
+  "name": "auction-analyze-0926",
+  "description": "交易日09:26读取竞价快照，结合昨日情绪/策略映射/新闻产出决策并推送Telegram（纯exec模式，绕过LLM）",
+  "enabled": true,
+  "createdAtMs": 1786835432940,
+  "updatedAtMs": 1791249967997,
+  "agentId": "main",
+  "schedule": {
+    "kind": "cron",
+    "expr": "26 9 * * 1-5",
+    "tz": "Asia/Shanghai"
+  },
+  "sessionTarget": "isolated",
+  "wakeMode": "now",
+  "payload": {
+    "kind": "agentTurn",
+    "message": "cd /Users/duguke/.openclaw/workspace && python3 -m analysis.auction_analyze 2>&1",
+    "model": "deepseek/deepseek-chat",
+    "thinking": "off",
+    "timeoutSeconds": 480,
+    "toolsAllow": [
+      "exec"
+    ]
+  },
+  "delivery": {
+    "mode": "announce",
+    "channel": "telegram",
+    "to": "626141741"
+  },
+  "state": {
+    "nextRunAtMs": 1791336360000,
+    "lastRunAtMs": 1791249960026,
+    "lastRunStatus": "ok",
+    "lastStatus": "ok",
+    "lastDurationMs": 7971,
+    "lastDeliveryStatus": "delivered",
+    "lastFailureNotificationDeliveryStatus": "not-requested",
+    "consecutiveErrors": 0,
+    "consecutiveSkipped": 0,
+    "lastDelivered": true
+  },
+  "nextRunAtMs": 1791336360000,
+  "lastRunAtMs": 1791249960026,
+  "lastRunStatus": "ok",
+  "lastDelivered": true,
+  "lastDeliveryStatus": "delivered",
+  "lastFailureNotificationDeliveryStatus": "not-requested"
+}
