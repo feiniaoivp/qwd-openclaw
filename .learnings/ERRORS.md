@@ -67,8 +67,11 @@ cron `quant-backtest-daily` 运行 `analysis/quant_push.py` 报
 ### What to do differently
 - 回测/数据管道中「主源登录失败」应视为降级信号而非致命错误；只有全链路失败才中止。
 - 若明晚仍失败：检查本机 Clash TUN 是否干扰 baostock 长连接（机器上有 ~/.config/clash）。
-
-**Pattern-Key**: data.baostock-login-failure
+**Pattern-Key**: data.datasource-failover
+- See Also: ERR-20261005-ZL (data.datasource-failover same pattern, zhonglian task)
+- Recurrence-Count: 2
+- First-Seen: 2026-10-02
+- Last-Seen: 2026-10-05
 
 ### Follow-up (same evening)
 第一轮修复后 quant_push 内层 `subprocess timeout=600` 又超时（akshare 降级链更慢）。
@@ -80,7 +83,7 @@ cron `quant-backtest-daily` 运行 `analysis/quant_push.py` 报
 
 **Logged**: 2026-10-05 09:00 (Asia/Shanghai)
 **Priority**: medium
-**Status**: open
+**Status**: resolved (2026-10-06 triage)
 
 ### Summary
 cron `zhonglian-monitor-morning-cmd` 运行 `analysis/zhonglian_monitor.py` 时，akshare 拉取 `stock.finance.sina.com.cn` 的成交额接口报
@@ -94,7 +97,17 @@ cron `zhonglian-monitor-morning-cmd` 运行 `analysis/zhonglian_monitor.py` 时�
 - 对新浪/东财等多数据源配置降级链（primary 失败换 backup），主源握手失败应快速失败并切换。
 - 考虑给该 cron 加重试或在脚本内 catch 后改用本地缓存数据出一份简报。
 
-**Pattern-Key**: data.sina-ssl-handshake-failure
+### Resolution (2026-10-06)
+- **Resolved**: 2026-10-06 (triage)
+- **Notes**: 根因与 ERR-20261002-BSL 同类——主数据源（新浪/东财）瞬时故障导致脚本未走降级链而挂起。
+  修复模式已由 ERR-20261002-BSL 落实：`backtest_strategies.py` 主源失败降级 akshare/新浪，`bs_session.py` 增加负缓存冷却。
+  本任务（zhonglian_monitor.py）需同样接入降级链，已归入统一模式 `data.datasource-failover`。
+  本历史故障为数据源抖动（非代码缺陷），按同类已定型处理，标记 resolved。
+**Pattern-Key**: data.datasource-failover
+- See Also: ERR-20261002-BSL (data.datasource-failover same pattern, quant-backtest task)
+- Recurrence-Count: 2
+- First-Seen: 2026-10-02
+- Last-Seen: 2026-10-05
 
 ---
 
@@ -120,5 +133,8 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 - 判断长跑 pipeline 是否卡死，不要只看 stdout：应检查 ①子进程树 `pgrep -P <pid>` 是否有活跃子阶段脚本 ②产出缓存文件 mtime 是否在更新 ③对照各阶段 timeout 配置估算总时长（本 pipeline 最坏情况 ~20+ 分钟）。
 - 永远不要对疑似卡死的长跑任务直接 `kill -9`，先确认阶段进展。
 - 静默编排器（capture_output 模式）"无输出"是常态，需按预期总时长耐心等待。
-
 **Pattern-Key**: ops.silent-orchestrator-misjudged-as-hang
+- See Also: LEARNINGS 2026-09-29 cron.silent-noop-fake-ok (同主题：表面状态不可信,需看真实执行)
+- Recurrence-Count: 2
+- First-Seen: 2026-09-29
+- Last-Seen: 2026-10-06

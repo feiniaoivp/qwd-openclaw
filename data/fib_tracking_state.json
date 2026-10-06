@@ -470,6 +470,18 @@
       "level": 12.97,
       "touch_date": "2026-09-09",
       "touch_price": 13.08
+    },
+    "605566:1.0:31.86": {
+      "level_name": "1.0",
+      "level": 31.86,
+      "touch_date": "2026-09-22",
+      "touch_price": 32.03
+    },
+    "605566:1.272:33.62": {
+      "level_name": "1.272",
+      "level": 33.62,
+      "touch_date": "2026-09-23",
+      "touch_price": 33.76
     }
   },
   "outcomes": {
@@ -533,6 +545,26 @@
         "date": "2026-09-09",
         "price": 12.86,
         "note": "观察中"
+      }
+    ],
+    "605566": [
+      {
+        "level": "1.0",
+        "touch_date": "2026-09-22",
+        "touch_price": 32.03,
+        "outcome": "pending",
+        "date": "2026-10-06",
+        "price": 32.07,
+        "note": "观察中(高34.32/低31.08/收32.07)"
+      },
+      {
+        "level": "1.272",
+        "touch_date": "2026-09-23",
+        "touch_price": 33.76,
+        "outcome": "兑现",
+        "date": "2026-10-06",
+        "price": 32.07,
+        "note": "触及后回落至31.37，跌破32.75"
       }
     ]
   },
@@ -650,6 +682,12 @@
       "kind": "verify",
       "events": 0,
       "hit_rate": "0/0(尚无数)"
+    },
+    {
+      "date": "2026-10-06",
+      "kind": "verify",
+      "events": 2,
+      "hit_rate": "1/1"
     }
   ],
   "time_baseline": {

@@ -50,3 +50,7 @@ Corrections, insights, and knowledge gaps captured during development.
 3. 巡检脚本（`cron_health_check.py`）需新增该判据。
 
 **Pattern-Key:** cron.silent-noop-fake-ok
+- See Also: ERR-20261006-PM ops.silent-orchestrator-misjudged-as-hang (同主题：表面状态不可信,需看真实执行/产出)
+- Recurrence-Count: 2
+- First-Seen: 2026-09-29
+- Last-Seen: 2026-09-29 (this entry) / 2026-10-06 (related ops entry)
