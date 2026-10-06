@@ -285,6 +285,10 @@ def is_trading_day(): ...
 ### 强制执行步骤（每次引用市场统计前**必须**按序执行）
 
 ```bash
+# 0. 【发送前自检，2026-10-06 补全】回复成稿后、发送前，对全文跑守卫（exit 1 = 禁止发送，修正后重跑）
+bash scripts/pre_response_check.sh "<即将发送的全文>"
+# 或 cat 草稿文件 | python3 scripts/pre_response_guard.py --stdin
+
 # 1. 确认交易日
 python3 -c "from analysis.close_scan_v2 import is_trading_day; print(is_trading_day())"
 

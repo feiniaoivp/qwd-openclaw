@@ -64,7 +64,7 @@ AUTHORIZED_SOURCES = {
     "close_scan_v2": {
         "name": "本地 close_scan_v2.py 扫描输出",
         "fields": ["全关注池价格/涨跌/成交量/技术指标", "市场概览"],
-        "access_method": "python3 analysis/close_scan_v2.py --json",
+        "access_method": "python3 analysis/close_scan_v2.py",
         "output_file": "analysis/daily/{date}_dual.md / adaptive.md / next_day_sim.md"
     }
 }
