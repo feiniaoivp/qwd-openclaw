@@ -1165,15 +1165,18 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **[09-30] cron 巡检必须检查 `lastDurationMs`，不能只看 `lastStatus`**：「systemEvent + main」类假 ok 会长期骗过所有基于状态的门禁。
 *   **[09-30] `apply_patch`/`edit` 参数勿包多余 `arguments` 层**；改完必须**语法自检 + 读回关键段**（本轮曾插出悬空 `else` 才发现）。
 
-### 📋 待办结转（09-29~09-30）
-*   🔴 **待批（新增）**：④ 「每日A股收盘推送」daily-a-share-telegram-push(3950d3cc) 也是假 ok 陷阱（近 8 次全 1-13ms，systemEvent+main 从不执行）→ 待 /approve 改 command/isolated（同新闻管道模式，命令已备好）。
-*   🔴 **待批（3 组，均涉核心数据路径/cron 配置，需显式 `/approve`）**：① 新闻管道 3 job 改 `command`/`isolated`（命令已备好）；② moneyflow 结构性修复（主源改 `push2 klt=1` + 空 data 判失败 + 超时对齐）；③ 「先写后验」市场数据门禁立项（`verify_market_data.py` 仅覆盖 cron，不含聊天即时输出）。
-*   🔴 **门禁升级待立项**：cron 巡检加「`lastDurationMs` 过小且 payload 需跑脚本 = 空转假成功」检测。
-*   🟡 **静默异常存量清理**：基线 115 处（`data/silent_except_baseline.json`）；本轮 `silent_except_guard.py` 报 **新增 1 处**（`analysis/portfolio_sim.py` 宽泛 except 仅 log.debug）→ 待修。
-*   🟡 09-30 新增两处 error job：① `daily-supervision-review`(a7456f8b) 19:12 `job interrupted by gateway restart`（重启中断，非逻辑错，观察下次 19:03 是否自愈）；② `quant-backtest-daily`(bd9843f1) 20:30 `Process: dawn-falcon failed`（推送已 `--no-deliver` 临时修，正式「systemEvent 改造」仍待办）。
-*   🟡 `snapshot_guard.sh` 快照同步到 `backups/<tag>/`（防护②前向兼容）；`guard/*` 快照窗口健康（最近 09-29 18:34）。
+### 📋 待办结转（09-29~09-30，2026-10-06 更新）
+*   ✅ **[10-06 闭环] ④ 3950d3cc 收盘推送假 ok**：改 command+isolated（写死 120s 超时→实测 363.7s 改 720s；JSON 提取改用 CLOSE_SCAN 成对标记），三测 ok 231s + Telegram True。快照 `guard/20261006-111638-3950d3cc-command-mode-fix`，commit 3eb7622。待今晚 18:30 自然调度终验。
+*   ✅ **[10-06 闭环] ① 新闻管道 3 job**：实测已是 `command`/`isolated`（此前某轮已改完，清单过时）。
+*   ✅ **[10-06 闭环] ③ 「先写后验」门禁**：盘点发现 `pre_response_guard.py` 早已存在且可用（ed9a2b4）；真缺口=发送前自检未进红线步骤 → TOOLS.md 新增步骤 0，并修 `verify_market_data.py` 里不存在的 `--json` 标志。commit 5406062。**教训：立项前先盘点存量，避免再造第二套检测器。**
+*   ✅ **[10-06 闭环] 静默异常「新增 1 处」**：今日 guard exit 0（存量 114 仅报告，portfolio_sim 那处已不在违规名单）。
+*   ✅ **[10-06 闭环] 临时探针产物**：`boss_warning*.png`/`gen_boss_fun.py` → `archive/2026-09-probes/`，commit 7004270。
+*   ✅ **[10-06 闭环] `per-job 模型覆盖`根因**：40 个 job 全量扫，7 个带失效 `deepseek-v4-flash`/`thinking` 字段全部 `--clear-model/--clear-thinking`，备份 `data/cron-backup/20261006-*.json`，6/7 force 实测 ok。
+*   🔴 **待批（剩 2 组，需显式 `/approve`）**：① moneyflow 结构性修复（主源改 `push2 klt=1` + 空 data 判失败 + 超时对齐）；② cron 巡检加「`lastDurationMs` 过小且 payload 需跑脚本 = 空转假成功」门禁（注：本轮 3950d3cc 修复后，剩余 15 个 main+systemEvent job 仍需逐个审计是否真需要 main）。
+*   🟡 09-30 遗留 error job：`quant-backtest-daily`(bd9843f1) 推送已 `--no-deliver` 临时修，正式「systemEvent 改造」仍待办。
 *   🟡 `data/news/` 历史归档回填（09-09~09-29 缺失，若源仍可取）。
-*   🟡 沿用：`rm` 前置门禁（连续 8 期）、F-5 脱钩观察（`data_date` 修复已为核心突破）、F-2 比率口径、北向真缺失 / `index_flow`+`market_net_total` 失真、3950d3cc description、backtest 09-11/09-21 缺档、daily portfolio_sim 09-12~21 缺档、daily-report 08-29/09-15/09-24 缺档、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、批次C回测、恒立液压分歧、⑫回测闭环、Minimax 无解、`param_tune` 单窗口隐患、`REFERENCE_TOTAL_CAPITAL` 保持 270 万（有意保持非 bug）。
+*   🟡 沿用：`rm` 前置门禁（连续 8 期）、F-5 脱钩观察、F-2 比率口径、北向真缺失 / `index_flow`+`market_net_total` 失真、backtest 09-11/09-21 缺档、daily portfolio_sim 09-12~21 缺档、daily-report 08-29/09-15/09-24 缺档、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、批次C回测、恒立液压分歧、⑫回测闭环、Minimax 无解、`param_tune` 单窗口隐患、`REFERENCE_TOTAL_CAPITAL` 保持 270 万（有意保持非 bug）。
+*   🟡 **10-06 新增观察点**：明晨 03:00 Memory Dreaming Promotion / 04:00 Dreaming Daily Report（连错 4 次链路，本轮已清 model+thinking，明日为全新配置终验）；今晚 18:30 3950d3cc 交易日完整简报首次实战。
 
 ## Promoted From Short-Term Memory (2026-10-06)
 
