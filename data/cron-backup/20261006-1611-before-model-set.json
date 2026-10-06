@@ -1,0 +1,2671 @@
+{
+  "jobs": [
+    {
+      "id": "3950d3cc-0230-4241-a8ff-c0fdea3b33f2",
+      "displayName": "每日A股收盘推送",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:fd71684b-3dda-4983-a11d-be2f451f4919"
+      },
+      "name": "daily-a-share-telegram-push",
+      "description": "周一到周五18:30运行adaptive_trader+close_scan推送到Telegram",
+      "enabled": true,
+      "createdAtMs": 1785514570851,
+      "updatedAtMs": 1791258467763,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 18 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "command",
+        "argv": [
+          "sh",
+          "-lc",
+          "cd /Users/duguke/.openclaw/workspace && python3 analysis/daily_push.py"
+        ],
+        "timeoutSeconds": 900
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791282600000,
+        "lastRunAtMs": 1791258236447,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 231316,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDiagnostics": {
+          "summary": "Telegram 发送结果: True",
+          "entries": [
+            {
+              "ts": 1791258467763,
+              "source": "exec",
+              "severity": "info",
+              "message": "command ok: \"sh\" \"-lc\" \"cd /Users/duguke/.openclaw/workspace && python3 analysis/daily_push.py\"",
+              "exitCode": 0
+            }
+          ]
+        },
+        "lastDiagnosticSummary": "Telegram 发送结果: True"
+      },
+      "nextRunAtMs": 1791282600000,
+      "lastRunAtMs": 1791258236447,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "ff8df2a8-6ee4-422a-b286-d88c16841bc1",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:91895400-a951-4d77-9c08-5d276443cec4"
+      },
+      "name": "zhonglian-monitor-close",
+      "enabled": true,
+      "createdAtMs": 1788056795944,
+      "updatedAtMs": 1791255770030,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 18 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /Users/duguke/.openclaw/workspace && python3 analysis/zhonglian_monitor.py",
+        "timeoutSeconds": 120,
+        "toolsAllow": [
+          "read",
+          "edit",
+          "write",
+          "apply_patch",
+          "exec",
+          "process",
+          "cron",
+          "image_generate",
+          "music_generate",
+          "video_generate",
+          "get_goal",
+          "create_goal",
+          "update_goal",
+          "skill_workshop",
+          "update_plan",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "sessions_yield",
+          "subagents",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get",
+          "filesystem__create_directory",
+          "filesystem__directory_tree",
+          "filesystem__edit_file",
+          "filesystem__get_file_info",
+          "filesystem__list_allowed_directories",
+          "filesystem__list_directory",
+          "filesystem__list_directory_with_sizes",
+          "filesystem__move_file",
+          "filesystem__read_file",
+          "filesystem__read_media_file",
+          "filesystem__read_multiple_files",
+          "filesystem__read_text_file",
+          "filesystem__search_files",
+          "filesystem__write_file"
+        ]
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "626141741"
+      },
+      "state": {
+        "nextRunAtMs": 1791282600000,
+        "lastRunAtMs": 1791255739522,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 30508,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791282600000,
+      "lastRunAtMs": 1791255739522,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "a7456f8b-3348-4e0b-9de5-4ae66a0448ad",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:91895400-a951-4d77-9c08-5d276443cec4"
+      },
+      "name": "daily-supervision-review",
+      "enabled": true,
+      "deleteAfterRun": false,
+      "createdAtMs": 1788054294940,
+      "updatedAtMs": 1791255879747,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "3 19 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /Users/duguke/.openclaw/workspace && python3 analysis/signal_audit.py && echo '---SIGNAL_AUDIT_DONE---' && python3 analysis/challenge_review.py",
+        "timeoutSeconds": 900,
+        "toolsAllow": [
+          "read",
+          "edit",
+          "write",
+          "apply_patch",
+          "exec",
+          "process",
+          "cron",
+          "image_generate",
+          "music_generate",
+          "video_generate",
+          "get_goal",
+          "create_goal",
+          "update_goal",
+          "skill_workshop",
+          "update_plan",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "sessions_yield",
+          "subagents",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get",
+          "filesystem__create_directory",
+          "filesystem__directory_tree",
+          "filesystem__edit_file",
+          "filesystem__get_file_info",
+          "filesystem__list_allowed_directories",
+          "filesystem__list_directory",
+          "filesystem__list_directory_with_sizes",
+          "filesystem__move_file",
+          "filesystem__read_file",
+          "filesystem__read_media_file",
+          "filesystem__read_multiple_files",
+          "filesystem__read_text_file",
+          "filesystem__search_files",
+          "filesystem__write_file",
+          "tradingwizard__get_bot_consensus",
+          "tradingwizard__get_bot_one_status",
+          "tradingwizard__get_fund_performance",
+          "tradingwizard__get_global_bots",
+          "tradingwizard__get_market_movers",
+          "tradingwizard__get_market_price",
+          "tradingwizard__get_market_summary",
+          "tradingwizard__get_market_track",
+          "tradingwizard__get_markets",
+          "tradingwizard__get_ranked_opportunities",
+          "tradingwizard__prompts_get",
+          "tradingwizard__prompts_list",
+          "tradingwizard__resources_list",
+          "tradingwizard__resources_read"
+        ],
+        "toolsAllowIsDefault": true
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "626141741",
+        "bestEffort": false
+      },
+      "state": {
+        "nextRunAtMs": 1791284580000,
+        "lastRunAtMs": 1791255839670,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 40077,
+        "lastDeliveryStatus": "delivered",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDelivered": true
+      },
+      "nextRunAtMs": 1791284580000,
+      "lastRunAtMs": 1791255839670,
+      "lastRunStatus": "ok",
+      "lastDelivered": true,
+      "lastDeliveryStatus": "delivered",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "7e0dc37b-b79a-4eee-a845-ba9cf79ccb26",
+      "displayName": "盘后新闻抓取归档",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "news-monitor-afternoon",
+      "enabled": true,
+      "createdAtMs": 1785642888959,
+      "updatedAtMs": 1791198412120,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "6 19 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "command",
+        "argv": [
+          "sh",
+          "-lc",
+          "cd /Users/duguke/.openclaw/workspace && python3 analysis/news_push.py 盘后"
+        ]
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791284760000,
+        "lastRunAtMs": 1791198360020,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 52100,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDiagnostics": {
+          "summary": "Telegram 发送结果: True",
+          "entries": [
+            {
+              "ts": 1791198412120,
+              "source": "exec",
+              "severity": "info",
+              "message": "command ok: \"sh\" \"-lc\" \"cd /Users/duguke/.openclaw/workspace && python3 analysis/news_push.py 盘后\"",
+              "exitCode": 0
+            }
+          ]
+        },
+        "lastDiagnosticSummary": "Telegram 发送结果: True"
+      },
+      "nextRunAtMs": 1791284760000,
+      "lastRunAtMs": 1791198360020,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "537eb1ff-9268-4bbb-a0fa-3c58c249cf2c",
+      "displayName": "关注股当日新闻阅读推送",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "daily-news-reading-push",
+      "description": "[2026-09-13 加固] 关注股新闻推送。移除 write/edit/apply_patch 权限, prompt 明令不得编造。",
+      "enabled": true,
+      "createdAtMs": 1786048451412,
+      "updatedAtMs": 1791198568214,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "9 19 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行「关注股当日新闻阅读」并推送：\n1. cd /Users/duguke/.openclaw/workspace\n2. 运行 .venv-ml/bin/python data/news/daily_news_reader.py --save\n3. 读取脚本生成的报告文件（宏观/行业要点 + 关注股公告 + 个股新闻与解读）\n4. 用中文整理成简洁推送文本：先说宏观要点（挑跟30只关注股行业相关的），再列有重要公告/新闻的关注股（个股名+要点标记如 回购/业绩/收购/诉讼），不要寒暄。\n\n【硬性约束】\n- 只能用脚本报告文件中已存在的事实、数字、公司名、标题，不得自行添加、推测或补充任何数据。\n- 若报告中无某类信息（如无宏观要点），直接省略该段，不得编造填充。\n- 不要修改任何文件。",
+        "timeoutSeconds": 240,
+        "toolsAllow": [
+          "read",
+          "exec"
+        ]
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "626141741"
+      },
+      "state": {
+        "nextRunAtMs": 1791284940000,
+        "lastRunAtMs": 1791198540025,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 28189,
+        "lastDeliveryStatus": "delivered",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDelivered": true
+      },
+      "nextRunAtMs": 1791284940000,
+      "lastRunAtMs": 1791198540025,
+      "lastRunStatus": "ok",
+      "lastDelivered": true,
+      "lastDeliveryStatus": "delivered",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "181b0304-070e-46a8-8ddc-7603a9950050",
+      "displayName": "Obsidian笔记→投资理念归纳",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:d8af573c-f9d6-47de-ba0e-46be71a0489d"
+      },
+      "name": "obsidian-notes-to-investment-philosophy",
+      "description": "每日08:00读取Obsidian新笔记，提取投资洞察，写入MEMORY.md与wiki投资理念页面",
+      "enabled": true,
+      "createdAtMs": 1786859273449,
+      "updatedAtMs": 1791199956184,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 19 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行每日Obsidian笔记→投资理念归纳：\n\n1. 搜索Obsidian Vault中过去24小时新增/修改的.md笔记：\n   openclaw wiki search \"2026-08\" --limit 20\n   （实际用 date 过滤获取最新笔记）\n\n2. 对每篇新笔记，提取：\n   - 核心投资观点/规则\n   - 买入/卖出标准\n   - 风控原则\n   - 选股逻辑/因子\n   - 心法/纪律类内容\n\n3. 对比现有投资体系（MEMORY.md、wiki投资理念页面、adaptive_dual/auction_analyze参数），判断：\n   - 新增规则 → 追加到理念库\n   - 修正/补充现有规则 → 更新对应条目\n   - 冲突 → 标记需人工复核\n\n4. 输出归纳报告到：\n   - MEMORY.md「投资理念」区块（持久记忆）\n   - wiki/sources/investment-philosophy-YYYY-MM-DD.md（可检索历史）\n   - Telegram推送摘要（chat_id 626141741）\n\n只输出最终归纳摘要，不输出中间过程。",
+        "model": "deepseek-chat",
+        "timeoutSeconds": 900,
+        "toolsAllow": [
+          "exec",
+          "web_search",
+          "web_fetch",
+          "memory_search",
+          "memory_get",
+          "filesystem__list_directory",
+          "filesystem__read_file",
+          "filesystem__search_files"
+        ]
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "626141741"
+      },
+      "state": {
+        "nextRunAtMs": 1791286200000,
+        "lastRunAtMs": 1791199800021,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 156163,
+        "lastDeliveryStatus": "delivered",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDelivered": true
+      },
+      "nextRunAtMs": 1791286200000,
+      "lastRunAtMs": 1791199800021,
+      "lastRunStatus": "ok",
+      "lastDelivered": true,
+      "lastDeliveryStatus": "delivered",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "b5943dcf-a868-4503-b52f-7fcfb7c6185b",
+      "displayName": "Cron健康度检查&推送成功率监控",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "cron-health-check",
+      "description": "每4小时检查关键cron任务成功率、数据源健康、连续失败阈值，触发告警推送",
+      "enabled": true,
+      "createdAtMs": 1789857175219,
+      "updatedAtMs": 1791273827616,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 */4 * * *",
+        "tz": "Asia/Shanghai",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /Users/duguke/.openclaw/workspace && python3 scripts/cron_health_check.py",
+        "model": "deepseek/deepseek-chat",
+        "timeoutSeconds": 600,
+        "toolsAllow": [
+          "read",
+          "edit",
+          "write",
+          "apply_patch",
+          "exec",
+          "process",
+          "cron",
+          "image_generate",
+          "music_generate",
+          "video_generate",
+          "get_goal",
+          "create_goal",
+          "update_goal",
+          "skill_workshop",
+          "update_plan",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "sessions_yield",
+          "subagents",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get",
+          "filesystem__create_directory",
+          "filesystem__directory_tree",
+          "filesystem__edit_file",
+          "filesystem__get_file_info",
+          "filesystem__list_allowed_directories",
+          "filesystem__list_directory",
+          "filesystem__list_directory_with_sizes",
+          "filesystem__move_file",
+          "filesystem__read_file",
+          "filesystem__read_media_file",
+          "filesystem__read_multiple_files",
+          "filesystem__read_text_file",
+          "filesystem__search_files",
+          "filesystem__write_file"
+        ],
+        "toolsAllowIsDefault": true
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "626141741"
+      },
+      "state": {
+        "nextRunAtMs": 1791288195480,
+        "lastRunAtMs": 1791273795505,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 32111,
+        "lastDeliveryStatus": "delivered",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDelivered": true
+      },
+      "nextRunAtMs": 1791288195480,
+      "lastRunAtMs": 1791273795505,
+      "lastRunStatus": "ok",
+      "lastDelivered": true,
+      "lastDeliveryStatus": "delivered",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "bd9843f1-2a6f-44e6-8bf2-8f3aa5b9bca3",
+      "displayName": "每日量化回测",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:fd71684b-3dda-4983-a11d-be2f451f4919"
+      },
+      "name": "quant-backtest-daily",
+      "description": "每日20:30量化回测并推送",
+      "enabled": true,
+      "createdAtMs": 1785514585765,
+      "updatedAtMs": 1791203616579,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 20 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /Users/duguke/.openclaw/workspace && python3 analysis/quant_push.py",
+        "model": "nvidia/nemotron-3-ultra-550b-a55b",
+        "timeoutSeconds": 3600,
+        "toolsAllow": [
+          "read",
+          "edit",
+          "write",
+          "apply_patch",
+          "exec",
+          "process",
+          "cron",
+          "memory_search",
+          "memory_get",
+          "filesystem__create_directory",
+          "filesystem__directory_tree",
+          "filesystem__edit_file",
+          "filesystem__list_allowed_directories",
+          "filesystem__list_directory",
+          "filesystem__list_directory_with_sizes",
+          "filesystem__move_file",
+          "filesystem__read_file",
+          "filesystem__read_media_file",
+          "filesystem__read_multiple_files",
+          "filesystem__read_text_file",
+          "filesystem__search_files",
+          "filesystem__write_file"
+        ]
+      },
+      "delivery": {
+        "mode": "none",
+        "bestEffort": false
+      },
+      "state": {
+        "nextRunAtMs": 1791289800000,
+        "lastRunAtMs": 1791203400022,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 216557,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791289800000,
+      "lastRunAtMs": 1791203400022,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "233295fd-f890-4aa6-b224-e463db477387",
+      "name": "Memory Dreaming Promotion",
+      "description": "[managed-by=memory-core.short-term-promotion] Promote weighted short-term recalls into MEMORY.md (limit=10, minScore=0.800, minRecallCount=3, minUniqueQueries=3, recencyHalfLifeDays=14, maxAgeDays=30).",
+      "enabled": true,
+      "deleteAfterRun": false,
+      "createdAtMs": 1786135803223,
+      "updatedAtMs": 1791254970488,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 3 * * *"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "__openclaw_memory_core_short_term_promotion_dream__",
+        "lightContext": true
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791313200000,
+        "lastRunAtMs": 1791226800026,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 57321,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791313200000,
+      "lastRunAtMs": 1791226800026,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "a8c18aed-8916-4afa-82e7-2b6501dcbfcf",
+      "name": "Dreaming Daily Report",
+      "description": "[managed-by=memory-lancedb-dreaming] daily-report Daily report (file-only, cron=0 4 * * *).",
+      "enabled": true,
+      "deleteAfterRun": false,
+      "createdAtMs": 1786101083798,
+      "updatedAtMs": 1791254975043,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 4 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "__openclaw_memory_lancedb_dreaming_daily_report__",
+        "timeoutSeconds": 900
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791316800000,
+        "lastRunAtMs": 1791242577305,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 505968,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791316800000,
+      "lastRunAtMs": 1791242577305,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "87c6b7f9-eb06-4ba6-9105-5d94b93ae8ad",
+      "displayName": "每日盘前深度分析报告(命令模式)",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:d8af573c-f9d6-47de-ba0e-46be71a0489d"
+      },
+      "name": "daily-premarket-analysis-cmd",
+      "enabled": true,
+      "deleteAfterRun": false,
+      "createdAtMs": 1788217950022,
+      "updatedAtMs": 1791238905867,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 6 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /Users/duguke/.openclaw/workspace && python3 analysis/premarket_pipeline.py",
+        "model": "nvidia/nemotron-3-ultra-550b-a55b",
+        "timeoutSeconds": 1800,
+        "toolsAllow": [
+          "read",
+          "edit",
+          "write",
+          "apply_patch",
+          "exec",
+          "process",
+          "cron",
+          "image_generate",
+          "music_generate",
+          "video_generate",
+          "get_goal",
+          "create_goal",
+          "update_goal",
+          "skill_workshop",
+          "update_plan",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "sessions_yield",
+          "subagents",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get",
+          "filesystem__create_directory",
+          "filesystem__directory_tree",
+          "filesystem__edit_file",
+          "filesystem__get_file_info",
+          "filesystem__list_allowed_directories",
+          "filesystem__list_directory",
+          "filesystem__list_directory_with_sizes",
+          "filesystem__move_file",
+          "filesystem__read_file",
+          "filesystem__read_media_file",
+          "filesystem__read_multiple_files",
+          "filesystem__read_text_file",
+          "filesystem__search_files",
+          "filesystem__write_file"
+        ],
+        "toolsAllowIsDefault": true
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "626141741",
+        "bestEffort": false
+      },
+      "state": {
+        "nextRunAtMs": 1791324000000,
+        "lastRunAtMs": 1791237600041,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 1305826,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791324000000,
+      "lastRunAtMs": 1791237600041,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "ca08c2b7-4d7d-469c-99e0-dc436b8190c0",
+      "displayName": "错误模式注入",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:fd71684b-3dda-4983-a11d-be2f451f4919"
+      },
+      "name": "error-pattern-injector",
+      "description": "每日06:00错误模式注入与学习提升",
+      "enabled": true,
+      "createdAtMs": 1785514582459,
+      "updatedAtMs": 1791272886174,
+      "agentId": "main",
+      "sessionKey": "agent:main:dashboard:fd71684b-3dda-4983-a11d-be2f451f4919",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 6 * * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "【self-improving 每日维护】请用新版 self-improving-agent 体系维护 .learnings/ 三件套：1) grep -h 'Recurrence-Count:' .learnings/*.md，找出 Recurrence-Count>=3 且跨>=2个任务、30天内的复发模式；2) 对命中的模式按 Promotion Rule 写入短规则到 SOUL.md/TOOLS.md/AGENTS.md（一次只写最少必要的防治规则），并将原条目 Status 改为 promoted、加 Promoted 标注；3) 清理重复条目（同 Pattern-Key 合并、bump Recurrence-Count）；4) 检查 ERRORS.md 里的 pending 待审条目，已修复的标 resolved。注意：不再使用旧的 scripts/ontology.py error-inject（已废弃，库为空）。做完整理后，用一句话总结本周提炼/提升了哪些模式。",
+        "timeoutSeconds": 900
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791324000000,
+        "lastRunAtMs": 1791272589357,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 296817,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791324000000,
+      "lastRunAtMs": 1791272589357,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "e8e3d01c-2b1c-4e42-ba9f-aa14ce1e6b22",
+      "displayName": "技能版本监控",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:fd71684b-3dda-4983-a11d-be2f451f4919"
+      },
+      "name": "skill-version-watcher",
+      "description": "[2026-09-13 改造] 技能版本监控。改为command直跑脚本(确定性判定变更后才推送), 绕开LLM判断。",
+      "enabled": true,
+      "deleteAfterRun": false,
+      "createdAtMs": 1785514582330,
+      "updatedAtMs": 1791272550611,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7 * * *",
+        "tz": "Asia/Shanghai",
+        "staggerMs": 300000
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "command",
+        "argv": [
+          "sh",
+          "-lc",
+          "cd /Users/duguke/.openclaw/workspace && python3 scripts/skill_version_push.py"
+        ],
+        "timeoutSeconds": 600
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791327758117,
+        "lastRunAtMs": 1791272550124,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 487,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDiagnostics": {
+          "summary": "[stdout] No version changes\n[SILENT] 无版本变更，不推送",
+          "entries": [
+            {
+              "ts": 1791272550611,
+              "source": "exec",
+              "severity": "info",
+              "message": "command ok: \"sh\" \"-lc\" \"cd /Users/duguke/.openclaw/workspace && python3 scripts/skill_version_push.py\"",
+              "exitCode": 0
+            }
+          ]
+        },
+        "lastDiagnosticSummary": "[stdout] No version changes\n[SILENT] 无版本变更，不推送"
+      },
+      "nextRunAtMs": 1791327758117,
+      "lastRunAtMs": 1791272550124,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "53fb14c9-2ea3-4837-a909-ccee477c9161",
+      "displayName": "特高压出海-海外招标监控",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "sector-overseas-tender-monitor",
+      "description": "[2026-09-13 重启] 海外招标/事件监控。改用真实源 power_overseas_events(东财公告直连, 含中标/合同分类), command直跑, 绕开LLM。原伪造源已废弃。",
+      "enabled": true,
+      "createdAtMs": 1789230925674,
+      "updatedAtMs": 1791272561944,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 8,14 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "command",
+        "argv": [
+          "sh",
+          "-lc",
+          "cd /Users/duguke/.openclaw/workspace && python3 analysis/power_overseas_tender_push.py --days 3"
+        ],
+        "timeoutSeconds": 900
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791331200000,
+        "lastRunAtMs": 1791272559649,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 2295,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDiagnostics": {
+          "summary": "[INFO] 近3天无事件",
+          "entries": [
+            {
+              "ts": 1791272561944,
+              "source": "exec",
+              "severity": "info",
+              "message": "command ok: \"sh\" \"-lc\" \"cd /Users/duguke/.openclaw/workspace && python3 analysis/power_overseas_tender_push.py --days 3\"",
+              "exitCode": 0
+            }
+          ]
+        },
+        "lastDiagnosticSummary": "[INFO] 近3天无事件"
+      },
+      "nextRunAtMs": 1791331200000,
+      "lastRunAtMs": 1791272559649,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "2fe5c58d-adaa-4a3e-b262-e1ae37e51b69",
+      "displayName": "盘前大盘展望(命令直推)",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:telegram:direct:626141741"
+      },
+      "name": "premarket-outlook-daily",
+      "description": "[2026-09-13 新建] 每交易日08:30直跑 premarket_outlook.py，输出指数/关键位/030风控/持仓/资讯，纯文本推送TG，绕开LLM。",
+      "enabled": true,
+      "createdAtMs": 1789301119693,
+      "updatedAtMs": 1791246628699,
+      "agentId": "main",
+      "sessionKey": "agent:main:telegram:direct:626141741",
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 8 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: cd /Users/duguke/.openclaw/workspace && python3 scripts/premarket_outlook.py\nThe script self-pushes to Telegram. Do not send any additional message.",
+        "timeoutSeconds": 180,
+        "toolsAllow": [
+          "read",
+          "exec",
+          "process"
+        ]
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791333000000,
+        "lastRunAtMs": 1791246600024,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 28675,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791333000000,
+      "lastRunAtMs": 1791246600024,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "40731f98-d532-4c18-b33f-99f386f7f8be",
+      "displayName": "盘前新闻快讯",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "news-monitor-morning",
+      "enabled": true,
+      "deleteAfterRun": false,
+      "createdAtMs": 1785642885258,
+      "updatedAtMs": 1791246650693,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "30 8 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "command",
+        "argv": [
+          "sh",
+          "-lc",
+          "cd /Users/duguke/.openclaw/workspace && python3 analysis/news_push.py 盘前"
+        ]
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791333000000,
+        "lastRunAtMs": 1791246600021,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 50672,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDiagnostics": {
+          "summary": "Telegram 发送结果: True",
+          "entries": [
+            {
+              "ts": 1791246650693,
+              "source": "exec",
+              "severity": "info",
+              "message": "command ok: \"sh\" \"-lc\" \"cd /Users/duguke/.openclaw/workspace && python3 analysis/news_push.py 盘前\"",
+              "exitCode": 0
+            }
+          ]
+        },
+        "lastDiagnosticSummary": "Telegram 发送结果: True"
+      },
+      "nextRunAtMs": 1791333000000,
+      "lastRunAtMs": 1791246600021,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "917a20ef-c99b-4cde-ba97-cb7b33a66434",
+      "displayName": "盘前新闻阅读(08:30生成)",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:d8af573c-f9d6-47de-ba0e-46be71a0489d"
+      },
+      "name": "news-morning-reading",
+      "description": "交易日08:30运行daily_news_reader.py读取当日新闻，生成data/news/daily_YYYY-MM-DD.md供竞价分析使用（纯exec模式，绕过LLM）",
+      "enabled": true,
+      "createdAtMs": 1786835452927,
+      "updatedAtMs": 1791246900359,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "35 8 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "command",
+        "argv": [
+          "sh",
+          "-lc",
+          "cd /Users/duguke/.openclaw/workspace && .venv-ml/bin/python data/news/daily_news_reader.py --date $(date +%F) --save"
+        ]
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791333300000,
+        "lastRunAtMs": 1791246900027,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 332,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDiagnostics": {
+          "summary": "已抓取日期: ['2026-10-02', '2026-10-05', '2026-10-06'] ... 共 34 期 | 读取: 2026-10-06\n==============================================================\n📰 关注股当日新闻解读 · 2026-10-06\n==============================================================\n\n🏛 宏观/行业要点（6条）\n  • 纳指、英伟达齐创新高\n  • 麦当劳在美遭集体诉讼 被指用 AI 系统非法操纵菜单价格\n  • 多家阿联酋基金以及贝莱德据悉商谈参与OpenAI最新一轮300亿美元融资\n  • 人工智能如何真正赋能思政课堂\n  • Lucid继续执行库存削减计划 第三季度交付3806辆汽车\n  • 老工业基地的数智蝶变——辽宁以工业互联网赋能制造业转型升级\n\n📌 个股新闻与解读（命中 0 只）\n  (目标日期无个股新闻)\n\n✅ 已保存 -> /Users/duguke/.openclaw/workspace/data/news/daily_2026-10-06.md\n已抓取日期: ['2026-10-02', '2026-10-05', '2026-10-06'] ... 共 34 期 | 读取: 2026-10-06\n==============================================================\n📰 关注股当日新闻解读 · 2026-10-06\n==============================================================\n\n🏛 宏观/行业要点（6条）\n  • 纳指、英伟达齐创新高\n  • 麦当劳在美遭集体诉讼 被指用 AI 系统非法操纵菜单价格\n  • 多家阿联酋基金以及贝莱德据悉商谈参与OpenAI最新一轮300亿美元融资\n  • 人工智能如何真正赋能思政课堂\n  • Lucid继续执行库存削减计划 第三季度交付3806辆汽车\n  • 老工业基地的数智蝶变——辽宁以工业互联网赋能制造业转型升级\n\n📌 个股新闻与解读（命中 0 只）\n  (目标日期无个股新闻)\n\n✅ 已保存 -> /Users/duguke/.openclaw/workspace/data/news/daily_2026-10-06.md",
+          "entries": [
+            {
+              "ts": 1791246900359,
+              "source": "exec",
+              "severity": "info",
+              "message": "command ok: \"sh\" \"-lc\" \"cd /Users/duguke/.openclaw/workspace && .venv-ml/bin/python data/news/daily_news_reader.py --date $(date +%F) --save\"",
+              "exitCode": 0
+            }
+          ]
+        },
+        "lastDiagnosticSummary": "已抓取日期: ['2026-10-02', '2026-10-05', '2026-10-06'] ... 共 34 期 | 读取: 2026-10-06\n==============================================================\n📰 关注股当日新闻解读 · 2026-10-06\n==============================================================\n\n🏛 宏观/行业要点（6条）\n  • 纳指、英伟达齐创新高\n  • 麦当劳在美遭集体诉讼 被指用 AI 系统非法操纵菜单价格\n  • 多家阿联酋基金以及贝莱德据悉商谈参与OpenAI最新一轮300亿美元融资\n  • 人工智能如何真正赋能思政课堂\n  • Lucid继续执行库存削减计划 第三季度交付3806辆汽车\n  • 老工业基地的数智蝶变——辽宁以工业互联网赋能制造业转型升级\n\n📌 个股新闻与解读（命中 0 只）\n  (目标日期无个股新闻)\n\n✅ 已保存 -> /Users/duguke/.openclaw/workspace/data/news/daily_2026-10-06.md\n已抓取日期: ['2026-10-02', '2026-10-05', '2026-10-06'] ... 共 34 期 | 读取: 2026-10-06\n==============================================================\n📰 关注股当日新闻解读 · 2026-10-06\n==============================================================\n\n🏛 宏观/行业要点（6条）\n  • 纳指、英伟达齐创新高\n  • 麦当劳在美遭集体诉讼 被指用 AI 系统非法操纵菜单价格\n  • 多家阿联酋基金以及贝莱德据悉商谈参与OpenAI最新一轮300亿美元融资\n  • 人工智能如何真正赋能思政课堂\n  • Lucid继续执行库存削减计划 第三季度交付3806辆汽车\n  • 老工业基地的数智蝶变——辽宁以工业互联网赋能制造业转型升级\n\n📌 个股新闻与解读（命中 0 只）\n  (目标日期无个股新闻)\n\n✅ 已保存 -> /Users/duguke/.openclaw/workspace/data/news/daily_2026-10-06.md"
+      },
+      "nextRunAtMs": 1791333300000,
+      "lastRunAtMs": 1791246900027,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "c57f99fb-b3bc-4957-8c4b-c123dcec3ab3",
+      "displayName": "盘中策略实时预警(30分钟轮询)",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:telegram:direct:626141741"
+      },
+      "name": "intraday-alert-watch",
+      "description": "[2026-09-13 改造] 盘中预警(上午场)。脚本已自含TG推送, 改为command直跑, 绕开LLM。",
+      "enabled": true,
+      "createdAtMs": 1787605802334,
+      "updatedAtMs": 1791257463039,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0,30 9-11 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: cd /Users/duguke/.openclaw/workspace && python3 scripts/push_intraday_alerts.py\nThe script self-pushes to Telegram. Do not send any additional message.",
+        "timeoutSeconds": 180,
+        "toolsAllow": [
+          "read",
+          "exec",
+          "process"
+        ]
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791334800000,
+        "lastRunAtMs": 1791257400027,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 63012,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791334800000,
+      "lastRunAtMs": 1791257400027,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "c7a8a955-ddb1-4a4b-8f5f-589507d5aa52",
+      "displayName": "中联重科盘前监控(命令模式)",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:d8af573c-f9d6-47de-ba0e-46be71a0489d"
+      },
+      "name": "zhonglian-monitor-morning-cmd",
+      "enabled": true,
+      "deleteAfterRun": false,
+      "createdAtMs": 1788218041652,
+      "updatedAtMs": 1791248468816,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /Users/duguke/.openclaw/workspace && python3 analysis/zhonglian_monitor.py",
+        "model": "nvidia/nemotron-3-ultra-550b-a55b",
+        "timeoutSeconds": 300,
+        "toolsAllow": [
+          "read",
+          "edit",
+          "write",
+          "apply_patch",
+          "exec",
+          "process",
+          "cron",
+          "image_generate",
+          "music_generate",
+          "video_generate",
+          "get_goal",
+          "create_goal",
+          "update_goal",
+          "skill_workshop",
+          "update_plan",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "sessions_yield",
+          "subagents",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get",
+          "filesystem__create_directory",
+          "filesystem__directory_tree",
+          "filesystem__edit_file",
+          "filesystem__get_file_info",
+          "filesystem__list_allowed_directories",
+          "filesystem__list_directory",
+          "filesystem__list_directory_with_sizes",
+          "filesystem__move_file",
+          "filesystem__read_file",
+          "filesystem__read_media_file",
+          "filesystem__read_multiple_files",
+          "filesystem__read_text_file",
+          "filesystem__search_files",
+          "filesystem__write_file"
+        ],
+        "toolsAllowIsDefault": true
+      },
+      "delivery": {
+        "mode": "none",
+        "channel": "telegram",
+        "to": "626141741",
+        "bestEffort": false
+      },
+      "state": {
+        "nextRunAtMs": 1791334800000,
+        "lastRunAtMs": 1791248400035,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 68781,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791334800000,
+      "lastRunAtMs": 1791248400035,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "f046d135-d7a4-4f88-af92-c235b90437e6",
+      "displayName": "电网装备出海-盘中预警(30分钟)",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "power-overseas-intraday",
+      "description": "[2026-09-13 改造] 盘中30分钟异动预警。改为 command 模式直跑脚本+直推, 绕开LLM杜绝伪造。",
+      "enabled": true,
+      "createdAtMs": 1788538211184,
+      "updatedAtMs": 1791271920248,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/30 9-11,13-15 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "cd /Users/duguke/.openclaw/workspace && python3 analysis/power_overseas_push.py --mode intraday"
+      },
+      "state": {
+        "nextRunAtMs": 1791334800000,
+        "lastRunAtMs": 1791271800023,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 120225,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791334800000,
+      "lastRunAtMs": 1791271800023,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "f4920382-c055-4e8e-9dd6-3f09106c6997",
+      "displayName": "集合竞价快照捕获(09:15)",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "auction-feed-0915",
+      "description": "交易日 09:15-09:25 捕获自选池竞价实时行情，9:25:05 落盘到 data/auction/YYYY-MM-DD_9_25.json",
+      "enabled": true,
+      "createdAtMs": 1789729573549,
+      "updatedAtMs": 1791249311107,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "15 9 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /Users/duguke/.openclaw/workspace && python3 analysis/auction_feed.py 2>&1",
+        "model": "deepseek/deepseek-chat",
+        "timeoutSeconds": 600,
+        "toolsAllow": [
+          "read",
+          "write",
+          "apply_patch",
+          "exec",
+          "filesystem__list_directory",
+          "filesystem__read_file",
+          "filesystem__write_file"
+        ]
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791335700000,
+        "lastRunAtMs": 1791249300026,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 11081,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDiagnostics": {
+          "summary": "⚠️ 🛠️ Exec failed: `python3 analysis/auction_feed.py` (agent)",
+          "entries": [
+            {
+              "ts": 1791249311105,
+              "source": "tool",
+              "severity": "warn",
+              "message": "⚠️ 🛠️ Exec failed: `python3 analysis/auction_feed.py` (agent)"
+            }
+          ]
+        },
+        "lastDiagnosticSummary": "⚠️ 🛠️ Exec failed: `python3 analysis/auction_feed.py` (agent)"
+      },
+      "nextRunAtMs": 1791335700000,
+      "lastRunAtMs": 1791249300026,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "4ecdf11f-7b93-4d53-83f2-4536c007e8a5",
+      "displayName": "集合竞价决策分析(09:26推送)",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:d8af573c-f9d6-47de-ba0e-46be71a0489d"
+      },
+      "name": "auction-analyze-0926",
+      "description": "交易日09:26读取竞价快照，结合昨日情绪/策略映射/新闻产出决策并推送Telegram（纯exec模式，绕过LLM）",
+      "enabled": true,
+      "createdAtMs": 1786835432940,
+      "updatedAtMs": 1791255725309,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "26 9 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /Users/duguke/.openclaw/workspace && python3 -m analysis.auction_analyze 2>&1",
+        "model": "deepseek/deepseek-chat",
+        "timeoutSeconds": 480,
+        "toolsAllow": [
+          "exec"
+        ]
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "626141741"
+      },
+      "state": {
+        "nextRunAtMs": 1791336360000,
+        "lastRunAtMs": 1791255717734,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 7575,
+        "lastDeliveryStatus": "delivered",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDelivered": true
+      },
+      "nextRunAtMs": 1791336360000,
+      "lastRunAtMs": 1791255717734,
+      "lastRunStatus": "ok",
+      "lastDelivered": true,
+      "lastDeliveryStatus": "delivered",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "3ca4931a-b31f-4dfe-9a10-c70159c8096c",
+      "displayName": "盘中策略实时预警-下午场(30分钟轮询)",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "intraday-alert-watch-pm",
+      "description": "[2026-09-13 改造] 盘中预警(下午场)。脚本已自含TG推送, 改为command直跑, 绕开LLM。",
+      "enabled": true,
+      "createdAtMs": 1787606262167,
+      "updatedAtMs": 1791268210784,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0,30 13-14 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "Run: cd /Users/duguke/.openclaw/workspace && python3 scripts/push_intraday_alerts.py\nThe script self-pushes to Telegram. Do not send any additional message.",
+        "timeoutSeconds": 300,
+        "toolsAllow": [
+          "read",
+          "exec",
+          "process"
+        ]
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791349200000,
+        "lastRunAtMs": 1791268200024,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 10760,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791349200000,
+      "lastRunAtMs": 1791268200024,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "8da42083-63d4-4884-9909-938a3f5c5d12",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:91895400-a951-4d77-9c08-5d276443cec4"
+      },
+      "name": "zhonglian-monitor-noon",
+      "enabled": true,
+      "createdAtMs": 1788056785408,
+      "updatedAtMs": 1791262827076,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 13 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /Users/duguke/.openclaw/workspace && python3 analysis/zhonglian_monitor.py",
+        "timeoutSeconds": 300,
+        "toolsAllow": [
+          "read",
+          "edit",
+          "write",
+          "apply_patch",
+          "exec",
+          "process",
+          "cron",
+          "image_generate",
+          "music_generate",
+          "video_generate",
+          "get_goal",
+          "create_goal",
+          "update_goal",
+          "skill_workshop",
+          "update_plan",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "sessions_yield",
+          "subagents",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get",
+          "filesystem__create_directory",
+          "filesystem__directory_tree",
+          "filesystem__edit_file",
+          "filesystem__get_file_info",
+          "filesystem__list_allowed_directories",
+          "filesystem__list_directory",
+          "filesystem__list_directory_with_sizes",
+          "filesystem__move_file",
+          "filesystem__read_file",
+          "filesystem__read_media_file",
+          "filesystem__read_multiple_files",
+          "filesystem__read_text_file",
+          "filesystem__search_files",
+          "filesystem__write_file",
+          "tradingwizard__get_bot_consensus",
+          "tradingwizard__get_bot_one_status",
+          "tradingwizard__get_fund_performance",
+          "tradingwizard__get_global_bots",
+          "tradingwizard__get_market_movers",
+          "tradingwizard__get_market_price",
+          "tradingwizard__get_market_summary",
+          "tradingwizard__get_market_track",
+          "tradingwizard__get_markets",
+          "tradingwizard__get_ranked_opportunities",
+          "tradingwizard__prompts_get",
+          "tradingwizard__prompts_list",
+          "tradingwizard__resources_list",
+          "tradingwizard__resources_read"
+        ],
+        "toolsAllowIsDefault": true
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "626141741"
+      },
+      "state": {
+        "nextRunAtMs": 1791349200000,
+        "lastRunAtMs": 1791262800034,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 27042,
+        "lastDeliveryStatus": "delivered",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDelivered": true
+      },
+      "nextRunAtMs": 1791349200000,
+      "lastRunAtMs": 1791262800034,
+      "lastRunStatus": "ok",
+      "lastDelivered": true,
+      "lastDeliveryStatus": "delivered",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "1410e346-127e-4c9b-b593-f0dcb60df9e6",
+      "displayName": "特高压出海-大宗商品汇率抓取",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "sector-overseas-commodity-fx",
+      "description": "[2026-09-13 改造] 收盘后抓取铜价/汇率/DXY。改为 command 直跑(脚本自带TG简报输出), 绕开LLM。",
+      "enabled": true,
+      "createdAtMs": 1789230933879,
+      "updatedAtMs": 1791272220224,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "35 15 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "cd /Users/duguke/.openclaw/workspace && python3 scripts/fetch_commodity_fx.py"
+      },
+      "state": {
+        "nextRunAtMs": 1791358500000,
+        "lastRunAtMs": 1791272100034,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 120190,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791358500000,
+      "lastRunAtMs": 1791272100034,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "7fac42a1-e98f-4316-a342-a32a3d4a541a",
+      "displayName": "电网装备出海-收盘复盘",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "power-overseas-eod",
+      "description": "[2026-09-13 改造] 收盘后深度复盘。改为 command 模式直跑脚本+直推, 绕开LLM杜绝伪造(原为 agentTurn+write 权限)。",
+      "enabled": true,
+      "createdAtMs": 1788538220144,
+      "updatedAtMs": 1791272220224,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "35 15 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "cd /Users/duguke/.openclaw/workspace && python3 analysis/power_overseas_push.py --mode eod"
+      },
+      "state": {
+        "nextRunAtMs": 1791358500000,
+        "lastRunAtMs": 1791272100032,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 120192,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791358500000,
+      "lastRunAtMs": 1791272100032,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "96ce82c1-8597-489d-898a-3408e97d9085",
+      "displayName": "收盘生成市场情绪上下文",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:d8af573c-f9d6-47de-ba0e-46be71a0489d"
+      },
+      "name": "market-context-generate",
+      "description": "[2026-09-13 改造] 收盘生成市场情绪上下文。纯脚本+inline python, 改为command直跑。",
+      "enabled": true,
+      "deleteAfterRun": false,
+      "createdAtMs": 1786575943703,
+      "updatedAtMs": 1791272220224,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "35 15 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "cd /Users/duguke/.openclaw/workspace && python3 -m analysis.review_030_snapshot && python3 -c \"import json, os, sys; from datetime import datetime, timedelta; ws=os.getenv('WORKSPACE','/Users/duguke/.openclaw/workspace'); snap=os.path.join(ws,'data','review_030_snapshot.json'); ctx_dir=os.path.join(ws,'data','context'); os.makedirs(ctx_dir,exist_ok=True); data=json.load(open(snap)); prev=(datetime.now()-timedelta(days=1)).strftime('%Y-%m-%d'); ctx={'date':prev,'breadth':data.get('breadth',{}),'index':data.get('index',{}),'yesterday_hot_sectors':['半导体','锂电','高端制造'],'yesterday_strong_stocks':[c for c,s in data.get('stocks',{}).items() if s.get('change_pct',0)>3],'market_phase':'上升期' if data.get('breadth',{}).get('up_ratio',0)>0.6 else '震荡期','sentiment':'活跃' if data.get('breadth',{}).get('limit_up',0)>50 else '一般','notes':'两市成交{:.0f}亿，涨停{}家，跌停{}家，上涨比{:.1%}'.format(data.get('breadth',{}).get('total_amount_yi',0),data.get('breadth',{}).get('limit_up',0),data.get('breadth',{}).get('limit_down',0),data.get('breadth',{}).get('up_ratio',0))}; out=os.path.join(ctx_dir,f'market_context_{prev}.json'); json.dump(ctx,open(out,'w'),ensure_ascii=False,indent=2); print(f'已生成 {out}')\""
+      },
+      "state": {
+        "nextRunAtMs": 1791358500000,
+        "lastRunAtMs": 1791272100030,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 120194,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791358500000,
+      "lastRunAtMs": 1791272100030,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "b954c808-fde1-46de-b2b4-8f83bb59d07d",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:91895400-a951-4d77-9c08-5d276443cec4"
+      },
+      "name": "portfolio-sim-daily",
+      "description": "周一到周五15:40运行全组合模拟盘扫描",
+      "enabled": true,
+      "createdAtMs": 1788054280126,
+      "updatedAtMs": 1791272520273,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "40 15 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "cd /Users/duguke/.openclaw/workspace && python3 analysis/portfolio_sim.py && python3 scripts/equity_guard.py"
+      },
+      "state": {
+        "nextRunAtMs": 1791358800000,
+        "lastRunAtMs": 1791272400026,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 120247,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791358800000,
+      "lastRunAtMs": 1791272400026,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "7d1b9562-9eaf-47d9-b527-b90f07d4e66d",
+      "displayName": "斐波那契扩展位追踪(预先声明→事后检验)",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:telegram:direct:626141741"
+      },
+      "name": "fib-tracking-daily",
+      "description": "[2026-09-13 改造] 斐波那契扩展位追踪。改为command直跑脚本, 绕开LLM转发。",
+      "enabled": true,
+      "createdAtMs": 1787174459423,
+      "updatedAtMs": 1791272700824,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "45 15 * * 1-5",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "command",
+        "argv": [
+          "sh",
+          "-lc",
+          "cd /Users/duguke/.openclaw/workspace && python3 analysis/fib_track.py"
+        ],
+        "timeoutSeconds": 600
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791359100000,
+        "lastRunAtMs": 1791272700024,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 800,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDiagnostics": {
+          "summary": "⏭ 2026-10-06 今日已验证，跳过",
+          "entries": [
+            {
+              "ts": 1791272700824,
+              "source": "exec",
+              "severity": "info",
+              "message": "command ok: \"sh\" \"-lc\" \"cd /Users/duguke/.openclaw/workspace && python3 analysis/fib_track.py\"",
+              "exitCode": 0
+            }
+          ]
+        },
+        "lastDiagnosticSummary": "⏭ 2026-10-06 今日已验证，跳过"
+      },
+      "nextRunAtMs": 1791359100000,
+      "lastRunAtMs": 1791272700024,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "9c483c25-f13c-469f-8454-c8779060c482",
+      "displayName": "记忆维护-周四",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:fd71684b-3dda-4983-a11d-be2f451f4919"
+      },
+      "name": "memory-maintenance-thursday",
+      "description": "每周四06:00记忆维护(systemEvent)提醒蒸馏",
+      "enabled": true,
+      "createdAtMs": 1785514582435,
+      "updatedAtMs": 1791272748534,
+      "agentId": "main",
+      "sessionKey": "agent:main:dashboard:fd71684b-3dda-4983-a11d-be2f451f4919",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 6 * * 4",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "【记忆维护提醒】今天是周四。请检查近期 memory/*.md 日志，把重要决策/教训蒸馏到 MEMORY.md。若有值得归档的发现，直接更新 MEMORY.md。",
+        "timeoutSeconds": 900
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791410400000,
+        "lastRunAtMs": 1791272584418,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 164116,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791410400000,
+      "lastRunAtMs": 1791272584418,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "8f676e04-fabf-4cb3-9a8c-d46317c01ee5",
+      "displayName": "记忆维护-完整蒸馏",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:fd71684b-3dda-4983-a11d-be2f451f4919"
+      },
+      "name": "memory-maintenance-check",
+      "description": "[2026-09-13 加固] 记忆系统维护。移除 web_search/web_fetch/外部MCP 等非必需工具，仅保留记忆读写+exec，降低外部不可信内容写入记忆的风险。",
+      "enabled": true,
+      "createdAtMs": 1785514582276,
+      "updatedAtMs": 1791155581233,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7 * * 1,4",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "执行记忆系统完整维护：\n1. 阅读近期 memory/*.md 日志\n2. 将重要决策、教训、事件蒸馏更新到 MEMORY.md（只能写 workspace 内的 MEMORY.md / memory/*.md，不得写入其他路径）\n3. 运行 python3 scripts/ontology.py error-inject --min-count 2 注入高频错误模式（若需要）\n4. 推送维护摘要到 Telegram（@qwd1_bot, chat_id 626141741）\n\n【硬性约束】\n- 写入内容必须源自本地 memory/*.md 已记录的事实，不得引入任何外部未核实信息。\n- 不得编造事件、日期、数字。\n只输出维护摘要。",
+        "timeoutSeconds": 1800,
+        "toolsAllow": [
+          "read",
+          "edit",
+          "write",
+          "apply_patch",
+          "exec",
+          "memory_search",
+          "memory_get",
+          "filesystem__edit_file",
+          "filesystem__list_directory",
+          "filesystem__read_file",
+          "filesystem__search_files",
+          "filesystem__write_file"
+        ]
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "626141741"
+      },
+      "state": {
+        "nextRunAtMs": 1791414000000,
+        "lastRunAtMs": 1791154832738,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 748495,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791414000000,
+      "lastRunAtMs": 1791154832738,
+      "lastRunStatus": "ok",
+      "lastDelivered": true,
+      "lastDeliveryStatus": "delivered",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "9ee829a7-7110-43de-aec7-654b65a1fdfa",
+      "displayName": "国瓷材料分歧复核提醒(10/08开盘前)",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "guoci-300285-divergence-check-1008",
+      "enabled": true,
+      "deleteAfterRun": true,
+      "createdAtMs": 1791162511630,
+      "updatedAtMs": 1791162511630,
+      "agentId": "main",
+      "sessionKey": "agent:main:main",
+      "schedule": {
+        "kind": "at",
+        "at": "2026-10-08T01:10:00.000Z"
+      },
+      "sessionTarget": "main",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "systemEvent",
+        "text": "【提醒】今天是节后首个交易日(10/08)。请复核国瓷材料(300285)分歧状态：券商10月金股「机构关注↑」(证券时报4205597点名入选电子板块金股) vs 本地双策略「分歧」(纯MACD持有 / EMA+OBV卖出, 9/30收盘¥63.06)。步骤: 1) cat analysis/daily/2026-10-08_dual.md 看今日双策略信号是否收敛; 2) 关注三季报窗口催化; 3) 结论回报用户并更新 memory/2026-10-08.md。背景见 analysis/daily/2026-10-05_gold_cross.md(10月金股×关注池交叉, 命中仅福耀玻璃+国瓷材料)。此提醒由 10-05 金股交叉分析会话设置。"
+      },
+      "state": {
+        "nextRunAtMs": 1791421800000
+      },
+      "nextRunAtMs": 1791421800000,
+      "status": "idle"
+    },
+    {
+      "id": "864cfb26-46c8-43da-af3a-b7512109f487",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:91895400-a951-4d77-9c08-5d276443cec4"
+      },
+      "name": "weekly-review-trading",
+      "enabled": true,
+      "createdAtMs": 1788053890870,
+      "updatedAtMs": 1790978420779,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 6 * * 6",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /Users/duguke/.openclaw/workspace && python3 analysis/weekly_review_push.py",
+        "timeoutSeconds": 300,
+        "toolsAllow": [
+          "read",
+          "edit",
+          "write",
+          "apply_patch",
+          "exec",
+          "process",
+          "cron",
+          "image_generate",
+          "music_generate",
+          "video_generate",
+          "get_goal",
+          "create_goal",
+          "update_goal",
+          "skill_workshop",
+          "update_plan",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "sessions_yield",
+          "subagents",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get",
+          "filesystem__create_directory",
+          "filesystem__directory_tree",
+          "filesystem__edit_file",
+          "filesystem__get_file_info",
+          "filesystem__list_allowed_directories",
+          "filesystem__list_directory",
+          "filesystem__list_directory_with_sizes",
+          "filesystem__move_file",
+          "filesystem__read_file",
+          "filesystem__read_media_file",
+          "filesystem__read_multiple_files",
+          "filesystem__read_text_file",
+          "filesystem__search_files",
+          "filesystem__write_file"
+        ],
+        "toolsAllowIsDefault": true
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791583200000,
+        "lastRunAtMs": 1790978400031,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 20748,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791583200000,
+      "lastRunAtMs": 1790978400031,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "c4cb94a5-1b61-43cc-a870-0a96d24f6a6d",
+      "name": "weekly-backtest-pipeline",
+      "description": "每周六06:00用weekly_full_pipeline.py直跑7步脚本+简报推送,不经LLM根治超时",
+      "enabled": true,
+      "createdAtMs": 1787410717403,
+      "updatedAtMs": 1790978773544,
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 6 * * 6",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "cd /Users/duguke/.openclaw/workspace && python3 analysis/weekly_full_pipeline.py",
+        "timeoutSeconds": 3600,
+        "toolsAllow": [
+          "read",
+          "edit",
+          "write",
+          "apply_patch",
+          "exec",
+          "process",
+          "cron",
+          "image_generate",
+          "music_generate",
+          "video_generate",
+          "get_goal",
+          "create_goal",
+          "update_goal",
+          "skill_workshop",
+          "update_plan",
+          "sessions_list",
+          "sessions_history",
+          "sessions_send",
+          "sessions_spawn",
+          "sessions_yield",
+          "subagents",
+          "session_status",
+          "web_search",
+          "web_fetch",
+          "image",
+          "memory_search",
+          "memory_get",
+          "filesystem__create_directory",
+          "filesystem__directory_tree",
+          "filesystem__edit_file",
+          "filesystem__get_file_info",
+          "filesystem__list_allowed_directories",
+          "filesystem__list_directory",
+          "filesystem__list_directory_with_sizes",
+          "filesystem__move_file",
+          "filesystem__read_file",
+          "filesystem__read_media_file",
+          "filesystem__read_multiple_files",
+          "filesystem__read_text_file",
+          "filesystem__search_files",
+          "filesystem__write_file"
+        ],
+        "toolsAllowIsDefault": true
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791583200000,
+        "lastRunAtMs": 1790978400029,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 373515,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791583200000,
+      "lastRunAtMs": 1790978400029,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "6cd3fcb4-9052-4059-9b2d-33964dd06bec",
+      "displayName": "特高压出海-周复盘报告生成",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "sector-overseas-weekly-review",
+      "description": "[2026-09-13 改造] 周六生成本周复盘报告。改为 command 直跑, 绕开LLM(附真实性守卫)。",
+      "enabled": true,
+      "createdAtMs": 1789231122126,
+      "updatedAtMs": 1791272571015,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 9 * * 6",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "command",
+        "argv": [
+          "sh",
+          "-lc",
+          "cd /Users/duguke/.openclaw/workspace && python3 analysis/sector_review/daily_review.py && python3 analysis/sector_review/weekly_review.py --auto"
+        ],
+        "timeoutSeconds": 1200
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791594000000,
+        "lastRunAtMs": 1791272569454,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 1561,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDiagnostics": {
+          "summary": "[WARN] 行情日期 2026-09-30 != 目标日期 2026-10-06 (非交易日或数据延迟)\n[SAVE] -> analysis/sector_review/daily/2026-10-06_evening_review.md (8/8 只有效)\n[AUTO] 检测到可用数据周: 2026-09-07 ~ 2026-09-11\n=== 生成周复盘报告 2026-09-07 ~ 2026-09-11 ===\n\n============================================================\n⚠️  数据真实性警告 (周报结论可能不可信)\n============================================================\n  [MISSING] 本周大宗商品汇率仅 0/5 天有数据，周变化区间不完整\n============================================================\n\nlogin success!\n  ✓ 600089 特变电工: -0.85% | 混杂 | MACD:空头 | RSI:None\n  ✓ 600406 国电南瑞: -1.85% | 混杂 | MACD:空头 | RSI:None\n  ✓ 000400 许继电气: -5.84% | 混杂 | MACD:空头 | RSI:None\n  ✓ 601179 中国西电: -2.30% | 混杂 | MACD:空头 | RSI:None\n  ✓ 600312 平高电气: -5.99% | 混杂 | MACD:多头 | RSI:None\n  ✓ 002028 思源电气: -8.51% | 混杂 | MACD:空头 | RSI:None\n  ✓ 002270 华明装备: -1.83% | 混杂 | MACD:空头 | RSI:None\n  ✓ 002130 沃尔核材: +4.43% | 混杂 | MACD:多头 | RSI:None\nlogout success!\n[SAVE] -> analysis/sector_review/weekly_2026-09-11.md\n\n=== 报告摘要 ===\n每日复盘: 1/5\n汇率商品: 0/5\n招标命中: 0 条\n营收新增: 0 条",
+          "entries": [
+            {
+              "ts": 1791272571015,
+              "source": "exec",
+              "severity": "info",
+              "message": "command ok: \"sh\" \"-lc\" \"cd /Users/duguke/.openclaw/workspace && python3 analysis/sector_review/daily_review.py && python3 analysis/sector_review/weekly_review.py --auto\"",
+              "exitCode": 0
+            }
+          ]
+        },
+        "lastDiagnosticSummary": "[WARN] 行情日期 2026-09-30 != 目标日期 2026-10-06 (非交易日或数据延迟)\n[SAVE] -> analysis/sector_review/daily/2026-10-06_evening_review.md (8/8 只有效)\n[AUTO] 检测到可用数据周: 2026-09-07 ~ 2026-09-11\n=== 生成周复盘报告 2026-09-07 ~ 2026-09-11 ===\n\n============================================================\n⚠️  数据真实性警告 (周报结论可能不可信)\n============================================================\n  [MISSING] 本周大宗商品汇率仅 0/5 天有数据，周变化区间不完整\n============================================================\n\nlogin success!\n  ✓ 600089 特变电工: -0.85% | 混杂 | MACD:空头 | RSI:None\n  ✓ 600406 国电南瑞: -1.85% | 混杂 | MACD:空头 | RSI:None\n  ✓ 000400 许继电气: -5.84% | 混杂 | MACD:空头 | RSI:None\n  ✓ 601179 中国西电: -2.30% | 混杂 | MACD:空头 | RSI:None\n  ✓ 600312 平高电气: -5.99% | 混杂 | MACD:多头 | RSI:None\n  ✓ 002028 思源电气: -8.51% | 混杂 | MACD:空头 | RSI:None\n  ✓ 002270 华明装备: -1.83% | 混杂 | MACD:空头 | RSI:None\n  ✓ 002130 沃尔核材: +4.43% | 混杂 | MACD:多头 | RSI:None\nlogout success!\n[SAVE] -> analysis/sector_review/weekly_2026-09-11.md\n\n=== 报告摘要 ===\n每日复盘: 1/5\n汇率商品: 0/5\n招标命中: 0 条\n营收新增: 0 条"
+      },
+      "nextRunAtMs": 1791594000000,
+      "lastRunAtMs": 1791272569454,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "ecd94d5d-ce4a-4534-836b-1764108508d9",
+      "displayName": "电网装备出海-周末深度研报",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "power-overseas-weekly",
+      "description": "[2026-09-13 改造] 周六周度深度研报。改为 command 直跑脚本, 绕开LLM杜绝伪造。",
+      "enabled": true,
+      "createdAtMs": 1788538229622,
+      "updatedAtMs": 1791272569499,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 10 * * 6",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "command",
+        "argv": [
+          "sh",
+          "-lc",
+          "cd /Users/duguke/.openclaw/workspace && python3 analysis/power_overseas_push.py --mode weekly"
+        ],
+        "timeoutSeconds": 1200
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791597600000,
+        "lastRunAtMs": 1791272564641,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 4858,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDiagnostics": {
+          "summary": "============================================================\n📊 电网装备/特高压出海板块 周度深度研报\n日期: 2026-10-06\n============================================================\n\n【宏观驱动因子】\n  ✅ 国内: 第4/5批特高压工程核准启动(2026-2027年投资高峰)\n  ✅ 海外: 全球电网投资超万亿$/年(IEA)，新能源并网+跨国互联+老旧更新三大驱动\n  ✅ 政策: 一带一路十周年/中欧投资协定/沙特Vision2030/美国IRA/欧盟REPowerEU\n  ✅ 技术: 柔性直流/HVDC/数字化电网/海上风电配套/核电配套\n\n【核心风险因子】\n  ⚠️ 全球经济增速放缓影响电网投资决策\n  ⚠️ 地缘政治(中欧关税/中美科技战/中东局势)\n  ⚠️ 汇率大幅波动侵蚀海外项目利润\n  ⚠️ 原材料(铜/铝/硅钢/六氟化硫)成本传导滞后\n  ⚠️ 海外项目执行/收款/汇率/法律多重风险\n\n【个股深度画像】\n\n  📈 特变电工 (600089)\n     核心产品: ±1100kV换流变压器, ±800kV换流变压器, 特高压变压器...\n     出海资质: 沙特SEC认证, 美国UL认证, 欧盟CE认证...\n     重点订单: 沙特NEOM 164亿大单, 阿联酋塔维拉项目\n     目标市场: 中东(沙特/阿联酋/卡塔尔), 东南亚(印尼/越南), 中亚(哈萨克/乌兹别克)\n     海外营收占比: 35%\n     汇率敞口: {'USD': 0.6, 'EUR': 0.2, 'SAR': 0.15, 'Other': 0.05}\n     技术面: 价格17.32 涨跌0.99% EMA20/50/200:空 MACD:平\n     止损/止盈: -8% / 25%\n     策略偏向: trend_following\n\n  📈 国电南瑞 (600406)\n     核心产品: 换流阀(柔性/常规), 特高压保护控制, 电网自动化系统...\n     出海资质: 国际大电网标准(IEC)参编, 海外型式试验通过, 中东/东南亚电网公司准入...\n     重点订单: 巴西美洲特高压±800kV换流阀, 沙特换流站自动化\n     目标市场: 南美(巴西/智利), 中东(沙特/阿联酋), 东南亚(菲律宾/越南/印尼)\n     海外营收占比: 18%\n     汇率敞口: {'USD': 0.55, 'BRL': 0.15, 'EUR': 0.15, 'Other': 0.15}\n     技术面: 价格22.52 涨跌1.4% EMA20/50/200:空 MACD:平\n     止损/止盈: -10% / 30%\n     策略偏向: event_driven\n\n  📈 许继电气 (000400)\n     核心产品: ±800/±1100kV换流阀, 直流控制保护系统, 柔性直流换流阀...\n     出海资质: 巴西国家电网准入, 沙特SEC认证, 国际型式试验(KEMA/CESI)...\n     重点订单: 巴西美洲特高压换流阀+控保双中标, 沙特±525kV柔性直流项目\n     目标市场: 南美(巴西), 中东(沙特/阿联酋/科威特), 东南亚\n     海外营收占比: 22%\n     汇率敞口: {'USD': 0.5, 'BRL': 0.2, 'SAR': 0.2, 'Other': 0.1}\n     技术面: 价格21.61 涨跌2.76% EMA20/50/200:空 MACD:平\n     止损/止盈: -10% / 28%\n     策略偏向: event_driven\n\n  📈 中国西电 (601179)\n     核心产品: ±1100kV/±800kV换流变, 特高压GIS/断路器, 变压器/电抗器全系列...\n     出海资质: 央企背景国家队, 全球主要电网公司准入, 一带一路重点项目供应商...\n     重点订单: 沙特/阿联酋特高压成套供货, 巴西美洲特高压一次设备\n     目标市场: 中东(核心), 南美(巴西), 中亚(五国)\n     海外营收占比: 28%\n     汇率敞口: {'USD': 0.5, 'SAR': 0.2, 'EUR': 0.15, 'Other': 0.15}\n     技术面: 价格11.61 涨跌1.75% EMA20/50/200:空 MACD:平\n     止损/止盈: -8% / 22%\n     策略偏向: value_reversion\n\n  📈 平高电气 …",
+          "entries": [
+            {
+              "ts": 1791272569498,
+              "source": "exec",
+              "severity": "info",
+              "message": "command ok: \"sh\" \"-lc\" \"cd /Users/duguke/.openclaw/workspace && python3 analysis/power_overseas_push.py --mode weekly\"",
+              "exitCode": 0
+            }
+          ]
+        },
+        "lastDiagnosticSummary": "============================================================\n📊 电网装备/特高压出海板块 周度深度研报\n日期: 2026-10-06\n============================================================\n\n【宏观驱动因子】\n  ✅ 国内: 第4/5批特高压工程核准启动(2026-2027年投资高峰)\n  ✅ 海外: 全球电网投资超万亿$/年(IEA)，新能源并网+跨国互联+老旧更新三大驱动\n  ✅ 政策: 一带一路十周年/中欧投资协定/沙特Vision2030/美国IRA/欧盟REPowerEU\n  ✅ 技术: 柔性直流/HVDC/数字化电网/海上风电配套/核电配套\n\n【核心风险因子】\n  ⚠️ 全球经济增速放缓影响电网投资决策\n  ⚠️ 地缘政治(中欧关税/中美科技战/中东局势)\n  ⚠️ 汇率大幅波动侵蚀海外项目利润\n  ⚠️ 原材料(铜/铝/硅钢/六氟化硫)成本传导滞后\n  ⚠️ 海外项目执行/收款/汇率/法律多重风险\n\n【个股深度画像】\n\n  📈 特变电工 (600089)\n     核心产品: ±1100kV换流变压器, ±800kV换流变压器, 特高压变压器...\n     出海资质: 沙特SEC认证, 美国UL认证, 欧盟CE认证...\n     重点订单: 沙特NEOM 164亿大单, 阿联酋塔维拉项目\n     目标市场: 中东(沙特/阿联酋/卡塔尔), 东南亚(印尼/越南), 中亚(哈萨克/乌兹别克)\n     海外营收占比: 35%\n     汇率敞口: {'USD': 0.6, 'EUR': 0.2, 'SAR': 0.15, 'Other': 0.05}\n     技术面: 价格17.32 涨跌0.99% EMA20/50/200:空 MACD:平\n     止损/止盈: -8% / 25%\n     策略偏向: trend_following\n\n  📈 国电南瑞 (600406)\n     核心产品: 换流阀(柔性/常规), 特高压保护控制, 电网自动化系统...\n     出海资质: 国际大电网标准(IEC)参编, 海外型式试验通过, 中东/东南亚电网公司准入...\n     重点订单: 巴西美洲特高压±800kV换流阀, 沙特换流站自动化\n     目标市场: 南美(巴西/智利), 中东(沙特/阿联酋), 东南亚(菲律宾/越南/印尼)\n     海外营收占比: 18%\n     汇率敞口: {'USD': 0.55, 'BRL': 0.15, 'EUR': 0.15, 'Other': 0.15}\n     技术面: 价格22.52 涨跌1.4% EMA20/50/200:空 MACD:平\n     止损/止盈: -10% / 30%\n     策略偏向: event_driven\n\n  📈 许继电气 (000400)\n     核心产品: ±800/±1100kV换流阀, 直流控制保护系统, 柔性直流换流阀...\n     出海资质: 巴西国家电网准入, 沙特SEC认证, 国际型式试验(KEMA/CESI)...\n     重点订单: 巴西美洲特高压换流阀+控保双中标, 沙特±525kV柔性直流项目\n     目标市场: 南美(巴西), 中东(沙特/阿联酋/科威特), 东南亚\n     海外营收占比: 22%\n     汇率敞口: {'USD': 0.5, 'BRL': 0.2, 'SAR': 0.2, 'Other': 0.1}\n     技术面: 价格21.61 涨跌2.76% EMA20/50/200:空 MACD:平\n     止损/止盈: -10% / 28%\n     策略偏向: event_driven\n\n  📈 中国西电 (601179)\n     核心产品: ±1100kV/±800kV换流变, 特高压GIS/断路器, 变压器/电抗器全系列...\n     出海资质: 央企背景国家队, 全球主要电网公司准入, 一带一路重点项目供应商...\n     重点订单: 沙特/阿联酋特高压成套供货, 巴西美洲特高压一次设备\n     目标市场: 中东(核心), 南美(巴西), 中亚(五国)\n     海外营收占比: 28%\n     汇率敞口: {'USD': 0.5, 'SAR': 0.2, 'EUR': 0.15, 'Other': 0.15}\n     技术面: 价格11.61 涨跌1.75% EMA20/50/200:空 MACD:平\n     止损/止盈: -8% / 22%\n     策略偏向: value_reversion\n\n  📈 平高电气 …"
+      },
+      "nextRunAtMs": 1791597600000,
+      "lastRunAtMs": 1791272564641,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "269ab910-feb7-474c-b83f-da4e49b28310",
+      "displayName": "仲裁逻辑单元测试",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "test-arbitration-logic",
+      "description": "每周日 07:00 运行仲裁逻辑单元测试，验证 validate_strategies.py 核心决策树",
+      "enabled": true,
+      "createdAtMs": 1788610259230,
+      "updatedAtMs": 1791068421700,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7 * * 0",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "运行仲裁逻辑单元测试：cd /Users/duguke/.openclaw/workspace && python3 analysis/test_arbitration.py",
+        "toolsAllow": [
+          "read",
+          "edit",
+          "write",
+          "apply_patch",
+          "exec",
+          "process",
+          "cron",
+          "filesystem__list_directory",
+          "filesystem__read_file",
+          "filesystem__search_files",
+          "filesystem__write_file"
+        ]
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "626141741"
+      },
+      "state": {
+        "nextRunAtMs": 1791673200000,
+        "lastRunAtMs": 1791068400022,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 21678,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791673200000,
+      "lastRunAtMs": 1791068400022,
+      "lastRunStatus": "ok",
+      "lastDelivered": true,
+      "lastDeliveryStatus": "delivered",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "01b13330-4477-4f50-9078-59aa052904e7",
+      "displayName": "记忆维护-周一",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:dashboard:fd71684b-3dda-4983-a11d-be2f451f4919"
+      },
+      "name": "memory-maintenance-monday",
+      "description": "每周一06:00记忆维护(systemEvent)提醒蒸馏",
+      "enabled": true,
+      "createdAtMs": 1785514582383,
+      "updatedAtMs": 1791273289161,
+      "agentId": "main",
+      "sessionKey": "agent:main:dashboard:fd71684b-3dda-4983-a11d-be2f451f4919",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 6 * * 1",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "【记忆维护提醒】今天是周一。请检查近期 memory/*.md 日志，把重要决策/教训蒸馏到 MEMORY.md。若有值得归档的发现，直接更新 MEMORY.md。\n\n【门禁自查（AGENTS.md 审计清单）】请依序执行并汇报结果：\n1) cd /Users/duguke/.openclaw/workspace && python3 scripts/script_path_guard.py —— 确认 0 违规（sys.path 样板门禁）\n2) python3 scripts/skill_supply_scan.py --offline —— 确认无致命高危（纯静态,秒级）\n3) python3 scripts/strategy_map_guard.py —— 确认关注池口径一致（映射/摘要/watchlist.md/MEMORY.md 均 == WATCHLIST 35只）\n4) lsof -i :18789 —— 确认仅本地监听\n5) cd /Users/duguke/.openclaw/workspace && git tag -l 'guard/*' | wc -l —— 确认近 30 天有快照记录\n6) python3 scripts/promotion_guard.py —— promote 淘汰门禁（2026-10-05 新增）：exit 1 = 自动晋升通道断，需人工把关键教训并入 MEMORY.md 人写区；另顺手检查最新 promote 区块，有值得长期保留的条目则并入人写区（promote 区=易失缓冲，会被预算淘汰）\n以上任一异常，写入当日 memory/YYYY-MM-DD.md 并提示我。",
+        "timeoutSeconds": 1800
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1791756000000,
+        "lastRunAtMs": 1791272579467,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 709694,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791756000000,
+      "lastRunAtMs": 1791272579467,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "3aafd4ce-4bc4-4e40-b61b-8112ad6cdb03",
+      "displayName": "Pipeline 集成测试",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "test-pipeline-integration",
+      "description": "每周一 07:00 运行 Pipeline 集成测试，验证 weekly_full_pipeline.py 步骤顺序、仲裁标志、文档、无效股票清理、最终映射一致性",
+      "enabled": true,
+      "createdAtMs": 1788611820622,
+      "updatedAtMs": 1791154863086,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 7 * * 1",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "agentTurn",
+        "message": "运行 Pipeline 集成测试：cd /Users/duguke/.openclaw/workspace && python3 analysis/test_pipeline_integration.py",
+        "toolsAllow": [
+          "read",
+          "edit",
+          "write",
+          "apply_patch",
+          "exec",
+          "process",
+          "cron",
+          "filesystem__list_directory",
+          "filesystem__read_file",
+          "filesystem__search_files",
+          "filesystem__write_file"
+        ]
+      },
+      "delivery": {
+        "mode": "announce",
+        "channel": "telegram",
+        "to": "626141741"
+      },
+      "state": {
+        "nextRunAtMs": 1791759600000,
+        "lastRunAtMs": 1791154832741,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 30345,
+        "lastDelivered": true,
+        "lastDeliveryStatus": "delivered",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0
+      },
+      "nextRunAtMs": 1791759600000,
+      "lastRunAtMs": 1791154832741,
+      "lastRunStatus": "ok",
+      "lastDelivered": true,
+      "lastDeliveryStatus": "delivered",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    },
+    {
+      "id": "14e04f9b-fc75-4468-b2a3-c0f373a24466",
+      "displayName": "电网装备出海-月度回测更新",
+      "owner": {
+        "agentId": "main",
+        "sessionKey": "agent:main:main"
+      },
+      "name": "power-overseas-backtest-monthly",
+      "description": "[2026-09-13 改造] 月度回测更新。改为command直跑脚本, 绕开LLM。",
+      "enabled": true,
+      "createdAtMs": 1788538239814,
+      "updatedAtMs": 1791272583585,
+      "agentId": "main",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 6 1 * *",
+        "tz": "Asia/Shanghai"
+      },
+      "sessionTarget": "isolated",
+      "wakeMode": "now",
+      "payload": {
+        "kind": "command",
+        "argv": [
+          "sh",
+          "-lc",
+          "cd /Users/duguke/.openclaw/workspace && python3 analysis/backtest_power_overseas.py --start 2022-01-01 --end $(date -v-1d +%F)"
+        ],
+        "timeoutSeconds": 3600
+      },
+      "delivery": {
+        "mode": "none"
+      },
+      "state": {
+        "nextRunAtMs": 1793484000000,
+        "lastRunAtMs": 1791272574546,
+        "lastRunStatus": "ok",
+        "lastStatus": "ok",
+        "lastDurationMs": 9039,
+        "lastDeliveryStatus": "not-requested",
+        "lastFailureNotificationDeliveryStatus": "not-requested",
+        "consecutiveErrors": 0,
+        "consecutiveSkipped": 0,
+        "lastDiagnostics": {
+          "summary": "stdout:\n================================================================================\n📊 电网装备/特高压出海板块回测汇总 (2022-01-01 ~ 2026-10-05)\n================================================================================\n\n【TREND_FOLLOWING】\n  加权总收益: 32.90%  加权年化: 5.35%\n  加权夏普: 0.340  加权最大回撤: -23.40%  加权胜率: 40.3%\n  平均盈亏比: 2.63  平均交易次数: 25\n\n【EVENT_DRIVEN】\n  加权总收益: -3.13%  加权年化: -0.68%\n  加权夏普: -0.259  加权最大回撤: -4.86%  加权胜率: 18.6%\n  平均盈亏比: 65.53  平均交易次数: 2\n\n【VALUE_REVERSION】\n  加权总收益: -5.67%  加权年化: -1.62%\n  加权夏普: -0.124  加权最大回撤: -28.28%  加权胜率: 25.7%\n  平均盈亏比: 1.27  平均交易次数: 4\n\n【BUY_HOLD】\n  加权总收益: 74.52%  加权年化: 0.00%\n  加权夏普: 0.000  加权最大回撤: 0.00%  加权胜率: 0.0%\n  平均盈亏比: 0.00  平均交易次数: 0\n\n【各标的最优策略】\n  600089 特变电工: trend_following (收益28.4% 夏普0.52)\n  600406 国电南瑞: event_driven (收益-2.6% 夏普-0.42)\n  000400 许继电气: event_driven (收益-1.1% 夏普-0.15)\n  601179 中国西电: buy_hold (收益111.1% 夏普0.00)\n  600312 平高电气: buy_hold (收益132.9% 夏普0.00)\n  002028 思源电气: buy_hold (收益153.1% 夏普0.00)\n  002270 华明装备: trend_following (收益110.6% 夏普0.81)\n  002130 沃尔核材: buy_hold (收益88.1% 夏普0.00)\n\n✅ 详细结果: /Users/duguke/.openclaw/workspace/analysis/backtest/power_overseas/backtest_detail_20261006_154303.json\n✅ 汇总表: /Users/duguke/.openclaw/workspace/analysis/backtest/power_overseas/backtest_summary_20261006_154303.csv\n\nstderr:\n15:42:55 INFO 回测 特变电工(600089) 2022-01-01 ~ 2026-10-05\n15:42:56 INFO 已加载 92 条历史事件\n15:42:56 INFO   特变电工(600089) 加载真实事件: 10 条\n15:42:56 INFO 回测 国电南瑞(600406) 2022-01-01 ~ 2026-10-05\n15:42:57 INFO   国电南瑞(600406) 加载真实事件: 16 条\n15:42:57 INFO 回测 许继电气(000400) 2022-01-01 ~ 2026-10-05\n15:42:58 INFO   许继电气(000400) 加载真实事件: 12 条\n15:42:58 INFO 回测 中国西电(601179) 2022-01-01 ~ 2026-10-05\n15:42:59 INFO   中国西电(601179) 加载真实事件: 10 条\n15:42:59 INFO 回测 平高电气(600312) 2022-01-01 ~ 2026-10-05\n15:43:00 INFO   平高电气(600312) 加载真实事件: 11 条\n15:43:00 INFO 回测 思源电气(002028) 2022-01-01 ~ 2026-10-05\n15:43:00 INFO   思源电气(002028) 加载真实事件: 11 条\n15:43:01 INFO 回测 华明装备(002270) 2022-01-01 ~ 2026-10-05\n15:43:01 INFO   华明装备(002270) 加载真实事件: 7 条\n15:43:02 INFO 回测 沃尔核材(002…",
+          "entries": [
+            {
+              "ts": 1791272583585,
+              "source": "exec",
+              "severity": "info",
+              "message": "command ok: \"sh\" \"-lc\" \"cd /Users/duguke/.openclaw/workspace && python3 analysis/backtest_power_overseas.py --start 2022-01-01 --end $(date -v-1d +%F)\"",
+              "exitCode": 0
+            }
+          ]
+        },
+        "lastDiagnosticSummary": "stdout:\n================================================================================\n📊 电网装备/特高压出海板块回测汇总 (2022-01-01 ~ 2026-10-05)\n================================================================================\n\n【TREND_FOLLOWING】\n  加权总收益: 32.90%  加权年化: 5.35%\n  加权夏普: 0.340  加权最大回撤: -23.40%  加权胜率: 40.3%\n  平均盈亏比: 2.63  平均交易次数: 25\n\n【EVENT_DRIVEN】\n  加权总收益: -3.13%  加权年化: -0.68%\n  加权夏普: -0.259  加权最大回撤: -4.86%  加权胜率: 18.6%\n  平均盈亏比: 65.53  平均交易次数: 2\n\n【VALUE_REVERSION】\n  加权总收益: -5.67%  加权年化: -1.62%\n  加权夏普: -0.124  加权最大回撤: -28.28%  加权胜率: 25.7%\n  平均盈亏比: 1.27  平均交易次数: 4\n\n【BUY_HOLD】\n  加权总收益: 74.52%  加权年化: 0.00%\n  加权夏普: 0.000  加权最大回撤: 0.00%  加权胜率: 0.0%\n  平均盈亏比: 0.00  平均交易次数: 0\n\n【各标的最优策略】\n  600089 特变电工: trend_following (收益28.4% 夏普0.52)\n  600406 国电南瑞: event_driven (收益-2.6% 夏普-0.42)\n  000400 许继电气: event_driven (收益-1.1% 夏普-0.15)\n  601179 中国西电: buy_hold (收益111.1% 夏普0.00)\n  600312 平高电气: buy_hold (收益132.9% 夏普0.00)\n  002028 思源电气: buy_hold (收益153.1% 夏普0.00)\n  002270 华明装备: trend_following (收益110.6% 夏普0.81)\n  002130 沃尔核材: buy_hold (收益88.1% 夏普0.00)\n\n✅ 详细结果: /Users/duguke/.openclaw/workspace/analysis/backtest/power_overseas/backtest_detail_20261006_154303.json\n✅ 汇总表: /Users/duguke/.openclaw/workspace/analysis/backtest/power_overseas/backtest_summary_20261006_154303.csv\n\nstderr:\n15:42:55 INFO 回测 特变电工(600089) 2022-01-01 ~ 2026-10-05\n15:42:56 INFO 已加载 92 条历史事件\n15:42:56 INFO   特变电工(600089) 加载真实事件: 10 条\n15:42:56 INFO 回测 国电南瑞(600406) 2022-01-01 ~ 2026-10-05\n15:42:57 INFO   国电南瑞(600406) 加载真实事件: 16 条\n15:42:57 INFO 回测 许继电气(000400) 2022-01-01 ~ 2026-10-05\n15:42:58 INFO   许继电气(000400) 加载真实事件: 12 条\n15:42:58 INFO 回测 中国西电(601179) 2022-01-01 ~ 2026-10-05\n15:42:59 INFO   中国西电(601179) 加载真实事件: 10 条\n15:42:59 INFO 回测 平高电气(600312) 2022-01-01 ~ 2026-10-05\n15:43:00 INFO   平高电气(600312) 加载真实事件: 11 条\n15:43:00 INFO 回测 思源电气(002028) 2022-01-01 ~ 2026-10-05\n15:43:00 INFO   思源电气(002028) 加载真实事件: 11 条\n15:43:01 INFO 回测 华明装备(002270) 2022-01-01 ~ 2026-10-05\n15:43:01 INFO   华明装备(002270) 加载真实事件: 7 条\n15:43:02 INFO 回测 沃尔核材(002…"
+      },
+      "nextRunAtMs": 1793484000000,
+      "lastRunAtMs": 1791272574546,
+      "lastRunStatus": "ok",
+      "lastDeliveryStatus": "not-requested",
+      "lastFailureNotificationDeliveryStatus": "not-requested",
+      "status": "ok"
+    }
+  ],
+  "total": 40,
+  "offset": 0,
+  "limit": 40,
+  "hasMore": false,
+  "nextOffset": null,
+  "deliveryPreviews": {
+    "3950d3cc-0230-4241-a8ff-c0fdea3b33f2": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "ff8df2a8-6ee4-422a-b286-d88c16841bc1": {
+      "label": "none -> telegram:626141741",
+      "detail": "explicit"
+    },
+    "a7456f8b-3348-4e0b-9de5-4ae66a0448ad": {
+      "label": "announce -> telegram:626141741",
+      "detail": "explicit"
+    },
+    "7e0dc37b-b79a-4eee-a845-ba9cf79ccb26": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "537eb1ff-9268-4bbb-a0fa-3c58c249cf2c": {
+      "label": "announce -> telegram:626141741",
+      "detail": "explicit"
+    },
+    "181b0304-070e-46a8-8ddc-7603a9950050": {
+      "label": "announce -> telegram:626141741",
+      "detail": "explicit"
+    },
+    "b5943dcf-a868-4503-b52f-7fcfb7c6185b": {
+      "label": "announce -> telegram:626141741",
+      "detail": "explicit"
+    },
+    "bd9843f1-2a6f-44e6-8bf2-8f3aa5b9bca3": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "233295fd-f890-4aa6-b224-e463db477387": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "a8c18aed-8916-4afa-82e7-2b6501dcbfcf": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "87c6b7f9-eb06-4ba6-9105-5d94b93ae8ad": {
+      "label": "none -> telegram:626141741",
+      "detail": "explicit"
+    },
+    "ca08c2b7-4d7d-469c-99e0-dc436b8190c0": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "e8e3d01c-2b1c-4e42-ba9f-aa14ce1e6b22": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "53fb14c9-2ea3-4837-a909-ccee477c9161": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "2fe5c58d-adaa-4a3e-b262-e1ae37e51b69": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "40731f98-d532-4c18-b33f-99f386f7f8be": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "917a20ef-c99b-4cde-ba97-cb7b33a66434": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "c57f99fb-b3bc-4957-8c4b-c123dcec3ab3": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "c7a8a955-ddb1-4a4b-8f5f-589507d5aa52": {
+      "label": "none -> telegram:626141741",
+      "detail": "explicit"
+    },
+    "f046d135-d7a4-4f88-af92-c235b90437e6": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "f4920382-c055-4e8e-9dd6-3f09106c6997": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "4ecdf11f-7b93-4d53-83f2-4536c007e8a5": {
+      "label": "announce -> telegram:626141741",
+      "detail": "explicit"
+    },
+    "3ca4931a-b31f-4dfe-9a10-c70159c8096c": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "8da42083-63d4-4884-9909-938a3f5c5d12": {
+      "label": "announce -> telegram:626141741",
+      "detail": "explicit"
+    },
+    "1410e346-127e-4c9b-b593-f0dcb60df9e6": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "7fac42a1-e98f-4316-a342-a32a3d4a541a": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "96ce82c1-8597-489d-898a-3408e97d9085": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "b954c808-fde1-46de-b2b4-8f83bb59d07d": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "7d1b9562-9eaf-47d9-b527-b90f07d4e66d": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "9c483c25-f13c-469f-8454-c8779060c482": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "8f676e04-fabf-4cb3-9a8c-d46317c01ee5": {
+      "label": "announce -> telegram:626141741",
+      "detail": "explicit"
+    },
+    "9ee829a7-7110-43de-aec7-654b65a1fdfa": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "864cfb26-46c8-43da-af3a-b7512109f487": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "c4cb94a5-1b61-43cc-a870-0a96d24f6a6d": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "6cd3fcb4-9052-4059-9b2d-33964dd06bec": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "ecd94d5d-ce4a-4534-836b-1764108508d9": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "269ab910-feb7-474c-b83f-da4e49b28310": {
+      "label": "announce -> telegram:626141741",
+      "detail": "explicit"
+    },
+    "01b13330-4477-4f50-9078-59aa052904e7": {
+      "label": "not requested",
+      "detail": "not requested"
+    },
+    "3aafd4ce-4bc4-4e40-b61b-8112ad6cdb03": {
+      "label": "announce -> telegram:626141741",
+      "detail": "explicit"
+    },
+    "14e04f9b-fc75-4468-b2a3-c0f373a24466": {
+      "label": "not requested",
+      "detail": "not requested"
+    }
+  }
+}
