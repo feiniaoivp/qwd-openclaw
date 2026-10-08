@@ -433,6 +433,24 @@ def run_auction_capture() -> Optional[Path]:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
     print(f"[INFO] 竞价快照已保存: {out_file} ({len(rows)} 只, 新浪{sum(1 for r in rows if r.get('source')=='sina_realtime')} + pytdx{sum(1 for r in rows if r.get('source')=='pytdx')})")
+
+    # —— 产出校验门禁（2026-10-08 空快照假 ok 事故后新增，修①）——
+    # 事故：10-08 feed 状态 ok 但快照 0 只（125B），下游 analyze 拿空数据生成 0.00 亿伪决策。
+    # 原则：产出为空必须显式失败（exit 1），禁止静默 ok；部分缺失仅告警不阻断。
+    expected = len(symbols)
+    if len(rows) == 0:
+        print(
+            f"[ERROR] 竞价快照为空（0/{expected} 只）：新浪+pytdx 双路均无数据。"
+            f"快照文件保留为空仅作取证，本次判定失败。请检查 9:15-9:25 网络/pytdx 行情源。",
+            file=sys.stderr,
+        )
+        return None
+    if len(rows) < expected * 0.5:
+        print(
+            f"[WARN] 竞价快照覆盖率过低: {len(rows)}/{expected} 只（<50%），"
+            f"下游分析覆盖面受限，请核查行情源。",
+            file=sys.stderr,
+        )
     return out_file
 
 

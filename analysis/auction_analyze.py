@@ -568,6 +568,20 @@ def main() -> int:
     rows = snapshot["rows"]
     print(f"[INFO] 加载快照: {date_str} ({len(rows)} 只)")
 
+    # —— 空快照拦截（2026-10-08 修②）——
+    # 禁止用 0 只快照生成“竞价成交额 0.00 亿”的伪决策对外推送；如实报缺失。
+    if len(rows) == 0:
+        msg = (
+            f"⚠️ **竞价分析跳过 · {date_str}**\n\n"
+            f"当日 09:25 竞价快照为空（0 只，新浪+pytdx 双路采集失败），"
+            f"无法生成开盘研判。不推送伪决策。\n"
+            f"处理：检查 auction-feed-0915 当日运行日志与行情源网络；"
+            f"竞价数据为一次性撮合数据，过时无法补采。"
+        )
+        print("[ERROR] 快照 rows=0，拒绝生成伪决策", file=sys.stderr)
+        print(msg)
+        return 1
+
     # 2. 加载上下文
     # 昨日日期（简单取前一日，实际应用交易日历）
     from datetime import timedelta
