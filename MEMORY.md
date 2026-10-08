@@ -1194,29 +1194,15 @@ This file serves as your curated long-term memory, storing significant events, d
 *   🟡 09-30 遗留 error job：`quant-backtest-daily`(bd9843f1) 推送已 `--no-deliver` 临时修，正式「systemEvent 改造」仍待办。
 *   ✅ **[10-08 闭环] ① trader_stock_picks 技术维 key 契约事故**：`get_technical_from_hist` 主路径返回 calc_full_signal 信号 dict（level/score/reasons）与下游 dif/dea/rsi 取值键错配→技术分全池恒 3.0。修复：弃用信号 dict 作数据源、直算 MACD/RSI，契约固定 keys，NaN 防御+异常可见（commit `09d2a42`）。全池 30 只端到端重跑技术分分布 7×7/5×6/3×17 有区分度；抽查 RSI 与半口径重算完全一致。无 cron 消费者（排查结论：仅手动 runner + 休眠 agent/nodes.py），18:30 推送走 daily_push.py 不受影响。
 *   🟡 **[10-08 立项，待风控流程] 五维评分「隐性 5.0 填充」结构改造**：缺失维度（筹码恒 5.0/资金流回退 5.0）以中性分托底垃圾票（实证 10-08 官方 Top1=福莱蒽特 29.0，RSI70 超买被双 5.0 托起）。方向：缺失返 None→有效维度归一+`valid_dims` 口径标注。详 `memory/2026-10-08.md` 21:0x 段。改造前对外口径继续用 core 三维（显式剔除）。
-*   🟡 **moneyflow 终验（10-09 盘前必做）**：10-08 全天双路全挂（含收盘后 20:50 全池 30/30 隐性 5.0），疑与 Telegram curl(28)/memory_search 超时同网络潮汐；明晨复测 `stock_flow('600030')`，恢复前资金维推送继续标「半口径」。
+*   🟡 **moneyflow 终验已做（10-09 04:4x）仍挂**：`stock_flow('600030')`=None，三 host 全 curl(56)；但同窗口裸 curl 存在独赢成功窗口（push2 klt=1 200/18747B、daykline 200/640B，约 1 分钟后同样 000）→ 判定为**东财对本机 IP 的周期性限流**，非纯 TLS 指纹问题；d230f48 双路回退链保持不动，资金维继续标「半口径」，裸 curl 兜底为候选增强（暂缓）。详见 `memory/2026-10-09.md`。
 *   🟡 `data/news/` 历史归档回填（09-09~09-29 缺失，若源仍可取）。
 *   🟡 沿用：`rm` 前置门禁（连续 8 期）、F-5 脱钩观察、F-2 比率口径、北向真缺失 / `index_flow`+`market_net_total` 失真、backtest 09-11/09-21 缺档、daily portfolio_sim 09-12~21 缺档、daily-report 08-29/09-15/09-24 缺档、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、批次C回测、恒立液压分歧、⑫回测闭环、Minimax 无解、`param_tune` 单窗口隐患、`REFERENCE_TOTAL_CAPITAL` 保持 270 万（有意保持非 bug）。
-*   🟡 **10-06 新增观察点**：明晨 03:00 Memory Dreaming Promotion / 04:00 Dreaming Daily Report（连错 4 次链路，本轮已清 model+thinking，明日为全新配置终验）；今晚 18:30 3950d3cc 交易日完整简报首次实战。
+*   ✅ **[10-09 销账] 10-06 三观察点全闭环**：3950d3cc 10-08 18:30 首跑 ok（211s，Telegram True，consecutiveErrors=0）；233295fd/03:00 与 a8c18aed/04:00 均 ok，daily-report-2026-10-09.md 正常产出。剩余观察：今日 09:15 auction-feed-0915 空快照门禁（5071d1c）交易日首跑。
 *   🟡 **10-06 观察**：agentTurn 隔离态 cron 跑在 agents.defaults 主模型 `DeepSeek-V4-Flash-Vision-Exp`（其「参数多包一层 arguments」缺陷见 10-01 条目；thursday 维护 job 一度被困扰但最终 ok，有 token 浪费）。待评估：给多轮工具链 cron（memory-maintenance-*/error-pattern-injector）显式 `--model` 指定非 Vision-Exp 模型。
 
-## Promoted From Short-Term Memory (2026-10-08)
+## Promoted From Short-Term Memory (2026-10-09)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-10-03-weekly-review.md:11:14 -->
-- 周六复盘 2026-10-03: 📋 近期日报文件: overseas_dual_factor_2026-09-02.md 2026-10-02_signal_audit.md 2026-10-02_premarket_report.md [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03-weekly-review.md:11-14]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-03-weekly-review.md:16:19 -->
-- 周六复盘 2026-10-03: 🔔 盘中预警记录: 38 条 break_below:600584: 64.28 break_below:605566: 25.1 break_below:002180: 16.75 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03-weekly-review.md:16-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-03-weekly-review.md:20:21 -->
-- 周六复盘 2026-10-03: break_below:002466: 40.25 break_below:300285: 62.77 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03-weekly-review.md:20-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-03-weekly-review.md:6:6 -->
-- 周六复盘 2026-10-03: 💼 模拟盘持仓: 0/27 只 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03-weekly-review.md:6-6]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-03-weekly-review.md:8:9 -->
-- 周六复盘 2026-10-03: 📊 本周成交: 买入 2 笔 | 卖出 3 笔 卖出盈亏: ¥+13,027 | 胜率 2/3 (67%) [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03-weekly-review.md:8-9]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-03.md:13:13 -->
-- Heartbeat 06:06: 无用户消息。两持续问题（wiki PATH 3 日连败 + Dreaming error）均已于 10-02 向用户报告，本轮无新增失败模式 → 静默结束，不重复打扰。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-03.md:16:16 -->
-- 状态快照（本 heartbeat）: 网关：healthy，loopback-only（127.0.0.1:18789），版本 2026.7.1-2，pid 19958。→ 合规。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03.md:16-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-03.md:5:8 -->
-- Heartbeat 06:06: 国庆假期非交易日（is_trading_day=False），A股休市；交易类 cron 全部待命。; **Wiki cron PATH 问题确认第 3 天连续失败**（10-01/10-02/10-03）：`wiki_cron_setup.sh` 直调 `openclaw`，cron 环境 PATH 不含 `~/Library/pnpm/bin` → `command not found`。今日 04:00 日志 `/tmp/wiki_cron_20261003.log` 再次证（compile/lint/status/bridge import 全部失败）。; 根因：脚本第 26/31/34/37 行裸调 `openclaw`；cron PATH 稀疏。; 修复方向（红线级，需用户 `/approve`）：脚本首部（shebang 后）加 `export PATH="$HOME/Library/pnpm/bin:/usr/local/opt/node/bin:$PATH"`。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03.md:5-8]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-03.md:9:12 -->
-- Heartbeat 06:06: 已确认 `openclaw` 位于 `/Users/duguke/Library/pnpm/bin/openclaw`。; **Dreaming Daily Report**：持续 error（未在本轮重查最新次数，10-02 记为 4x）。; **DeepSeek-V4-Flash-Vision-Exp 工具嵌套 bug 复现**：多次 exec/write/read 参数被多包一层 `arguments` → Validation failed。间歇性发生，重启 session/换模型可解。已知 bug（10-01/10-02 记录）。; 周六复盘（weekly-review）已产出：`memory/2026-10-03-weekly-review.md`。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-03-weekly-review.md:3:4 -->
+- 周六复盘 2026-10-03: 📅 周六复盘 2026-10-03 周期: 2026-09-27 ~ 2026-10-03 [score=0.808 recalls=0 avg=0.620 source=memory/2026-10-03-weekly-review.md:3-4]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-04.md:3:6 -->
+- 04:00 Dreaming Daily Report（cron a8c18aed）✅ 恢复 + 🔴 发现 promote 静默丢失: 本任务上轮**连续 5 次 error**（8 模型全败：amd-radeon deepseek-v4-flash 404 / DeepSeek-V4-Flash 拒 thinking 参数 400 / 其余 idle timeout），本轮成功 → 产出报告并**代偿 10-02、10-03 两期缺档**（10-01 报告正常，10-02/03 因连败未产出）。; 🔴🔴 **高严重度新发现：dreaming「promote」写入不可靠**。journal `memory.promotion.applied` 记录 10-02 applied=9（源 09-17/09-26/09-26-weekly/09-27）、10-03 applied=10（源 09-28/09-28-2149）、10-04 applied=6（源 09-29）；但 `MEMORY.md` 实际仅存活 **10-04 的 6 条**，前两期 **9+10=19 条 grep 命中 0**；`git show HEAD:MEMORY.md` 只有 1 个 promotion 区块（10-01），工作树 diff 显示该区块被删除、10-02/10-03 区块从未出现 → **19 条永久丢失**。属 2026-08-08 同款坑**第 2... [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-04.md:3-6]
