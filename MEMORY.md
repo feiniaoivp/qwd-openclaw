@@ -396,7 +396,7 @@ This file serves as your curated long-term memory, storing significant events, d
 ### 2026-08-09 技能库真实变更（skill-version-watcher 捕获）
 *   **self-improving v1.2.16 → self-improving-agent v4.0.2**（升级+改名, 08-08 21:27 更新）; **hf-mem v1.0.10** 新增(08-08 21:20 安装)。baseline memory/skill-versions.json 已更新。
 
-## 投资理念归纳（每日同步，最新 2026-10-05）
+## 投资理念归纳（每日同步，最新 2026-10-08）
 > 完整可检索历史见 `wiki/sources/investment-philosophy-YYYY-MM-DD.md`；本区块为蒸馏要点。
 > 注：09-01~04 无增量空跑；09-07(周一)24h 0 篇但补录 09-05/06 周末 4 篇方法论(见 09-07 节)；**09-08(周二)24h 新增 9 篇、打破连续 6 日空跑；09-09(周三)新增 2 篇(1 投资+RVI方法论 + 1 爬虫教程非投资)、RSI 主线续作；09-10(周四)新增 1 篇「涡流+布林带」突破系统；**09-11(周五)新增 3 篇方法论(MACD进阶/RSI压缩剥头皮/斐波那契时间预测)、连续第 4 日真实增量**(见 09-11 节)。；09-12~09-15 连续 no-op（投资层 0 篇）；**09-16 投资类语料静默 18 天后恢复**——新增 1 篇半导体设备行业深度（投资相关，应用型素材非方法论），体系 head 不变、「卖铲人范式」证据 +1（见 09-16 节）。
 > 注：**09-17 严格 24h no-op**（09-16 19:30→09-17 19:30 命中 0 篇 .md），投资层无增量，体系 head 与量化参数均不变（见 09-17 节）。
@@ -408,6 +408,16 @@ This file serves as your curated long-term memory, storing significant events, d
 > 注：**09-29 积压补录 → 投资层真实增量 2 篇**（严格 24h 命中 0，但发现 09-27 两篇未归档；09-25~09-28 报告缺失本次代偿）。存储行业「硬核猪周期+HBM 挤占效应」与 TQQQ「200MA 牛熊闸门+40–50% 胜率高盈亏比」。**体系 head 不变，证据 +2**（卖铲人范式上游扩展、选择性入场纪律跨市场印证）。
 > 注：**09-30 严格 24h no-op**（09-29 19:30→09-30 19:30 全 Vault 命中 0 篇 .md；主源 63 篇最新 mtime 仍为 09-27 08:50，已在 09-29 代偿归档）。投资层无增量，体系 head 与量化参数均不变。投资类语料自 09-27 后**连续 3 日静默**（见 09-30 节）。
 > 注：**10-02 积压补录 → 投资层真实增量 2 篇**（严格 24h 命中 0；发现 10-01 两篇未归档，09-30 报告窗口未覆盖）。RSI 深度教学（延续 ⑧ 张力）+ DeltaFlow Volume Profile/Delta/POC（**新增候选⑮：量价分布结构定位**）。**体系 head 不变**，新增 1 项待复核候选，印证 3 处（背离=动能衰竭 / 长周定方向短周找点 / 量价共振）。
+
+### 2026-10-08 要点（严格 24h no-op · 0 篇新笔记 · 体系 head 不变；回填 10-06/10-07 缺口）
+> **24h 判定**：严格 24h 窗口（10-07 19:30→10-08 19:30）全 Vault 命中 **0 篇** .md → **投资层 no-op**，无新增规则/修正/冲突，体系 head 与量化参数均不变。主源 71 篇，最新 mtime 10-07 11:17。
+- **缺口回填**：①**10-06 报告已归档**（`wiki/sources/investment-philosophy-2026-10-06.md`，2 篇真实增量：AI trading bot 心法 + 斐波回撤入场候选⑯+冲突1）但本区块头部当时未同步、10-06/10-07 要点未回填，本次一并修正；②**10-07 该 cron 无产出**，窗口内唯一新笔记为 10-07 11:17《How To Build LLM Wiki In Obsidian?》——**非投资类**（AI 记忆架构主题，同 09-15 多Agent同类），即便正常运行判定亦为 no-op → 缺口无信息损失。
+- **新增规则 0 / 修正 0 / 冲突 0**；候选⑯（斐波 0.786 回撤入场，10-06 提出）**待复核状态延续**。
+- **体系 head（不变）**：纯MACD优选 / CCI聚簇退潮 / 030裁决分级 / 三因素共振门控(ResonanceGate) / 斐波那契扩展止盈 / 波动率仓位(ATR/1%风险) / 选择性入场纪律(1:2盈亏比+40%胜率) / 结构点止损+S/R Flip / 产业链卡位·卖铲人范式。
+- **量化参数（不变）**：`adaptive_dual.py`（09-28 13:33）/ `auction_analyze.py`（09-17）/ `fib_extension_scan.py`（09-17）/ `data/adaptive_params.json`（10-03 06:03）均未因笔记改动。
+- **新增观察项 O4（仅记）**：LLM Wiki 三层文件夹+索引+审核机制与本工作区 memory/wiki 分层同型，若用户有意可评估引入（非本职责范围）。
+- **待人工复核台账**：延续无新增（①⑭已合并；⑧⑩⑪白名单简化；②③④⑤⑥⑦⑨⑫⑬⑮原状；O1 存储/HBM、O2 杠杆ETF、O3 人形机器人链仅记不动作）。
+- 完整归档：`wiki/sources/investment-philosophy-2026-10-08.md`。
 
 ### 2026-10-05 要点（严格 24h 命中 2 篇 · 投资层真实增量 1 篇 · 证据 +3）
 > **24h 判定**：严格 24h 窗口（10-04 19:30→10-05 19:30）源 vault 命中 **2 篇**（均 10-05 15:13 更新），其中 1 篇 **0 字节空文件**（`未命名 4.md`）→ **投资层真实增量 1 篇**（行业素材，非方法论）。属 10-01 完成后再次真实增量。**无 head 级新规则、无修正、无冲突**；证据 **+3**，新增观察项 O3。体系 head 不变。
@@ -1182,22 +1192,31 @@ This file serves as your curated long-term memory, storing significant events, d
 *   ✅ **[10-06 闭环] ① moneyflow 结构性修复**：`_fflow` 主源改 `push2 klt=1` 实时快照（`_fflow_realtime`），主源失败回落 daykline，两路全失败才 None（旧版单点失败即整单静默）。实测 6/6 返回数据（601995 旧版 None→已修复），guards 双过，commit `d230f48`。
 *   ✅ **[10-06 闭环] ② cron 空转假成功门禁**：新 `scripts/cron_noop_guard.py`（直读 sqlite，0.13s；ok+毫秒返回=假成功；棘轮基线 `data/cron_noop_baseline.json` 存量 9 个仅报告、新增 exit 1）；接入周流水线步骤 0h + 周一审计。首次扫描揪出 9 个存量空转 job；用户批准后已全部改造（SHELL×6→command+isolated、INSTRUCTION×3→agentTurn+isolated，全部显式 --no-deliver），force 实测 9/9 ok，基线 9→0 全绿。commit `2e28808`→`4679d9c`。
 *   🟡 09-30 遗留 error job：`quant-backtest-daily`(bd9843f1) 推送已 `--no-deliver` 临时修，正式「systemEvent 改造」仍待办。
+*   ✅ **[10-08 闭环] ① trader_stock_picks 技术维 key 契约事故**：`get_technical_from_hist` 主路径返回 calc_full_signal 信号 dict（level/score/reasons）与下游 dif/dea/rsi 取值键错配→技术分全池恒 3.0。修复：弃用信号 dict 作数据源、直算 MACD/RSI，契约固定 keys，NaN 防御+异常可见（commit `09d2a42`）。全池 30 只端到端重跑技术分分布 7×7/5×6/3×17 有区分度；抽查 RSI 与半口径重算完全一致。无 cron 消费者（排查结论：仅手动 runner + 休眠 agent/nodes.py），18:30 推送走 daily_push.py 不受影响。
+*   🟡 **[10-08 立项，待风控流程] 五维评分「隐性 5.0 填充」结构改造**：缺失维度（筹码恒 5.0/资金流回退 5.0）以中性分托底垃圾票（实证 10-08 官方 Top1=福莱蒽特 29.0，RSI70 超买被双 5.0 托起）。方向：缺失返 None→有效维度归一+`valid_dims` 口径标注。详 `memory/2026-10-08.md` 21:0x 段。改造前对外口径继续用 core 三维（显式剔除）。
+*   🟡 **moneyflow 终验（10-09 盘前必做）**：10-08 全天双路全挂（含收盘后 20:50 全池 30/30 隐性 5.0），疑与 Telegram curl(28)/memory_search 超时同网络潮汐；明晨复测 `stock_flow('600030')`，恢复前资金维推送继续标「半口径」。
 *   🟡 `data/news/` 历史归档回填（09-09~09-29 缺失，若源仍可取）。
 *   🟡 沿用：`rm` 前置门禁（连续 8 期）、F-5 脱钩观察、F-2 比率口径、北向真缺失 / `index_flow`+`market_net_total` 失真、backtest 09-11/09-21 缺档、daily portfolio_sim 09-12~21 缺档、daily-report 08-29/09-15/09-24 缺档、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、批次C回测、恒立液压分歧、⑫回测闭环、Minimax 无解、`param_tune` 单窗口隐患、`REFERENCE_TOTAL_CAPITAL` 保持 270 万（有意保持非 bug）。
 *   🟡 **10-06 新增观察点**：明晨 03:00 Memory Dreaming Promotion / 04:00 Dreaming Daily Report（连错 4 次链路，本轮已清 model+thinking，明日为全新配置终验）；今晚 18:30 3950d3cc 交易日完整简报首次实战。
 *   🟡 **10-06 观察**：agentTurn 隔离态 cron 跑在 agents.defaults 主模型 `DeepSeek-V4-Flash-Vision-Exp`（其「参数多包一层 arguments」缺陷见 10-01 条目；thursday 维护 job 一度被困扰但最终 ok，有 token 浪费）。待评估：给多轮工具链 cron（memory-maintenance-*/error-pattern-injector）显式 `--model` 指定非 Vision-Exp 模型。
 
-## Promoted From Short-Term Memory (2026-10-06)
+## Promoted From Short-Term Memory (2026-10-08)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-10-01.md:11:13 -->
-- 同类坑排查（第二、第三处同款 bug 一并修复）: **`analysis/service.py` is_trading_day（同款确证）**：字符串匹配 date 对象失败 → 永远 return True 放行节假日；且 `except Exception: pass` 静默吞噬。**premarket_pipeline.py:457 import 的就是这个函数** → 解释了为何今早 06:08 流水线在国庆日照跑。修复：astype(str) 匹配 + 异常改 log.warning 可见。; **`scripts/verify_market_data.py` is_trading_day_check（同款但方向相反）**：字符串匹配永远失败 → **永远返回 False（把真实交易日也误判为非交易日）**，日期校验全废；且 CLI --date 传 str 而 target_date.strftime 会 AttributeError。修复：str→date 兼容 + astype(str) 匹配。; **自检全过**：service 国庆 False/交易日 True；verify_market_data 国庆 (False,...)/交易日 (True,...) 字符串传参路径 OK。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-01.md:11-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-01.md:16:19 -->
-- 🟢 cron 运行级 timeout 上限提升（17:49~17:56，先快照 guard/20261001-174913）: **背景**：用户指令「如果 agents.defaults.timeoutSeconds 或特定于运行的超时较低，也请提高该上限；provider 超时不能延长整个代理运行时间」（出自 docs/local-models.md:175 同款规则）。; **主会话层无需改**：agents.defaults.timeoutSeconds 未设置时源码内置默认就是 600s（dist/agent-via-gateway:109 `timeoutSeconds ?? 600`）> provider 300s（openclaw.json 的 3 处 300 全是 models.providers.* HTTP 超时，不是运行超时）。; **实测方法**：`state/openclaw.sqlite` 的 cron_jobs.payload_timeout_seconds 关联 cron_run_logs 的 duration_ms，对比 max/avg vs 上限，找出踩线/超限任务。; **12 项提升全部落地**（CLI `openclaw cron edit <id> --timeout-seconds <n>`，payload message 完整性抽查全过）： [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-01.md:16-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-01.md:20:23 -->
-- 🟢 cron 运行级 timeout 上限提升（17:49~17:56，先快照 guard/20261001-174913）: | 任务 | 旧→新 | 依据(max duration) | |---|---|---| | quant-backtest-daily | 1800→3600 | 3160s 超限 | | weekly-backtest-pipeline | 1800→3600 | 1701s 贴线 | [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-01.md:20-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-01.md:24:27 -->
-- 🟢 cron 运行级 timeout 上限提升（17:49~17:56，先快照 guard/20261001-174913）: | memory-maintenance-check | 900→1800 | 920s 超限 | | daily-premarket-analysis-cmd | 900→1800 | 1800s 超限（「连败4次timeout」） | | Dreaming Daily Report | NULL(600)→900 | 601s 踩线 | | daily-supervision-review | 300→900 | 1131s 超限 | [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-01.md:24-27]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-01.md:4:7 -->
-- 🔴 发现并修复 is_trading_day() 节假日拦截失效 bug: **症状**：用户会话中调用 `is_trading_day()` 对 2026-10-01（国庆）返回 True。; **根因（实测确证）**：`ak.tool_trade_date_hist_sina()` 的 `trade_date` 列是 **datetime.date 对象**（非字符串），`close_scan_v2.py` 旧代码用字符串 `today_str` 去匹配 → 永远 False → 走到函数末尾 `return True` 默认放行。**节假日拦截完全失效**（仅剩周末 weekday 检查在工作），今早 06:00 流水线因此照跑"10-01"报告。; **修复**：`cal_dates = set(trade_cal["trade_date"].astype(str))` 统一转字符串后匹配；在日历中 = 开市 True，不在 = 休市 False。修复后验证：今天返回 False ✅; **验证数据源**：sina 交易日历显示 09-30 之后直接跳 10-08（国庆休市 10-01~10-07）；新浪实时行情 sh000001 报价日期停在 2026-09-30 16:19。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-01.md:4-7]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-01.md:8:8 -->
-- 🔴 发现并修复 is_trading_day() 节假日拦截失效 bug: **教训**：与 08-02「新浪日K接口」不同，这是新坑：**pandas 列元素类型必须实测 repr() 确认，不能假设与字面量同类型**。日期列尤其常见 date vs str 错配。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-01.md:8-8]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-03-weekly-review.md:11:14 -->
+- 周六复盘 2026-10-03: 📋 近期日报文件: overseas_dual_factor_2026-09-02.md 2026-10-02_signal_audit.md 2026-10-02_premarket_report.md [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03-weekly-review.md:11-14]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-03-weekly-review.md:16:19 -->
+- 周六复盘 2026-10-03: 🔔 盘中预警记录: 38 条 break_below:600584: 64.28 break_below:605566: 25.1 break_below:002180: 16.75 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03-weekly-review.md:16-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-03-weekly-review.md:20:21 -->
+- 周六复盘 2026-10-03: break_below:002466: 40.25 break_below:300285: 62.77 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03-weekly-review.md:20-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-03-weekly-review.md:6:6 -->
+- 周六复盘 2026-10-03: 💼 模拟盘持仓: 0/27 只 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03-weekly-review.md:6-6]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-03-weekly-review.md:8:9 -->
+- 周六复盘 2026-10-03: 📊 本周成交: 买入 2 笔 | 卖出 3 笔 卖出盈亏: ¥+13,027 | 胜率 2/3 (67%) [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03-weekly-review.md:8-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-03.md:13:13 -->
+- Heartbeat 06:06: 无用户消息。两持续问题（wiki PATH 3 日连败 + Dreaming error）均已于 10-02 向用户报告，本轮无新增失败模式 → 静默结束，不重复打扰。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-03.md:16:16 -->
+- 状态快照（本 heartbeat）: 网关：healthy，loopback-only（127.0.0.1:18789），版本 2026.7.1-2，pid 19958。→ 合规。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03.md:16-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-03.md:5:8 -->
+- Heartbeat 06:06: 国庆假期非交易日（is_trading_day=False），A股休市；交易类 cron 全部待命。; **Wiki cron PATH 问题确认第 3 天连续失败**（10-01/10-02/10-03）：`wiki_cron_setup.sh` 直调 `openclaw`，cron 环境 PATH 不含 `~/Library/pnpm/bin` → `command not found`。今日 04:00 日志 `/tmp/wiki_cron_20261003.log` 再次证（compile/lint/status/bridge import 全部失败）。; 根因：脚本第 26/31/34/37 行裸调 `openclaw`；cron PATH 稀疏。; 修复方向（红线级，需用户 `/approve`）：脚本首部（shebang 后）加 `export PATH="$HOME/Library/pnpm/bin:/usr/local/opt/node/bin:$PATH"`。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03.md:5-8]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-03.md:9:12 -->
+- Heartbeat 06:06: 已确认 `openclaw` 位于 `/Users/duguke/Library/pnpm/bin/openclaw`。; **Dreaming Daily Report**：持续 error（未在本轮重查最新次数，10-02 记为 4x）。; **DeepSeek-V4-Flash-Vision-Exp 工具嵌套 bug 复现**：多次 exec/write/read 参数被多包一层 `arguments` → Validation failed。间歇性发生，重启 session/换模型可解。已知 bug（10-01/10-02 记录）。; 周六复盘（weekly-review）已产出：`memory/2026-10-03-weekly-review.md`。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-03.md:9-12]
