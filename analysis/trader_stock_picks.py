@@ -106,18 +106,18 @@ def get_fund_flow(symbol: str) -> Dict[str, float]:
     return {}
 
 def get_technical_from_hist(symbol: str, name: str) -> Dict[str, Any]:
-    """Compute technical indicators from historical data."""
+    """Compute technical indicators from historical data.
+
+    契约（2026-10-08 修复）：返回 dict，keys 固定为 macd/dif/dea/rsi。
+    下游 score_technical 依赖这些 key —— 旧版主路径返回 calc_full_signal 的
+    signal dict（keys=level/score/reasons/risks），与下游取值键完全错配，
+    导致技术分全池恒 3.0（第二个 key 契约事故，同 roe 引号坑）。
+    calc_full_signal 是信号判定接口，不保证指标数值 key，不再作为数据源使用。
+    """
     df = get_daily_hist(symbol, name, start_date="20260101")
     if df is None or len(df) < 30:
         return {}
-    # Use existing calc_full_signal if available
-    from analysis.service import calc_full_signal
     try:
-        sig = calc_full_signal(df)
-        # Expect keys: signal (dict with level, score, reasons, risks)
-        return sig.get("signal", {})
-    except Exception:
-        # fallback to simple MACD/RSI
         close = df["close"]
         # MACD
         ema12 = close.ewm(span=12).mean()
@@ -134,12 +134,21 @@ def get_technical_from_hist(symbol: str, name: str) -> Dict[str, Any]:
         rs = ma_up / ma_down
         rsi = 100 - (100 / (1 + rs))
         latest = {
-            "macd": macd.iloc[-1],
-            "dif": dif.iloc[-1],
-            "dea": dea.iloc[-1],
-            "rsi": rsi.iloc[-1],
+            "macd": float(macd.iloc[-1]),
+            "dif": float(dif.iloc[-1]),
+            "dea": float(dea.iloc[-1]),
+            "rsi": float(rsi.iloc[-1]),
         }
+        # NaN 防御：任一指标 NaN 视为该票技术数据不可用（下游回退 5.0，而非静默错分）
+        if any(v != v for v in latest.values()):  # NaN check
+            import logging
+            logging.getLogger(__name__).warning(f"get_technical_from_hist({symbol}) 指标含 NaN: {latest}")
+            return {}
         return latest
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"get_technical_from_hist({symbol}) 失败: {e}")
+        return {}
 
 def score_chip_structure(symbol: str) -> float:
     """Chip structure score (0-10). Default medium."""
@@ -220,6 +229,7 @@ def score_technical(symbol: str, name: str) -> float:
         return 5.0
     score = 5.0
     # MACD: dif > dea => bullish
+    # 注：key 契约 2026-10-08 已修复（get_technical_from_hist 现保证 dif/dea/rsi 存在）
     dif = tech.get("dif") or 0
     dea = tech.get("dea") or 0
     if dif > dea:
