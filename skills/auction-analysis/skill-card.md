@@ -1,40 +1,52 @@
-## Description: <br>
-竞价分析 helps traders rapidly assess fatal auction risk, identify same-day opportunity directions, and prepare opening actions during the 9:26-9:29 post-auction window. <br>
+## Description:
 
-This skill is ready for commercial/non-commercial use. <br>
+竞价结束后（9:26-9:29）的快速分析技能。基于竞价数据做三件事：致命风险扫描、当日机会方向识别、开盘操作建议。必须在3分钟内完成输出。前置依赖：盘前核心标的筛选应已在8:00-9:15完成。触发词：竞价分析、竞价结束、竞价后分析、开盘前分析、9点26分、竞价复盘。
 
-## Publisher: <br>
-[userb000](https://clawhub.ai/user/userb000) <br>
+This skill is ready for commercial/non-commercial use.
 
-### License/Terms of Use: <br>
-MIT-0 <br>
+## Publisher:
+
+[userb000](https://clawhub.ai/user/userb000)
+
+### License/Terms of Use:
+
+MIT-0
+
+## Use Case:
+
+Traders and market analysts use this skill immediately after call auction close to scan fatal risk signals, identify same-day opportunity directions, and prepare opening-session action guidance.
+
+### Deployment Geography for Use:
+
+Global
+
+## Known Risks and Mitigations:
+
+Risk: The skill can produce direct trading guidance that may be wrong if auction, volume, or risk-limit inputs are incomplete or stale.
+
+Mitigation: Verify outputs against current market data, independent judgment, and predefined risk limits before acting.
+
+Risk: Broad trigger phrases could activate the trading-analysis workflow unintentionally.
+
+Mitigation: Limit activation to explicit use of the skill name together with a clear trading-analysis request.
+
+## Reference(s):
 
 
-## Use Case: <br>
-External traders and market analysts use this skill after auction close and before market open to turn live auction signals into a concise risk check, opportunity ranking, and opening action plan. <br>
+## Skill Output:
 
-### Deployment Geography for Use: <br>
-Global <br>
+**Output Type(s):** [text, markdown, guidance]
 
-## Known Risks and Mitigations: <br>
-Risk: Trading guidance may be incomplete or misleading if pre-market screening or live auction data is missing, stale, or unverified. <br>
-Mitigation: Confirm the 8:00-9:15 preparation checklist and verify live market data before acting on the skill's output. <br>
-Risk: Time-sensitive outputs could be overused as executable trading instructions. <br>
-Mitigation: Use the output as decision support only and keep separate controls and human review before any brokerage execution. <br>
+**Output Format:** [Markdown decision brief with risk judgment, opportunity priorities, warning notes, and opening-watch checklist.]
 
+**Output Parameters:** [1D]
 
-## Reference(s): <br>
-- [ClawHub skill page](https://clawhub.ai/userb000/skills/auction-analysis) <br>
+**Other Properties Related to Output:** [Designed for a concise 9:26-9:29 post-auction decision window.]
 
+## Skill Version(s):
 
-## Skill Output: <br>
-**Output Type(s):** [text, markdown, guidance] <br>
-**Output Format:** [Markdown decision checklist] <br>
-**Output Parameters:** [1D] <br>
-**Other Properties Related to Output:** [Time-sensitive financial decision support; no code, shell commands, credentials, or account access.] <br>
+1.0.0 (source: server release evidence)
 
-## Skill Version(s): <br>
-1.0.0 (source: server release metadata) <br>
+## Ethical Considerations:
 
-## Ethical Considerations: <br>
-Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment. <br>
+Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment.

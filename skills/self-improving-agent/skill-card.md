@@ -1,6 +1,6 @@
 ## Description:
 
-Captures learnings, errors, and corrections to enable continuous improvement.
+Captures errors, corrections, and learnings in persistent notes and helps agents review and maintain guidance before reuse.
 
 This skill is ready for commercial/non-commercial use.
 
@@ -14,7 +14,7 @@ MIT-0
 
 ## Use Case:
 
-Developers and agent users use this skill to capture corrections, command failures, feature requests, and recurring workflow lessons as workspace-local Markdown records. OpenClaw users can optionally enable a hook that reminds agents to review learnings and performs session-end error sweeps.
+Developers using OpenClaw capture failures, corrections, and feature requests, then review and revalidate saved lessons before reusing them or promoting them to workspace guidance.
 
 ### Deployment Geography for Use:
 
@@ -22,38 +22,35 @@ Global
 
 ## Known Risks and Mitigations:
 
-Risk: The skill can store potentially sensitive work history in .learnings/ files.
+Risk: Persistent learning notes may expose sensitive details if shared.
 
-Mitigation: Treat .learnings/ as sensitive workspace data, keep it out of version control unless intentionally shared, and periodically review or delete stale entries.
+Mitigation: Keep .learnings out of version control unless deliberately sharing it, and omit secrets or use short redacted excerpts.
 
-Risk: The optional OpenClaw hook can sweep ended session transcripts and append redacted error excerpts, but redaction is best effort.
+Risk: Promoted lessons may introduce incorrect or outdated workspace guidance.
 
-Mitigation: Enable the hook only in trusted workspaces, avoid logging secrets or raw transcripts, and review pending auto-detected entries before promoting them.
+Mitigation: Check the supporting evidence and review changes to SOUL.md, TOOLS.md, and AGENTS.md before adopting them.
 
-Risk: Captured corrections or lessons can be incorrect or too context-specific if promoted without review.
+Risk: The optional hook scans session-end transcripts and persists error excerpts.
 
-Mitigation: Review entries before promoting them into SOUL.md, TOOLS.md, AGENTS.md, or reusable skills.
+Mitigation: Enable the hook only if this scanning is acceptable, and review the saved redacted excerpts.
 
 ## Reference(s):
 
-- [ClawHub Skill Page](https://clawhub.ai/pskoett/skills/self-improving-agent)
-- [OpenClaw Integration](references/openclaw-integration.md)
-- [Entry Examples](references/examples.md)
-- [Uninstall Guide](references/uninstall.md)
+- [Self-Improving Agent on ClawHub](https://clawhub.ai/pskoett/skills/self-improving-agent)
 
 ## Skill Output:
 
-**Output Type(s):** [markdown, shell commands, configuration, guidance]
+**Output Type(s):** [Markdown, Guidance, Shell commands, Configuration instructions]
 
-**Output Format:** [Markdown guidance with inline shell commands and workspace file templates]
+**Output Format:** [Markdown notes and guidance with optional shell commands]
 
 **Output Parameters:** [1D]
 
-**Other Properties Related to Output:** [Writes or appends local .learnings Markdown files when used by an agent; optional OpenClaw hook can add redacted session-end error entries.]
+**Other Properties Related to Output:** [Maintains local learning logs; reviewed lessons may be promoted to workspace guidance files.]
 
 ## Skill Version(s):
 
-4.0.2 (source: frontmatter, changelog, server release evidence)
+4.0.3 (source: ClawHub release)
 
 ## Ethical Considerations:
 

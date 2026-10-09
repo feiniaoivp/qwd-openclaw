@@ -1,37 +1,48 @@
-## Description: <br>
-Enable and configure Moltbot/Clawdbot memory search for persistent context. <br>
+## Description:
 
-This skill is ready for commercial/non-commercial use. <br>
+Enable and configure Moltbot/Clawdbot memory search for persistent context. Use when setting up memory, fixing "goldfish brain," or helping users configure memorySearch in their config. Covers MEMORY.md, daily logs, and vector search setup.
 
-## Publisher: <br>
-[jrbobbyhansen-pixel](https://clawhub.ai/user/jrbobbyhansen-pixel) <br>
+This skill is ready for commercial/non-commercial use.
 
-### License/Terms of Use: <br>
+## Publisher:
 
+[jrbobbyhansen-pixel](https://clawhub.ai/user/jrbobbyhansen-pixel)
 
-## Use Case: <br>
-Developers and agent users use this skill to configure persistent memory search, create a MEMORY.md structure, set daily memory logs, and troubleshoot memory recall for Moltbot or Clawdbot. <br>
-
-### Deployment Geography for Use: <br>
-Global <br>
-
-## Known Risks and Mitigations: <br>
-Risk: Memory and session indexing can make sensitive past context easier to retrieve, including passwords, tokens, private business information, or regulated personal data if users place it in memory files or logs. <br>
-Mitigation: Decide what sources to index before enabling memory search, avoid storing sensitive data in MEMORY.md or memory logs, and use a local provider or review hosted embedding-provider policies for private environments. <br>
+### License/Terms of Use:
 
 
-## Reference(s): <br>
-- [ClawHub Skill Page](https://clawhub.ai/jrbobbyhansen-pixel/memory-setup) <br>
+## Use Case:
 
+Developers and agent users use this skill to configure Moltbot/Clawdbot memory search, create persistent memory files, and troubleshoot recall across sessions.
 
-## Skill Output: <br>
-**Output Type(s):** [text, markdown, configuration, guidance, shell commands] <br>
-**Output Format:** [Markdown with JSON configuration examples and shell commands] <br>
-**Output Parameters:** [1D] <br>
-**Other Properties Related to Output:** [Provides memorySearch configuration, MEMORY.md and memory directory templates, AGENTS.md guidance, and troubleshooting steps.] <br>
+### Deployment Geography for Use:
 
-## Skill Version(s): <br>
-1.0.0 (source: server release metadata) <br>
+Global
 
-## Ethical Considerations: <br>
-Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment. <br>
+## Known Risks and Mitigations:
+
+Risk: The skill recommends indexing memory files and past session transcripts, including with external embedding providers, which can expose sensitive or regulated data if configured broadly.
+
+Mitigation: Review memory sources before indexing, prefer local or memory-only indexing in sensitive environments, avoid storing secrets or regulated data, and define a deletion or rebuild process for transcripts and embeddings.
+
+## Reference(s):
+
+- [ClawHub skill page](https://clawhub.ai/jrbobbyhansen-pixel/skills/memory-setup)
+
+## Skill Output:
+
+**Output Type(s):** [text, markdown, configuration, shell commands, guidance]
+
+**Output Format:** [Markdown guidance with JSON configuration snippets and shell commands]
+
+**Output Parameters:** [1D]
+
+**Other Properties Related to Output:** [Docs-only setup guidance; no runtime code is executed by the skill itself.]
+
+## Skill Version(s):
+
+1.0.0 (source: server release metadata)
+
+## Ethical Considerations:
+
+Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment.

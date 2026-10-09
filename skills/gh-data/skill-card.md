@@ -1,45 +1,59 @@
-## Description: <br>
-A股炒股选股量化工具 - 16维数据深度分析，自学习预判引擎，趋势预测，自动报告。直接HTTP采集新浪/腾讯/东方财富数据+WebAPI量化分析。支持自动生成DOCX分析报告。 <br>
+## Description:
 
-This skill is ready for commercial/non-commercial use. <br>
+股海罗盘 is a Chinese-language A-share and ETF analysis skill that gathers market, technical, financial, fund-flow, and research-report data, compares signals against historical patterns, and can generate DOCX reports.
 
-## Publisher: <br>
-[sunbinpy](https://clawhub.ai/user/sunbinpy) <br>
+This skill is ready for commercial/non-commercial use.
 
-### License/Terms of Use: <br>
-MIT-0 <br>
+## Publisher:
 
+[sunbinpy](https://clawhub.ai/user/sunbinpy)
 
-## Use Case: <br>
-External ClawHub users and developers use this skill to analyze A-share stocks, screen candidates, review quantitative signals and predictions, and generate local DOCX and chart reports from public market data and a configured WebAPI. <br>
+### License/Terms of Use:
 
-### Deployment Geography for Use: <br>
-Global <br>
+MIT-0
 
-## Known Risks and Mitigations: <br>
-Risk: Stock codes, analysis requests, and API keys may be sent to a configured WebAPI that defaults to plain HTTP. <br>
-Mitigation: Review or replace the WebAPI URL before use and install only when this network exposure is acceptable. <br>
-Risk: API keys can be persisted in plaintext under ~/.ghdata/ghdataapikey, including keys supplied through GHDATA_API_KEY. <br>
-Mitigation: Use a key appropriate for this service, avoid highly sensitive shared credentials, and rotate or remove the local key file when needed. <br>
-Risk: Report and chart generation can create local DOCX and PNG files. <br>
-Mitigation: Confirm the configured report directory before running the skill and review generated files before sharing them. <br>
-Risk: Quantitative stock analysis and predictions can be incomplete, stale, or misleading for investment decisions. <br>
-Mitigation: Treat generated analysis as informational and verify conclusions against current market data and qualified financial judgment. <br>
+## Use Case:
 
+External users and agents use this skill to gather China A-share and ETF market data, compare current signals with historical patterns, and generate concise Markdown-style summaries or DOCX reports. The outputs are informational research aids and are not investment advice.
 
-## Reference(s): <br>
-- [ClawHub skill page](https://clawhub.ai/sunbinpy/skills/gh-data) <br>
-- [股海罗盘 service page](https://www.oraskl.com/ghdata-admin) <br>
+### Deployment Geography for Use:
 
+Global; data coverage is focused on China A-share and ETF markets.
 
-## Skill Output: <br>
-**Output Type(s):** [Text, Markdown, Code, Shell commands, Configuration, Files, Guidance] <br>
-**Output Format:** [Markdown guidance with Python code snippets plus generated DOCX and PNG report files] <br>
-**Output Parameters:** [1D] <br>
-**Other Properties Related to Output:** [May call public market-data endpoints and a configured WebAPI; report generation writes local DOCX and chart files.] <br>
+## Known Risks and Mitigations:
 
-## Skill Version(s): <br>
-2.0.20 (source: server release evidence) <br>
+Risk: The skill creates a persistent local API key and the security evidence reports risky key storage and transmission.
 
-## Ethical Considerations: <br>
-Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment. <br>
+Mitigation: Use only a low-value or trial key until the publisher documents key storage and rotation and uses HTTPS for credential-bearing calls; remove or rotate the local key after testing.
+
+Risk: Preview outputs may include paid upgrade links.
+
+Mitigation: Review generated analysis and DOCX reports before sharing them, and treat upgrade links as payment content rather than analysis evidence.
+
+Risk: Stock-analysis output can be mistaken for investment advice.
+
+Mitigation: Preserve the skill's risk disclaimer and review outputs so they remain framed as historical data and statistical reference, not buy, sell, or hold guidance.
+
+## Reference(s):
+
+- [ClawHub skill page](https://clawhub.ai/sunbinpy/skills/gh-data)
+- [Publisher profile](https://clawhub.ai/user/sunbinpy)
+- [股海罗盘 product homepage](https://www.oraskl.com/ghdata-admin)
+
+## Skill Output:
+
+**Output Type(s):** [text, markdown, files, configuration, guidance]
+
+**Output Format:** [Markdown-style analysis text with optional DOCX report files and generated chart files]
+
+**Output Parameters:** [1D]
+
+**Other Properties Related to Output:** [May include local report paths, risk disclaimer text, and preview-mode upgrade links.]
+
+## Skill Version(s):
+
+2.2.51 (source: server release evidence and artifact metadata)
+
+## Ethical Considerations:
+
+Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment.

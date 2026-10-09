@@ -1,39 +1,57 @@
-## Description: <br>
-Hugging Face CLI to estimate the required memory to load Safetensors or GGUF model weights for inference from the Hugging Face Hub. <br>
+## Description:
 
-This skill is ready for commercial/non-commercial use. <br>
+Hugging Face CLI to estimate the required memory to load Safetensors or GGUF model weights for inference from the Hugging Face Hub.
 
-## Publisher: <br>
-[huggingface](https://clawhub.ai/user/huggingface) <br>
+This skill is ready for commercial/non-commercial use.
 
-### License/Terms of Use: <br>
-MIT-0 <br>
+## Publisher:
 
+[huggingface](https://clawhub.ai/user/huggingface)
 
-## Use Case: <br>
-Developers and engineers use this skill to estimate whether Hugging Face Hub models fit within available VRAM or instance memory before inference. It is useful when a user provides a Hugging Face model ID or URL and asks about Safetensors or GGUF memory requirements. <br>
+### License/Terms of Use:
 
-### Deployment Geography for Use: <br>
-Global <br>
+MIT-0
 
-## Known Risks and Mitigations: <br>
-Risk: The skill runs an external CLI through uvx and contacts Hugging Face when estimating model memory. <br>
-Mitigation: Review the generated command before execution and use it only for model repositories you intend to query. <br>
-Risk: Accessing gated or private models may require HF_TOKEN or an explicit Hugging Face token. <br>
-Mitigation: Provide tokens only through the environment or approved secret handling, and avoid pasting long-lived credentials into prompts or logs. <br>
+## Use Case:
 
+Developers and ML engineers use this skill to estimate whether Hugging Face Hub models with Safetensors or GGUF weights will fit available GPU or system memory before inference.
 
-## Reference(s): <br>
+### Deployment Geography for Use:
 
+Global
 
-## Skill Output: <br>
-**Output Type(s):** [Shell commands, Guidance, Analysis] <br>
-**Output Format:** [Markdown with inline bash commands and JSON-producing CLI examples] <br>
-**Output Parameters:** [1D] <br>
-**Other Properties Related to Output:** [CLI examples use --json-output and may require HF_TOKEN for gated or private Hugging Face models.] <br>
+## Known Risks and Mitigations:
 
-## Skill Version(s): <br>
-1.0.10 (source: server release evidence) <br>
+Risk: Running an unpinned external CLI package can introduce supply-chain risk.
 
-## Ethical Considerations: <br>
-Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment. <br>
+Mitigation: Use a pinned, reviewed hf-mem version before installing or running the CLI.
+
+Risk: Gated or private repositories may require a Hugging Face token with broader access than the task needs.
+
+Mitigation: Use a least-privilege Hugging Face token and expose it only for the command that needs it.
+
+Risk: GGUF repositories may contain several precision or quantization files, so estimating all files can overstate the memory needed for one inference run.
+
+Mitigation: Specify --gguf-file for the exact file or path intended for inference.
+
+## Reference(s):
+
+- [ClawHub hf-mem release](https://clawhub.ai/huggingface/skills/hf-mem)
+
+## Skill Output:
+
+**Output Type(s):** [Guidance, Shell commands, Configuration]
+
+**Output Format:** [Markdown with bash commands and JSON-output guidance]
+
+**Output Parameters:** [1D]
+
+**Other Properties Related to Output:** [May require HF_TOKEN or --hf-token for gated or private repositories; optional KV cache settings affect experimental estimates.]
+
+## Skill Version(s):
+
+1.0.10 (source: server release evidence)
+
+## Ethical Considerations:
+
+Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment.

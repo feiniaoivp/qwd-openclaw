@@ -1,6 +1,6 @@
 """
-7规则投票引擎 — 纯数学计算方向预测
-引用: MEMORY.md -> 7规则投票引擎 / predictor.py
+7规则投票引擎 — 纯数学技术指标计算
+引用: MEMORY.md -> 7规则投票引擎 / eval_engine.py
 
 本地版规则（与C#服务端同步，规则7不同）：
   1. 均线排列     — MA5>MA10>MA20>MA60=多头，反之空头
@@ -102,10 +102,10 @@ def kptn_pattern(k):
 
 # ===== 7规则投票 =====
 
-def predict(k):
+def evaluate(k):
     """
     7规则投票引擎
-    返回 (direction, score, votes, signals, range_forecast)
+    返回 (direction, score, votes, signals, range_ref)
     """
     if len(k) < 60:
         return "数据不足", 0, [], [], ""
@@ -250,13 +250,13 @@ def predict(k):
     else:
         direction = "偏空"
 
-    range_forecast = config.RANGE_MAP.get(direction, "")
-    return direction, score, votes, signals, range_forecast
+    range_ref = config.RANGE_MAP.get(direction, "")
+    return direction, score, votes, signals, range_ref
 
 
 def analyze(code: str, klines: list = None) -> dict:
     """
-    对指定股票进行方向预测
+    对指定股票进行技术信号分析
     klines: [{date, open, close, high, low, volume}, ...]
     如不传则自动从数据库拉取
     """
@@ -269,12 +269,12 @@ def analyze(code: str, klines: list = None) -> dict:
     if len(klines) < 60:
         return {"code": code, "error": f"数据不足({len(klines)}条)", "direction": "数据不足"}
 
-    direction, score, votes, signals, range_fc = predict(klines)
+    direction, score, votes, signals, range_fc = evaluate(klines)
     latest = klines[-1]
 
-    acc_all = db.get_accuracy_stats(code, 36500)
-    acc_60 = db.get_accuracy_stats(code, 60)
-    acc_30 = db.get_accuracy_stats(code, 30)
+    acc_all = db.get_match_stats(code, 36500)
+    acc_60 = db.get_match_stats(code, 60)
+    acc_30 = db.get_match_stats(code, 30)
 
     # 规律挖掘
     from . import pattern_miner
@@ -287,7 +287,7 @@ def analyze(code: str, klines: list = None) -> dict:
         "price": latest["close"],
         "direction": direction,
         "score": score,
-        "range_forecast": range_fc,
+        "range_ref": range_fc,
         "votes": votes,
         "signals": signals,
         "accuracy": {
@@ -299,8 +299,8 @@ def analyze(code: str, klines: list = None) -> dict:
     }
 
 
-def judge(direction, actual_change):
-    """判断预测是否正确"""
+def verify(direction, actual_change):
+    """验证信号方向与实际表现是否匹配"""
     if direction == "偏多" and actual_change > 0.5:
         return True
     if direction == "偏空" and actual_change < -0.5:

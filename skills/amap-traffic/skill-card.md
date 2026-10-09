@@ -1,43 +1,55 @@
-## Description: <br>
-Amap Traffic helps agents query AMap real-time traffic conditions and plan fastest driving routes with route time, distance, estimated cost, and congestion details. <br>
+## Description:
 
-This skill is ready for commercial/non-commercial use. <br>
+高德地图实时路况查询与最优自驾路线规划技能。基于高德交通态势API和路径规划API，提供实时拥堵信息和最快路线建议。
 
-## Publisher: <br>
-[robin797860](https://clawhub.ai/user/robin797860) <br>
+This skill is ready for commercial/non-commercial use.
 
-### License/Terms of Use: <br>
+## Publisher:
 
+[robin797860](https://clawhub.ai/user/robin797860)
 
-## Use Case: <br>
-Drivers, operations teams, and travel-planning agents use this skill to turn addresses into AMap driving routes informed by real-time traffic. It is useful when an agent needs to compare route duration, distance, estimated toll cost, and congestion details before recommending a driving option. <br>
-
-### Deployment Geography for Use: <br>
-Global <br>
-
-## Known Risks and Mitigations: <br>
-Risk: The skill sends queried addresses, route endpoints, and derived coordinates to AMap. <br>
-Mitigation: Use it only when sharing those locations with AMap is acceptable, and avoid submitting highly sensitive locations. <br>
-Risk: The skill requires an AMap API key read from OpenClaw configuration or the AMAP_KEY environment variable. <br>
-Mitigation: Use a dedicated or restricted AMap key where possible and keep OpenClaw configuration files private. <br>
+### License/Terms of Use:
 
 
-## Reference(s): <br>
-- [ClawHub skill page](https://clawhub.ai/robin797860/skills/amap-traffic) <br>
-- [Publisher profile](https://clawhub.ai/user/robin797860) <br>
-- [AMap Open Platform](https://console.amap.com/) <br>
-- [AMap geocoding API endpoint](https://restapi.amap.com/v3/geocode/geo) <br>
-- [AMap driving route API endpoint](https://restapi.amap.com/v3/direction/driving) <br>
+## Use Case:
 
+External users and developers use this skill to query Amap traffic conditions, geocode route endpoints, and request driving-route recommendations that account for real-time congestion.
 
-## Skill Output: <br>
-**Output Type(s):** [text, shell commands, configuration, guidance] <br>
-**Output Format:** [Plain text route summaries and Markdown guidance with command examples] <br>
-**Output Parameters:** [1D] <br>
-**Other Properties Related to Output:** [Requires an AMap API key and address or coordinate inputs for route planning.] <br>
+### Deployment Geography for Use:
 
-## Skill Version(s): <br>
-1.0.0 (source: server release metadata) <br>
+Global
 
-## Ethical Considerations: <br>
-Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment. <br>
+## Known Risks and Mitigations:
+
+Risk: Origin and destination addresses or coordinates are sent to Amap when the skill performs geocoding and route planning.
+
+Mitigation: Avoid using the skill with highly sensitive precise locations unless sharing that data with Amap is acceptable.
+
+Risk: The skill requires an Amap API key stored in OpenClaw configuration or an environment variable.
+
+Mitigation: Protect the OpenClaw configuration file and rotate the API key if it may have been exposed.
+
+## Reference(s):
+
+- [ClawHub Skill Page](https://clawhub.ai/robin797860/skills/amap-traffic)
+- [Amap Open Platform](https://console.amap.com/)
+- [Amap Geocoding API Endpoint](https://restapi.amap.com/v3/geocode/geo)
+- [Amap Driving Route API Endpoint](https://restapi.amap.com/v3/direction/driving)
+
+## Skill Output:
+
+**Output Type(s):** [text, shell commands, configuration, guidance]
+
+**Output Format:** [Plain text and Markdown with inline shell command examples]
+
+**Output Parameters:** [1D]
+
+**Other Properties Related to Output:** [Requires an AMAP_KEY and sends location or route queries to Amap.]
+
+## Skill Version(s):
+
+1.0.0 (source: server release evidence)
+
+## Ethical Considerations:
+
+Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment.

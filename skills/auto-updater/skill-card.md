@@ -1,43 +1,56 @@
-## Description: <br>
-Automatically update Clawdbot and all installed skills once daily. <br>
+## Description:
 
-This skill is ready for commercial/non-commercial use. <br>
+Automatically update Clawdbot and all installed skills once daily. Runs via cron, checks for updates, applies them, and messages the user with a summary of what changed.
 
-## Publisher: <br>
-[maximeprades](https://clawhub.ai/user/maximeprades) <br>
+This skill is ready for commercial/non-commercial use.
 
-### License/Terms of Use: <br>
+## Publisher:
 
+[maximeprades](https://clawhub.ai/user/maximeprades)
 
-## Use Case: <br>
-Developers and Clawdbot users use this skill to configure unattended daily checks that update Clawdbot and installed skills, then report what changed or failed. <br>
-
-### Deployment Geography for Use: <br>
-Global <br>
-
-## Known Risks and Mitigations: <br>
-Risk: Unattended daily updates can change Clawdbot and all installed skills without per-update approval. <br>
-Mitigation: Enable the skill only when automatic updates are intended; consider dry-run or notification-only operation and pin critical skills. <br>
-Risk: A failed or incompatible update can interrupt the user's Clawdbot or skill workflow. <br>
-Mitigation: Review the delivered update summary, keep the documented cron removal command available, and run manual repair commands when the summary reports errors. <br>
+### License/Terms of Use:
 
 
-## Reference(s): <br>
-- [Agent Implementation Guide](references/agent-guide.md) <br>
-- [Update Summary Examples](references/summary-examples.md) <br>
-- [Clawdbot Updating Guide](https://docs.clawd.bot/install/updating) <br>
-- [ClawdHub CLI](https://docs.clawd.bot/tools/clawdhub) <br>
-- [Cron Jobs](https://docs.clawd.bot/cron) <br>
+## Use Case:
 
+Developers and Clawdbot users use this skill to configure daily update checks for Clawdbot and installed skills, apply available updates, and receive a concise update summary.
 
-## Skill Output: <br>
-**Output Type(s):** [Markdown, Shell commands, Configuration, Guidance] <br>
-**Output Format:** [Markdown with inline bash and JSON code blocks] <br>
-**Output Parameters:** [1D] <br>
-**Other Properties Related to Output:** [May include cron schedules, update commands, version summaries, and error-handling guidance.] <br>
+### Deployment Geography for Use:
 
-## Skill Version(s): <br>
-1.0.0 (source: server evidence and SKILL.md metadata) <br>
+Global
 
-## Ethical Considerations: <br>
-Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment. <br>
+## Known Risks and Mitigations:
+
+Risk: Daily auto-updates can replace Clawdbot and every installed skill without fresh approval.
+
+Mitigation: Prefer dry-run notifications or explicit approval before installation, pin or verify versions, keep backups, and define rollback and disable steps before enabling in sensitive environments.
+
+Risk: Automatic update runs can encounter partial failures, permission issues, network problems, or package conflicts.
+
+Mitigation: Review the delivered update summary, keep logs for failed runs, run diagnostic commands after updates, and require manual intervention when errors are reported.
+
+## Reference(s):
+
+- [Agent Implementation Guide](references/agent-guide.md)
+- [Update Summary Examples](references/summary-examples.md)
+- [Clawdbot Updating Guide](https://docs.clawd.bot/install/updating)
+- [ClawdHub CLI](https://docs.clawd.bot/tools/clawdhub)
+- [Cron Jobs](https://docs.clawd.bot/cron)
+
+## Skill Output:
+
+**Output Type(s):** [text, markdown, shell commands, configuration, guidance]
+
+**Output Format:** [Markdown guidance with shell command blocks and cron configuration.]
+
+**Output Parameters:** [1D]
+
+**Other Properties Related to Output:** [Can propose a daily cron schedule, optional local update script, verification commands, and update-summary messaging.]
+
+## Skill Version(s):
+
+1.0.0 (source: evidence release version and SKILL.md metadata)
+
+## Ethical Considerations:
+
+Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment.

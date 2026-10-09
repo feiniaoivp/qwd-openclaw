@@ -1,6 +1,6 @@
 ## Description:
 
-Provides an investment-advisor workflow for A-share market hotspot discovery, comparable-company analysis, fund screening and diagnosis, stock capital-flow analysis, multi-factor stock screening, technical analysis, shareholder analysis, and review-ready market reports.
+覆盖A股热点发现、可比公司分析、基金诊断筛选、股票资金流向分析、多维选股、行情技术分析、股东股本分析、深度技术分析全流程。为投资顾问提供全方位的市场分析参考。
 
 This skill is ready for commercial/non-commercial use.
 
@@ -14,7 +14,7 @@ MIT-0
 
 ## Use Case:
 
-Licensed financial professionals and investment advisory teams use this skill to structure A-share equity and fund research workflows, draft analytical reports, and support human-reviewed advisory decisions.
+Investment advisors and financial analysis teams use this skill to structure A-share market hotspot discovery, comparable-company analysis, fund screening and diagnosis, capital-flow analysis, stock screening, technical analysis, and shareholder-capital analysis. Outputs are reference materials for human-reviewed investment research workflows, not financial, legal, or insurance advice.
 
 ### Deployment Geography for Use:
 
@@ -22,39 +22,36 @@ Global
 
 ## Known Risks and Mitigations:
 
-Risk: Financial analysis outputs could be mistaken for final investment, legal, credit, insurance, or suitability advice.
+Risk: External data or web lookups may expose client, portfolio, or research context if used without approval.
 
-Mitigation: Use outputs only as analytical drafts and require review by appropriately qualified professionals before decisions.
+Mitigation: Require explicit user approval before any external lookup and use the minimum necessary, anonymized data.
 
-Risk: Reports may use sensitive customer or financial information supplied by the user.
+Risk: Generated investment research reports may be mistaken for personalized financial advice.
 
-Mitigation: Apply institution-approved access controls, retention limits, encryption, and redaction before saving or sharing outputs.
+Mitigation: Keep outputs framed as reference analysis, include risk and suitability notices, and require review by qualified personnel before real-world use.
 
-Risk: Referenced financial data services may require authorization and current data context.
+Risk: Report export or external sharing could disclose sensitive holdings, identifiers, or unpublished business information.
 
-Mitigation: Use only data sources the user is entitled to access and include data cutoff dates in reports.
-
-Risk: The skill text describes data lookups, logs, and file outputs, while release evidence states the skill does not execute code or automatic tool calls.
-
-Mitigation: Treat those steps as user-executed workflow guidance in authorized, compliance-governed environments rather than autonomous actions.
+Mitigation: Preview the full report, remove or aggregate sensitive data, and obtain explicit approval before writing files or sending content.
 
 ## Reference(s):
 
 - [ClawHub skill page](https://clawhub.ai/gechengling/skills/investment-advisor-digital-employee)
+- [Publisher profile](https://clawhub.ai/user/gechengling)
 
 ## Skill Output:
 
-**Output Type(s):** [Text, Markdown, Guidance]
+**Output Type(s):** [text, markdown, code, shell commands, configuration, guidance]
 
-**Output Format:** [Markdown reports and structured analytical summaries]
+**Output Format:** [Markdown reports, tabular analysis outlines, illustrative command snippets, and optional spreadsheet/report-generation guidance]
 
 **Output Parameters:** [1D]
 
-**Other Properties Related to Output:** [Requires human review before use in financial decisions; does not bundle executable code.]
+**Other Properties Related to Output:** [Requires human review, source attribution, suitability checks, and explicit approval before writing files or sending reports.]
 
 ## Skill Version(s):
 
-2.0.3 (source: server release metadata)
+2.0.4 (source: frontmatter and server release evidence)
 
 ## Ethical Considerations:
 

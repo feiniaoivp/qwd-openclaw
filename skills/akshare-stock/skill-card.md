@@ -1,41 +1,60 @@
-## Description: <br>
-A股量化 AkShare helps agents query Chinese A-share quotes, historical prices, financial data, sector data, fund flows, IPO information, and screening inputs through AkShare. <br>
+## Description:
 
-This skill is for research and development only. <br>
+A股量化数据分析工具，基于AkShare库获取A股行情、财务数据、板块信息等。用于回答关于A股股票查询、行情数据、财务分析、选股等问题。
 
-## Publisher: <br>
-[mbpz](https://clawhub.ai/user/mbpz) <br>
+This skill is for research and development only.
 
-### License/Terms of Use: <br>
+## Publisher:
 
+[mbpz](https://clawhub.ai/user/mbpz)
 
-## Use Case: <br>
-Developers and analysts use this skill to guide A-share market data lookups, financial analysis, sector review, stock search, and local AkShare CLI usage. Its outputs should be treated as research information rather than investment advice. <br>
-
-### Deployment Geography for Use: <br>
-Global <br>
-
-## Known Risks and Mitigations: <br>
-Risk: Market data can be unavailable, stale, or affected by upstream website and network changes. <br>
-Mitigation: Validate important results against authoritative data sources and add exception handling, retries, and local testing before relying on outputs. <br>
-Risk: Installing AkShare and related packages changes the user's Python environment. <br>
-Mitigation: Install dependencies in a controlled virtual environment and pin versions for repeatable workflows. <br>
-Risk: Financial analysis output could be mistaken for investment advice. <br>
-Mitigation: Use the output for research only and require qualified human review before making trading or investment decisions. <br>
+### License/Terms of Use:
 
 
-## Reference(s): <br>
-- [ClawHub skill page](https://clawhub.ai/mbpz/akshare-stock) <br>
+## Use Case:
 
+Developers and external users use this skill to query and analyze China A-share quotes, historical K-line data, financial indicators, sector data, fund flows, IPO data, and margin trading data with AkShare-oriented examples and a CLI helper.
 
-## Skill Output: <br>
-**Output Type(s):** [text, markdown, code, shell commands, configuration, guidance] <br>
-**Output Format:** [Markdown guidance with Python and shell code blocks; CLI commands can emit JSON market data.] <br>
-**Output Parameters:** [1D] <br>
-**Other Properties Related to Output:** [Requires a Python environment with AkShare installed and network access to upstream market data sources.] <br>
+### Deployment Geography for Use:
 
-## Skill Version(s): <br>
-1.0.1 (source: server release evidence) <br>
+Global
 
-## Ethical Considerations: <br>
-Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment. <br>
+## Known Risks and Mitigations:
+
+Risk: Dependency and data-source reliability caveats can cause installation or runtime failures.
+
+Mitigation: Install in an isolated Python environment with reviewed pinned dependency versions, then test target actions locally before relying on outputs.
+
+Risk: The skill makes network requests to retrieve A-share market data, and upstream websites may change or be unavailable.
+
+Mitigation: Expect network access, add retry and error handling around calls, and verify important outputs against authoritative market data sources.
+
+Risk: Some advertised features appear incomplete or broken.
+
+Mitigation: Validate each action before enabling it in a workflow and document any unavailable commands for users.
+
+Risk: Market data analysis could be mistaken for investment advice.
+
+Mitigation: Treat outputs as informational research support only and apply human review before financial decisions.
+
+## Reference(s):
+
+- [ClawHub skill page](https://clawhub.ai/mbpz/skills/akshare-stock)
+
+## Skill Output:
+
+**Output Type(s):** [Text, Markdown, Code, Shell commands, Configuration, JSON]
+
+**Output Format:** [Markdown guidance with Python and shell code blocks; the CLI helper emits JSON records.]
+
+**Output Parameters:** [1D]
+
+**Other Properties Related to Output:** [May require network access to market data endpoints and installed Python dependencies.]
+
+## Skill Version(s):
+
+1.0.1 (source: server release metadata)
+
+## Ethical Considerations:
+
+Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment.

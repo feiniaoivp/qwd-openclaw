@@ -1,42 +1,59 @@
-## Description: <br>
-Use Wiz for current market prices, macro mood, Market Track, movers, global TradingWizard bots, ranked opportunities, Bot Fund performance, and optional private account tools through OAuth. <br>
+## Description:
 
-This skill is ready for commercial/non-commercial use. <br>
+Use Wiz for current market prices, macro mood, Market Track, movers, global TradingWizard bots, ranked opportunities, Bot Fund performance, and optional private account tools through OAuth.
 
-## Publisher: <br>
-[hugors00](https://clawhub.ai/user/hugors00) <br>
+This skill is ready for commercial/non-commercial use.
 
-### License/Terms of Use: <br>
-MIT-0 <br>
+## Publisher:
 
+[hugors00](https://clawhub.ai/user/hugors00)
 
-## Use Case: <br>
-External users and developers use Wiz to add TradingWizard market intelligence, bot context, Bot Fund performance, and optional private workspace tools to OpenClaw market research and paper-trading workflows. <br>
+### License/Terms of Use:
 
-### Deployment Geography for Use: <br>
-Global <br>
+MIT-0
 
-## Known Risks and Mitigations: <br>
-Risk: Private account and paper-trading controls require OAuth with read and paper-trading write scopes. <br>
-Mitigation: Enable OAuth only when private TradingWizard features are needed, confirm user intent before paper controls, and avoid exposing tokens or OAuth codes in chat. <br>
-Risk: Market data, bot signals, and performance information can be mistaken for personalized financial advice or guaranteed returns. <br>
-Mitigation: Present market information as educational, separate observed data from interpretation, include relevant timeframes and freshness, and never promise future returns or real-money execution. <br>
+## Use Case:
 
+External OpenClaw users use Wiz to retrieve live market context, TradingWizard bot signals, Bot Fund performance, and optional private TradingWizard workspace information. It supports market research and paper-trading workflows, not real-money trade execution.
 
-## Reference(s): <br>
-- [TradingWizard OpenClaw Connection](https://www.tradingwizard.ai/mcp?client=openclaw#connect) <br>
-- [TradingWizard MCP Documentation](https://www.tradingwizard.ai/docs/mcp) <br>
-- [ClawHub Skill Page](https://clawhub.ai/hugors00/skills/wiz-by-tradingwizard) <br>
+### Deployment Geography for Use:
 
+Global
 
-## Skill Output: <br>
-**Output Type(s):** [Guidance, Markdown, Shell commands, Configuration] <br>
-**Output Format:** [Markdown with inline shell commands and concise market-research guidance] <br>
-**Output Parameters:** [1D] <br>
-**Other Properties Related to Output:** [May call TradingWizard MCP tools for live market data; private account and paper-trading tools require OAuth and user confirmation.] <br>
+## Known Risks and Mitigations:
 
-## Skill Version(s): <br>
-1.0.0 (source: frontmatter and release evidence) <br>
+Risk: Market data, bot signals, and Bot Fund performance may be mistaken for personalized financial advice or guaranteed returns.
 
-## Ethical Considerations: <br>
-Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment. <br>
+Mitigation: Present market information as educational context, separate observed data from interpretation, and avoid promises about future returns.
+
+Risk: Optional OAuth can expose private TradingWizard workspace data and supported paper-trading controls.
+
+Mitigation: Request OAuth only for private account features, do not request or expose credentials in chat, and require clear confirmation before any paper control.
+
+Risk: Users may confuse paper-trading controls with real-money trading.
+
+Mitigation: State that Wiz supports paper trading only and never claim that it places real-money trades.
+
+## Reference(s):
+
+- [ClawHub skill page](https://clawhub.ai/hugors00/skills/wiz-by-tradingwizard)
+- [TradingWizard MCP connection page](https://www.tradingwizard.ai/mcp?client=openclaw#connect)
+- [TradingWizard MCP documentation](https://www.tradingwizard.ai/docs/mcp)
+
+## Skill Output:
+
+**Output Type(s):** [text, markdown, shell commands, configuration, guidance]
+
+**Output Format:** [Markdown responses with market summaries, evidence notes, and setup command blocks when connection guidance is needed]
+
+**Output Parameters:** [1D]
+
+**Other Properties Related to Output:** [Uses public read-only market tools when available; optional private workspace and paper-trading controls require TradingWizard OAuth and clear user confirmation.]
+
+## Skill Version(s):
+
+1.0.0 (source: server release metadata and SKILL.md frontmatter)
+
+## Ethical Considerations:
+
+Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment.

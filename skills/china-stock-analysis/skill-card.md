@@ -1,46 +1,57 @@
-## Description: <br>
-Analyze Chinese stock prices (A-shares, HK stocks) and provide investment recommendations. <br>
+## Description:
 
-This skill is ready for commercial/non-commercial use. <br>
+Analyze Chinese stock prices (A-shares, HK stocks) and provide investment recommendations.
 
-## Publisher: <br>
-[paulshe](https://clawhub.ai/user/paulshe) <br>
+This skill is ready for commercial/non-commercial use.
 
-### License/Terms of Use: <br>
-MIT-0 <br>
+## Publisher:
 
+[paulshe](https://clawhub.ai/user/paulshe)
 
-## Use Case: <br>
-External users use this skill to ask an agent for structured analysis of A-share, Hong Kong, and related US-listed stocks using public web data. The skill helps summarize current price data, market context, technical signals, and informational buy, hold, or sell recommendations. <br>
+### License/Terms of Use:
 
-### Deployment Geography for Use: <br>
-Global <br>
+MIT-0
 
-## Known Risks and Mitigations: <br>
-Risk: Stock recommendations may be inaccurate, incomplete, or mistaken for personalized financial advice. <br>
-Mitigation: Treat buy, hold, and sell outputs as informational only and include the skill's investment-risk disclaimer in user-facing analysis. <br>
-Risk: Public market data gathered through web search may be stale, inconsistent, or unavailable. <br>
-Mitigation: Check the source, timestamp, and quoted ticker before relying on current price or trend analysis. <br>
-Risk: The skill is branded for Chinese stocks but may also handle US tickers. <br>
-Mitigation: Confirm the requested market and ticker format before presenting conclusions. <br>
+## Use Case:
 
+External users can use this skill to ask an agent for structured Chinese stock analysis, including current price context, market signals, and buy, hold, or sell recommendations with a risk disclaimer.
 
-## Reference(s): <br>
-- [Popular Chinese Stocks Reference](references/china-stocks.md) <br>
-- [Eastmoney](https://www.eastmoney.com) <br>
-- [Xueqiu](https://xueqiu.com) <br>
-- [Yahoo Finance](https://finance.yahoo.com) <br>
-- [Google Finance](https://www.google.com/finance) <br>
+### Deployment Geography for Use:
 
+Global
 
-## Skill Output: <br>
-**Output Type(s):** [text, markdown, guidance] <br>
-**Output Format:** [Markdown with tables and bullet lists] <br>
-**Output Parameters:** [1D] <br>
-**Other Properties Related to Output:** [Includes price summaries, technical analysis, recommendation rationale, operating strategy, and risk disclaimer.] <br>
+## Known Risks and Mitigations:
 
-## Skill Version(s): <br>
-1.0.0 (source: server release evidence) <br>
+Risk: Stock prices, market news, and investment recommendations can be stale or incorrect.
 
-## Ethical Considerations: <br>
-Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment. <br>
+Mitigation: Verify current market data and any buy, hold, or sell recommendation against trusted financial sources before acting.
+
+Risk: The skill's default financial risk notice is in Chinese.
+
+Mitigation: Request an English or bilingual disclaimer when users are not comfortable reading Chinese financial risk notices.
+
+## Reference(s):
+
+- [Popular Chinese Stocks Reference](references/china-stocks.md)
+- [Eastmoney](https://www.eastmoney.com)
+- [Xueqiu](https://xueqiu.com)
+- [Yahoo Finance](https://finance.yahoo.com)
+- [Google Finance](https://www.google.com/finance)
+
+## Skill Output:
+
+**Output Type(s):** [analysis, markdown, guidance]
+
+**Output Format:** [Markdown with tables and bullet lists]
+
+**Output Parameters:** [1D]
+
+**Other Properties Related to Output:** [Includes a Chinese financial risk disclaimer; no files or executable code are produced.]
+
+## Skill Version(s):
+
+1.0.0 (source: release metadata)
+
+## Ethical Considerations:
+
+Users should evaluate whether this skill is appropriate for their environment, review any generated or modified files before relying on them, and apply their organization's safety, security, and compliance requirements before deployment.
