@@ -15,6 +15,11 @@ if __name__ == "__main__":
     if isinstance(wl, dict):
         wl = list(wl.items())
     picks = get_trader_picks(wl)
+    # 口径头部（2026-10-09 五维改造）：消费方读榜前先看维度覆盖
+    from collections import Counter
+    dist = Counter(p.get("valid_dims", 0) for p in picks)
+    header = " | ".join(f"{k}/5维:{v}只" for k, v in sorted(dist.items(), reverse=True))
+    print(f"PICKS_DIM_COVERAGE: {header}")
     print("=====PICKS_JSON_BEGIN=====")
     print(json.dumps(picks, ensure_ascii=False, indent=1))
     print("=====PICKS_JSON_END=====")

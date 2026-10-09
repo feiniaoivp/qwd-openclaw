@@ -205,6 +205,9 @@ def node_fetch_trader_picks(state: Dict[str, Any]) -> Dict[str, Any]:
         from analysis.service import WATCHLIST
         trader_picks = get_trader_picks(WATCHLIST)
         state["trader_picks"] = trader_picks
+        # 2026-10-09 五维改造：报告侧用可读表（强制带「口径 x/5 维」），不再裸 dump JSON
+        from analysis.trader_stock_picks import format_picks_for_report
+        state["trader_picks_table"] = format_picks_for_report(trader_picks)
     except Exception as e:
         state["error_count"] = state.get("error_count", 0) + 1
         state["trader_picks"] = []
@@ -603,7 +606,7 @@ def node_make_report(state: Dict[str, Any]) -> Dict[str, Any]:
 {json.dumps(state.get('zhonglian', {}), ensure_ascii=False, indent=2)}
 
 操盘手选股:
-{json.dumps(state.get('trader_picks', []), ensure_ascii=False, indent=2)}
+{state.get('trader_picks_table') or json.dumps(state.get('trader_picks', []), ensure_ascii=False, indent=2)}
 """
     state["report_text"] = report
     return state

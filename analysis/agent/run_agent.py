@@ -71,7 +71,12 @@ def build_report_text(state) -> str:
     L.append(json.dumps(state.get("zhonglian") or {}, ensure_ascii=False, indent=2))
     tp = state.get("trader_picks")
     L.append("操盘手选股:")
-    L.append(json.dumps(tp or [], ensure_ascii=False, indent=2))
+    # 2026-10-09 五维改造：优先读「口径 x/5 维」表，兜底才裸 JSON
+    tp_table = state.get("trader_picks_table")
+    if tp_table:
+        L.append(tp_table)
+    else:
+        L.append(json.dumps(tp or [], ensure_ascii=False, indent=2))
 
     # 斐波那契波段止盈参考（独立小节，复用已锁定基线，纯参考不画靶）
     try:

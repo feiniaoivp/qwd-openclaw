@@ -3,7 +3,10 @@
 Trader stock picks module: simplified implementation of the top trader's stock selection logic.
 Provides scoring and recommendation for watchlist stocks based on five dimensions:
 chip structure, volume-price, fund flow, fundamentals, technical.
-Falls back to default values when data unavailable.
+2026-10-09 结构改造（10-08 立项）：数据缺失维度返回 None（禁止隐性 5.0 填充），
+总分 = 有效维度均值 ×5 归一到 50 制，输出携带 valid_dims / dims_available，
+供消费方展示「口径 x/5 维」。根因教训：10-05「fallback 默认值把贵票伪装成中档票」
+的评分版（10-08 官方五维 Top1=福莱蒽特 29.0，RSI70 超买被筹码+资金双 5.0 托底）。
 """
 
 
@@ -153,11 +156,18 @@ def get_technical_from_hist(symbol: str, name: str) -> Dict[str, Any]:
 def score_chip_structure(symbol: str) -> float:
     """Chip structure score (0-10). Default medium."""
     # In reality we would look at institutional holder %, top 10 changes, etc.
-    # Lacking data, return a neutral score.
-    return 5.0
+    # 2026-10-09 改造（10-08 立项）：无数据源 → 返回 None，禁止隐性 5.0 填充。
+    # 当前无筹码数据源 → 该维对所有票一致为 None，不参与总分（对相对排序无信息量）。
+    return None
 
 def score_volume_price(symbol: str, name: str, spot_item: dict) -> float:
-    """Volume-price score based on turnover rate and price change."""
+    """Volume-price score based on turnover rate and price change.
+
+    2026-10-09 改造：spot_item 无真实 price → 返回 None。
+    旧行为：空 spot 也给 base 5.0-1=4.0，把「无行情」伪装成「弱势票」。
+    """
+    if not spot_item or spot_item.get("price") is None:
+        return None
     score = 5.0  # base
     # Price change magnitude (absolute)
     change_pct = abs(spot_item.get("change_pct", 0))
@@ -183,7 +193,8 @@ def score_fund_flow(symbol: str, name: str) -> float:
     """Fund flow score based on net main force inflow."""
     data = get_fund_flow(symbol)
     if not data:
-        return 5.0
+        # 2026-10-09：缺失即 None，禁止 5.0 托底（moneyflow 双路失败时资金维退出排序）
+        return None
     main_net_in = data.get("main_net_in") or 0
     # Normalize roughly: assume +/- 1e8 is strong
     # Convert to 0-10 scale
@@ -198,7 +209,8 @@ def score_fundamentals(symbol: str, name: str) -> float:
     """Fundamentals score based on PE, PB, ROE."""
     data = get_fundamentals(symbol)
     if not data:
-        return 5.0
+        # 2026-10-09：baostock 完全取不到 PE/PB/ROE → None（旧 5.0 把高估值票伪装成中档票）
+        return None
     pe = data.get("pe") or 0
     pb = data.get("pb") or 0
     roe = data.get("roe") or 0   # 修复：原代码 key 写成 "roe, 0" 导致恒为 None 且比较崩溃
@@ -226,7 +238,8 @@ def score_technical(symbol: str, name: str) -> float:
     """Technical score based on MACD, RSI, etc from historical signal."""
     tech = get_technical_from_hist(symbol, name)
     if not tech:
-        return 5.0
+        # 2026-10-09：指标不可得 → None（旧 5.0 让 NaN 防御变成中性分伪装）
+        return None
     score = 5.0
     # MACD: dif > dea => bullish
     # 注：key 契约 2026-10-08 已修复（get_technical_from_hist 现保证 dif/dea/rsi 存在）
@@ -251,87 +264,117 @@ def score_technical(symbol: str, name: str) -> float:
 def get_trader_picks(watchlist: List[tuple]) -> List[Dict[str, Any]]:
     """
     Return list of stock picks sorted by total score.
+
+    2026-10-09 结构改造（10-08 立项，用户批准）：
+    - 缺失维度 = None，**不再回退 5.0/0.0**
+    - total_score = 有效维度均值 ×5，归一到 50 制（与旧「五维相加」量纲一致，阈值 35/20 可沿用）
+    - 新增 valid_dims（int, 0-5）与 dims_available（可用维度名列表），消费方须展示「口径 x/5 维」
+    - 有效维度为 0 的票 total_score=None，参与列表但排在最后，且 advice 标为「无法评估」
     Each item: {
         "symbol": str,
         "name": str,
-        "total_score": float,
-        "chip": float,
-        "volume_price": float,
-        "fund_flow": float,
-        "fundamentals": float,
-        "technical": float,
+        "total_score": float | None,   # 有效维度均值 ×5（50 制）
+        "valid_dims": int,             # 参与计算的有效维度个数 0-5
+        "dims_available": [str],       # 有效维度名
+        "chip": float | None,
+        "volume_price": float | None,
+        "fund_flow": float | None,
+        "fundamentals": float | None,
+        "technical": float | None,
         "stage": str,  # e.g., "吸筹", "洗盘末期", "拉升初期"
         "catalyst": str,
         "advice": str  # BUY/SELL/HOLD with reason
     }
     """
-    results = []
+    # spot 一次性拉取，量价维直接用真实行情（旧实现先空 spot 打分再二次覆盖，
+    # 空 spot 阶段会产出伪装的 4.0 分，且要二次重排；现改为单趟）
+    spot_data, _ = get_spot_scan()
+    spot_map = {item["symbol"]: item for item in (spot_data or []) if "symbol" in item}
+
+    results: List[Dict[str, Any]] = []
     for symbol, name in watchlist:
-        chip = score_chip_structure(symbol)
-        vol_price = score_volume_price(symbol, name, {})  # we'll update spot later
-        fund_flow = score_fund_flow(symbol, name)
-        fundamentals = score_fundamentals(symbol, name)
-        technical = score_technical(symbol, name)
-        # 数据缺失时可能得 None，统一回退 0 防止 NoneType 崩溃
-        chip = chip or 0.0
-        vol_price = vol_price or 0.0
-        fund_flow = fund_flow or 0.0
-        fundamentals = fundamentals or 0.0
-        technical = technical or 0.0
-        total = chip + vol_price + fund_flow + fundamentals + technical
-        # Determine stage based on scores (simplified)
-        stage = "中性"
-        if technical > 6 and fund_flow > 6:
-            stage = "拉升初期"
-        elif technical < 4 and fund_flow < 4:
-            stage = "洗盘末期"
-        elif chip > 7 and vol_price > 6:
-            stage = "吸筹"
-        else:
-            stage = "观察"
-        # Catalyst placeholder
+        dims: Dict[str, Any] = {
+            "chip": score_chip_structure(symbol),
+            "volume_price": score_volume_price(symbol, name, spot_map.get(symbol, {})),
+            "fund_flow": score_fund_flow(symbol, name),
+            "fundamentals": score_fundamentals(symbol, name),
+            "technical": score_technical(symbol, name),
+        }
+        valid = {k: float(v) for k, v in dims.items() if v is not None}
+        dims_available = list(valid.keys())
+        total = round(sum(valid.values()) / len(valid) * 5.0, 2) if valid else None
+
+        stage = _infer_stage(valid)
         catalyst = "待定"
-        # Advice based on total score
-        if total >= 35:
-            action = "BUY"
-            reason = "综合评分较高，具备启动条件"
+        if total is None:
+            action, reason = "N/A", "全部维度数据缺失，无法评估"
+        elif total >= 35:
+            action, reason = "BUY", f"综合评分较高（{len(valid)}/5 维口径），具备启动条件"
         elif total <= 20:
-            action = "SELL"
-            reason = "综合评分偏低，注意风险"
+            action, reason = "SELL", f"综合评分偏低（{len(valid)}/5 维口径），注意风险"
         else:
-            action = "HOLD"
-            reason = "综合评分中性，建议观望"
+            action, reason = "HOLD", f"综合评分中性（{len(valid)}/5 维口径），建议观望"
+
         results.append({
             "symbol": symbol,
             "name": name,
-            "total_score": round(total, 2),
-            "chip": round(chip, 2),
-            "volume_price": round(vol_price, 2),
-            "fund_flow": round(fund_flow, 2),
-            "fundamentals": round(fundamentals, 2),
-            "technical": round(technical, 2),
+            "total_score": total,
+            "valid_dims": len(valid),
+            "dims_available": dims_available,
+            "chip": None if dims["chip"] is None else round(dims["chip"], 2),
+            "volume_price": None if dims["volume_price"] is None else round(dims["volume_price"], 2),
+            "fund_flow": None if dims["fund_flow"] is None else round(dims["fund_flow"], 2),
+            "fundamentals": None if dims["fundamentals"] is None else round(dims["fundamentals"], 2),
+            "technical": None if dims["technical"] is None else round(dims["technical"], 2),
             "stage": stage,
             "catalyst": catalyst,
             "advice": f"{action}: {reason}",
         })
-    # Sort by total_score descending
-    results.sort(key=lambda x: x["total_score"], reverse=True)
-    # Update volume_price with actual spot data for better accuracy
-    spot_data, _ = get_spot_scan()
-    spot_map = {item["symbol"]: item for item in spot_data if "symbol" in item}
-    for res in results:
-        sym = res["symbol"]
-        if sym in spot_map:
-            spot_item = spot_map[sym]
-            res["volume_price"] = round(score_volume_price(sym, res["name"], spot_item), 2)
-            # Recalculate total
-            res["total_score"] = round(
-                res["chip"] + res["volume_price"] + res["fund_flow"] +
-                res["fundamentals"] + res["technical"], 2
-            )
-    # Re-sort after update
-    results.sort(key=lambda x: x["total_score"], reverse=True)
+    # 有效分降序；无有效维度的票排最后
+    results.sort(key=lambda x: (x["total_score"] is not None, x["total_score"] or 0.0), reverse=True)
     return results
+
+
+def _infer_stage(valid: Dict[str, float]) -> str:
+    """阶段判定（None 安全版）。缺失维度不参与判定，不再被 5.0 假分触发/压制。"""
+    tech = valid.get("technical")
+    ff = valid.get("fund_flow")
+    chip = valid.get("chip")
+    vp = valid.get("volume_price")
+    if tech is not None and ff is not None:
+        if tech > 6 and ff > 6:
+            return "拉升初期"
+        if tech < 4 and ff < 4:
+            return "洗盘末期"
+    if chip is not None and vp is not None and chip > 7 and vp > 6:
+        return "吸筹"
+    return "观察"
+
+
+def format_picks_for_report(picks: List[Dict[str, Any]], top_n: int = 10) -> str:
+    """推送/报告侧可读表（2026-10-09 五维改造配套）。
+
+    强制展示「口径 x/5 维」——这是本次结构改造的红线：
+    禁止只报总分不报维度覆盖（防止半口径票被当成全口径票比较）。
+    """
+    if not picks:
+        return "(操盘手选股无数据)"
+    from collections import Counter
+    dist = Counter(p.get("valid_dims", 0) for p in picks)
+    cov = " | ".join(f"{k}/5维 {v}只" for k, v in sorted(dist.items(), reverse=True))
+    lines = [f"维度覆盖: {cov}",
+             "| 排名 | 股票 | 总分(50制) | 口径 | 量价 | 基本面 | 技术 | 资金 | 筹码 | 阶段 |",
+             "|---|---|---|---|---|---|---|---|---|---|"]
+    for i, p in enumerate(picks[:top_n], 1):
+        fmt = lambda v: "—" if v is None else f"{v:g}"
+        lines.append(
+            f"| {i} | {p['name']}({p['symbol']}) | {fmt(p.get('total_score'))} "
+            f"| {p.get('valid_dims', 0)}/5 | {fmt(p.get('volume_price'))} "
+            f"| {fmt(p.get('fundamentals'))} | {fmt(p.get('technical'))} "
+            f"| {fmt(p.get('fund_flow'))} | {fmt(p.get('chip'))} | {p.get('stage', '')} |"
+        )
+    lines.append("> 口径说明：总分=有效维度均值×5；— 表示该维数据缺失，未参与计分（禁止 5.0 填充）。")
+    return "\n".join(lines)
 
 if __name__ == "__main__":
     # Example usage with a small watchlist
