@@ -194,3 +194,16 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 **Recurrence-Count**: 1
 **First-Seen**: 2026-10-09
 **Last-Seen**: 2026-10-09
+
+## ERR-20261009-QuantPushDetachedOutputLost
+**Error**: quant_push.py launched via exec was SIGKILLed at ~300s (exec timeout), and its child backtest_strategies.py was orphaned (reparented to init, kept running). No stdout captured → JSON summary lost; report file still written but Telegram push never fired.
+**Root cause**: quant_push.py uses subprocess.run(capture_output=True); killing the parent kills the pipe consumer, but the child survived because the exec kill didn't cascade to the process group. Meanwhile a well-intentioned "restart with logging" created a SECOND parallel run (duplicate compute).
+**Resolution**: Let the surviving original run finish (~13min total, 20:30→20:43); report analysis/backtest/2026-10-09.md written; Telegram push lost (stdout unrecoverable, avoided duplicate re-push).
+**Prevention**:
+1. For this cron, do NOT use short-timeout exec + relaunch. Launch directly with `nohup ... > logs/quant_push_YYYYMMDD.log 2>&1 &` so output survives regardless of exec lifecycle.
+2. Before relaunching, ALWAYS `pgrep -f quant_push.py` — SIGKILL on the parent does not necessarily kill the child backtest run.
+3. Consider adding stdout tee-to-log inside quant_push.py so the JSON block is always persisted.
+**Pattern-Key**: exec.timeout-orphan-child.cron-longrunning
+**Recurrence-Count**: 1
+**First-Seen**: 2026-10-09
+**Last-Seen**: 2026-10-09

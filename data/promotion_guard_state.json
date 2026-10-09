@@ -1,11 +1,11 @@
 {
-  "latest_ts": "2026-10-05T19:00:00.310Z",
-  "latest_keys": 6,
+  "latest_ts": "2026-10-08T19:00:00.271Z",
+  "latest_keys": 2,
   "latest_missing": 0,
   "latest_survival": 1.0,
   "window_promotions": 7,
-  "window_survival": 0.1132,
+  "window_survival": 0.0417,
   "zero_survival_streak": 0,
-  "memory_markers_total": 6,
-  "checked_at": "2026-10-06T08:19:55.498214+00:00"
+  "memory_markers_total": 2,
+  "checked_at": "2026-10-09T14:38:44.700062+00:00"
 }
