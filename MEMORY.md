@@ -396,7 +396,7 @@ This file serves as your curated long-term memory, storing significant events, d
 ### 2026-08-09 技能库真实变更（skill-version-watcher 捕获）
 *   **self-improving v1.2.16 → self-improving-agent v4.0.2**（升级+改名, 08-08 21:27 更新）; **hf-mem v1.0.10** 新增(08-08 21:20 安装)。baseline memory/skill-versions.json 已更新。
 
-## 投资理念归纳（每日同步，最新 2026-10-08）
+## 投资理念归纳（每日同步，最新 2026-10-09）
 > 完整可检索历史见 `wiki/sources/investment-philosophy-YYYY-MM-DD.md`；本区块为蒸馏要点。
 > 注：09-01~04 无增量空跑；09-07(周一)24h 0 篇但补录 09-05/06 周末 4 篇方法论(见 09-07 节)；**09-08(周二)24h 新增 9 篇、打破连续 6 日空跑；09-09(周三)新增 2 篇(1 投资+RVI方法论 + 1 爬虫教程非投资)、RSI 主线续作；09-10(周四)新增 1 篇「涡流+布林带」突破系统；**09-11(周五)新增 3 篇方法论(MACD进阶/RSI压缩剥头皮/斐波那契时间预测)、连续第 4 日真实增量**(见 09-11 节)。；09-12~09-15 连续 no-op（投资层 0 篇）；**09-16 投资类语料静默 18 天后恢复**——新增 1 篇半导体设备行业深度（投资相关，应用型素材非方法论），体系 head 不变、「卖铲人范式」证据 +1（见 09-16 节）。
 > 注：**09-17 严格 24h no-op**（09-16 19:30→09-17 19:30 命中 0 篇 .md），投资层无增量，体系 head 与量化参数均不变（见 09-17 节）。
@@ -408,6 +408,14 @@ This file serves as your curated long-term memory, storing significant events, d
 > 注：**09-29 积压补录 → 投资层真实增量 2 篇**（严格 24h 命中 0，但发现 09-27 两篇未归档；09-25~09-28 报告缺失本次代偿）。存储行业「硬核猪周期+HBM 挤占效应」与 TQQQ「200MA 牛熊闸门+40–50% 胜率高盈亏比」。**体系 head 不变，证据 +2**（卖铲人范式上游扩展、选择性入场纪律跨市场印证）。
 > 注：**09-30 严格 24h no-op**（09-29 19:30→09-30 19:30 全 Vault 命中 0 篇 .md；主源 63 篇最新 mtime 仍为 09-27 08:50，已在 09-29 代偿归档）。投资层无增量，体系 head 与量化参数均不变。投资类语料自 09-27 后**连续 3 日静默**（见 09-30 节）。
 > 注：**10-02 积压补录 → 投资层真实增量 2 篇**（严格 24h 命中 0；发现 10-01 两篇未归档，09-30 报告窗口未覆盖）。RSI 深度教学（延续 ⑧ 张力）+ DeltaFlow Volume Profile/Delta/POC（**新增候选⑮：量价分布结构定位**）。**体系 head 不变**，新增 1 项待复核候选，印证 3 处（背离=动能衰竭 / 长周定方向短周找点 / 量价共振）。
+
+### 2026-10-09 要点（严格 24h no-op · 0 篇新笔记 · 体系 head 不变）
+> **24h 判定**：严格 24h 窗口（10-08 19:30→10-09 19:30）全 Vault 命中 **0 篇** .md → **投资层 no-op**，无新增规则/修正/冲突，体系 head 与量化参数均不变。主源 71 篇，最新 mtime 10-07 11:17（已归档），无积压。
+- **新增规则 0 / 修正 0 / 冲突 0**；无观点可提取；自 10-06 投资层增量后连续静默。
+- **体系 head（不变）**：纯MACD优选 / CCI聚簇退潮 / 030裁决分级 / 三因素共振门控(ResonanceGate) / 斐波那契扩展止盈 / 波动率仓位(ATR/1%风险) / 选择性入场纪律(1:2盈亏比+40%胜率) / 结构点止损+S/R Flip / 产业链卡位·卖铲人范式。
+- **量化参数（不变）**：`adaptive_dual.py`（09-28）/ `auction_analyze.py`（09-17）/ `fib_extension_scan.py`（09-17）/ `data/adaptive_params.json`（10-03）均未因笔记改动。
+- **待人工复核台账**：延续无新增（候选⑯斐波0.786回撤入场待复核；②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑮原状；O1 存储/HBM、O2 杠杆ETF、O3 人形机器人链、O4 LLM Wiki 仅记不动作）。
+- 完整归档：`wiki/sources/investment-philosophy-2026-10-09.md`。
 
 ### 2026-10-08 要点（严格 24h no-op · 0 篇新笔记 · 体系 head 不变；回填 10-06/10-07 缺口）
 > **24h 判定**：严格 24h 窗口（10-07 19:30→10-08 19:30）全 Vault 命中 **0 篇** .md → **投资层 no-op**，无新增规则/修正/冲突，体系 head 与量化参数均不变。主源 71 篇，最新 mtime 10-07 11:17。
@@ -1194,12 +1202,22 @@ This file serves as your curated long-term memory, storing significant events, d
 *   🟡 09-30 遗留 error job：`quant-backtest-daily`(bd9843f1) 推送已 `--no-deliver` 临时修，正式「systemEvent 改造」仍待办。
 *   ✅ **[10-08 闭环] ① trader_stock_picks 技术维 key 契约事故**：`get_technical_from_hist` 主路径返回 calc_full_signal 信号 dict（level/score/reasons）与下游 dif/dea/rsi 取值键错配→技术分全池恒 3.0。修复：弃用信号 dict 作数据源、直算 MACD/RSI，契约固定 keys，NaN 防御+异常可见（commit `09d2a42`）。全池 30 只端到端重跑技术分分布 7×7/5×6/3×17 有区分度；抽查 RSI 与半口径重算完全一致。无 cron 消费者（排查结论：仅手动 runner + 休眠 agent/nodes.py），18:30 推送走 daily_push.py 不受影响。
 *   🟡 **[10-08 立项，待风控流程] 五维评分「隐性 5.0 填充」结构改造**：缺失维度（筹码恒 5.0/资金流回退 5.0）以中性分托底垃圾票（实证 10-08 官方 Top1=福莱蒽特 29.0，RSI70 超买被双 5.0 托起）。方向：缺失返 None→有效维度归一+`valid_dims` 口径标注。详 `memory/2026-10-08.md` 21:0x 段。改造前对外口径继续用 core 三维（显式剔除）。
-*   🟡 **moneyflow 终验已做（10-09 04:4x）仍挂**：`stock_flow('600030')`=None，三 host 全 curl(56)；但同窗口裸 curl 存在独赢成功窗口（push2 klt=1 200/18747B、daykline 200/640B，约 1 分钟后同样 000）→ 判定为**东财对本机 IP 的周期性限流**，非纯 TLS 指纹问题；d230f48 双路回退链保持不动，资金维继续标「半口径」，裸 curl 兜底为候选增强（暂缓）。详见 `memory/2026-10-09.md`。
+*   🔴 **moneyflow 10-09 全天仍挂，根因已修正（20:2x 复测推翻「周期性限流」）**：早间 04:4x/08:25 两轮 5/5 失败；**20:24 复测 5/5 失败 + 裸 curl 窗口消失**。关键反证：同 host `push2 .../stock/get`（行情）秒回 200，仅 `fflow/kline` 被 curl(56) 掐 → 非 IP 限流/网络潮汐，而是**东财对 fflow 资金流端点按 URL path 级定向封禁或接口变更**（UA/Referer 无效，早间「裸 curl 独赢窗口」晚间已消失，封禁收紧）。早间「对本机 IP 周期性限流」判定**作废**。处置：d230f48 不动、资金维继续「半口径」；若明日盘前再测仍挂 → 查 fflow 新版接口（路径/字段变更），不再等限流自愈；候选增强：`push2 .../stock/get`（实测可通）纳入备用链。附带修复：`verify_moneyflow_recovery.py` 硬编码标题时间已改动态（旧坑：显示 08:25 实为任意时刻执行）。详见 `memory/2026-10-09.md` 20:2x 条目。
 *   🟡 `data/news/` 历史归档回填（09-09~09-29 缺失，若源仍可取）。
 *   🟡 沿用：`rm` 前置门禁（连续 8 期）、F-5 脱钩观察、F-2 比率口径、北向真缺失 / `index_flow`+`market_net_total` 失真、backtest 09-11/09-21 缺档、daily portfolio_sim 09-12~21 缺档、daily-report 08-29/09-15/09-24 缺档、op CLI 未登录、nvidia(404)、auction-feed-0915、§5 三疑点、mapping(002318/002156)、批次C回测、恒立液压分歧、⑫回测闭环、Minimax 无解、`param_tune` 单窗口隐患、`REFERENCE_TOTAL_CAPITAL` 保持 270 万（有意保持非 bug）。
 *   ✅ **[10-09 销账] 10-06 三观察点全闭环**：3950d3cc 10-08 18:30 首跑 ok（211s，Telegram True，consecutiveErrors=0）；233295fd/03:00 与 a8c18aed/04:00 均 ok，daily-report-2026-10-09.md 正常产出。剩余观察：今日 09:15 auction-feed-0915 空快照门禁（5071d1c）交易日首跑——**[10-09 18:5x 已验 ok**，f4920382 今日 09:25 last=ok err=None，非交易日首跑窗口关闭；18:30 双推送 job 自然调度亦 ok，3950d3cc 假 ok 修复链彻底闭环；其 description 已为 18:30 与 expr 一致，旧「描述不符」疑点同步销账]。
 *   ✅ **[10-09 闭环] Cron 模型/投递批量修复**：7 error job 归因三分法——Telegram 投递断连×4（--best-effort-deliver）、nvidia 坏模型×1 + Vision-Exp 继承生成失败×2→×6（显式 --model Qwen3.8-Flash-Next；含 bd9843f1 旧 systemEvent 待办被实质替代）。10/10 落盘，bd9843f1/a7456f8b force 实测 ok，18:30 自然调度终验 ok。备份 data/cron-backup/20261009-1817-model-fix.json。遗留：Telegram 间歇断连根因未除；5 轻量监控 job 保持继承观察。另 self-improving/proactivity 双技能落地（~/self-improving/ + ~/proactivity/，供应链扫描零高危）。
 *   🟡 **10-06 观察**：agentTurn 隔离态 cron 跑在 agents.defaults 主模型 `DeepSeek-V4-Flash-Vision-Exp`（其「参数多包一层 arguments」缺陷见 10-01 条目；thursday 维护 job 一度被困扰但最终 ok，有 token 浪费）。待评估：给多轮工具链 cron（memory-maintenance-*/error-pattern-injector）显式 `--model` 指定非 Vision-Exp 模型。
+
+## 2026-10-09 蒸馏补充（memory-maintenance 10-09 晚）
+
+> 全部源自 `memory/2026-10-09.md` / `memory/2026-10-09-1931.md` 已落盘事实。
+
+*   **🔴 OpenRouter 免费兜底接入（15:4x，用户选 B）**：根因坐实——OpenRouter key 余额为 0（total_credits=0）→ 9 月起所有付费模型调用 402（gateway.log 9/4、9/6、9/17、9/28 全 402），key 本身有效；openrouter/auto 偶发能通 = 剩几分钱路由便宜模型，故症状时好时坏。修复：`agents.defaults.model.fallbacks` 追加 2 个 0 成本 `:free` 通道（实测 :free 不吃余额、cost=0；12 个 :free 模型批量测 6 通 6 限流，选 2 个与已有 nvidia 链互补的）；dry-run → config patch → `openclaw infer model run --gateway` 双 PONG 验证，Fallbacks(9)。备份 `backups/config/openclaw.json.before-openrouter-free-fallback-20261009-154248`。**遗留**：kimi-k2.5/2.6 仍需充值才可用；:free 有上游 429，只适合兜底位；日常主力链（amd-radeon→deepseek→nvidia）不受影响。
+*   **🔴 webchat→Telegram 跨会话投递标准路径确立（20:00）**：`sessions_send` 到 telegram 会话被 `visibility=tree` 拦（forbidden）→ 正确做法 = **一次性 cron job**（sessionTarget=`session:agent:main:telegram:direct:<chatId>` + agentTurn + delivery none + deleteAfterRun）→ force 触发 → job 自动清除。交付验证需查 telegram 会话 transcript（`sessions_history` 被 tree 拦时直接读 `~/.openclaw/agents/main/sessions/<sessionId>.jsonl` grep）。
+*   **🔴 密钥防泄漏入库门禁（git 整理时发现）**：`backups/config/openclaw.json.before-*` 备份含明文 apiKey/token ×8 处 → `backups/config/` 已加入 `.gitignore`，文件留本地做回滚、git 永不跟踪。**教训：配置备份目录必须与 .gitignore 同步审查，含密钥备份绝不入库。** 本次同时完成工作区 100 处变更 → 6 批 commit → `git status` 清零，promotion_guard/strategy_map_guard 双过。
+*   **新增 cron `c50849c8` daily-skill-auto-update（04:00）**：只跑 `openclaw skills update --all --agent main`（ClawHub 技能），🔴红线禁碰核心（不跑 openclaw update/doctor、不改 plist），与 launchd 版本锁定 @2026.7.1-2 兼容；更新前 git 快照、更新后 skill_supply_scan --offline（exit 1 即回滚）+ 版本核对。实测坑：`skills update --all` 手动跑超 90s 被 SIGKILL → timeout 给足 1200s。
+*   **[10-09 复证] Vision-Exp「arguments 双层包裹」缺陷第 3 次复现**（随机发作，write/apply_patch 通道不受影响）→ 已记 corrections.md；10-06 留的「给多轮工具链 cron 显式 --model」待办已由 10-09 cron 批量修复实质落地（见待办结转 [10-09 闭环] 条目）。
 
 ## Promoted From Short-Term Memory (2026-10-09)
 

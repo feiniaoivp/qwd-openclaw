@@ -94,7 +94,8 @@ def main() -> str:
         "moneyflow 已恢复，资金维可重新计入五维" if recovered_runs >= 3
         else "双路仍挂，今日选股推送继续用 core 三维半口径"
     )
-    print(f"复测时间: 2026-10-09 08:25 (Asia/Shanghai)")
+    from datetime import datetime
+    print(f"复测时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} (Asia/Shanghai)")
     print(f"5次采样: 恢复={recovered_runs} 失败={failed_runs} 失败次数位={detail_times}")
     print(f"代码版本: d230f48 (10-08)", end="")
     print(diag)
