@@ -20,6 +20,18 @@ def _yi(v: Optional[float]) -> str:
     return f"{v:+.2f}亿"
 
 
+def _cum_label(x: Dict[str, Any]) -> str:
+    """累计额口径标签。
+
+    cum 的天数不固定：健康态=请求的 days 天，datacenter 兜底态=仅 1 天。
+    旧版不分口径一律渲染，会把兜底的**单日值**误读成多日累计。
+    """
+    n = x.get("days_n")
+    if not isinstance(n, int) or x.get("cum") is None:
+        return ""
+    return f" [{n}日计{_yi(x.get('cum'))}]"
+
+
 def render_moneyflow(mf: Optional[Dict[str, Any]], top: int = 5) -> str:
     """渲染资金流段落。mf 为 None/异常时返回说明性文本。"""
     if not mf:
@@ -28,6 +40,13 @@ def render_moneyflow(mf: Optional[Dict[str, Any]], top: int = 5) -> str:
         return f"💰 **资金流**：获取失败（{mf['error'][:60]}）\n"
 
     lines: List[str] = ["💰 **主力资金流（东财）**"]
+
+    # 口径标注（2026-10-09）：datacenter 兜底态下只有当日快照、无中/小单拆分、
+    # 且 cum 是单日值。
+    # 必须显式告知口径，否则读者会把单日净额当多日累计、把缺拆分当“无小单动向”。
+    note = mf.get("degraded_note")
+    if note:
+        lines.append(f"　⚠️ 口径降级：{note}")
 
     # ── 市场级：行业聚合 ──
     tot = mf.get("market_net_total")
@@ -51,7 +70,8 @@ def render_moneyflow(mf: Optional[Dict[str, Any]], top: int = 5) -> str:
         for x in ti[:top]:
             pct = x.get("main_pct")
             pct_s = f"({pct:+.2f}%)" if isinstance(pct, (int, float)) else ""
-            lines.append(f"　　{x['code']} {x.get('name','')}  {_yi(x.get('main'))} {pct_s}")
+            cum_s = _cum_label(x)
+            lines.append(f"　　{x['code']} {x.get('name','')}  {_yi(x.get('main'))} {pct_s}{cum_s}")
 
     to = mf.get("top_outflow") or []
     if to:
@@ -59,7 +79,8 @@ def render_moneyflow(mf: Optional[Dict[str, Any]], top: int = 5) -> str:
         for x in to[:top]:
             pct = x.get("main_pct")
             pct_s = f"({pct:+.2f}%)" if isinstance(pct, (int, float)) else ""
-            lines.append(f"　　{x['code']} {x.get('name','')}  {_yi(x.get('main'))} {pct_s}")
+            cum_s = _cum_label(x)
+            lines.append(f"　　{x['code']} {x.get('name','')}  {_yi(x.get('main'))} {pct_s}{cum_s}")
 
     # ── 北向 ──
     nb = mf.get("northbound") or {}
@@ -78,7 +99,6 @@ def render_moneyflow(mf: Optional[Dict[str, Any]], top: int = 5) -> str:
     errs = mf.get("errors") or []
     if errs:
         lines.append(f"　⚠️ 未取到 {len(errs)} 只：{'、'.join(e.split(':')[0] for e in errs[:5])}")
-
     return "\n".join(lines) + "\n"
 
 

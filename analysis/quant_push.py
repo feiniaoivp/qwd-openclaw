@@ -6,8 +6,10 @@
 """
 
 import sys
+import os
 import json
 import subprocess
+from datetime import date
 
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
 sys.path.insert(0, WORKSPACE)
@@ -16,23 +18,35 @@ from send_telegram import send_with_retry
 
 
 def run_and_push():
-    # 运行 backtest_strategies.py 并捕获输出
-    result = subprocess.run(
-        [sys.executable, "analysis/backtest_strategies.py"],
-        cwd=WORKSPACE,
-        capture_output=True,
-        text=True,
-        timeout=1800  # 回测可能需要较长时间（2026-10-02: 600s 在 akshare 降级链下不够用）
-    )
-    
+    # 运行 backtest_strategies.py；stdout 直接落盘到 logs/，
+    # 这样即使父进程/包装 shell 被杀，JSON 摘要也不会丢失（2026-10-09 教训）
+    log_dir = os.path.join(WORKSPACE, "logs")
+    os.makedirs(log_dir, exist_ok=True)
+    log_path = os.path.join(log_dir, f"backtest_run_{date.today():%Y%m%d}.log")
+    with open(log_path, "w", encoding="utf-8") as logf, \
+            open(log_path + ".err", "w", encoding="utf-8") as errf:
+        result = subprocess.run(
+            [sys.executable, "analysis/backtest_strategies.py"],
+            cwd=WORKSPACE,
+            stdout=logf,
+            stderr=errf,
+            text=True,
+            timeout=1800  # 回测可能需要较长时间（2026-10-02: 600s 在 akshare 降级链下不够用）
+        )
+
+    with open(log_path, encoding="utf-8") as f:
+        stdout_text = f.read()
+    with open(log_path + ".err", encoding="utf-8") as f:
+        stderr_text = f.read()
+
     if result.returncode != 0:
-        error_msg = f"❌ backtest_strategies 执行失败:\n{result.stderr[-2000:]}"
+        error_msg = f"❌ backtest_strategies 执行失败:\n{stderr_text[-2000:]}"
         print(error_msg)
         send_with_retry(error_msg, parse_mode='')
         return False
     
     # 提取 JSON (在 =====BACKTEST_RESULT===== 和 =====BACKTEST_END===== 之间)
-    output = result.stdout
+    output = stdout_text
     try:
         start = output.index("=====BACKTEST_RESULT=====") + len("=====BACKTEST_RESULT=====")
         end = output.index("=====BACKTEST_END=====")
@@ -45,7 +59,7 @@ def run_and_push():
         return False
     
     # 生成简报文本
-    summary = format_summary(data, result.stdout)
+    summary = format_summary(data, stdout_text)
     
     # 发送到 Telegram (纯文本模式)
     send_result = send_with_retry(summary, parse_mode='')

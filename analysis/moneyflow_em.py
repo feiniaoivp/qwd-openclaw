@@ -24,7 +24,11 @@ from __future__ import annotations
 import time
 import json
 import threading
+import logging
+from urllib.parse import quote
 from typing import Dict, List, Optional, Any
+
+_log = logging.getLogger(__name__)
 
 try:
     from curl_cffi import requests as _cr
@@ -154,6 +158,170 @@ def _to_secid(code: str) -> str:
 
 
 # ────────────────────────────────────────────
+# 第三路兜底：datacenter-web 龙虎榜资金表（2026-10-09）
+# ────────────────────────────────────────────
+# 背景（2026-10-09 实测坐实）：push2/push2his 的 fflow 专属路径被 path 级掐断——
+#   同一时刻同 host 的 /api/qt/stock/kline/get（普通K线）与 /api/qt/stock/get 仍 200，
+#   但 /api/qt/stock/fflow/{kline,daykline} 在 curl_cffi(chrome/safari/edge/无指纹)
+#   与**裸 curl 双通道**下全部 curl:56 / 000。白天 04:4x 的"裸 curl 独赢窗口"到
+#   20:2x 已完全消失 → 不是限流自愈，是封禁收紧/接口变更。
+#   另：官方 akshare 的 stock_individual_fund_flow（同走 push2his daykline）现网
+#   同样 ConnectionError → 上游全网性退化，非本机特化封锁，也**没有"新版接口"可切**。
+#
+# 新通道：datacenter-web.eastmoney.com 龙虎榜资金表 RPT_DMSK_TS_STOCKNEW
+#   - 不同域名/网关，实测不吃 push2 封锁（稳定 200）
+#   - 支持 filter IN 批量：一次请求取回整池（35/35 实测全中）
+#   - 口径自洽性已校验：PRIME_INFLOW == (SUPERDEAL_IN-SUPERDEAL_OUT)
+#     + (BIGDEAL_IN-BIGDEAL_OUT)，与 push2 的 main == xlarge + large **完全等价**
+#   - 局限（故只作兜底，不作主源）：①**仅当日快照，无历史多日**（历史报表名
+#     RPT_DMSK_TS_STOCKHIS / _DAILY 实测"报表配置不存在"）；②只有超大单/大单，
+#     **无中单/小单拆分**（small/medium 置 None，不填 0 以免伪装成真实观测）；
+#     ③无 main_pct，置 None 由下游按缺失处理。
+_DC_URL = "https://datacenter-web.eastmoney.com/api/data/v1/get"
+_DC_HEADERS = {
+    "User-Agent": ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                   "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"),
+    "Referer": "https://data.eastmoney.com/",
+}
+_DC_TTL = 600.0  # 当日快照，10 分钟进程内缓存
+_dc_cache: Dict[str, Any] = {"ts": 0.0, "rows": {}}
+
+# 🔴 push2 熔断器（2026-10-09）：fflow 双路每票要等满 _MAX_TOTAL_TIME 才失败，
+#   35 只全池串行 ≈ 35 分钟，会直接撑爆 cron（close_scan 720s / 收盘推送 900s）。
+#   故：连续 _FF_CIRCUIT_TRIP 次双路全挂后，在 _FF_CIRCUIT_COOLDOWN 秒内**跳过
+#   push2 直接走 datacenter 兜底**；冷却结束后放行一只探测（半开），成功即复位。
+#   注意：熔断只是"不打死磕一个已被掐断的端点"，不是把它当健康——探测照做，
+#   且降级来源在返回里显式标注（_degraded / _source），禁止伪装成主源。
+#   trip=2：单次双路全挂耗时 ≈ 2×_MAX_TOTAL_TIME(15s)=30s+，第 3 次继续死磕会
+#   白烧 30s；收盘推送 job 预算 900s，把浪费压在 ~60s 内才可能长期挂在流水线里。
+#   cooldown=900s：覆盖一整轮收盘扫描；到期放行一只真实探测（半开）判恢复。
+_FF_CIRCUIT_TRIP = 2
+_FF_CIRCUIT_COOLDOWN = 900.0
+_ff_circuit: Dict[str, Any] = {"fails": 0, "open_until": 0.0}
+
+
+def _ff_push2_down() -> bool:
+    """push2 是否处于熔断打开状态（True = 本次应跳过 push2 直接走兜底）。"""
+    return time.time() < _ff_circuit["open_until"]
+
+
+def _ff_record(push2_ok: bool) -> None:
+    if push2_ok:
+        if _ff_circuit["fails"] or _ff_circuit["open_until"]:
+            _log.info("push2 fflow 探测恢复，熔断复位")
+        _ff_circuit["fails"] = 0
+        _ff_circuit["open_until"] = 0.0
+        return
+    _ff_circuit["fails"] += 1
+    if _ff_circuit["fails"] >= _FF_CIRCUIT_TRIP:
+        _ff_circuit["fails"] = 0
+        _ff_circuit["open_until"] = time.time() + _FF_CIRCUIT_COOLDOWN
+        _log.warning(
+            "push2 fflow 连续 %d 次双路全挂 → 熔断 %.0fs，期间直接走 datacenter 兜底",
+            _FF_CIRCUIT_TRIP, _FF_CIRCUIT_COOLDOWN)
+
+
+def _dc_via_requests(url: str) -> Optional[dict]:
+    import requests
+    r = requests.get(url, headers=_DC_HEADERS, timeout=15)
+    return r.json() if r.status_code == 200 and r.content else None
+
+
+def _dc_via_curl_cffi(url: str) -> Optional[dict]:
+    r = _cr.get(url, headers=_DC_HEADERS, impersonate=_IMPERSONATE, timeout=15)
+    return r.json() if r.status_code == 200 and r.content else None
+
+
+def _dc_request(filter_expr: str, page_size: int = 500) -> List[Dict[str, Any]]:
+    """请求 datacenter-web 资金表（requests 主、curl_cffi 兜底；失败返回空列表）。"""
+    url = (f"{_DC_URL}?reportName=RPT_DMSK_TS_STOCKNEW&columns=ALL"
+           f"&filter={quote(filter_expr)}&pageSize={page_size}&pageNumber=1"
+           "&sortColumns=PRIME_INFLOW&sortTypes=-1&source=WEB&client=WEB")
+    last_err = None
+    for fetch in (_dc_via_requests, _dc_via_curl_cffi):
+        try:
+            j = fetch(url)
+            if isinstance(j, dict) and j.get("result") and j["result"].get("data"):
+                return j["result"]["data"]
+            last_err = (j or {}).get("message") if isinstance(j, dict) else "empty"
+        except Exception as e:  # noqa: BLE001
+            last_err = f"{type(e).__name__}: {e}"
+    _log.warning("datacenter 资金表取数失败: %s", last_err)
+    return []
+
+
+def _dc_row_to_day(row: Dict[str, Any]) -> Dict[str, Any]:
+    """datacenter 行 → 与 daykline/rt_klt1 对齐的 day 结构（缺失项置 None，不填 0）。"""
+    def net(k_in: str, k_out: str) -> Optional[float]:
+        a, b = row.get(k_in), row.get(k_out)
+        if a is None or b is None:
+            return None
+        return float(a) - float(b)
+
+    prime = row.get("PRIME_INFLOW")
+    return {
+        "date": str(row.get("TRADE_DATE", ""))[:10],
+        "main": float(prime) if prime is not None else None,
+        "small": None,     # 本通道无小单拆分（显式 None，禁止 0 冒充）
+        "medium": None,    # 本通道无中单拆分
+        "large": net("BIGDEAL_INFLOW", "BIGDEAL_OUTFLOW"),
+        "xlarge": net("SUPERDEAL_INFLOW", "SUPERDEAL_OUTFLOW"),
+        "main_pct": None,  # 本通道无主力净占比字段
+        "_source": "datacenter_dc",
+    }
+
+
+def _dc_lookup(code: str) -> Optional[Dict[str, Any]]:
+    """按 6 位代码查当日资金流原始行；进程内缓存优先，未命中发单票请求。"""
+    now = time.time()
+    if now - _dc_cache["ts"] > _DC_TTL:
+        _dc_cache["rows"] = {}
+        _dc_cache["ts"] = now
+    rows = _dc_cache["rows"]
+    if code in rows:
+        return rows[code]
+    data = _dc_request('(SECURITY_CODE="{}")'.format(code))
+    for row in data:
+        rows[str(row.get("SECURITY_CODE", "")).zfill(6)] = row
+    return rows.get(code)
+
+
+def dc_refresh_batch(codes: List[str]) -> int:
+    """批量预热缓存（一次 filter IN 请求覆盖整池）。返回命中只数。
+
+    逐票调用 stock_flow 前调本函数，可把 N 次 datacenter 请求压成 1 次。
+    """
+    if not codes:
+        return 0
+    inlist = ",".join(f'"{str(c).strip().zfill(6)}"' for c in codes)
+    data = _dc_request(f"(SECURITY_CODE in ({inlist}))",
+                       page_size=max(50, len(codes) * 2))
+    if not data:
+        return 0
+    _dc_cache["rows"].update(
+        {str(r.get("SECURITY_CODE", "")).zfill(6): r for r in data})
+    _dc_cache["ts"] = time.time()
+    return len(data)
+
+
+def _dc_fund_flow(secid: str) -> Optional[Dict[str, Any]]:
+    """第三路兜底入口：返回与 _fflow 同构的 {code,name,days:[...]}（仅当日一天）。"""
+    code = str(secid).split(".")[-1].zfill(6)
+    row = _dc_lookup(code)
+    if not row:
+        return None
+    day = _dc_row_to_day(row)
+    if day.get("main") is None:
+        return None
+    return {
+        "code": str(row.get("SECURITY_CODE", code)),
+        "name": row.get("SECURITY_NAME_ABBR"),
+        "days": [day],
+        "_degraded": "datacenter 兜底：仅当日、无中/小单拆分、无 main_pct",
+    }
+
+
+# ────────────────────────────────────────────
 # 指数 / 个股 主力资金流
 # ────────────────────────────────────────────
 
@@ -199,10 +367,15 @@ def _fflow(secid: str, lmt: int = 5) -> Optional[Dict[str, Any]]:
 
     2026-10-06 改造（用户批准，09-30 对照实验结论落地）：
     1. 当日行：push2 klt=1 实时快照（主源，现网高成功率）
-    2. 历史行：push2his daykline（结构性退化≤50%，能拉到则拼接，拉不到降级仅当日）
+    2. 历史行：push2his daykline（结构性退化，能拉到则拼接，拉不到降级仅当日）
     3. 两路全失败才返回 None（旧版 daykline 单点失败即整单 None → 静默失效多日的根因）。
+    4. 2026-10-09 新增：**datacenter 兜底**（见 _dc_fund_flow）。当日 push2/push2his 的
+       fflow 专属路径被 path 级掐断（curl:56，同 host 其他 path 正常）时，走
+       datacenter-web 的龙虎榜资金表，单票/批量均可，且不吃 push2 的限流。
     """
-    rt = _fflow_realtime(secid)
+    skip_push2 = _ff_push2_down()
+
+    rt = None if skip_push2 else _fflow_realtime(secid)
 
     # 历史 daykline（失败只降级不报错）
     hist_days: List[Dict[str, Any]] = []
@@ -210,7 +383,7 @@ def _fflow(secid: str, lmt: int = 5) -> Optional[Dict[str, Any]]:
     url = (f"https://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get"
            f"?lmt={lmt}&klt=101&secid={secid}"
            f"&fields1=f1,f2,f3,f7&fields2={_FFLOW_FIELDS}&ut={_UT}")
-    d = _get(url)
+    d = None if skip_push2 else _get(url)
     if d and not d.get("_error") and d.get("data"):
         hist_meta = {"code": d["data"].get("code"), "name": d["data"].get("name")}
         # f51=日期 f52=主力净额 f53=小单 f54=中单 f55=大单 f56=超大单 f57=主力净占比 f58=?
@@ -229,7 +402,19 @@ def _fflow(secid: str, lmt: int = 5) -> Optional[Dict[str, Any]]:
                 "_source": "daykline",
             })
 
-    if not rt and not hist_days:
+    push2_ok = bool(rt or hist_days)
+    if not skip_push2:
+        # 只按**真实探测**记账；熔断打开期间的跳过不计入，
+        # 否则冷却期会被自己的跳过无限续期，永远得不到恢复探测。
+        _ff_record(push2_ok)
+
+    if not push2_ok:
+        # 4) 第三路兜底：datacenter-web（push2 系 fflow 路径被掐断时的可用通道）
+        dc = _dc_fund_flow(secid)
+        if dc:
+            _log.info("stock_flow(%s) 走 datacenter 兜底成功（push2 双路失败）", secid)
+            return dc
+        _log.warning("stock_flow(%s) 三路全失败（push2 双路 + datacenter）", secid)
         return None
 
     out = {"code": (rt or {}).get("code") or hist_meta.get("code"),
@@ -297,7 +482,17 @@ def stock_flow(stock_code: str, lmt: int = 5) -> Optional[Dict[str, Any]]:
 
 
 def batch_stock_flow(codes: List[str], lmt: int = 3) -> Dict[str, Optional[Dict[str, Any]]]:
-    """批量个股主力资金流（串行，带重试；注意东财限流，建议 <=30 只）"""
+    """批量个股主力资金流（串行，带重试；注意东财限流，建议 <=30 只）。
+
+    2026-10-09：先用**一次** datacenter 批量请求预热缓存（dc_refresh_batch），
+    这样即使 push2 被掐断，逐票也只需命中缓存而不必各打一次接口。
+    """
+    try:
+        n = dc_refresh_batch(codes)
+        if n:
+            _log.info("datacenter 预热命中 %d/%d 只", n, len(codes))
+    except Exception as e:  # noqa: BLE001
+        _log.warning("datacenter 预热失败（不影响逐票路径）: %s", e)
     out: Dict[str, Optional[Dict[str, Any]]] = {}
     for c in codes:
         out[c] = stock_flow(c, lmt=lmt)

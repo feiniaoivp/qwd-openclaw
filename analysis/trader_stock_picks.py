@@ -89,6 +89,13 @@ def get_fund_flow(symbol: str) -> Dict[str, float]:
     """Fetch main force net inflow, etc.
     2026-10-05 改：akshare stock_individual_fund_flow（东财）在本机被 TLS 指纹拦截；
     改用 moneyflow_em（curl_cffi Chrome 指纹 + push2delay 回退链，已实战验证可用）。
+
+    2026-10-09 改：**缺失字段保留 None，不再 `or 0`**。
+    moneyflow_em 新增了 datacenter 兜底通道，该通道**只有当日、且无中/小单拆分
+    与 main_pct**（上游就没这些字段）。旧写法 `get(k, 0) or 0` 会把 None 洗成 0，
+    等于把「未观测」伪造成「观测到 0 净流入」——同 10-05「隐性 5.0 把贵票伪装成
+    中档票」教训的字段版。当前 score_fund_flow 只消费 main_net_in（三路均有值），
+    改动不影响现有分数；但不修就是下一次 key/口径契约事故的种子。
     """
     try:
         from analysis.moneyflow_em import stock_flow
@@ -96,12 +103,12 @@ def get_fund_flow(symbol: str) -> Dict[str, float]:
         if r and r.get("days"):
             latest = r["days"][-1]
             return {
-                "main_net_in": latest.get("main", 0) or 0,
-                "main_net_in_rate": latest.get("main_pct", 0) or 0,
-                "super_net_in": latest.get("xlarge", 0) or 0,
-                "big_net_in": latest.get("large", 0) or 0,
-                "medium_net_in": latest.get("medium", 0) or 0,
-                "small_net_in": latest.get("small", 0) or 0,
+                "main_net_in": latest.get("main"),
+                "main_net_in_rate": latest.get("main_pct"),
+                "super_net_in": latest.get("xlarge"),
+                "big_net_in": latest.get("large"),
+                "medium_net_in": latest.get("medium"),
+                "small_net_in": latest.get("small"),
             }
     except Exception as e:
         import logging

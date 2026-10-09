@@ -859,27 +859,52 @@ def collect_moneyflow(codes: list[str], name_map: dict[str, str], days: int = 3)
         return out
 
     # ── 1) 个股主力资金流 ──
+    # 2026-10-09：先做一次 datacenter 批量预热（1 次请求覆盖整池）。push2 系 fflow
+    # 路径被掐断时，moneyflow_em 会自动逐票回落到 datacenter；预热可把 N 次请求压成 1 次。
+    #   注意：dc_refresh_batch 成功**不代表** push2 挂了（datacenter 平时也可用），
+    #   故降级告警只看下面逐票结果的 degraded 标记，不看预热结果。
+    try:
+        from analysis.moneyflow_em import dc_refresh_batch
+        dc_refresh_batch(list(codes))
+    except Exception as e:  # noqa: BLE001
+        out["errors"].append(f"moneyflow prewarm: {e}")
+
     for code in codes:
         try:
             d = stock_flow(code, lmt=days)
             if not d or not d.get("days"):
-                # 东财对少数标的（如 601995 中金公司）返回 rc=100/data=null，
-                # 属**上游数据本身缺失**，非网络/代码问题。
-                out["errors"].append(f"{code}: 上游无资金流数据(rc=100/data=null)")
+                # 三路（push2 实时 / daykline / datacenter）全空才到这里。既往仅标注
+                # rc=100/data=null，现在也可能是网络全断，故如实带上排查方向。
+                out["errors"].append(
+                    f"{code}: 资金流三路全空(上游无数据 rc=100 或网络全断)")
                 continue
             last = d["days"][-1]
+            n_days = len(d["days"])
             cum = sum(x.get("main") or 0 for x in d["days"])
             out["stocks"][code] = {
                 "name": name_map.get(code, d.get("name") or ""),
                 "date": last["date"],
                 "main": round((last.get("main") or 0) / 1e8, 4),
-                "xlarge": round((last.get("xlarge") or 0) / 1e8, 4),
-                "large": round((last.get("large") or 0) / 1e8, 4),
+                "xlarge": round((last.get("xlarge") or 0) / 1e8, 4) if last.get("xlarge") is not None else None,
+                "large": round((last.get("large") or 0) / 1e8, 4) if last.get("large") is not None else None,
                 "main_pct": last.get("main_pct"),
+                # ⚠️ cum 的天数**不固定**：健康态=days 天，datacenter 兜底态=仅 1 天。
+                #    渲染层必须按 days_n 标注口径，禁止把 cum 一律当"3 日累计"。
                 "cum": round(cum / 1e8, 4),
+                "days_n": n_days,
+                "degraded": bool(d.get("_degraded")),
             }
         except Exception as e:  # noqa: BLE001
             out["errors"].append(f"{code}: {e}")
+
+    # 口径告警：只要有票走兜底，整块资金流就必须显式标半口径（禁止静默混口径）。
+    # ⚠️ 走**独立字段**而非 errors[]：errors 会被渲染层当"未取到 N 只"播报，
+    #    而兜底票**是有数据的**（只是口径窄），两者语义完全不同，混用会误报缺数。
+    _degraded = [c for c, v in out["stocks"].items() if v.get("degraded")]
+    if _degraded:
+        out["degraded_note"] = (
+            f"{len(_degraded)}/{len(codes)} 只走 datacenter 兜底"
+            "（仅当日快照、无中/小单拆分、cum 为单日值）")
         time.sleep(0.2)  # 东财限流保护
 
     # ── 2) 行业板块（全市场口径首选）──
