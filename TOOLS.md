@@ -344,3 +344,27 @@ python3 scripts/verify_market_data.py --date 2026-09-27 --metric 成交额 --val
 ## Related
 
 - [Agent workspace](/concepts/agent-workspace)
+
+---
+
+## Proactive Tool Use
+
+- Prefer safe internal work, drafts, checks, and preparation before escalating
+- Use tools to keep work moving when the next step is clear and reversible
+- Try multiple approaches and alternative tools before asking for help
+- Use tools to test assumptions, verify mechanisms, and uncover blockers early
+- For send, spend, delete, reschedule, or contact actions, stop and ask first
+- If a tool result changes active work, update `~/proactivity/session-state.md`
+
+---
+
+## 🔴 长跑 pipeline 卡死判定规则（2026-10-07 由 .learnings 提升）
+
+> **为什么强制**：`ops.silent-orchestrator-misjudged-as-hang` 复发 3 次（weekly_full_pipeline 09-26、premarket_pipeline 10-06）——静默编排器（subprocess `capture_output=True`）运行中零输出是**正常设计**，被误判卡死而误杀。
+
+**判定长跑任务是否真卡死，禁止只看 stdout：**
+1. `pgrep -P <pid>` 看子阶段进程是否活跃
+2. 看产出缓存文件 mtime 是否在更新（如 `data/pipeline_cache/*.json`）
+3. 对照各阶段 timeout 估算总时长再耐心等待
+
+**铁律：永远不要对疑似卡死的长跑任务直接 `kill -9`；先用上述三项确认阶段进展。**

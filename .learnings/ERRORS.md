@@ -2,7 +2,7 @@
 
 **Logged**: 2026-09-26
 **Priority**: medium
-**Status**: resolved (2026-10-07 triage: 与 ERR-20261006-PM 同模式——静默编排/长跑 pipeline, 见下)
+**Status**: promoted (2026-10-07 → TOOLS.md「长跑 pipeline 卡死判定规则」；2026-10-09 复核确认提升生效)
 
 ### What happened The `python3 analysis/weekly_full_pipeline.py` command was executed as part of the weekly backtest pipeline cron job. The script ran for several minutes without producing any output to stdout or stderr. Attempts to poll for output returned nothing. The process was eventually killed as it appeared to be hanging.
 ### What to do differently
@@ -20,6 +20,7 @@ Investigate `analysis/weekly_full_pipeline.py`; check for deadlocks/infinite loo
 - First-Seen: 2026-09-26
 - Last-Seen: 2026-10-06
 - See Also: ERR-20261006-PM (same pattern), LEARNINGS cron.silent-noop-fake-ok (同主题：表面状态不可信)
+- Promoted: TOOLS.md「🔴 长跑 pipeline 卡死判定规则」(2026-10-07 提升；2026-10-09 维护复核确认生效，Source: .learnings/ERRORS.md#ERR-20260926-WBP)
 
 ## [ERR-20260927-87V] openclaw_session_sweep
 
@@ -151,17 +152,45 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 - 判断长跑 pipeline 是否卡死，不要只看 stdout：应检查 ①子进程树 `pgrep -P <pid>` 是否有活跃子阶段脚本 ②产出缓存文件 mtime 是否在更新 ③对照各阶段 timeout 配置估算总时长（本 pipeline 最坏情况 ~20+ 分钟）。
 - 永远不要对疑似卡死的长跑任务直接 `kill -9`，先确认阶段进展。
 - 静默编排器（capture_output 模式）"无输出"是常态，需按预期总时长耐心等待。
-**Promoted**: TOOLS.md (2026-10-07)
+**Promoted**: TOOLS.md (2026-10-07)「🔴 长跑 pipeline 卡死判定规则」/ 2026-10-09 复核确认生效
 **Pattern-Key**: ops.silent-orchestrator-misjudged-as-hang
 - See Also: LEARNINGS 2026-09-29 cron.silent-noop-fake-ok (同主题：表面状态不可信,需看真实执行); ERR-20260926-WBP (same pattern)
 - Recurrence-Count: 3
 - First-Seen: 2026-09-26
 - Last-Seen: 2026-10-06
+- Promoted: TOOLS.md「🔴 长跑 pipeline 卡死判定规则」(Source: .learnings/ERRORS.md#ERR-20261006-PM)
 
 ## ERR-20261008-ModelGarbledOutput
 **Date**: 2026-10-08 18:18
+**Priority**: high
+**Status**: resolved (2026-10-09 triage: 两处根因均已定型并提升至 AGENTS.md)
+**Area**: runtime/model
 **What Happened**: 长任务（关注池35只全量扫描）后台跑时，主模型 GLM-5.3-Flash 在 visible reply 输出完全乱码（中英日混杂、无关字符墙），用户质问"你这写的是什么啊"。同轮脚本自身也崩（第4只票 baostock 返回含空字符串 `''`，`astype(float)` 直接 ValueError）。
 **Root Cause**: ①模型级输出退化（GLM-5.3-Flash 此前已因 26s 超时被排除，本轮又乱码——免费快速模型长任务不可靠的又一实证）；②baostock 停牌/缺失日返回空字符串而非 NaN，需 `pd.to_numeric(errors='coerce')` 容错。
 **Pattern-Key**: model.free-quick-garbled-longtask; data.empty-string-float
 **Fix**: 模型乱码无法会话内自修，只能换模型/重试；脚本修复=to_numeric coerce + dropna 后重跑，35/35 全成。
 **See Also**: MEMORY 2026-10-01 模型发坏条目（Vision-Exp 参数多包层）
+
+### Resolution (2026-10-09 triage)
+- **Resolved**: 2026-10-09
+- **Notes**: ①`data.empty-string-float` 已修复（pd.to_numeric(errors='coerce')+dropna，35/35 跑通）并提升为 AGENTS.md
+  “配套铁律 数据源返回类型必须容错”；②`model.free-quick-garbled-longtask` 为模型侧退化，防治规则已提升为
+  AGENTS.md“配套铁律 免费快速模型不许跑长任务”。两条根因均已固化，本条目关闭。
+**Promoted**: AGENTS.md (2026-10-09, 配套铁律 ×2)
+**Recurrence-Count**: 1
+**First-Seen**: 2026-10-08
+**Last-Seen**: 2026-10-08
+
+## ERR-20261009-AuctionLateStartEmptySnapshot
+**Date**: 2026-10-09 09:25
+**Priority**: high
+**Status**: fixed (2026-10-09)
+**Area**: analysis/auction_feed
+**What Happened**: cron 09:25 触发 `analysis/auction_feed.py`，产出 0/27 空快照（新浪0+pytdx0），exit 1。与 10-08 空快照假 ok 同一类事故。
+**Root Cause**: 脚本设计为"09:15 前启动、持续轮询、09:25:05 快照"，但 cron 在 09:25:00 才拉起。启动耗时（import + pytdx TCP 连接，含连不通的 180.153.18.170 超时）使实际进入循环时已 ≥09:25:05。`sina_loop` 与 pytdx `run_loop` 的首个循环检查立即命中"硬截止"分支并 break，**从未抓取过一次** → merged_snapshot 为空。新浪源本身完全正常（手动 fetch_batch 27/27）。
+**Fix**: 两个循环的硬截止分支增加"晚启动兜底"：若尚未抓取过，则在 break 前强制抓取一次当前行情（sina `late_start_fetch_done` 标志 + pytdx `fetched_once` 标志），保证即使晚启动也至少落一次真实快照。已通过隔离模拟验证新浪路径 27/27。
+**Pattern-Key**: analysis.late-start-cutoff-before-first-fetch
+**See Also**: ERR-20261008-AuctionEmptySnapshot（10-08 同类）；cron.silent-noop-fake-ok
+**Recurrence-Count**: 1
+**First-Seen**: 2026-10-09
+**Last-Seen**: 2026-10-09

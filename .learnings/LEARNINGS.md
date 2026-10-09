@@ -51,8 +51,9 @@ Corrections, insights, and knowledge gaps captured during development.
 
 **Pattern-Key:** cron.silent-noop-fake-ok
 - See Also: ERR-20261006-PM ops.silent-orchestrator-misjudged-as-hang (同主题：表面状态不可信,需看真实执行/产出)
-- Recurrence-Count: 2
+**Promoted**: AGENTS.md (2026-10-09)「🧠 教训固化原则 · 配套铁律」；检查门禁待建：data_type_tolerance_guard
+- Recurrence-Count: 3
 - First-Seen: 2026-09-29
-- Last-Seen: 2026-09-29 (this entry) / 2026-10-06 (related ops entry)
+- Last-Seen: 2026-10-06 (this entry + related ops entry) (2026-10-08 相关：ERR-20261008-ModelGarbledOutput data.empty-string-float 同源)
 
 * **[2026-10-09] 东财限流是「间歇窗口」不是「全断」**：moneyflow 三 host curl_cffi 全 curl(56) 的同一分钟里，裸 curl 曾独赢（push2 klt=1 200/18.7KB、daykline 200/640B），1 分钟后裸 curl 同样 000。诊断此类故障禁止单窗口探测下「完全断开」结论，必须做**时间分窗多次采样**并对比 curl_cffi/裸 curl 双通道，否则会误改代码（本次代码 d230f48 保持不动是正确结论）。
