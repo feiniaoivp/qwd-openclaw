@@ -273,12 +273,21 @@ class PytdxAuctionSubscriber:
         if not self._connect():
             return
 
+        fetched_once = False
         try:
             while not self._stop_event.is_set():
                 now = datetime.now()
                 # 硬截止：9:25:05 后强制退出循环
                 if now.hour == 9 and now.minute >= 25 and now.second >= 5:
                     print("[INFO] 9:25:05 硬截止，退出 pytdx 订阅循环")
+                    # 晚启动兜底：尚未抓取过则至少抓一次（cron 09:25 触发+连接耗时场景）
+                    if not fetched_once:
+                        batch = self._fetch_once()
+                        if batch:
+                            self.snapshot.update(batch)
+                            print(f"[INFO] 晚启动兜底抓取: pytdx {len(batch)} 只")
+                    break
+                if now.hour > 9:
                     break
                 # 仅在竞价时段运行
                 if not (now.hour == 9 and now.minute >= 15 and now.minute < 26):
@@ -290,6 +299,7 @@ class PytdxAuctionSubscriber:
                 batch = self._fetch_once()
                 if batch:
                     self.snapshot.update(batch)
+                    fetched_once = True
 
                 sleep_sec = 1 if now.minute >= 25 else 3
                 time.sleep(sleep_sec)
@@ -355,10 +365,22 @@ def run_auction_capture() -> Optional[Path]:
     snapshot_lock = Thread()
 
     # —— 新浪实时轮询线程 —— 
+    late_start_fetch_done = False
     def sina_loop():
+        nonlocal late_start_fetch_done
         while True:
             now = datetime.now()
-            if now.hour == 9 and now.minute >= 25 and now.second >= 5:
+            past_cutoff = (now.hour == 9 and now.minute >= 25 and now.second >= 5) or now.hour > 9
+            if past_cutoff:
+                # 晚启动兜底：脚本可能在 9:25 后才被拉起（cron 09:25 触发 + 启动/连接耗时），
+                # 此时轮询循环尚未抓取过一次。必须至少抓取一次当前行情，否则快照为空。
+                # 见 2026-10-09 空快照事故 + 10-08 同类事故。
+                if not late_start_fetch_done:
+                    late_start_fetch_done = True
+                    batch = SinaRealtimeFeed.fetch_batch(symbols, timeout=5.0)
+                    if batch:
+                        merged_snapshot.update(batch)
+                        print(f"[INFO] 晚启动兜底抓取: 新浪 {len(batch)} 只")
                 break
             if not (now.hour == 9 and now.minute >= 15):
                 time.sleep(10)
