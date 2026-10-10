@@ -31,6 +31,78 @@ COMMISSION = 0.0003
 SLIPPAGE = 0.001
 CAPITAL = 100_000
 
+
+def fetch_daily_qfq(symbol_ak="sz000157", symbol_em="000157", symbol_bs="sz.000157"):
+    """多源降级获取前复权日线：新浪akshare → 东财akshare → baostock。
+
+    统一输出列 date/open/high/low/close/volume（volume 单位统一为股）。
+    任一源空/异常即换下一源；全部失败抛 RuntimeError（调用方兜底输出 error JSON）。
+    模式源自 ERR-20261002-BSL：主源失败应降级而非致命。
+    """
+    end = datetime.now().strftime("%Y%m%d")
+    errors = []
+    # 源1: akshare 新浪（历史主源）
+    try:
+        df = ak.stock_zh_a_daily(symbol=symbol_ak, start_date="20240101", end_date=end, adjust="qfq")
+        if df is not None and not df.empty:
+            df = df[["date", "open", "high", "low", "close", "volume"]].copy()
+            df["date"] = pd.to_datetime(df["date"])
+            for c in ("open", "high", "low", "close", "volume"):
+                df[c] = pd.to_numeric(df[c], errors="coerce")
+            df = df.dropna(subset=["close"])
+            if not df.empty:
+                return df.sort_values("date").reset_index(drop=True)
+        errors.append("sina: 空")
+    except Exception as e:
+        errors.append(f"sina: {e}")
+    # 源2: akshare 东财（成交量单位为手，换算成股对齐）
+    try:
+        df = ak.stock_zh_a_hist(symbol=symbol_em, period="daily", start_date="20240101", end_date=end, adjust="qfq")
+        if df is not None and not df.empty:
+            col = {"日期": "date", "开盘": "open", "最高": "high", "最低": "low", "收盘": "close", "成交量": "volume"}
+            df = df.rename(columns=col)[list(col.values())].copy()
+            df["date"] = pd.to_datetime(df["date"])
+            for c in ("open", "high", "low", "close", "volume"):
+                df[c] = pd.to_numeric(df[c], errors="coerce")
+            df["volume"] = df["volume"] * 100  # 手 -> 股
+            df = df.dropna(subset=["close"])
+            if not df.empty:
+                return df.sort_values("date").reset_index(drop=True)
+        errors.append("eastmoney: 空")
+    except Exception as e:
+        errors.append(f"eastmoney: {e}")
+    # 源3: baostock（登录失败不应致命，直接进下一源；负缓存由 bs_session 负责）
+    try:
+        import baostock as bs
+        lg = bs.login()
+        try:
+            if lg.error_code != "0":
+                raise RuntimeError(f"登录失败 {lg.error_code} {lg.error_msg}")
+            rs = bs.query_history_k_data_plus(
+                symbol_bs, "date,open,high,low,close,volume",
+                start_date="2024-01-01", end_date=datetime.now().strftime("%Y-%m-%d"),
+                frequency="d", adjustflag="2")
+            rows = []
+            while rs.error_code == "0" and rs.next():
+                rows.append(rs.get_row_data())
+            if rows:
+                df = pd.DataFrame(rows, columns=["date", "open", "high", "low", "close", "volume"])
+                df["date"] = pd.to_datetime(df["date"])
+                for c in ("open", "high", "low", "close", "volume"):
+                    df[c] = pd.to_numeric(df[c], errors="coerce")
+                df = df.dropna(subset=["close"])
+                if not df.empty:
+                    return df.sort_values("date").reset_index(drop=True)
+            errors.append("baostock: 空数据")
+        finally:
+            try:
+                bs.logout()
+            except Exception:
+                pass
+    except Exception as e:
+        errors.append(f"baostock: {e}")
+    raise RuntimeError("全部数据源失败: " + " | ".join(errors))
+
 # 共享策略库 (2026-09-11): 中联重科双策略统一实现, 消除多脚本重复漂移
 sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
 from strategies import (
@@ -221,28 +293,10 @@ def calc_portfolio_value(state, price):
 
 def main():
     try:
-        # 获取最新数据
-        df = ak.stock_zh_a_daily(symbol='sz000157',
-            start_date='20250101',
-            end_date=datetime.now().strftime('%Y%m%d'),
-            adjust='qfq')
-        if df is None or df.empty:
-            raise Exception("无数据")
-
-        df["date"] = pd.to_datetime(df["date"])
-        df = df.sort_values("date").reset_index(drop=True)
-        # 需要至少3个月数据计算指标
+        # 获取最新数据（多源降级：新浪 -> 东财 -> baostock，2026-10-11 接入降级链）
+        df = fetch_daily_qfq()
         if len(df) < 120:
-            # 补数据
-            df_long = ak.stock_zh_a_daily(symbol='sz000157',
-                start_date='20240101',
-                end_date=datetime.now().strftime('%Y%m%d'),
-                adjust='qfq')
-            if df_long is not None and not df_long.empty:
-                df_long["date"] = pd.to_datetime(df_long["date"])
-                df_long = df_long.sort_values("date").reset_index(drop=True)
-                df = df_long
-
+            raise Exception(f"可用K线不足 120 根（实际 {len(df)}），指标不可信")
     except Exception as e:
         print(json.dumps({"error": f"数据获取失败: {e}"}, ensure_ascii=False))
         return
