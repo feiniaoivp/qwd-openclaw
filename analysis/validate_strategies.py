@@ -390,9 +390,14 @@ def main(stocks=None, write_map=False, arbitrate=False):
             tune_score = tune_sharpe = tune_trades = -999
             if tune_s and tune_s in tune_details.get(symbol, {}).get("details", {}):
                 tinfo = tune_details[symbol]["details"][tune_s]
+                # 2026-10-10 修复：avg_trades 在 param_tune 输出里位于「股票层」
+                # (tune_details[symbol]['avg_trades'])，details[策略] 层并无该键。
+                # 旧写法 .get('avg_trades', 999) 恒取默认 999 → 低样本量惩罚(thr=0.4)
+                # 永远不生效。现回退到股票层取真实样本量。
                 tune_score = tinfo.get("best_score", -999)
                 tune_sharpe = tinfo.get("avg_sharpe", -999)
-                tune_trades = tinfo.get("avg_trades", 999)
+                _stock_tune = tune_details.get(symbol, {})
+                tune_trades = tinfo.get("avg_trades", _stock_tune.get("avg_trades", 999))
                 tune_ok, _ = confidence_guard(tune_score, tune_sharpe, tune_trades)
             
             # ── 仲裁逻辑 ──

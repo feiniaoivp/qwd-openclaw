@@ -367,7 +367,9 @@ def tune_single_stock(symbol: str, name: str, df: pd.DataFrame,
             def_agg = aggregate_score(wmetrics)
             if def_agg:
                 combo_best = (def_agg["score"], default_params, def_agg)
-                stock_detail[sname] = {"best_params": default_params, "best_score": def_agg["score"], "best_agg": def_agg, "fallback": True}
+                # 2026-10-10 源头修复：details[策略] 层补写 avg_trades（旧结构只有股票层有，
+                # 消费端 validate_strategies 取 details 层恒得默认 999 → 低样本量护栏失效）
+                stock_detail[sname] = {"best_params": default_params, "best_score": def_agg["score"], "best_agg": def_agg, "avg_trades": def_agg["avg_trades"], "fallback": True}
         else:
             stock_detail[sname] = {
                 "best_params": combo_best[1],
@@ -375,6 +377,8 @@ def tune_single_stock(symbol: str, name: str, df: pd.DataFrame,
                 "best_agg": combo_best[2],
                 "avg_return": combo_best[2]["avg_return"],
                 "avg_sharpe": combo_best[2]["avg_sharpe"],
+                # 2026-10-10 源头修复：同上，details[策略] 层补写 avg_trades
+                "avg_trades": combo_best[2]["avg_trades"],
             }
         
         if combo_best:
