@@ -10,12 +10,104 @@ import sys
 import json
 import subprocess
 import os
+from datetime import datetime, timedelta
 
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
 if WORKSPACE not in sys.path:
     sys.path.insert(0, WORKSPACE)
 
 from send_telegram import send_with_retry
+
+
+# ── 2026-10-11 新增：产物落盘 + 数据滞后可见化 ─────────────────────────────
+# 背景：收盘扫描此前只推 Telegram 不落盘，T 日收盘信号无档案可查
+# （10-11 晨引用 10-09_dual.md 时发现其指标实际只到 10-08，被迫手动重跑全池）。
+
+
+def _expected_latest_trading_date() -> str:
+    """最近一个交易日（含今天）。交易日判定走 analysis.service 单一来源。"""
+    from analysis.service import is_trading_day
+
+    d = datetime.now()
+    for _ in range(10):
+        ds = d.strftime("%Y-%m-%d")
+        if is_trading_day(ds):
+            return ds
+        d -= timedelta(days=1)
+    return d.strftime("%Y-%m-%d")
+
+
+def check_staleness(data: dict) -> str:
+    """数据滞后校验：滞后时返回警告前缀文本，正常返回空串。"""
+    warnings = []
+    expected = _expected_latest_trading_date()
+    data_date = data.get("data_date") or ""
+    if data_date and data_date != expected:
+        warnings.append(
+            f"⚠️ 行情日期滞后: 预期 {expected}，实际 {data_date}（指标口径以 {data_date} 为准）"
+        )
+    # K线滞后检测：spot 收盘 与 hist 最后一根收盘 不一致的占比
+    # （baostock 当日K线未更新时，指标会静默退回 T-1 口径，必须显式告警）
+    rows = data.get("watchlist_scan") or []
+    total = mism = 0
+    for r in rows:
+        ind = r.get("indicators") or {}
+        hp = (ind.get("ema_trend") or {}).get("price")
+        sp = r.get("price")
+        if hp and sp:
+            total += 1
+            if abs(sp - hp) / hp > 0.001:
+                mism += 1
+    if total and mism / total > 0.3:
+        warnings.append(
+            f"⚠️ K线滞后: {mism}/{total} 只 K线收盘不等于spot收盘（指标可能仍基于 T-1，信号降权看待）"
+        )
+    return ("\n".join(warnings) + "\n\n") if warnings else ""
+
+
+def persist_artifacts(data: dict, summary_text: str) -> list:
+    """落盘收盘扫描产物（md 简报 + slim JSON），返回写入路径列表。"""
+    data_date = data.get("data_date") or data.get("date") or datetime.now().strftime("%Y-%m-%d")
+    daily_dir = os.path.join(WORKSPACE, "analysis", "daily")
+    os.makedirs(daily_dir, exist_ok=True)
+    slim = {
+        "data_date": data.get("data_date"),
+        "scan_run_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "data_source": data.get("data_source"),
+        "summary": data.get("summary"),
+        "market_overview": data.get("market_overview"),
+        "moneyflow_degraded": bool((data.get("moneyflow") or {}).get("degraded")),
+        "stocks": [
+            {
+                "symbol": r.get("symbol"),
+                "name": r.get("name"),
+                "price": r.get("price"),
+                "change_pct": r.get("change_pct"),
+                "signal": r.get("signal"),
+                "trend": (r.get("indicators") or {}).get("ema_trend", {}).get("trend"),
+                "stop_long": (r.get("indicators") or {}).get("atr", {}).get("stop_long"),
+                "support": (r.get("indicators") or {}).get("support_resistance", {}).get("support_recent"),
+                "resistance": (r.get("indicators") or {}).get("support_resistance", {}).get("resistance_recent"),
+                "vol_ratio": (r.get("indicators") or {}).get("volume", {}).get("vol_ratio"),
+            }
+            for r in (data.get("watchlist_scan") or [])
+        ],
+    }
+    paths = []
+    md_path = os.path.join(daily_dir, f"{data_date}_close_scan.md")
+    header = (
+        f"# 收盘全池扫描 {data_date}\n\n"
+        f"- 数据日期: {data.get('data_date')} | 数据源: {data.get('data_source')}\n"
+        f"- 生成: {datetime.now().strftime('%Y-%m-%d %H:%M')}（daily-a-share-telegram-push 18:30 cron 落盘）\n\n"
+    )
+    with open(md_path, "w", encoding="utf-8") as f:
+        f.write(header + summary_text + "\n")
+    paths.append(md_path)
+    json_path = os.path.join(daily_dir, f"{data_date}_close_scan.json")
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(slim, f, ensure_ascii=False, indent=1)
+    paths.append(json_path)
+    return paths
 
 
 def run_and_push():
@@ -59,7 +151,18 @@ def run_and_push():
     
     # 生成简报文本
     summary = format_summary(data)
-    
+
+    # 2026-10-11: 先落盘再推送（推送失败也有档案），随后附加滞后告警。
+    try:
+        persisted = persist_artifacts(data, summary)
+        print(f"已落盘: {persisted}")
+    except Exception as e:  # noqa: BLE001
+        print(f"⚠️ 落盘失败(不影响推送): {e}")
+
+    staleness = check_staleness(data)
+    if staleness:
+        summary = staleness + summary
+
     # 发送到 Telegram (纯文本模式)
     send_result = send_with_retry(summary, parse_mode='')
     print(f"Telegram 发送结果: {send_result.get('ok')}")
@@ -76,7 +179,9 @@ def format_summary(data: dict) -> str:
     data_date = data.get('data_date', '')
     source = data.get('data_source', '')
     
-    if not is_td:
+    # 2026-10-11: 非交易日但扫描仍有数据（如周末手动 force）时照常渲染，
+    # 只有真正空扫描才跳过 —— 避免有档案数据却推“跳过”造成误导。
+    if not is_td and not data.get('watchlist_scan'):
         return f"📅 {date} 非交易日，跳过扫描"
     
     lines.append(f"📊 A股收盘扫描 {date}")
