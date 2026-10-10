@@ -1,0 +1,47 @@
+{
+ "generatedAt": "2026-10-11T07:51:16",
+ "skill": "taskflow-inbox-triage (pattern adapted: no gmail/slack inbox wired; real queue = durable background tasks + TaskFlows via `openclaw tasks`)",
+ "inboxScope": {
+  "totalTasks": 432,
+  "byStatus": {
+   "succeeded": 329,
+   "failed": 97,
+   "cancelled": 6
+  },
+  "taskFlows": 12
+ },
+ "actionItems": [
+  {
+   "flowId": "df494217-0963-4bd2-b88b-74f9c4905583",
+   "goal": "validate-strategies",
+   "age": "21d",
+   "diagnosis": "work ended 09-19; completion delivery failed (LLM timeout, Sep model-outage chain); 0 child tasks; superseded by validate-strategies-v2/v3 (succeeded)",
+   "action": "cancelled",
+   "result": "ok"
+  },
+  {
+   "flowId": "39a1634e-025d-4a3e-8ca8-5578ce2ba91f",
+   "goal": "verify-glm53",
+   "age": "13d",
+   "diagnosis": "delivery failed (deepseek down); conclusion already in MEMORY (GLM-5.3-Flash excluded, 26s timeout)",
+   "action": "cancelled",
+   "result": "ok"
+  },
+  {
+   "flowId": "2c2f69cf-5f14-488a-815c-0029172b7017",
+   "goal": "verify-kimi-k3-retry",
+   "age": "13d",
+   "diagnosis": "delivery failed (LLM timeout); conclusion already in MEMORY (kimi needs recharge)",
+   "action": "cancelled",
+   "result": "ok"
+  }
+ ],
+ "waitForOwner": [],
+ "eodSummary": [
+  "audit after cleanup: 0 findings / 0 errors / 0 warnings (was 6 TaskFlow warnings)",
+  "97 failed tasks = terminal history, audit Task findings: 0 (majority: cron health-check exit-1-by-design alerts); not touched",
+  "9 remaining TaskFlow mirrors (succeeded/failed) kept as history",
+  "optional deeper clean: `openclaw tasks maintenance --apply` would prune all 12 flow mirrors (not applied — preserving history)"
+ ],
+ "waitJson": null
+}
