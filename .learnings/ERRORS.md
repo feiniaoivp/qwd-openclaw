@@ -22,6 +22,10 @@ Investigate `analysis/weekly_full_pipeline.py`; check for deadlocks/infinite loo
 - See Also: ERR-20261006-PM (same pattern), LEARNINGS cron.silent-noop-fake-ok (同主题：表面状态不可信)
 - Promoted: TOOLS.md「🔴 长跑 pipeline 卡死判定规则」(2026-10-07 提升；2026-10-09 维护复核确认生效，Source: .learnings/ERRORS.md#ERR-20260926-WBP)
 
+> **[2026-10-10 维护去重]** 本条目与 ERR-20261006-PM 同 Pattern-Key `ops.silent-orchestrator-misjudged-as-hang`
+> （Recurrence-Count=3 共享计数，First-Seen 2026-09-26）。已合并为一条模式，保留两条作为
+> 不同任务的实证记录，不再重复计入。防治规则已落地 TOOLS.md 同名章节。
+
 ## [ERR-20260927-87V] openclaw_session_sweep
 
 **Logged**: 2026-09-27T12:00:56.623Z
@@ -190,12 +194,15 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 **Root Cause**: 脚本设计为"09:15 前启动、持续轮询、09:25:05 快照"，但 cron 在 09:25:00 才拉起。启动耗时（import + pytdx TCP 连接，含连不通的 180.153.18.170 超时）使实际进入循环时已 ≥09:25:05。`sina_loop` 与 pytdx `run_loop` 的首个循环检查立即命中"硬截止"分支并 break，**从未抓取过一次** → merged_snapshot 为空。新浪源本身完全正常（手动 fetch_batch 27/27）。
 **Fix**: 两个循环的硬截止分支增加"晚启动兜底"：若尚未抓取过，则在 break 前强制抓取一次当前行情（sina `late_start_fetch_done` 标志 + pytdx `fetched_once` 标志），保证即使晚启动也至少落一次真实快照。已通过隔离模拟验证新浪路径 27/27。
 **Pattern-Key**: analysis.late-start-cutoff-before-first-fetch
-**See Also**: ERR-20261008-AuctionEmptySnapshot（10-08 同类）；cron.silent-noop-fake-ok
+**See Also**: cron.silent-noop-fake-ok（空快照=未抓取一次的假 ok）；ERR-20261008-AuctionEmptySnapshot 已并为本条目同一 Pattern-Key（旧ID不单独存在）
 **Recurrence-Count**: 1
 **First-Seen**: 2026-10-09
 **Last-Seen**: 2026-10-09
 
 ## ERR-20261009-QuantPushDetachedOutputLost
+**Date**: 2026-10-09
+**Priority**: high
+**Status**: promoted (2026-10-10 → AGENTS.md「🧠 教训固化原则 · 配套铁律」cron 长任务产出落盘/孤儿进程防护)
 **Error**: quant_push.py launched via exec was SIGKILLed at ~300s (exec timeout), and its child backtest_strategies.py was orphaned (reparented to init, kept running). No stdout captured → JSON summary lost; report file still written but Telegram push never fired.
 **Root cause**: quant_push.py uses subprocess.run(capture_output=True); killing the parent kills the pipe consumer, but the child survived because the exec kill didn't cascade to the process group. Meanwhile a well-intentioned "restart with logging" created a SECOND parallel run (duplicate compute).
 **Resolution**: Let the surviving original run finish (~13min total, 20:30→20:43); report analysis/backtest/2026-10-09.md written; Telegram push lost (stdout unrecoverable, avoided duplicate re-push).
@@ -207,3 +214,55 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 **Recurrence-Count**: 1
 **First-Seen**: 2026-10-09
 **Last-Seen**: 2026-10-09
+**Promoted**: AGENTS.md「🧠 教训固化原则 · 配套铁律」(2026-10-10, Source: .learnings/ERRORS.md#ERR-20261009-QuantPushDetachedOutputLost)
+
+### Maintenance
+- Claim: 长任务 cron/脚本产出必须落盘日志(`nohup ... > logs/xxx.log 2>&1 &`)，不依赖 exec stdio；重跑前 `pgrep -f` 防孤儿重复实例。
+- Scope: 本 workspace 长跑脚本 + cron 任务。
+- Authority: quant_push.py `subprocess.run(capture_output=True)` 实测行为。
+- Decay: reality / medium
+- Revalidate: 新增/改造长跑任务启动方式时。
+- Validation: verified（已有防御原则，quant_push.py 已改为 stdout 落盘 logs/）。
+- Evidence: 2026-10-09 SIGKILL 父进程后子进程被 init 收养、stdout 丢失、Telegram 推送丢失。
+- Disposition: retain/externalize — 已提升为 AGENTS.md 铁律，以后改启动方式即可。
+- Guidance: AGENTS.md「🧠 教训固化原则 · 配套铁律」。
+
+## [ERR-20261010-GPWD] weekly_full_pipeline 步骤 0d 固定 today 路径导致门禁误报
+
+**Logged**: 2026-10-10
+**Priority**: medium
+**Status**: resolved (2026-10-11 triage: 修复已验证并提交 691061b)
+**Area**: ops/gate
+
+### What happened
+周六 06:00 跑周报流水线时 `verify_market_data.py --report ../analysis/daily/{today}_dual.md` 恒失败（"报告文件不存在"），10-03、10-10 两轮连续误报。
+
+### Root cause
+当天 dual 日报尚未生成（06:00 早于盘后扫描），而门禁意图是验证"最新已生成日报"；路径写死 today 属于窗口错配。
+
+### Fix applied
+改为 glob 取 `analysis/daily/*_dual.md` 最新一份传入；无 dual 文件时才回退 today 路径（此时报错合理）。10-09 dual 实测通过门禁；修复提交 691061b（此前停留在未提交工作区，triage 时补交）。
+
+### What to do differently
+给"最新产物"类门禁传路径前先取实际最新文件（glob 排序取末位），别按运行日期硬拼——运行日 ≠ 产物日。
+
+**Pattern-Key**: ops.gate-path-window-mismatch
+- Recurrence-Count: 2
+- First-Seen: 2026-10-03
+- Last-Seen: 2026-10-10
+
+### Maintenance
+- Claim: "验证最新产物"的门禁必须用 glob 取实际最新文件，不得用运行日期硬拼路径。
+- Scope: 本 workspace 所有带 --report/--file 参数的门禁脚本（verify_market_data.py 等）。
+- Authority: `analysis/weekly_full_pipeline.py` L139-141 修复实现 + 10-09 dual 实测通过。
+- Decay: reality / slow
+- Revalidate: 新增/改造产物型门禁时检查路径来源。
+- Validation: verified (2026-10-11, commit 691061b)。
+- Evidence: 10-03/10-10 两轮同因误报 → glob 修复后 10-09 dual 通过门禁。
+- Disposition: retain — 已修复提交，模式留存供新增门禁时复用。
+- Guidance: 暂无（单模式首次定型，暂不提升）。
+
+### Resolution
+- **Resolved**: 2026-10-11T05:40:00+08:00
+- **Commit/PR**: 691061b
+- **Notes**: glob 取最新 dual + today 兜底；两轮误报根因同一（运行日与产物日错配），Recurrence-Count 记 2。
