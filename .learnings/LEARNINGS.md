@@ -51,9 +51,51 @@ Corrections, insights, and knowledge gaps captured during development.
 
 **Pattern-Key:** cron.silent-noop-fake-ok
 - See Also: ERR-20261006-PM ops.silent-orchestrator-misjudged-as-hang (同主题：表面状态不可信,需看真实执行/产出)
-**Promoted**: AGENTS.md (2026-10-09)「🧠 教训固化原则 · 配套铁律」；检查门禁待建：data_type_tolerance_guard
+**Status**: promoted (2026-10-09/2026-10-10)
+**Promoted**: AGENTS.md「🧠 教训固化原则 · 配套铁律」(2026-10-09 Source: .learnings/LEARNINGS.md#cron.silent-noop-fake-ok)；2026-10-10 维护补强：cron 真健康判定 + 长任务产出落盘/孤儿进程防护
 - Recurrence-Count: 3
 - First-Seen: 2026-09-29
-- Last-Seen: 2026-10-06 (this entry + related ops entry) (2026-10-08 相关：ERR-20261008-ModelGarbledOutput data.empty-string-float 同源)
+- Last-Seen: 2026-10-06
 
-* **[2026-10-09] 东财限流是「间歇窗口」不是「全断」**：moneyflow 三 host curl_cffi 全 curl(56) 的同一分钟里，裸 curl 曾独赢（push2 klt=1 200/18.7KB、daykline 200/640B），1 分钟后裸 curl 同样 000。诊断此类故障禁止单窗口探测下「完全断开」结论，必须做**时间分窗多次采样**并对比 curl_cffi/裸 curl 双通道，否则会误改代码（本次代码 d230f48 保持不动是正确结论）。
+### Maintenance
+- Claim: cron 真健康 = `lastStatus==ok` AND `lastDurationMs` 合理；需跑脚本的 cron 用 isolated+agentTurn，长任务产出落盘日志。
+- Scope: 本 workspace 全部 cron 任务与长跑脚本；不适用于短交互式命令。
+- Authority: OpenClaw cron runner 行为 + `scripts/cron_noop_guard.py` 直读 sqlite 基线。
+- Decay: reality / medium
+- Revalidate: 新增/改造 cron 时、或 `cron_noop_guard.py` 报告基线外新增空转项时核查。
+- Validation: verified (门禁 scripts/cron_noop_guard.py 落地并接入周流水线步骤 0h + 周一审计)。
+- Evidence: 2026-10-06 cron_noop_guard.py 上线，源起 3950d3cc 假 ok 事故，存量 9 个待逐个改造。
+- Disposition: retain — 已提升为 AGENTS.md 配套铁律，长期有效。
+- Guidance: AGENTS.md「🧠 教训固化原则 · 配套铁律」。
+
+## [LRN-20261009-EMFLOW] 东财限流是「间歇窗口」不是「全断」（禁单窗口结论）
+
+**Logged**: 2026-10-09
+**Category**: knowledge_gap
+**Area**: data-source
+
+### What happened
+moneyflow 三 host curl_cffi 全 curl(56) 的同一分钟里，裸 curl 曾独赢（push2 klt=1 200/18.7KB、daykline 200/640B），1 分钟后裸 curl 同样 000。若按单窗口探测就会误判「东财完全断开」并去改代码。
+
+### What to do differently
+诊断此类故障禁止单窗口探测下「完全断开」结论，必须做**时间分窗多次采样**并对比 curl_cffi/裸 curl 双通道。
+
+### Metadata
+- Source: cron
+- Pattern-Key: data.source-rate-limit-intermittent
+- Recurrence-Count: 1
+- First-Seen: 2026-10-09
+- Last-Seen: 2026-10-09
+
+### Maintenance
+- Claim: 东财限流是间歇窗口，需分窗多次采样 + 双通道对比方可下结论。
+- Scope: 东财/新浪等外部行情源限流诊断。
+- Authority: 本次实测采样记录（代码 d230f48 保持不动是正确结论）。
+- Decay: reality / fast
+- Revalidate: 每次遇疑似源「全断」时先分窗采样。
+- Validation: verified（2026-10-09 实测）。
+- Evidence: 同一分钟内裸 curl 成功、1 分钟后失败；curl_cffi 全 curl(56)。
+- Disposition: retain — provisional，样本仅 1 次但结论方向明确。
+- Guidance: 暂无（未达 promote 阈值，Recurrence-Count=1）。
+
+* **[2026-10-09] 东财限流是「间歇窗口」不是「全断」**（原始速记，已并入上方条目）：moneyflow 三 host curl_cffi 全 curl(56) 的同一分钟里，裸 curl 曾独赢（push2 klt=1 200/18.7KB、daykline 200/640B），1 分钟后裸 curl 同样 000。诊断此类故障禁止单窗口探测下「完全断开」结论，必须做**时间分窗多次采样**并对比 curl_cffi/裸 curl 双通道，否则会误改代码（本次代码 d230f48 保持不动是正确结论）。

@@ -376,6 +376,13 @@ echo "✅ 已回滚到 $TAG"
 *   **免费快速模型不许跑长任务**。长任务（全量扫描、多阶段分析）禁用免费快速小模型：
     已两次实证退化——26s 超时、visible reply 整段乱码。长任务一律用稳定主模型，
     或拆分为可重试的短步骤。（实证：GLM-5.3-Flash 2026-10-08 乱码事故）
+*   **cron 真健康 = `lastStatus==ok` 且 `lastDurationMs` 合理**。需要跑脚本的 cron 必须用
+    `isolated` + `agentTurn`（或 `--command` 直跑），不要用 `main` + `systemEvent` 注入命令文本——
+    注入的 systemEvent 不执行，runner 投递即认为 ok，`lastDurationMs` 仅几毫秒 = 空转假成功。
+    **凡长任务类 cron/脚本，产出必须落盘到日志文件（`nohup ... > logs/xxx.log 2>&1 &`）**，
+    不要依赖 exec 生命周期捕获 stdout；SIGKILL 父进程不会级联杀子进程，重跑前先 `pgrep -f` 确认无孤儿实例。
+    （实证：3 个新闻 cron 静默停摆 21 天；quant_push.py 10-09 stdout 丢失事故）
+    Source: .learnings/LEARNINGS.md#cron.silent-noop-fake-ok / .learnings/ERRORS.md#ERR-20261009-QuantPushDetachedOutputLost
 
 <!-- prismfy-search:start -->
 Prismfy Web Search is installed and available via `prismfy-search "<query>"`.

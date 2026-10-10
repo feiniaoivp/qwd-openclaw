@@ -1221,25 +1221,23 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **新增 cron `c50849c8` daily-skill-auto-update（04:00）**：只跑 `openclaw skills update --all --agent main`（ClawHub 技能），🔴红线禁碰核心（不跑 openclaw update/doctor、不改 plist），与 launchd 版本锁定 @2026.7.1-2 兼容；更新前 git 快照、更新后 skill_supply_scan --offline（exit 1 即回滚）+ 版本核对。实测坑：`skills update --all` 手动跑超 90s 被 SIGKILL → timeout 给足 1200s。
 *   **[10-09 复证] Vision-Exp「arguments 双层包裹」缺陷第 3 次复现**（随机发作，write/apply_patch 通道不受影响）→ 已记 corrections.md；10-06 留的「给多轮工具链 cron 显式 --model」待办已由 10-09 cron 批量修复实质落地（见待办结转 [10-09 闭环] 条目）。
 
-## Promoted From Short-Term Memory (2026-10-10)
+## Promoted From Short-Term Memory (2026-10-11)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-10-06.md:7:7 -->
-- 08:13-11:00 cron per-job 模型覆盖清理（续 10-05/10-06 早 404 事故）: **全面扫描（40 个 job）**：清出 7 个 job、8 处问题字段： [score=0.815 recalls=0 avg=0.620 source=memory/2026-10-06.md:7-7]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-05-maintenance-summary.md:14:17 -->
-- 🔴🔴 重大：MEMORY.md promote 区块被「预算淘汰」（已读插件源码坐实）: MEMORY.md 全文 208,525 字节；人写区 117.1KB，promote 区仅 1.7KB，marker仅6个（今日块）。; 昨天实存的 10-02/10-03/10-04 三块今天已 0 条；HEAD 仅存 10-01 块被工作树删除。; 根因：DEFAULT_MEMORY_FILE_MAX_CHARS=1e4，超预算按日期升序丢弃最老 promote 区块；droppedDates 只进内存、journal 无 dropped 字段 → 66 次 journal 全报成功，掩盖静默淘汰。; 结论：非「非幂等重写」，是确定性预算淘汰 + 可观测性缺陷。promote 通道本仓基本日抛，长期记忆沉淀已断。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-05-maintenance-summary.md:14-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-05-maintenance-summary.md:18:19 -->
-- 🔴🔴 重大：MEMORY.md promote 区块被「预算淘汰」（已读插件源码坐实）: 待批(需 /approve)：①memoryFileMaxChars 调整(止血) ②新增 scripts/promotion_guard.py ③口径改 promote=易失缓冲 ④上游反馈补 dropped 字段。; 教训：第三方组件异常先读源码再下机制性结论。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-05-maintenance-summary.md:18-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-05-maintenance-summary.md:22:25 -->
-- 门禁/一致性检查（本会话实跑）: ✅ strategy_map_guard: 口径一致 35 只; ✅ silent_except_guard: exit 0，无新增（存量114仅报告; SKIP scripts/decode_gnews_link.py 语法解析失败）; ⚠️ script_path_guard: 141脚本，违规1项 = scripts/decode_gnews_link.py（语法错误，未跟踪，建议修复/移除）; SSOT 一致：WATCHLIST=35 / adaptive_strategy_map=35 / watchlist.md=35 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-05-maintenance-summary.md:22-25]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-05-maintenance-summary.md:28:31 -->
-- 运行状态（源自 10-05.md）: 交易日：is_trading_day(2026-10-02) =False；下一交易日 10-08（周四）; Gateway pid 19958 / 2026.7.1-2 / 18789 loopback-only；磁盘 4%; cron 39 全 ok（Wiki 维护 job 已不在列表，4连败不再复现）; guard/* 最近快照 10-01（4天，窗口收窄）；git 未提交 ~19 条 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-05-maintenance-summary.md:28-31]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-05-maintenance-summary.md:4:4 -->
-- 执行时间: 2026-10-05 07:00 (Asia/Shanghai) / cron memory-maintenance-check [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-05-maintenance-summary.md:4-4]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-05-maintenance-summary.md:7:9 -->
-- 维护动作: 阅读近期 memory/*.md（10-01 ~ 10-05）; 蒸馏长期记忆至 MEMORY.md（重点：promote 预算淘汰机制性发现，已在 10-05.md 全文记录）; 运行 SSOT 一致性门禁 + 供应链/异常门禁 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-05-maintenance-summary.md:7-9]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-05.md:13:14 -->
-- 🔴🔴 重大发现：MEMORY.md promote 区块被「预算淘汰」（已读插件源码坐实）: 待批建议：①`memoryFileMaxChars` 调到与实际文件相称（止血）②新增 `scripts/promotion_guard.py`（journal keys vs MEMORY.md markers，缺失 exit 1）③口径改为「promote=易失缓冲，长期保留需人工晋升」④向插件上游反馈补 dropped 字段。; 方法论教训：第三方组件行为异常，**先读其源码再下机制性结论**；否则把「确定性设计」误诊为「随机故障」，修复方向会整条错。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-05.md:13-14]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-05.md:17:19 -->
-- 系统状态（04:26）: Gateway pid 19958 / 2026.7.1-2 / 18789 仅 loopback ✅；磁盘 4%；cron 39 条全 ok（Wiki 维护 job 已不在列表，4 连败不再复现）。; 交易日：`is_trading_day('2026-10-05')=False`；下一交易日 2026-10-08（周四）。; `guard/*` 最近快照 10-01（4 天，窗口收窄）；git 未提交 19 条（含 boss_warning*.png / gen_boss_fun.py 等探针产物）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-05.md:17-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-05.md:22:25 -->
-- 券商10月金股 × 关注池交叉分析（07:30）: 产出：`analysis/daily/2026-10-05_gold_cross.md`；原始图表存 `data/goldoct/`。; 关键结论：154只全名单为 Wind/每市付费数据，公开源仅能抽到约80只（覆盖~52%）。明确命中 2/35：福耀玻璃（兴业证券）、国瓷材料（证券时报名点，券商未指明）。证券5只、半导体4只、电力出海8只公开名单全部未见。; 10月金股主线 = AI算力硬件(中际旭创/寒武纪/海光/瑞芯微) + CXO(药明康德8家) + 资源股；与我池结构重叠度低。; 金股高频榜：药明康德8 > 中际旭创4 > 海信视像/中国巨石3。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-05.md:22-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-06.md:8:11 -->
+- 08:13-11:00 cron per-job 模型覆盖清理（续 10-05/10-06 早 404 事故）: `model=deepseek/deepseek-v4-flash`（失效 404）：zhonglian-monitor-noon(8da42083)、zhonglian-monitor-close(ff8df2a8)、daily-supervision-review(a7456f8b); `model=deepseek-v4-flash` + `thinking=medium` 双踩：Memory Dreaming Promotion(233295fd); `thinking=medium`：Dreaming Daily Report(a8c18aed); `thinking=off` 残留：auction-analyze-0926(4ecdf11f)、cron-health-check(b5943dcf) [score=0.804 recalls=0 avg=0.620 source=memory/2026-10-06.md:8-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-06-2235.md:15:18 -->
+- 核心发现：09-30 主力净流出 **-6.77亿**，结构教科书式派发: | 资金层 | 净额 | |---|---| | 超大单 | **-4.03亿** | | 大单 | -2.75亿 | [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06-2235.md:15-18]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-06-2235.md:19:20 -->
+- 核心发现：09-30 主力净流出 **-6.77亿**，结构教科书式派发: | 中单 | +1.60亿 | | 小单 | **+5.18亿** | [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06-2235.md:19-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-06-2235.md:22:22 -->
+- 核心发现：09-30 主力净流出 **-6.77亿**，结构教科书式派发: 散户恰好接走机构全部抛盘，净卖占当日成交额(≈42亿) **-16.2%**——集中撤退量级，且是板块级行动（电子当日全链 -150亿）的组成部分。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06-2235.md:22-22]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-06-2235.md:25:25 -->
+- 量价三段式出货节奏（新浪日K）: 09-22 天量滞涨(1.42亿手@63.5) → 09-29 **缩量**诱多(+2.48%) → 09-30 **放量长阴 -5.73%** 吞掉全部反弹、跌破EMA20(60.48) [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06-2235.md:25-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-06.md:13:13 -->
+- 08:13-11:00 cron per-job 模型覆盖清理（续 10-05/10-06 早 404 事故）: **处置**（用户口头授权「好的继续」）： [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-06.md:14:17 -->
+- 08:13-11:00 cron per-job 模型覆盖清理（续 10-05/10-06 早 404 事故）: 备份 7 个 job 完整定义 → `data/cron-backup/20261006-104600_<id8>.json`（7/7 OK）; `openclaw cron edit <uuid> --clear-model / --clear-thinking`（注意：**必须用完整 UUID**，短 id 报 not found；`cron get` **不接受 --json**，默认输出就是 JSON）; 复核：`cron list --json` 全量扫描 → ✅ 无残留; 抽测：cron-health-check(force) → ok, model=deepseek-chat, 37.8s；zhonglian-monitor-noon(force) → lastRunStatus=ok, payload.model=None [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06.md:14-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-06.md:20:22 -->
+- 08:13-11:00 cron per-job 模型覆盖清理（续 10-05/10-06 早 404 事故）: `thinking` 字段只要非空（哪怕 "off"）就会下发触发 400；清除用 `--clear-thinking`，不要写 "off"。; `cron runs` 的 entries 有缓存/滞后，验证以 `cron get` 的 lastRunStatus/lastRunAtMs 为准。; 短 id（前 8 位）不能用于 get/edit/run，一律完整 UUID。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06.md:20-22]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-06.md:5:5 -->
+- 08:13-11:00 cron per-job 模型覆盖清理（续 10-05/10-06 早 404 事故）: **背景**：`Dreaming Daily Report`(a8c18aed) 连续 4 次 error，根因 = per-job `payload.model` 指向已下线 `deepseek-v4-flash`（404）＋ `payload.thinking` 字段网关不认（400）。早上先修了 a8c18aed 本身（摘 model/fallbacks），07:22 手动重试成功（506s，产出 `memory/dreaming/daily-report-2026-10-06.md`）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06.md:5-5]
