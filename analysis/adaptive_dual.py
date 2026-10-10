@@ -19,7 +19,8 @@ for _p in (_WORKSPACE, _os.path.join(_WORKSPACE, "analysis")):
         _sys.path.insert(0, _p)
 
 import os, sys, json, time, warnings
-from datetime import datetime
+from datetime import datetime, timedelta
+from datetime import time as dtime
 from typing import Dict, List
 import pandas as pd
 import pandas_ta as ta
@@ -319,7 +320,11 @@ def fetch_today_realtime(symbols):
                 hi = float(fields[4]) if fields[4] else cur
                 lo = float(fields[5]) if fields[5] else cur
                 vol = int(fields[8]) if fields[8] else 0
-                result[s] = {"date": datetime.now().strftime("%Y-%m-%d"),
+                # 🔴 2026-10-11 修复：bar 日期必须取行情快照自带的交易日(fields[30])，
+                # 不能用日历日 today——盘前/周末快照是上一交易日行情，误标 today 会把
+                # T-1 收盘注入成“今日 bar”（dual.md 现价=T-1、涨跌全 0.00% 的根因）。
+                qdate = fields[30].strip()[:10].replace("/", "-") if len(fields) > 30 and fields[30] else ""
+                result[s] = {"date": qdate,
                              "open": oh, "close": cur, "high": hi, "low": lo, "volume": vol}
             except (ValueError, IndexError):
                 pass
@@ -358,31 +363,114 @@ def _fetch_sina_daily(symbol: str, n: int = 300):
     return df.sort_values("date").reset_index(drop=True)
 
 
+_EXPECTED_BAR_DATE_CACHE = {"value": None}
+
+
+def _expected_bar_date() -> str:
+    """当前时刻应已存在的最新日线 bar 日期（进程级缓存，批量扫描只算一次）。
+
+    判据（2026-10-11 重写，消除 T-1 假 bar）：
+      - 交易日判定走 analysis.service.is_trading_day（SSOT，含节假日），
+        取代旧实现 weekday<5（节假日会误判，国庆也曾注入假 bar）；
+      - 盘前(09:30 前) = 上一交易日 —— 此时绝不存在“今日 bar”；
+      - 交易日 09:30 后（盘中/盘后）= 今日。
+    """
+    if _EXPECTED_BAR_DATE_CACHE["value"] is not None:
+        return _EXPECTED_BAR_DATE_CACHE["value"]
+    from analysis.service import is_trading_day
+    now = datetime.now()
+    today_str = now.strftime("%Y-%m-%d")
+    expected = None
+    if is_trading_day(today_str) and now.time() >= dtime(9, 30):
+        expected = today_str
+    if expected is None:
+        d = now.date() - timedelta(days=1)
+        for _ in range(12):
+            ds = d.strftime("%Y-%m-%d")
+            if is_trading_day(ds):
+                expected = ds
+                break
+            d -= timedelta(days=1)
+    expected = expected or today_str
+    _EXPECTED_BAR_DATE_CACHE["value"] = expected
+    return expected
+
+
+def _backfill_stale_bars(symbol: str, df, latest: str, expected: str):
+    """滞后补录（对齐 portfolio_sim._backfill_today 已验证范式，2026-10-11）：
+
+    1) 新浪日K按真实 bar 日期合并（可跨多日、去重），不再是“伪造今日日期的 spot 行”；
+    2) 仍缺今日 bar 时才用新浪 spot 补，且仅当快照日期(fields[30])确为今日（盘中/盘后）；
+    3) 补完做与前收的跳变自检（>±10.5% 疑似除权/错位，可见告警）；
+    4) 全部失败时可见告警，不静默。
+    """
+    # 1) 新浪日K补录（真实日期）
+    try:
+        sina = _fetch_sina_daily(symbol, n=300)
+        if sina is not None and len(sina) >= 2:
+            sina_latest = sina["date"].iloc[-1].strftime("%Y-%m-%d")
+            if sina_latest > latest:
+                new_rows = sina[sina["date"] > pd.Timestamp(latest)]
+                df = pd.concat([df, new_rows], ignore_index=True)
+                df = df.drop_duplicates(subset="date", keep="last").sort_values("date").reset_index(drop=True)
+                latest = df["date"].iloc[-1].strftime("%Y-%m-%d")
+                print(f"  ✅ {symbol} 滞后补录(新浪日K)：最新 {latest}（预期 {expected}）")
+    except Exception as e:
+        print(f"  ⚠️ {symbol} 新浪日K补录异常: {e}")
+
+    # 2) spot 补今日 bar（仅当快照确为今日行情）
+    if latest < expected:
+        rt = fetch_today_realtime([symbol])
+        r = (rt or {}).get(symbol)
+        if r and r.get("date") == expected:
+            new_row = {"date": pd.Timestamp(r["date"]), "open": r["open"], "close": r["close"],
+                       "high": r["high"], "low": r["low"], "volume": r["volume"]}
+            df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+            df = df.drop_duplicates(subset="date", keep="last").sort_values("date").reset_index(drop=True)
+            latest = r["date"]
+            print(f"  ✅ {symbol} spot 补今日 bar：{r['date']} 收盘 ¥{r['close']}")
+
+    # 3) 跳变自检（补录 bar vs 前收）
+    try:
+        if len(df) >= 2:
+            prev_close = float(df["close"].iloc[-2])
+            new_close = float(df["close"].iloc[-1])
+            if prev_close > 0 and abs(new_close / prev_close - 1) > 0.105:
+                print(f"  ⚠️ {symbol} 补录 bar 与前收跳变 {new_close / prev_close - 1:+.1%}"
+                      f"（>±10.5%，疑似除权/数据错位），指标可能失真")
+    except Exception as e:
+        print(f"  ⚠️ {symbol} 跳变自检异常: {e}")
+
+    # 4) 仍滞后：可见告警
+    if latest < expected:
+        print(f"  ⚠️ {symbol} 数据滞后：最新 {latest} < 预期 {expected}，补录失败 —— 信号基于过期数据")
+    return df
+
+
 def fetch_data(symbol, start="20250101", max_retry=3, realtime_fallback=True):
-    """统一走 DataRouter 获取历史日线，自动带降级链；实时补丁仅在交易日补齐当日收盘。"""
+    """统一走 DataRouter 获取历史日线，自动带降级链。
+
+    新鲜度策略（2026-10-11 重写）：
+      - 判据用 _expected_bar_date()（SSOT 交易日历 + 时段），不再用“最新bar < 日历日”；
+        盘前 06:00 预期=T-1，绝不注入假 bar（旧实现把 T-1 收盘伪装成今日 bar，
+        dual.md「现价=10-08、涨跌全 0.00%、data_date 误标今日」即此根因）；
+      - 真滞后时：新浪日K真实日期合并补录 → spot 仅补“确为今日”的 bar → 失败可见告警。
+    """
     from analysis.data_layer.router import get_router
     router = get_router()
-    today_str = datetime.now().strftime("%Y-%m-%d")
+    expected = _expected_bar_date() if realtime_fallback else None
 
     # 主路径：DataRouter（内含 新浪日K/baostock/pytdx/akshare 降级，且有进程级缓存）
     try:
         df = router.get_daily(symbol, "", start_date=start)
         if df is not None and len(df) >= 60:
             latest = df["date"].iloc[-1].strftime("%Y-%m-%d")
-            if realtime_fallback and latest < today_str:
-                import datetime as dt
-                if dt.date.today().weekday() < 5:
-                    rt = fetch_today_realtime([symbol])
-                    if symbol in rt:
-                        r = rt[symbol]
-                        new_row = {"date": pd.Timestamp(r["date"]), "open": r["open"],
-                                   "close": r["close"], "high": r["high"], "low": r["low"],
-                                   "volume": r["volume"]}
-                        df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+            if realtime_fallback and expected and latest < expected:
+                df = _backfill_stale_bars(symbol, df, latest, expected)
             return df
     except Exception as e:
         print(f"  [DataRouter] {symbol} 获取失败: {e}")
-    
+
     return None
 
 

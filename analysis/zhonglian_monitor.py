@@ -97,8 +97,9 @@ def fetch_daily_qfq(symbol_ak="sz000157", symbol_em="000157", symbol_bs="sz.0001
         finally:
             try:
                 bs.logout()
-            except Exception:
-                pass
+            except Exception as e:
+                # 2026-10-11 去静默（silent_except_guard 棘轮）：logout 失败也要可见，不改控制流
+                print(f"⚠️ baostock logout 异常(忽略): {e}", file=sys.stderr)
     except Exception as e:
         errors.append(f"baostock: {e}")
     raise RuntimeError("全部数据源失败: " + " | ".join(errors))

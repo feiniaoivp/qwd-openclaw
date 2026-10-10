@@ -136,7 +136,10 @@ def fetch_today_realtime(symbols):
                 hi = float(fields[4]) if fields[4] else cur
                 lo = float(fields[5]) if fields[5] else cur
                 vol = int(fields[8]) if fields[8] else 0
-                result[s] = {"date": datetime.now().strftime("%Y-%m-%d"),
+                # 🔴 2026-10-11 同步修复（与 adaptive_dual 一致）：bar 日期取行情快照
+                # 自带的交易日(fields[30])，非日历日——防盘前/周末把 T-1 快照当今日 bar。
+                qdate = fields[30].strip()[:10].replace("/", "-") if len(fields) > 30 and fields[30] else ""
+                result[s] = {"date": qdate,
                              "open": oh, "close": cur, "high": hi, "low": lo, "volume": vol}
             except (ValueError, IndexError):
                 pass
