@@ -194,16 +194,23 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 ## ERR-20261009-AuctionLateStartEmptySnapshot
 **Date**: 2026-10-09 09:25
 **Priority**: high
-**Status**: fixed (2026-10-09)
+**Status**: resolved (2026-10-11 triage: 修复已提交并实测验证)
 **Area**: analysis/auction_feed
 **What Happened**: cron 09:25 触发 `analysis/auction_feed.py`，产出 0/27 空快照（新浪0+pytdx0），exit 1。与 10-08 空快照假 ok 同一类事故。
 **Root Cause**: 脚本设计为"09:15 前启动、持续轮询、09:25:05 快照"，但 cron 在 09:25:00 才拉起。启动耗时（import + pytdx TCP 连接，含连不通的 180.153.18.170 超时）使实际进入循环时已 ≥09:25:05。`sina_loop` 与 pytdx `run_loop` 的首个循环检查立即命中"硬截止"分支并 break，**从未抓取过一次** → merged_snapshot 为空。新浪源本身完全正常（手动 fetch_batch 27/27）。
 **Fix**: 两个循环的硬截止分支增加"晚启动兜底"：若尚未抓取过，则在 break 前强制抓取一次当前行情（sina `late_start_fetch_done` 标志 + pytdx `fetched_once` 标志），保证即使晚启动也至少落一次真实快照。已通过隔离模拟验证新浪路径 27/27。
 **Pattern-Key**: analysis.late-start-cutoff-before-first-fetch
 **See Also**: cron.silent-noop-fake-ok（空快照=未抓取一次的假 ok）；ERR-20261008-AuctionEmptySnapshot 已并为本条目同一 Pattern-Key（旧ID不单独存在）
-**Recurrence-Count**: 1
-**First-Seen**: 2026-10-09
+**Recurrence-Count**: 2
+**First-Seen**: 2026-10-08
 **Last-Seen**: 2026-10-09
+
+### Resolution (2026-10-11 triage)
+- **Resolved**: 2026-10-11（self-improving 每日维护分诊）
+- **Notes**: 兜底修复已提交 commit `344c790`（晚启动强制首抓，sina `late_start_fetch_done` + pytdx `fetched_once`）；
+  实测验证：`data/auction/2026-10-09_9_25.json`（17KB 真实快照，非空）+ `decision_2026-10-09.json` 正常产出。
+  10-10/10-11 为周末非交易日，无快照属预期，不是复现。Recurrence-Count 修正为 2（10-08、10-09 两次事故已并入本条目）。
+  下周一（10-12）盘前可顺手复核一次 09:25 快照非空即可彻底销账。
 
 ## ERR-20261009-QuantPushDetachedOutputLost
 **Date**: 2026-10-09
