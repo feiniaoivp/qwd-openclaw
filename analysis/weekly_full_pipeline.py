@@ -11,6 +11,7 @@
 import os
 import sys
 import json
+import glob
 import subprocess
 import time
 from datetime import datetime
@@ -133,8 +134,13 @@ def main():
     # 步骤 0d: 市场数据引用验证门禁（2026-09-28 新增）
     # 背景：曾出现「编造 9/27 成交额 1.45 万亿、北向 8129 亿」的先写后验事故。
     # 强制验证：引用日期为交易日、来源在授权清单、字段匹配。
+    # 注：周六 06:00 运行时当天 dual 日报尚未生成，固定 today 路径会因"文件不存在"误报
+    # （10-03、10-10 两轮均如此）。门禁意图是验证"最新日报"，故取 daily/ 下最新的
+    # *_dual.md；仅当 daily/ 无任何 dual 文件时才回退 today 路径（此时报错合理）。
+    _dual_files = sorted(glob.glob(os.path.join(ANALYSIS_DIR, "daily", "*_dual.md")), reverse=True)
+    _dual_report = _dual_files[0] if _dual_files else os.path.join(ANALYSIS_DIR, "daily", f"{today}_dual.md")
     print("\n🚦 步骤 0d/9: 市场数据引用验证门禁 (verify_market_data.py)")
-    r = run_script("../scripts/verify_market_data.py", ["--report", f"../analysis/daily/{today}_dual.md"], timeout=60)
+    r = run_script("../scripts/verify_market_data.py", ["--report", _dual_report], timeout=60)
     results["market_data_verify"] = r
     if not r["success"]:
         print("⚠️ 最新日报存在未验证的市场数据引用（见上方），请人工核对（不阻断流水线）...")
