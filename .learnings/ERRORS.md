@@ -126,6 +126,12 @@ cron `zhonglian-monitor-morning-cmd` 运行 `analysis/zhonglian_monitor.py` 时�
   修复模式已由 ERR-20261002-BSL 落实：`backtest_strategies.py` 主源失败降级 akshare/新浪，`bs_session.py` 增加负缓存冷却。
   本任务（zhonglian_monitor.py）需同样接入降级链，已归入统一模式 `data.datasource-failover`。
   本历史故障为数据源抖动（非代码缺陷），按同类已定型处理，标记 resolved。
+
+### Follow-up Closure (2026-10-11 复核)
+skill 周期性复核发现遗留待办「zhonglian_monitor.py 接入降级链」一直未落地（3 个活跃 cron
+早/午/收盘仍每日跑该脚本，单源无降级）。已闭环：接入多源降级链
+（新浪akshare → 东财akshare手→股换算 → baostock，pd.to_numeric coerce 容错），
+端到端实测通过（data_date 2026-10-09, price 6.04），commit 500dfda。
 **Pattern-Key**: data.datasource-failover
 - See Also: ERR-20261002-BSL (data.datasource-failover same pattern, quant-backtest task)
 - Recurrence-Count: 2
