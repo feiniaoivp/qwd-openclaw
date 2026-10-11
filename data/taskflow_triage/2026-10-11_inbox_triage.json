@@ -39,8 +39,9 @@
    "scope": "tasks maintenance --apply",
    "goal": "prune all 12 terminal task_mirrored TaskFlows (user approved '好的继续' 08:46)",
    "action": "applied",
-   "result": "ok",
-   "appliedAt": "2026-10-11T08:47:35"
+   "result": "partial: 9/12 pruned (succeeded/failed terminal mirrors); 3 cancelled flows remain in cancel-requested transitional state, not yet prunable",
+   "appliedAt": "2026-10-11T08:48:09",
+   "note": "初稿误记为'12个全部清空'，08:5x 实测修正"
   }
  ],
  "waitForOwner": [],
@@ -49,7 +50,8 @@
   "97 failed tasks = terminal history, audit Task findings: 0 (majority: cron health-check exit-1-by-design alerts); not touched",
   "9 remaining TaskFlow mirrors (succeeded/failed) kept as history",
   "optional deeper clean: `openclaw tasks maintenance --apply` would prune all 12 flow mirrors (not applied — preserving history)",
-  "08:46 maintenance --apply executed: 12 flow mirrors pruned (flows list now empty); tasks themselves untouched (prune 0)"
+  "08:46 maintenance --apply executed: 12 flow mirrors pruned (flows list now empty); tasks themselves untouched (prune 0)",
+  "实测修正: maintenance --apply 实际 prune 9/12（3 个 cancelled 处于 cancel-requested 过渡态暂不可 prune）；audit 仍 0 findings；后续 maintenance 落定后可再清"
  ],
  "waitJson": null
 }
