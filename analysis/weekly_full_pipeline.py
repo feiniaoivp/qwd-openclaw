@@ -252,6 +252,16 @@ def main():
     if not r["success"]:
         print("⚠️ 发现基线外新增空转假成功 cron 任务（见上方），需人工改 command+isolated 或清理（不阻断流水线）...")
 
+    # 步骤 0i: 调试残留门禁（2026-10-11 新增，AST 静态秒级）
+    # 背景：python-debugpy 技能落实。breakpoint()/pdb.set_trace 提交后会让 cron
+    # 无人值守进程挂死等 stdin；debugpy.listen 会在本机开调试端口。
+    # AST 扫描不误报注释/docstring；HIGH=阻断式调试入口 → exit 1。
+    print("\n🚦 步骤 0i/9: 调试残留门禁 (debug_residue_guard.py)")
+    r = run_script("../scripts/debug_residue_guard.py", ["--quiet"], timeout=60)
+    results["debug_residue"] = r
+    if not r["success"]:
+        print("⚠️ 发现阻断式调试残留（见上方），交互调试完成后必须移除（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = _resume_skip("backtest", resume_record)

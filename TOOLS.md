@@ -368,3 +368,50 @@ python3 scripts/verify_market_data.py --date 2026-09-27 --metric 成交额 --val
 3. 对照各阶段 timeout 估算总时长再耐心等待
 
 **铁律：永远不要对疑似卡死的长跑任务直接 `kill -9`；先用上述三项确认阶段进展。**
+
+---
+
+## 🐞 Python 调试落实（python-debugpy 技能，2026-10-11）
+
+**三种调试器按场景选最小够用的：**
+
+| 场景 | 用法 |
+|------|------|
+| 本地可复现、能改源码 | 源码插 `breakpoint()`（调完必删，见下方门禁） |
+| 崩溃有 traceback、不改代码 | `python3 -m pdb -c continue script.py`（直落事故现场） |
+| cron/已运行/长跑进程 | `python3 -m debugpy --listen 127.0.0.1:5678 --pid <pid>` |
+
+### 1. cron 脚本禁止交互调试 → 事后验尸（SSOT: `analysis/debug_pm.py`）
+
+```python
+from analysis.debug_pm import pm_dump
+try:
+    run()
+except Exception:
+    pm_dump("close_scan")   # traceback + 各帧局部变量 → /tmp/openclaw_pm/，stderr 提示
+    raise
+```
+
+自检：`python3 analysis/debug_pm.py`（注入样例异常并打印落盘内容）。
+产出目录可用环境变量 `PM_DUMP_DIR` 覆盖。
+
+### 2. 手动复现 cron 环境（debugpy，仅手动，禁止留在 cron job 里）
+
+```bash
+# 用与 cron 完全相同的命令手动起，另一终端 attach：
+python3 -m debugpy --listen 127.0.0.1:5678 --wait-for-client analysis/close_scan_v2.py
+# 只看已运行进程的栈：
+python3 -m debugpy --listen 127.0.0.1:5678 --pid <pid>
+```
+
+铁律：先按「长跑 pipeline 卡死判定规则」确认真卡死再 attach，禁止 kill -9。
+
+### 3. 提交前调试残留门禁（SSOT: `scripts/debug_residue_guard.py`，已接入周流水线步骤 0i）
+
+```bash
+python3 scripts/debug_residue_guard.py            # 🔴 HIGH（breakpoint/pdb.set_trace/debugpy.listen）→ exit 1
+python3 scripts/debug_residue_guard.py --selftest # 对抗性自测（9 例）
+rg -n 'breakpoint\(|pdb\.set_trace|debugpy\.' --type py   # 人工快速版
+```
+
+注意：注释/docstring 里的提及不算残留（AST 扫描不误报）；`import pdb`/`post_mortem` 仅 WARN 报告不阻断。
