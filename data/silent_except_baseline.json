@@ -20,6 +20,7 @@
  "analysis/premarket_pipeline.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 5,
  "analysis/deep_grid_search.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
  "analysis/strategy_tri_compare.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 2,
+ "analysis/daily_push.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
  "analysis/position_sizer.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 3,
  "analysis/moat_factor.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 2,
  "analysis/param_tune.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 3,
