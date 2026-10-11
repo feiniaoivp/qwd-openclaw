@@ -1221,6 +1221,28 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **新增 cron `c50849c8` daily-skill-auto-update（04:00）**：只跑 `openclaw skills update --all --agent main`（ClawHub 技能），🔴红线禁碰核心（不跑 openclaw update/doctor、不改 plist），与 launchd 版本锁定 @2026.7.1-2 兼容；更新前 git 快照、更新后 skill_supply_scan --offline（exit 1 即回滚）+ 版本核对。实测坑：`skills update --all` 手动跑超 90s 被 SIGKILL → timeout 给足 1200s。
 *   **[10-09 复证] Vision-Exp「arguments 双层包裹」缺陷第 3 次复现**（随机发作，write/apply_patch 通道不受影响）→ 已记 corrections.md；10-06 留的「给多轮工具链 cron 显式 --model」待办已由 10-09 cron 批量修复实质落地（见待办结转 [10-09 闭环] 条目）。
 
+## 2026-10-11 蒸馏补充（dreaming 10-12 04:00）
+
+> 10-11 当日 18 条 light 候选中重大修复未被 deep promote（deep 回捞 10-07 旧物），按既有策略蒸馏入人写区。
+
+- **analysis/adaptive_dual 盘前 T-1 假 bar 根治**（commit `6f077f1`）：根因 = `fetch_today_realtime` 用日历日当 bar 日期 + `fetch_data` 判据「最新 bar<日历日」→ 盘前把新浪快照（T-1 行情）注入成"今日 bar"，`data_date` 众数被污染，报告"数据滞后"标注永不触发。修复全走 SSOT：快照日期取 fields[30] + `_expected_bar_date()`（is_trading_day + 09:30 时段）+ 滞后补录（新浪日K真实日期合并去重 + 跳变自检 + 失败可见）+ portfolio_core 同步修 + zhonglian_monitor 去静默。五道门禁（silent_except/script_path/data_freshness/strategy_map 等）全 0。
+- **十项建议全落地**（commits `febe9b0` / `7760fea` / `c0ea086`）：①daily_push 落盘 + 盘前消费昨夜档案；②周末新闻聚合（_news_span）；③竞价信号交集推送（cron 09:27）；④weekly_full_pipeline --resume（周日 06:00 cron）；⑤策略写回人工闸门（TaskFlow 等待语义文件实现，DSR≥0.95 自动应用/其余候审）；⑥小样本（<3 次交易）标注；⑦月度调参-执行对账（首期覆盖率 **5.7%** → 🔴 执行链健康度差）。附带：`premarket_pipeline.py` / `daily_news_reader.py` 摘除 .gitignore 纳入版本保护。
+- **两条教训**：①「XX 任务不存在」结论**必须先全量列 job 名**再下（按 close/scan/收盘 搜漏了名叫 "push" 的 job `3950d3cc`）；②`cron get` 的 lastDurationMs 与 runs 历史 durationMs **可能不一致**，判定以 `cron runs --id` 为准。
+- **promote 淘汰机制修正（10-12 实测）**：预算淘汰**不是整块删除，而是按总字节预算逐条裁剪** —— 10-10 报告曾核实"已消失"的 10-10 区块本期反而复活 2 条；故"存活窗口<24h"应表述为「**存活=拼 token 运气，随时可能被裁剪**」。人写区蒸馏仍是唯一可靠沉淀路径。
+
+## 2026-10-12 蒸馏补充（memory-maintenance-monday，10-10~10-12 日志）
+
+> 源自 `memory/2026-10-10.md` / `memory/2026-10-11.md` / `memory/2026-10-12.md` 已落盘事实；10-11 重大修复（T-1 假 bar / 十项建议）已由 dreaming 区蒸馏，本区只补缺口。
+
+*   **🔴 主模型切换（10-10 18:55，用户指令，已生效）**：`agents.defaults.model.primary` DeepSeek-V4-Flash-Vision-Exp → **amd-radeon/Qwen3.8-Flash-Next**（dry-run 后 config patch，热生效）；Vision-Exp 因「arguments 双层包裹」缺陷 3 次复现彻底出链（原为 primary 不在 fallbacks）。主会话 GLM pin 由直接原子修 `sessions.json` 清除（`session_status` 被 visibility=tree 拦时的替代路径；sessions list 里 `model=` 只是 last-used 记录）。备份 `backups/config/openclaw.json.before-model-qwen-20261010`。注意 Qwen 上下文 262k < Vision-Exp 1049k；继承默认的 cron 全部转跑 Qwen。
+*   **🔴 仲裁「调优侧样本量恒 999」bug 修复（10-10，commit `ca262cb`，源头+消费端双修）**：`param_tune.py` 的 `avg_trades` 写在股票层、`details[策略]` 层没有，`validate_strategies.py` 读 `tinfo.get('avg_trades', 999)` 恒取默认 → `confidence_guard` 低样本量严格阈值永不生效。**教训：消费端 `.get(key, default)` 在「键在别的层级」时会恒取默认值，把护栏变摆设；修复必须源头补写 + 消费端层间回退，并用真实样本对照验证两种口径差异**（本次 002413 雷科 4 笔、thr 0.25→0.4 即证据）。
+*   **✅ 五维 None 化 × moneyflow 三路兜底组合态 e2e 闭环（10-10 20:1x）**：全池 30/30，PICKS_DIM_COVERAGE 4/5 维（资金维经 datacenter-web 第三路恢复），chip 全 None、fund_flow==5.0 可疑托底 0 只；抽查中信证券 fund_flow=0 与主力净流出 -1.01亿 一致（真实流出非填充）。10-09 遗留「恢复后回 4/5 维」兑现。
+*   **✅ daily-skill-auto-update 观察销账（10-10 05:29）**：11 个「因 ClawHub 信任警告被跳过」的技能经逐读 `.clawhub/origin.json` 实证 installedVersion == 目标版本 → **更新本就是 no-op，警告是重校验噪声，无需 --acknowledge-clawhub-risk，无待办**。
+*   **taskflow-inbox-triage 首轮分诊（10-11）**：audit 6 findings 全为死镜像 blocked flow（工作 9 月已结束、仅回执投递失败卡住）→ cancel ×3 后 0 findings；`maintenance --apply` 实清 9/12（3 个 cancel 过渡态不可 prune）。**教训：凡写「已清空/全部完成」必须贴实测输出**（初稿误记 12 个全清，未核对 flow list）。
+*   **stock-watcher 技能修复（10-11）**：数据源 10jqka（JS 渲染静态页无数字，旧正则 35/35 全挂）→ sina_hq 批量接口；35/35 成功与 close_scan 逐值吻合。坑：sina 响应变量名是 `hq_str_` 非请求参数的 `list=`，正则写错静默 0 行——先打印原始响应再写正则。关注池快照已同步 `~/.clawdbot/stock_watcher/watchlist.txt`，**关注池变更需重同步**。
+*   **python-debugpy 三件套落地（10-11，commit `9b301dd`，细则已入 TOOLS.md）**：`analysis/debug_pm.py` 事后验尸 + `scripts/debug_residue_guard.py` AST 残留门禁（周流水线步骤 0i）+ 调试手册。自测教训：断言前先收集全部 findings，禁止单遍历短路（首版 break 掩盖 HIGH 残留致 4/9 假失败）。
+*   **🔴 工具参数双层包裹并非 Vision-Exp 独有（10-12 复现）**：exec/write 并行调用偶发参数被多包一层 `{"arguments":{...}}` → "must have required properties"；当前模型 **MiMo-V2.6-Flash 也有此发作**，与 10-01 DeepSeek-V4-Flash 同症状。**规避法：单条顺序调用、不并行 exec/write**。（若后续再遇连环报错，先换模型/改串行，别怀疑工具本身。）
+
 ## Promoted From Short-Term Memory (2026-10-12)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-10-07-1458.md:13:16 -->
