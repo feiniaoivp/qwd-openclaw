@@ -1221,23 +1221,25 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **新增 cron `c50849c8` daily-skill-auto-update（04:00）**：只跑 `openclaw skills update --all --agent main`（ClawHub 技能），🔴红线禁碰核心（不跑 openclaw update/doctor、不改 plist），与 launchd 版本锁定 @2026.7.1-2 兼容；更新前 git 快照、更新后 skill_supply_scan --offline（exit 1 即回滚）+ 版本核对。实测坑：`skills update --all` 手动跑超 90s 被 SIGKILL → timeout 给足 1200s。
 *   **[10-09 复证] Vision-Exp「arguments 双层包裹」缺陷第 3 次复现**（随机发作，write/apply_patch 通道不受影响）→ 已记 corrections.md；10-06 留的「给多轮工具链 cron 显式 --model」待办已由 10-09 cron 批量修复实质落地（见待办结转 [10-09 闭环] 条目）。
 
-## Promoted From Short-Term Memory (2026-10-11)
+## Promoted From Short-Term Memory (2026-10-12)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-10-06.md:8:11 -->
-- 08:13-11:00 cron per-job 模型覆盖清理（续 10-05/10-06 早 404 事故）: `model=deepseek/deepseek-v4-flash`（失效 404）：zhonglian-monitor-noon(8da42083)、zhonglian-monitor-close(ff8df2a8)、daily-supervision-review(a7456f8b); `model=deepseek-v4-flash` + `thinking=medium` 双踩：Memory Dreaming Promotion(233295fd); `thinking=medium`：Dreaming Daily Report(a8c18aed); `thinking=off` 残留：auction-analyze-0926(4ecdf11f)、cron-health-check(b5943dcf) [score=0.804 recalls=0 avg=0.620 source=memory/2026-10-06.md:8-11]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-06-2235.md:15:18 -->
-- 核心发现：09-30 主力净流出 **-6.77亿**，结构教科书式派发: | 资金层 | 净额 | |---|---| | 超大单 | **-4.03亿** | | 大单 | -2.75亿 | [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06-2235.md:15-18]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-06-2235.md:19:20 -->
-- 核心发现：09-30 主力净流出 **-6.77亿**，结构教科书式派发: | 中单 | +1.60亿 | | 小单 | **+5.18亿** | [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06-2235.md:19-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-06-2235.md:22:22 -->
-- 核心发现：09-30 主力净流出 **-6.77亿**，结构教科书式派发: 散户恰好接走机构全部抛盘，净卖占当日成交额(≈42亿) **-16.2%**——集中撤退量级，且是板块级行动（电子当日全链 -150亿）的组成部分。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06-2235.md:22-22]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-06-2235.md:25:25 -->
-- 量价三段式出货节奏（新浪日K）: 09-22 天量滞涨(1.42亿手@63.5) → 09-29 **缩量**诱多(+2.48%) → 09-30 **放量长阴 -5.73%** 吞掉全部反弹、跌破EMA20(60.48) [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06-2235.md:25-25]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-06.md:13:13 -->
-- 08:13-11:00 cron per-job 模型覆盖清理（续 10-05/10-06 早 404 事故）: **处置**（用户口头授权「好的继续」）： [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-06.md:14:17 -->
-- 08:13-11:00 cron per-job 模型覆盖清理（续 10-05/10-06 早 404 事故）: 备份 7 个 job 完整定义 → `data/cron-backup/20261006-104600_<id8>.json`（7/7 OK）; `openclaw cron edit <uuid> --clear-model / --clear-thinking`（注意：**必须用完整 UUID**，短 id 报 not found；`cron get` **不接受 --json**，默认输出就是 JSON）; 复核：`cron list --json` 全量扫描 → ✅ 无残留; 抽测：cron-health-check(force) → ok, model=deepseek-chat, 37.8s；zhonglian-monitor-noon(force) → lastRunStatus=ok, payload.model=None [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06.md:14-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-06.md:20:22 -->
-- 08:13-11:00 cron per-job 模型覆盖清理（续 10-05/10-06 早 404 事故）: `thinking` 字段只要非空（哪怕 "off"）就会下发触发 400；清除用 `--clear-thinking`，不要写 "off"。; `cron runs` 的 entries 有缓存/滞后，验证以 `cron get` 的 lastRunStatus/lastRunAtMs 为准。; 短 id（前 8 位）不能用于 get/edit/run，一律完整 UUID。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06.md:20-22]
-<!-- openclaw-memory-promotion:memory:memory/2026-10-06.md:5:5 -->
-- 08:13-11:00 cron per-job 模型覆盖清理（续 10-05/10-06 早 404 事故）: **背景**：`Dreaming Daily Report`(a8c18aed) 连续 4 次 error，根因 = per-job `payload.model` 指向已下线 `deepseek-v4-flash`（404）＋ `payload.thinking` 字段网关不认（400）。早上先修了 a8c18aed 本身（摘 model/fallbacks），07:22 手动重试成功（506s，产出 `memory/dreaming/daily-report-2026-10-06.md`）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-06.md:5-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-07-1458.md:13:16 -->
+- 🩺 现金流质量：改善但仍是短板: | 年度 | 经营现金流净额 | 归母净利 | 现金/净利比 | |---|---|---|---| | 2022 | 24.3亿 | 23.1亿 | 1.05 | | 2023 | 27.1亿 | 35.1亿 | 0.77 | [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-07-1458.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-07-1458.md:17:18 -->
+- 🩺 现金流质量：改善但仍是短板: | 2024 | 21.4亿 | 35.2亿 | **0.61 ⚠️** | | 2025 | **48.7亿** | 48.6亿 | **1.00 ✅** | [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-07-1458.md:17-18]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-07-1458.md:20:20 -->
+- 🩺 现金流质量：改善但仍是短板: [来源: 同花顺 `stock_financial_cash_ths` 按年度 + 同花顺利润表] [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-07-1458.md:20-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-07-1458.md:22:23 -->
+- 🩺 现金流质量：改善但仍是短板: 2024 年利润含金量差（现金只覆盖净利 6 成），2025 年大幅修复到 1:1 —— 分红能兑现的基础。; Baostock 口径 CFO/营收：2024Q4 4.7% → 2025Q4 9.4% → 2026Q2 8.9%，趋势向好但对工程机械行业来说只是及格线。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-07-1458.md:22-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-07.md:12:13 -->
+- 08:15 — 修复 pre_response_guard.py 正则 bug（commit 8af7402）: `NUMBER_PATTERN` 单位组 `(万亿|亿|...)` 是捕获组 → 反向匹配 `group(2)` 被单位占用 → 已带来源标注的文本被误判违规、关键词显示 None。; 修复：改非捕获组 `(?:...)`，正反双向测试通过（裸数字 exit 1 / 带来源 exit 0）。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-07.md:12-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-07.md:16:19 -->
+- 08:34 — A股分析师晨报（a-share-analyst skill，数据截止 2026-09-30 收盘，今日休市）: 大盘：涨 16 / 跌 11，总成交额 288.4 亿，030 健康度 6/10 [来源: close_scan_v2, analysis/daily/2026-10-07_premarket_report.md]; 双策略 38 只：双买 0 | 双卖 1 | 双持有 24 | 分歧 13 [来源: analysis/daily/2026-10-07_dual.md:5-6]; 🔴 唯一一致卖出：**沃尔核材(002130) ¥15.71**，KDJ+RSI + EMA+OBV 共振卖出 → 明日开盘优先减仓 [来源: dual.md:34]; ⚡ 分歧 13 只：10 只被 EMA+OBV 单边拉卖出（亿纬/通富/天齐/应流/国瓷/福莱特/中信金属/巨化/西电/华明）；唯一多头线索 中信特钢(000708) ¥13.11 纯MACD买入 [来源: dual.md:14-27] [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-07.md:16-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-07.md:20:21 -->
+- 08:34 — A股分析师晨报（a-share-analyst skill，数据截止 2026-09-30 收盘，今日休市）: RSI 超卖边缘带：中金 28.7 / 天齐 35.2 / 福莱特 35.6 / 中信建投 37.3 / 中信证券 39.9; ⚠️ AI 研判模块数据停在 09-18 降级缓存，已降权。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-07.md:20-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-07.md:24:25 -->
+- 08:49 — blogwatcher 扫描（补 10-02 以来假期增量）: A股动态 +88、中国财经证券 +41、FT中文网首次 EOF 失败重试后正常（0 新增）；共 129 新入库，未读累计 351（未 read-all，用户未表态）。; 与持仓/明日开盘直接相关：①中信建投：A股节后情绪有望回升；②东方证券收购上海证券 100% 股权获证监会受理（券商整合主线，关联中信/中金/中信建投）；③美国非农爆冷 → 关注中芯/长电/通富；④招商证券聘任刘波为总裁。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-07.md:24-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-07.md:4:7 -->
+- 06:43~08:15 — 新闻任务「内容为空」排查（已闭环）: 结论：**任务全部 ok，假期源头无新闻**。盘前快讯/盘后归档/阅读推送 lastRunStatus 均 ok、Telegram 投递成功（openclaw cron list --json 实测）。; 根因：①休市无新公告（10/06 notices=0）；②个股新闻源全部停留在 9/30 及更早，reader 按当日过滤命中 0（正常设计）；③宏观 200 条全是海外新闻，筛选后无关 → 10/06 报告仅 6 条美股资讯。; 今日 daily_2026-10-07.md 全空 = 时序竞争：06:30 生成时当天第一批抓取 08:30 才落盘；08:35 阅读任务会用新数据重新生成。; 改进建议（未做，用户未表态）：假期明确推送「休市无新闻」而非空内容。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-07.md:4-7]
+<!-- openclaw-memory-promotion:memory:memory/2026-10-07.md:8:9 -->
+- 06:43~08:15 — 新闻任务「内容为空」排查（已闭环）: 沉淀：/tmp/cron_output_triage.py（6 步 triage 脚本，实测 40 job 正确筛出 4 新闻任务）+ Skill 提案 `cron-empty-output-triage-20261007-325c09813b`（pending 待 Operator 审批，未应用）。; 关键坑（已写进提案）：`cron list --json` 顶层是对象需取 `["jobs"]`；`stock_news` 原始层是嵌套 list 非 dict。 [score=0.803 recalls=0 avg=0.620 source=memory/2026-10-07.md:8-9]
