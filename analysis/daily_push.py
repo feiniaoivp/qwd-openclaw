@@ -107,6 +107,22 @@ def persist_artifacts(data: dict, summary_text: str) -> list:
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(slim, f, ensure_ascii=False, indent=1)
     paths.append(json_path)
+    # 2026-10-11(#1): 全量 JSON 落盘到 pipeline_cache，供次日盘前 scan 阶段直接
+    # 消费——06:00 开盘前 spot=昨收、K线=到昨收，与昨夜 18:30 扫描数据完全等价，
+    # 复用可省一次全池重扫并消除盘前数据源抖动。保留最近 10 份。
+    cache_dir = os.path.join(WORKSPACE, "data", "pipeline_cache")
+    os.makedirs(cache_dir, exist_ok=True)
+    full_path = os.path.join(cache_dir, f"close_scan_{data_date}.json")
+    with open(full_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, default=str)
+    paths.append(full_path)
+    try:
+        import glob as _glob
+        old = sorted(_glob.glob(os.path.join(cache_dir, "close_scan_*.json")))
+        for p in old[:-10]:
+            os.remove(p)
+    except Exception:  # noqa: BLE001
+        pass
     return paths
 
 
