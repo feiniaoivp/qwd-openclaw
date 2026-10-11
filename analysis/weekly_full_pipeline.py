@@ -98,9 +98,77 @@ def run_script(script: str, args: List[str] = None, timeout: int = 600) -> Dict[
         return {"success": False, "stdout": "", "stderr": str(e), "elapsed": 0}
 
 
+RESUME_SKIP_KEYS = {"backtest", "param_tune", "validate", "dsr_audit",
+                    "param_signal_diff", "param_evaluate_backup", "param_evaluate", "auto_adjust"}
+
+
+def _load_resume_record():
+    """--resume [latest|path]（2026-10-11 #7）：读上次周流水线记录，只补跑失败的慢步骤。
+    仅认 2 天内的记录（防止捡到 ancient record 全量重跑）；无待补跑项返回 'clean'
+    （主流程优雅退出，不重推简报）。门禁与简报永远重跑，不在 RESUME_SKIP_KEYS 内。"""
+    if "--resume" not in sys.argv:
+        return None
+    idx = sys.argv.index("--resume")
+    target = (sys.argv[idx + 1] if idx + 1 < len(sys.argv) and not sys.argv[idx + 1].startswith("-")
+              else "latest")
+    if target == "latest":
+        import glob as _g
+        files = sorted(_g.glob(os.path.join(DATA_DIR, "weekly_pipeline_*.json")))
+        path = files[-1] if files else None
+    else:
+        path = target if os.path.isabs(target) else os.path.join(DATA_DIR, target)
+    if not path or not os.path.exists(path):
+        print(f"⚠️ --resume: 找不到运行记录 {path}，退出（补跑仅在有记录时工作）")
+        return "clean"
+    try:
+        with open(path, encoding="utf-8") as f:
+            rec = json.load(f)
+    except Exception as e:  # noqa: BLE001
+        print(f"⚠️ --resume: 记录解析失败 {e}，退出")
+        return "clean"
+    rec_date = rec.get("date", "")
+    try:
+        age_days = (datetime.now() - datetime.strptime(rec_date, "%Y-%m-%d")).days
+    except Exception:  # noqa: BLE001
+        age_days = 99
+    if age_days > 2:
+        print(f"⚠️ --resume: 最新记录 {rec_date} 已超 2 天，退出（避免拾旧记录全量重跑）")
+        return "clean"
+    failed = [k for k, v in rec.get("steps", {}).items()
+              if not v.get("success") and k in RESUME_SKIP_KEYS]
+    if not failed:
+        print("✅ --resume: 上次运行慢步骤全部成功，无需补跑，退出")
+        return "clean"
+    print(f"🔁 --resume 补跑模式（{os.path.basename(path)}），重跑: {failed}；门禁+简报照常")
+    rec["_resumed_failed"] = failed
+    return rec
+
+
+def _resume_skip(key, resume_record):
+    """补跑模式下该慢步骤上次成功 → 返回跳过伪结果；否则 None 照常执行。"""
+    if not resume_record or resume_record == "clean":
+        return None
+    if key in resume_record.get("_resumed_failed", []):
+        return None  # 失败步骤要重跑
+    if resume_record.get("steps", {}).get(key, {}).get("success"):
+        return {"success": True, "stdout": "", "stderr": "skipped(resume: 上次成功)",
+                "elapsed": 0, "skipped": True}
+    return None  # 上次也没跑成 → 重跑
+
+
 def main():
+    # 2026-10-11(#7): 补跑模式——沿用原运行日产物路径（validation/backtest/简报都按原日期找）
+    resume_record = _load_resume_record()
+    if resume_record == "clean":
+        print("🔚 无待补跑项，退出（周末补跑 job 仅在有失败慢步骤时工作）")
+        return 0
     today = datetime.now().strftime("%Y-%m-%d")
-    print(f"\n📅 周回测全流水线启动 ({today})")
+    run_date = today
+    # 2026-10-11(#7) 注：补跑模式不改造日期——重跑步骤按自然运行日写最新产物，
+    # 被跳过步骤沿用上次的旧日期产物；下游消费靠 latest 回退（见 3b/简报）。
+    if resume_record is not None:
+        print(f"🔁 补跑模式：重跑失败慢步骤并写新日期产物，成功步骤跳过")
+    print(f"\n📅 周回测全流水线启动 (run={run_date})")
 
     results = {}
 
@@ -186,21 +254,30 @@ def main():
 
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
-    r = run_script("backtest_strategies.py", timeout=600)  # 10分钟上限，当前约3.5分钟跑完，留足缓冲
+    r = _resume_skip("backtest", resume_record)
+    if r is None:
+        r = run_script("backtest_strategies.py", timeout=600)  # 10分钟上限，当前约3.5分钟跑完，留足缓冲
     results["backtest"] = r
     if not r["success"]:
         print("⚠️ 回测失败，继续后续步骤...")
     
     # 步骤 2: 参数调优 (强制快速模式 --fast，约6分钟/35只)
     print("\n⚙️ 步骤 2/8: 参数调优快速模式 (param_tune.py --fast)")
-    r = run_script("param_tune.py", ["--fast"], timeout=1800)  # 30分钟上限，足够覆盖快速模式(约6分钟)+缓冲
+    r = _resume_skip("param_tune", resume_record)
+    if r is None:
+        r = run_script("param_tune.py", ["--fast"], timeout=1800)  # 30分钟上限，足够覆盖快速模式(约6分钟)+缓冲
     results["param_tune"] = r
     if not r["success"]:
         print("⚠️ 参数调优失败，继续后续步骤...")
     
     # 步骤 3: 跨周期验证 — 最后跑，带置信度仲裁写回（拥有最终决定权）
-    print("\n🔍 步骤 3/9: 跨周期验证 + 置信度仲裁 (validate_strategies.py --write-map --arbitrate)")
-    r = run_script("validate_strategies.py", ["--write-map", "--arbitrate"], timeout=1800)
+    print("\n🔍 步骤 3/9: 跨周期验证 + 置信度仲裁 (validate_strategies.py --arbitrate --pending-out)")
+    # 2026-10-11(#8): 不再直接 --write-map —— 变更先进候审清单，由步骤 3c 按 DSR 分流，
+    # DSR 不显著票的策略切换不再自动生效（记忆规约的强制化）。
+    r = _resume_skip("validate", resume_record)
+    if r is None:
+        r = run_script("validate_strategies.py",
+                       ["--arbitrate", "--pending-out", "data/strategy_pending.json"], timeout=1800)
     results["validate"] = r
     if not r["success"]:
         print("⚠️ 验证失败，继续后续步骤...")
@@ -212,8 +289,17 @@ def main():
     # 失败仅告警不阻断（防误伤主流程）。
     print("\n🎲 步骤 3b/9: DSR 运气基线体检 (dsr_sharpe.py)")
     val_file = os.path.join(ANALYSIS_DIR, f"validation_{today}.json")
+    val_file = os.path.join(ANALYSIS_DIR, f"validation_{today}.json")
+    if not os.path.exists(val_file):
+        # 2026-10-11(#7) 补跑跨天回退：validation 取最新（被跳过的 validate 产物是原运行日的）
+        _vals = sorted(glob.glob(os.path.join(ANALYSIS_DIR, "validation_*.json")))
+        if _vals:
+            val_file = _vals[-1]
+            print(f"ℹ️ 未找到当日 validation，回退最新: {os.path.basename(val_file)}")
     if os.path.exists(val_file):
-        r = run_script("dsr_sharpe.py",
+        r = _resume_skip("dsr_audit", resume_record)
+        if r is None:
+            r = run_script("dsr_sharpe.py",
                        ["--validation", val_file,
                         "--out", os.path.join(ANALYSIS_DIR, f"dsr_audit_{today}.md")],
                        timeout=300)
@@ -224,37 +310,53 @@ def main():
         print(f"⚠️ 未找到 {val_file}（步骤 3 未产出？），跳过 DSR 体检")
         results["dsr_audit"] = {"success": False, "stdout": "", "stderr": "validation 文件缺失", "elapsed": 0}
     
+    # 步骤 3c: 策略候审闸门（2026-10-11 #8 新增）
+    # 候审清单按 DSR 分流：显著自动写 map，偏弱/不显著留候审等人批准（apply --apply-symbol）。
+    print("\n🚦 步骤 3c/9: 策略候审闸门 (apply_strategy_pending.py --auto)")
+    r = run_script("../scripts/apply_strategy_pending.py", ["--auto"], timeout=120)
+    results["apply_pending"] = r
+    if not r["success"]:
+        print("⚠️ 候审分流失败（不阻断；清单保留待人工处理）...")
+
     # 步骤 4: 调参差异榜
     print("\n⚖️ 步骤 4/8: 调参差异榜 (param_signal_diff.py)")
-    r = run_script("param_signal_diff.py", timeout=300)
+    r = _resume_skip("param_signal_diff", resume_record)
+    if r is None:
+        r = run_script("param_signal_diff.py", timeout=300)
     results["param_signal_diff"] = r
     if not r["success"]:
         print("⚠️ 差异榜失败，继续后续步骤...")
     
     # 步骤 5: 赛后验证（备份当前参数）
     print("\n🔄 步骤 5/8: 赛后验证 - 备份参数 (param_evaluate.py --backup)")
-    r = run_script("param_evaluate.py", ["--backup"], timeout=120)
+    r = _resume_skip("param_evaluate_backup", resume_record)
+    if r is None:
+        r = run_script("param_evaluate.py", ["--backup"], timeout=120)
     results["param_evaluate_backup"] = r
     if not r["success"]:
         print("⚠️ 参数备份失败，继续后续步骤...")
     
     # 步骤 6: 赛后验证（评估前 14 天）
     print("\n📈 步骤 6/8: 赛后验证 - 评估前 14 天 (param_evaluate.py)")
-    r = run_script("param_evaluate.py", timeout=120)
+    r = _resume_skip("param_evaluate", resume_record)
+    if r is None:
+        r = run_script("param_evaluate.py", timeout=120)
     results["param_evaluate"] = r
     if not r["success"]:
         print("⚠️ 赛后验证失败，继续后续步骤...")
     
     # 步骤 7: 030 自动仓位微调 ⭐ 新增
     print("\n🔧 步骤 7/8: 030 自动仓位微调 (auto_adjust_position.py)")
-    r = run_script("auto_adjust_position.py", timeout=60)
+    r = _resume_skip("auto_adjust", resume_record)
+    if r is None:
+        r = run_script("auto_adjust_position.py", timeout=60)
     results["auto_adjust"] = r
     if not r["success"]:
         print("⚠️ 自动微调失败（可能成交不足），继续...")
 
     # 步骤 8: 生成简报并推送 Telegram（纯文本，绕开 LLM 与 Markdown 实体问题）
     print("\n📤 步骤 8/8: 生成周报简报并推送 Telegram")
-    brief = build_brief(results)
+    brief = build_brief(results, as_of=today)
     results["brief"] = push_brief(brief)
 
     # 汇总
@@ -272,13 +374,15 @@ def main():
     
     # 保存运行记录
     run_record = {
-        "date": today,
+        "date": run_date,
+        "artifact_date": today,
+        "resumed": resume_record is not None,
         "steps": results,
         "all_success": all_success,
         "total_elapsed": sum(r.get("elapsed", 0) for r in results.values()),
     }
     
-    record_path = os.path.join(DATA_DIR, f"weekly_pipeline_{today}.json")
+    record_path = os.path.join(DATA_DIR, f"weekly_pipeline_{run_date}.json")
     with open(record_path, "w") as f:
         json.dump(run_record, f, ensure_ascii=False, indent=2, default=str)
     
@@ -318,15 +422,23 @@ def _parse_brief_bool(line):
     return line
 
 
-def build_brief(results=None):
-    """读取各步骤产物生成纯文本周报简报。results 可含 param_signal_diff 的 stdout。"""
-    today = datetime.now().strftime("%Y-%m-%d")
+def build_brief(results=None, as_of=None):
+    """读取各步骤产物生成纯文本周报简报。results 可含 param_signal_diff 的 stdout。
+    as_of: 补跑模式传入原运行日，保证 backtest/validation 产物路径对齐（2026-10-11 #7）。"""
+    today = (as_of or datetime.now().strftime("%Y-%m-%d"))
     lines = []
     lines.append("每周A股策略回测更新简报 " + today)
     lines.append("")
 
     # 一、策略回测（从 backtest 报告提炼策略榜，去 markdown 符号）
     bt_path = os.path.join(ANALYSIS_DIR, "backtest", today + ".md")
+    if not os.path.exists(bt_path):
+        # 2026-10-11(#7) 补跑跨天回退：backtest 报告取最新
+        import glob as _g
+        _bts = sorted(_g.glob(os.path.join(ANALYSIS_DIR, "backtest", "*.md")))
+        if _bts:
+            bt_path = _bts[-1]
+            print(f"ℹ️ 未找到当日 backtest 报告，回退最新: {os.path.basename(bt_path)}")
     try:
         if os.path.exists(bt_path):
             with open(bt_path, encoding="utf-8") as f:
@@ -348,6 +460,26 @@ def build_brief(results=None):
             if strategy_count:
                 lines[1] = f"一、{strategy_count}策略全量回测"  # 修正标题
             lines.append("\n".join(rows[:9]) if rows else "(无策略榜行)")
+            # 2026-10-11(#9): 小样本策略列标注——总交易次数<3 的列统计不可信，
+            # 防止"交易1次、胜率82.86%、盈亏比52922"这类列被误读为真实实力。
+            try:
+                header_cells = None
+                trades_cells = None
+                for ln in seg.splitlines():
+                    ln_s = ln.strip()
+                    if ln_s.startswith("|") and "指标" in ln_s and header_cells is None:
+                        header_cells = [c.strip() for c in ln_s.strip("|").split("|")]
+                    if ln_s.startswith("|") and "总交易次数" in ln_s and trades_cells is None:
+                        trades_cells = [c.strip() for c in ln_s.strip("|").split("|")]
+                if header_cells and trades_cells and len(header_cells) == len(trades_cells):
+                    small = [header_cells[i] for i in range(1, len(header_cells))
+                             if trades_cells[i].isdigit() and int(trades_cells[i]) < 3]
+                    if small:
+                        lines.append(f"  ⚠️ 小样本策略列（交易<3次，统计不可信）: {', '.join(small)}")
+                    else:
+                        lines.append("  ✅ 全部策略交易次数≥3，无小样本列")
+            except Exception as e:  # noqa: BLE001
+                lines.append(f"  (小样本标注解析失败: {e})")
         else:
             lines.append("(backtest 报告未生成)")
     except Exception as e:
@@ -445,6 +577,27 @@ def build_brief(results=None):
         lines.append(f"(DSR名单读取失败: {e})")
     lines.append("")
 
+    # 六、候审策略变更（2026-10-11 #8 新增；读步骤 3c 分流后的 strategy_pending.json）
+    # 等待/恢复语义：候审存在=waiting；用户批准后 apply --apply-symbol=resume。
+    lines.append("六、策略变更候审(DSR不显著,待人工批准)")
+    try:
+        pend_path = os.path.join(DATA_DIR, "strategy_pending.json")
+        if os.path.exists(pend_path):
+            with open(pend_path, encoding="utf-8") as f:
+                pend = json.load(f)
+            pend_ch = pend.get("changes", [])
+            if pend_ch:
+                for ch in pend_ch:
+                    lines.append(f"  {ch['name']}({ch['symbol']}) {ch['old']} -> {ch['new']}")
+                lines.append("  ⏸️ 以上变更未生效；批准=回复时说明,驳回=不处理/明示驳回 (apply_strategy_pending.py)")
+            else:
+                lines.append("  无候审变更")
+        else:
+            lines.append("  无候审变更")
+    except Exception as e:
+        lines.append(f"(候审清单读取失败: {e})")
+    lines.append("")
+
     lines.append("—— 由 weekly_full_pipeline.py 自动生成（command cron 直跑，不经 LLM）")
     text = "\n".join(lines)
     _emit_dual_output(text)
@@ -459,8 +612,12 @@ def push_brief(brief_text):
     现统一走 send_telegram 的传输层（curl_cffi 优先，自动回退 requests）。
     """
     try:
-        import sys
-        sys.path.insert(0, WORKSPACE)
+        import sys as _sys
+        _sys.path.insert(0, WORKSPACE)
+        if os.getenv("WFP_SKIP_PUSH"):
+            # 2026-10-11(#7): 测试钩子——补跑干测时不重复推 Telegram
+            print("(WFP_SKIP_PUSH=1，跳过推送)")
+            return {"success": True, "skipped": True}
         from send_telegram import _post, API_URL, CHAT_ID
         # parse_mode="" 纯文本：含 () / 冒号易触发 Markdown 实体错误
         payload = {"chat_id": CHAT_ID, "text": brief_text, "parse_mode": ""}

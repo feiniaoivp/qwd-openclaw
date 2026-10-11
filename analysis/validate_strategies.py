@@ -111,7 +111,7 @@ def fetch_long_history(symbol: str, name: str, start: str, end: str) -> pd.DataF
     return None
 
 
-def main(stocks=None, write_map=False, arbitrate=False):
+def main(stocks=None, write_map=False, arbitrate=False, pending_out=None):
     today = datetime.datetime.now().strftime("%Y-%m-%d")
 
     if stocks is None:
@@ -358,7 +358,9 @@ def main(stocks=None, write_map=False, arbitrate=False):
                 return False, f"随机基准未过: {e}"
         return True, ""
 
-    if write_map or arbitrate:
+    if write_map or arbitrate or pending_out:
+        # 2026-10-11(#8): --pending-out 时只产出候审清单、不写 map ——
+        # DSR 不显著票的策略切换不再自动生效（记忆规约的强制化），人工批准后才落盘。
         mapfile = os.path.join(WORKSPACE, "data", "adaptive_strategy_map.json")
         with open(mapfile, "r", encoding="utf-8") as f:
             _raw = json.load(f)
@@ -370,6 +372,7 @@ def main(stocks=None, write_map=False, arbitrate=False):
         changes = 0
         skipped = []
         arbitrated = []
+        pending_changes = []  # 2026-10-11(#8) 候审清单
         
         for symbol, info in best_map.items():
             if "error" in info or "strategy" not in info:
@@ -433,6 +436,20 @@ def main(stocks=None, write_map=False, arbitrate=False):
                     reason = f"验证未过护栏({val_reason})，调优{'过' if tune_ok else '未过'}护栏，保留原策略"
             
             if final_s != old_s:
+                if pending_out:
+                    # 2026-10-11(#8): 不落盘，进候审清单（由 apply_strategy_pending 按 DSR 分流）
+                    pending_changes.append({
+                        "symbol": symbol, "name": info.get("name", symbol),
+                        "old": old_s, "new": final_s, "reason": reason,
+                        "val": {"strategy": val_s, "score": val_score, "sharpe": val_sharpe, "trades": val_trades},
+                        "tune": {"strategy": tune_s, "score": tune_score, "sharpe": tune_sharpe, "trades": tune_trades},
+                        "dsr_trials": info.get("dsr_trials", []),
+                    })
+                    print(f"  📝(候审) {info.get('name', symbol)}: {old_s} -> {final_s} ({reason})")
+                    changes += 1
+                    if val_s != tune_s:
+                        arbitrated.append((symbol, info.get('name', symbol), val_s, tune_s, final_s, reason))
+                    continue
                 print(f"  📝 {info.get('name', symbol)}: {old_s} -> {final_s} ({reason})")
                 if isinstance(cur_raw.get(symbol), dict):
                     cur_raw[symbol]["strategy"] = final_s
@@ -445,23 +462,48 @@ def main(stocks=None, write_map=False, arbitrate=False):
             else:
                 skipped.append((symbol, info.get('name', symbol), old_s, val_s, tune_s, val_score, val_sharpe, val_trades, val_reason))
         
-        # 使用 Strategy Registry 版本化写入
-        try:
-            from analysis.strategy_registry import create_version
-            metadata = {
+        if pending_out:
+            # 2026-10-11(#8): 候审清单落盘，不写 map、不建版本
+            # 合并旧候审：上周未批准项不被本周新清单覆盖丢失（同股新候选优先）
+            old_pending = {"changes": []}
+            if os.path.exists(pend_path := (pending_out if os.path.isabs(pending_out) else os.path.join(WORKSPACE, pending_out))):
+                try:
+                    with open(pend_path, encoding="utf-8") as f:
+                        old_pending = json.load(f)
+                except Exception:  # noqa: BLE001
+                    old_pending = {"changes": []}
+            new_syms = {c["symbol"] for c in pending_changes}
+            carried = [c for c in (old_pending.get("changes") or []) if c.get("symbol") not in new_syms]
+            merged_changes = carried + pending_changes
+            pend = {
+                "generated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "validation_date": datetime.datetime.now().strftime("%Y-%m-%d"),
-                "validation_method": "cross_window_4_windows",
-                "changes": changes,
-                "arbitrated_count": len(arbitrated),
-                "skipped_count": len(skipped),
+                "carried_from_previous": len(carried),
+                "note": "DSR 不显著/无法验证的策略变更候审清单；批准后用 apply_strategy_pending.py 应用",
+                "changes": merged_changes,
             }
-            create_version(cur, source="validate_strategies_arbitrate", metadata=metadata)
-            print(f"\n✅ 已写回 {mapfile} (版本化, 变更 {changes} 处)")
-        except Exception as e:
-            # 回退：直接写文件
-            with open(mapfile, "w", encoding="utf-8") as f:
-                json.dump(cur_raw if cur_raw else cur, f, ensure_ascii=False, indent=2)
-            print(f"\n✅ 已写回 {mapfile} (回退, 变更 {changes} 处)")
+            os.makedirs(os.path.dirname(pend_path), exist_ok=True)
+            with open(pend_path, "w", encoding="utf-8") as f:
+                json.dump(pend, f, ensure_ascii=False, indent=1)
+            print(f"\n📮 候审清单已写 {pend_path}（本周新增 {len(pending_changes)} + 上期结转 {len(carried)}，未写入 map）")
+        else:
+            # 使用 Strategy Registry 版本化写入
+            try:
+                from analysis.strategy_registry import create_version
+                metadata = {
+                    "validation_date": datetime.datetime.now().strftime("%Y-%m-%d"),
+                    "validation_method": "cross_window_4_windows",
+                    "changes": changes,
+                    "arbitrated_count": len(arbitrated),
+                    "skipped_count": len(skipped),
+                }
+                create_version(cur, source="validate_strategies_arbitrate", metadata=metadata)
+                print(f"\n✅ 已写回 {mapfile} (版本化, 变更 {changes} 处)")
+            except Exception as e:
+                # 回退：直接写文件
+                with open(mapfile, "w", encoding="utf-8") as f:
+                    json.dump(cur_raw if cur_raw else cur, f, ensure_ascii=False, indent=2)
+                print(f"\n✅ 已写回 {mapfile} (回退, 变更 {changes} 处)")
         
         if arbitrated:
             print(f"\n⚖️ 仲裁决策 ({len(arbitrated)} 处):")
@@ -482,7 +524,9 @@ if __name__ == "__main__":
     parser.add_argument("--stocks", help="股票代码逗号分隔")
     parser.add_argument("--write-map", action="store_true")
     parser.add_argument("--arbitrate", action="store_true")
+    parser.add_argument("--pending-out", dest="pending_out", default=None,
+                        help="2026-10-11(#8): 变更写入候审清单 JSON 而非直接写 map（人工闸门）")
     args = parser.parse_args()
     
     stocks = args.stocks.split(",") if args.stocks else None
-    main(stocks=stocks, write_map=args.write_map, arbitrate=args.arbitrate)
+    main(stocks=stocks, write_map=args.write_map, arbitrate=args.arbitrate, pending_out=args.pending_out)
