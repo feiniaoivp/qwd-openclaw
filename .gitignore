@@ -47,7 +47,7 @@ data/premarket_*.json
 data/portfolio_sim_state.json
 data/portfolio_equity.csv
 data/zhonglian_state.json
-data/news/daily_news_reader.py
+# 2026-10-11: daily_news_reader.py 摘出忽略——核心流水线源码需版本保护（用户批准）
 data/agent_runs/
 data/arbitration_*.json
 data/auction/
@@ -64,7 +64,7 @@ analysis/daily/
 analysis/backtest/2026-*.md
 analysis/backlog_backtest_*.json
 analysis/daily_report_*.md
-analysis/premarket_pipeline.py
+# 2026-10-11: premarket_pipeline.py 摘出忽略——核心流水线源码需版本保护（用户批准）
 
 # ── 备份文件 ──
 *.bak.*
