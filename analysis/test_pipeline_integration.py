@@ -35,7 +35,8 @@ def test_pipeline_step_order():
     steps = [
         ("步骤 1", "backtest_strategies.py"),
         ("步骤 2", "param_tune.py.*--fast"),  # 现在是步骤 2，无 --write
-        ("步骤 3", "validate_strategies.py.*--write-map.*--arbitrate"),  # 现在是步骤 3，有 --arbitrate
+        # 2026-10-11(#8): 步骤 3 不再直接 --write-map，改为 --arbitrate + --pending-out 候审清单
+        ("步骤 3", r"(?s)validate_strategies\.py.*?--arbitrate.*?--pending-out"),
         ("步骤 4", "param_signal_diff.py"),
         ("步骤 5", "param_evaluate.py.*--backup"),
         ("步骤 6", "param_evaluate.py"),
@@ -74,7 +75,8 @@ def test_arbitration_flag():
     checks = [
         ("arbitrate 参数定义", "parser.add_argument(\"--arbitrate\", action=\"store_true\")"),
         ("arbitrate 传给 main", "arbitrate=args.arbitrate"),
-        ("写入条件包含 arbitrate", "if write_map or arbitrate:"),
+        # 2026-10-11(#8): 写入条件扩展为 write_map or arbitrate or pending_out
+        ("写入条件包含 arbitrate", "if write_map or arbitrate or pending_out:"),
         ("confidence_guard 函数", "def confidence_guard"),
         ("三维显著优势判定", "tune_score > val_score + 10 and tune_sharpe > val_sharpe + 0.1 and tune_trades >= 6"),
     ]
