@@ -34,6 +34,13 @@
    "diagnosis": "delivery failed (LLM timeout); conclusion already in MEMORY (kimi needs recharge)",
    "action": "cancelled",
    "result": "ok"
+  },
+  {
+   "scope": "tasks maintenance --apply",
+   "goal": "prune all 12 terminal task_mirrored TaskFlows (user approved '好的继续' 08:46)",
+   "action": "applied",
+   "result": "ok",
+   "appliedAt": "2026-10-11T08:47:35"
   }
  ],
  "waitForOwner": [],
@@ -41,7 +48,8 @@
   "audit after cleanup: 0 findings / 0 errors / 0 warnings (was 6 TaskFlow warnings)",
   "97 failed tasks = terminal history, audit Task findings: 0 (majority: cron health-check exit-1-by-design alerts); not touched",
   "9 remaining TaskFlow mirrors (succeeded/failed) kept as history",
-  "optional deeper clean: `openclaw tasks maintenance --apply` would prune all 12 flow mirrors (not applied — preserving history)"
+  "optional deeper clean: `openclaw tasks maintenance --apply` would prune all 12 flow mirrors (not applied — preserving history)",
+  "08:46 maintenance --apply executed: 12 flow mirrors pruned (flows list now empty); tasks themselves untouched (prune 0)"
  ],
  "waitJson": null
 }
