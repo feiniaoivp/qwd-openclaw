@@ -122,7 +122,7 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **[2026-09-09]:** backtest_strategies.py `preload_index_benchmarks` 传递日期格式 `20240101` 而非 `2024-01-01` 导致指数预加载失败 —— 修复日期格式转换。
 *   **[2026-09-09]:** portfolio_sim 每次 fetch_data 重复 login/logout baostock 导致连接池耗尽 `[Errno 9] Bad file descriptor` —— 改为单次登录复用会话，脚本结束时统一 logout。
 
-## User's Stock Watchlist (Definitive - 35 stocks)
+## User's Stock Watchlist (Definitive - 36 stocks)
 *   **证券/金融:** 中信证券(600030), 中信建投(601066), 招商银行(600036), 中金公司(601995), 越秀资本(000987)
 *   **半导体/TMT:** 长电科技(600584), 中芯国际(688981), 通富微电(002156), 雷科防务(002413)
 *   **新能源/储能:** 亿纬锂能(300014), 天齐锂业(002466)
@@ -131,8 +131,9 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **化工:** 巨化股份(600160), 恒力石化(600346)
 *   **钢铁/特钢:** 中信特钢(000708)
 *   **消费/其他:** 福耀玻璃(600660), 恒生电子(600570), 福莱蒽特(605566), 中联重科(000157), 中信金属(601061)
+*   **医药/生物（2026-10-12 新增）:** 翰宇药业(300199)
 *   **电力出海/电网装备（2026-09-27 纳入操作池）:** 特变电工(600089), 国电南瑞(600406), 许继电气(000400), 中国西电(601179), 平高电气(600312), 思源电气(002028), 华明装备(002270), 沃尔核材(002130)
-*   **Note:** 2026-08-06 撤除机电B股(900925, baostock无数据)与上能电气(300827)，2026-08-30 撤除中船汉光(300847)/奔图科技(002180)/福莱特(601865)。**2026-09-27 口径统一为 35 只：27只核心 + 电力出海/电网装备8只纳入操作池**（与 `data/adaptive_strategy_map.json`、回测范围、`memory/watchlist.md` 四层分层一致）。重点关注股的完整分析结果保存在 `analysis_summary_all.md`。当需要分析关注股票时，必须：1) 先读 `skill/stock-daily-report/SKILL.md` 获取分析模板；2) 再读 `analysis_summary_all.md` 获取确切列表。**绝不能凭记忆拼凑。**
+*   **Note:** 2026-08-06 撤除机电B股(900925, baostock无数据)与上能电气(300827)，2026-08-30 撤除中船汉光(300847)/奔图科技(002180)/福莱特(601865)。**2026-10-12 口径更新为 36 只：+医药生物 翰宇药业(300199)；此前 2026-09-27 统一为 35 只（27只核心 + 电力出海/电网装备8只纳入操作池）**（与 `data/adaptive_strategy_map.json`、回测范围、`memory/watchlist.md` 四层分层一致）。重点关注股的完整分析结果保存在 `analysis_summary_all.md`。当需要分析关注股票时，必须：1) 先读 `skill/stock-daily-report/SKILL.md` 获取分析模板；2) 再读 `analysis_summary_all.md` 获取确切列表。**绝不能凭记忆拼凑。**
 
 ## Important Events After 2026-06-29
 *   **2026-07-10:** Conducted A-share market news and bulletin analysis using akshare (stock_info_global_em) with user discussing market dynamics. Web search via Tavily was still unavailable.
@@ -1242,6 +1243,14 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **stock-watcher 技能修复（10-11）**：数据源 10jqka（JS 渲染静态页无数字，旧正则 35/35 全挂）→ sina_hq 批量接口；35/35 成功与 close_scan 逐值吻合。坑：sina 响应变量名是 `hq_str_` 非请求参数的 `list=`，正则写错静默 0 行——先打印原始响应再写正则。关注池快照已同步 `~/.clawdbot/stock_watcher/watchlist.txt`，**关注池变更需重同步**。
 *   **python-debugpy 三件套落地（10-11，commit `9b301dd`，细则已入 TOOLS.md）**：`analysis/debug_pm.py` 事后验尸 + `scripts/debug_residue_guard.py` AST 残留门禁（周流水线步骤 0i）+ 调试手册。自测教训：断言前先收集全部 findings，禁止单遍历短路（首版 break 掩盖 HIGH 残留致 4/9 假失败）。
 *   **🔴 工具参数双层包裹并非 Vision-Exp 独有（10-12 复现）**：exec/write 并行调用偶发参数被多包一层 `{"arguments":{...}}` → "must have required properties"；当前模型 **MiMo-V2.6-Flash 也有此发作**，与 10-01 DeepSeek-V4-Flash 同症状。**规避法：单条顺序调用、不并行 exec/write**。（若后续再遇连环报错，先换模型/改串行，别怀疑工具本身。）
+
+## 2026-10-12 蒸馏补充 Ⅱ（memory-maintenance 07:00 增量，10-11 日志缺口 3 条）
+
+> 源自 `memory/2026-10-11.md` 已落盘事实；10-12 06:04 首轮维护已蒸馏 8 条（见上节），本节仅补其未覆盖的缺口。
+
+*   **并行会话共写 workspace 两条防护**：①写共享文件（memory daily note）前**先读最新内容再追加**——10-11 曾发生并行会话整文件重写、覆盖 06:10 记录（当日已合并恢复）；②判断报告生成时机/来源必须 `stat` mtime 实测，不能凭记忆里的 cron 配置推断（15:30 cron 误判实为 06:02 盘前流水线产物即此坑）。
+*   **运维（10-11 14:58，用户指令）**：Antigravity IDE 从挂载 DMG 直接运行致 442% CPU + language_server 78%，SIGTERM 无效（进程卡死不处理信号）→ SIGKILL 处置后 CPU 恢复正常；我方后台无孤儿进程、gateway 正常。
+*   **维护路径确认（10-12）**：当日维护为双轮制（06:04 首轮全量 + 07:00 本轮增量），本轮核实首轮蒸馏已落盘、无重复写入；10-11 报告「17 项未提交」已全部落定（7 commit 实测存在），当前 git 未提交仅 4 项（维护态文件 + 新脚本 analysis/monday_cross_analysis.py 待归类）。
 
 ## Promoted From Short-Term Memory (2026-10-12)
 
