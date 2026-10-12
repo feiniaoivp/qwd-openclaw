@@ -1013,6 +1013,29 @@ def main(target_date: str = None):
                 continue
             sym = item["symbol"]
             df = daily_data.get(sym)
+            # ── 2026-10-13: spot vs K线 sanity 门禁 ──
+            # 10-12 事故: 新浪日K对601061返回坏序列(末根15.82 vs 真实10.80, 偏离46%),
+            # 坏K线直通 calc_full_signal_whitelist 进日报。规则: spot价 与 K线末根 偏离
+            # >25%(超出全部板块涨跌停幅度, 必非真实行情) => 数据源损坏, 该票显式失败 +
+            # 告警, 宁可缺数不可错数(与"数据降级必须显式标注"同哲学)。
+            spot_price = item.get("price")
+            hist_last = None
+            if df is not None and len(df):
+                try:
+                    hist_last = float(df["close"].iloc[-1])
+                except Exception as e:
+                    log.warning(f"sanity: {sym} K线末根读取失败({e}), 跳过spot交叉校验")
+                    hist_last = None
+            if spot_price and hist_last:
+                dev = abs(hist_last - spot_price) / spot_price
+                if dev > 0.25:
+                    msg = (f"sanity_check_failed: {sym} {item['name']} hist末根 {hist_last:.2f} "
+                           f"vs spot {spot_price:.2f} 偏离 {dev*100:.1f}% > 25%, 数据源损坏, 拒绝本票")
+                    log.warning(msg)
+                    output.setdefault("sanity_warnings", []).append(msg)
+                    output["summary"]["fail_count"] += 1
+                    output["watchlist_scan"].append({**item, "error": msg})
+                    continue
             if df is not None and len(df) >= 60:
                 try:
                     sig = calc_full_signal_whitelist(df)

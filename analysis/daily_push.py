@@ -62,6 +62,20 @@ def check_staleness(data: dict) -> str:
         warnings.append(
             f"⚠️ K线滞后: {mism}/{total} 只 K线收盘不等于spot收盘（指标可能仍基于 T-1，信号降权看待）"
         )
+    # 2026-10-13: 单票价格 sanity——spot价 与 K线价 偏离>25% 直接告警。
+    # 10-12 事故: 601061 坏K线 15.82 vs 真实 10.80(偏离46%), 整体不一致占比仅 1/36,
+    # 未达上面 30% 旧阈值而漏网; 单票级坏数据必须逐票拦截。
+    bad = []
+    for r in rows:
+        ind = r.get("indicators") or {}
+        hp = (ind.get("ema_trend") or {}).get("price")
+        sp = r.get("price")
+        if hp and sp and abs(sp - hp) / hp > 0.25:
+            bad.append(f"{r.get('symbol', '')} {r.get('name', '')}: 报告价 {sp} vs K线 {hp}")
+    if bad:
+        warnings.append(
+            "🔴 单票价格异常(偏离>25%, 数据源疑似损坏, 信号不可信): " + "; ".join(bad[:5])
+        )
     return ("\n".join(warnings) + "\n\n") if warnings else ""
 
 
