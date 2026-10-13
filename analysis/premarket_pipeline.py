@@ -147,6 +147,37 @@ def load_fallback(fallback_path: str, date: str):
     return None
 
 
+def _load_agent_fallback(date: str):
+    """agent 阶段降级数据（2026-10-14 修复）：
+    优先取 data/agent_runs/ 下**最新**的 run_*.json（当日 run 往往是好的，只是
+    pipeline 侧超时/解析失败被判死），其次才 last_success.json。
+    根因：last_success.json 停留在 2026-09-20，导致盘前报告连日静默输出
+    24 天前的僵尸缓存（来伊份旧闻循环 + 「交易日:否」假标签）且无日期提示。
+    返回 (data, note)；note 必须带缓存日期，禁止无日期静默降级。"""
+    runs_dir = WORKSPACE / "data" / "agent_runs"
+    try:
+        candidates = sorted(runs_dir.glob("run_*.json"), reverse=True)
+        for p in candidates:
+            m = re.match(r"run_(\d{8})_\d{6}\.json", p.name)
+            if not m:
+                continue
+            rd = m.group(1)
+            run_date = f"{rd[:4]}-{rd[4:6]}-{rd[6:]}"
+            if run_date > date:  # 防御：未来日期档案不用
+                continue
+            try:
+                data = json.loads(p.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            if isinstance(data, dict) and (data.get("signals") or data.get("data_date")):
+                if run_date == date:
+                    return data, f"降级使用当日 run（{p.name}，数据日期 {data.get('data_date', '?')}）"
+                return data, f"⚠️ 降级使用 {run_date} 的旧 run（{p.name}，非当日，时效性打折）"
+    except Exception as e:  # noqa: BLE001
+        sys.stderr.write(f"⚠️ agent run 档案扫描失败: {e}\n")
+    return None, None
+
+
 def save_success_output(name: str, data: dict, date: str):
     """保存成功产出供后续降级"""
     if name == "news":
@@ -452,6 +483,11 @@ def build_report(date: str, results: dict) -> str:
                           if isinstance(r, dict) and r.get("fallback")]
     if degraded_in_report:
         md_parts.append(f"⚠️ **降级数据标注**: 以下阶段本次失败、使用历史缓存降级 → {', '.join(degraded_in_report)}（数据时效性打折，谨慎参考）")
+        # 2026-10-14: 降级必须写明数据来源与缓存日期，禁止只标"降级"不标多旧
+        for n in degraded_in_report:
+            _note = results[n].get("fallback_note")
+            if _note:
+                md_parts.append(f"> - {n}: {_note}")
         md_parts.append("")
 
     md_parts.append("## 🎯 市场全景")
@@ -495,12 +531,17 @@ def main():
     for stage in STAGES:
         name = stage["name"]
         
-        # 非交易日跳过 agent 阶段（使用降级数据）
+        # 非交易日跳过 agent 阶段（使用降级数据；2026-10-14: 优先最新 run 档案并标注日期）
         if not is_trade_day and name == "agent":
-            fallback = load_fallback(stage.get("fallback_file"), date)
-            if fallback:
-                results[name] = {"ok": True, "data": fallback, "fallback": True, "error": "非交易日跳过"}
-                print(f"  ⏭️ {name}: 非交易日，使用降级数据")
+            fb_data, fb_note = _load_agent_fallback(date)
+            if fb_data is None:
+                fb_data = load_fallback(stage.get("fallback_file"), date)
+                if fb_data is not None:
+                    _d = fb_data.get("data_date") or fb_data.get("date") if isinstance(fb_data, dict) else None
+                    fb_note = f"⚠️ 降级使用 last_success.json（缓存日期 {_d}，可能严重过时）"
+            if fb_data is not None:
+                results[name] = {"ok": True, "data": fb_data, "fallback": True, "error": "非交易日跳过", "fallback_note": fb_note}
+                print(f"  ⏭️ {name}: 非交易日，使用降级数据 | {fb_note}")
             else:
                 results[name] = {"ok": False, "data": None, "error": "非交易日且无降级数据"}
             continue
@@ -531,11 +572,20 @@ def main():
             # 关键阶段失败 → 尝试降级
             if stage["required"]:
                 critical_failed = True
-                fallback = load_fallback(stage.get("fallback_file"), date)
-                if fallback:
-                    results[name] = {"ok": True, "data": fallback, "fallback": True, "error": result["error"]}
+                fb_data, fb_note = (None, None)
+                if name == "agent":
+                    # 2026-10-14: agent 失败先找最新 run 档案（run_agent 成功即落盘，
+                    # pipeline 侧超时不代表数据不存在），last_success 仅兜底且必须带日期
+                    fb_data, fb_note = _load_agent_fallback(date)
+                if fb_data is None:
+                    fb_data = load_fallback(stage.get("fallback_file"), date)
+                    if fb_data is not None:
+                        _d = fb_data.get("data_date") or fb_data.get("date") if isinstance(fb_data, dict) else None
+                        fb_note = f"⚠️ 降级使用 last_success.json（缓存日期 {_d}，可能严重过时）"
+                if fb_data is not None:
+                    results[name] = {"ok": True, "data": fb_data, "fallback": True, "error": result["error"], "fallback_note": fb_note}
                     degraded_stages.append(f"{name}({result['error']})")
-                    sys.stderr.write(f"⚠️ 阶段 {name} 失败已降级旧缓存: {result['error']}\n")
+                    sys.stderr.write(f"⚠️ 阶段 {name} 失败已降级旧缓存: {result['error']} | {fb_note}\n")
                 else:
                     # 发送关键阶段失败告警
                     from send_telegram import send_message

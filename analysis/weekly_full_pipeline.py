@@ -262,6 +262,14 @@ def main():
     if not r["success"]:
         print("⚠️ 发现阻断式调试残留（见上方），交互调试完成后必须移除（不阻断流水线）...")
 
+    # 步骤 0j: agent 降级链门禁（2026-10-14 新增，缘起 last_success.json 僵尸缓存连日静默
+    # 输出 24 天前旧闻事故：盘前 agent 段降级必须优先最新 run 档案 + 必须带缓存日期标注）
+    print("\n🚦 步骤 0j/9: agent 降级链门禁 (agent_fallback_guard.py)")
+    r = run_script("../scripts/agent_fallback_guard.py", timeout=60)
+    results["agent_fallback"] = r
+    if not r["success"]:
+        print("⚠️ agent 降级链防护被破坏（见上方），盘前报告可能再次静默复用僵尸缓存（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = _resume_skip("backtest", resume_record)

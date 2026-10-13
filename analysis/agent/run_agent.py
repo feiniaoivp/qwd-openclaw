@@ -114,6 +114,16 @@ def main():
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(final_state, f, ensure_ascii=False, indent=2)
 
+        # 2026-10-14 修复：成功即刷新 last_success.json（此前无任何活路径写它，
+        # 导致盘前降级连日静默复用 24 天前的僵尸缓存）
+        if final_state.get("signals") or final_state.get("data_date"):
+            try:
+                ls_path = os.path.join(out_dir, "last_success.json")
+                with open(ls_path, "w", encoding="utf-8") as f:
+                    json.dump(final_state, f, ensure_ascii=False, indent=2)
+            except Exception as _e:
+                print(f"[WARN] last_success.json 刷新失败: {_e}")
+
         # 输出结构化 JSON（供 pipeline 解析）
         print("=====AGENT_RESULT=====")
         print(json.dumps({
