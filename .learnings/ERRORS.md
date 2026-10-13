@@ -144,7 +144,7 @@ skill 周期性复核发现遗留待办「zhonglian_monitor.py 接入降级链�
 
 **Logged**: 2026-10-06 06:10 (Asia/Shanghai)
 **Priority**: medium
-**Status**: resolved (2026-10-06, 第三次运行成功)
+**Status**: promoted (2026-10-07 → TOOLS.md「🔴 长跑 pipeline 卡死判定规则」；事故本身 2026-10-06 第三次运行成功已 resolved，2026-10-13 维护统一 Status 为 promoted)
 **Area**: ops/misjudgment
 
 ### Summary
@@ -194,7 +194,7 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 ## ERR-20261009-AuctionLateStartEmptySnapshot
 **Date**: 2026-10-09 09:25
 **Priority**: high
-**Status**: resolved (2026-10-11 triage: 修复已提交并实测验证)
+**Status**: resolved (2026-10-11 triage: 修复已提交并实测验证；2026-10-13 复核项清零，彻底销账)
 **Area**: analysis/auction_feed
 **What Happened**: cron 09:25 触发 `analysis/auction_feed.py`，产出 0/27 空快照（新浪0+pytdx0），exit 1。与 10-08 空快照假 ok 同一类事故。
 **Root Cause**: 脚本设计为"09:15 前启动、持续轮询、09:25:05 快照"，但 cron 在 09:25:00 才拉起。启动耗时（import + pytdx TCP 连接，含连不通的 180.153.18.170 超时）使实际进入循环时已 ≥09:25:05。`sina_loop` 与 pytdx `run_loop` 的首个循环检查立即命中"硬截止"分支并 break，**从未抓取过一次** → merged_snapshot 为空。新浪源本身完全正常（手动 fetch_batch 27/27）。
@@ -211,6 +211,19 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
   实测验证：`data/auction/2026-10-09_9_25.json`（17KB 真实快照，非空）+ `decision_2026-10-09.json` 正常产出。
   10-10/10-11 为周末非交易日，无快照属预期，不是复现。Recurrence-Count 修正为 2（10-08、10-09 两次事故已并入本条目）。
   下周一（10-12）盘前可顺手复核一次 09:25 快照非空即可彻底销账。
+
+### Maintenance (2026-10-12 每日维护)
+- 复核项移交：10-12（周一）09:25 盘后，后续维护（或任何盘后会话）需确认 `data/auction/2026-10-12_9_25.json` 非空（>1KB 为真实快照）→ 非空则本条彻底销账；空/缺则视为复现，bump Recurrence-Count 至 3 并重查晚启动兜底（cron add 在维护 job 中被 restricted，改为手动跟进项）。
+- Pattern-Key `analysis.late-start-cutoff-before-first-fetch` RC=2 < 3，暂不提升，继续观察。
+
+### Maintenance (2026-10-13 每日维护) — 彻底销账 ✅
+- 实测复核：`data/auction/2026-10-12_9_25.json` = 17,230 字节，count=27 真实快照（`snapshot_time 09:25:00`，含中联重科等全池行情），`decision_2026-10-12.json` 同步产出 → 晚启动兜底（commit `344c790`）在真实 cron 09:25 拉起场景下验证有效，**无复现**。
+- Recurrence-Count 维持 2（10-08/10-09 两次事故），10-12 为验证通过非新事故，不虚增。
+- 本条目复核项清零，彻底销账；Pattern-Key RC=2 < 3 继续观察，若再复现则触发 promote 评估。
+
+### Maintenance (2026-10-14 每日维护) — 持续无复现
+- 顺延复核：`data/auction/2026-10-13_9_25.json` = 17,249 字节，count=27 真实快照（`snapshot_time 09:25:00`），`decision_2026-10-13.json` 同步产出（10-13 为交易日，is_trading_day=True）→ 连续第 2 个交易日正常，晚启动兜底持续有效。
+- Validation 维持 verified；RC 维持 2 不虚增。若后续再复现（RC→3，跨 10-08/10-09 与复现日 ≥2 任务）再触发 promote 评估。
 
 ## ERR-20261009-QuantPushDetachedOutputLost
 **Date**: 2026-10-09
