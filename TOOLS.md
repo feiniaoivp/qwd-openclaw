@@ -415,3 +415,9 @@ rg -n 'breakpoint\(|pdb\.set_trace|debugpy\.' --type py   # 人工快速版
 ```
 
 注意：注释/docstring 里的提及不算残留（AST 扫描不误报）；`import pdb`/`post_mortem` 仅 WARN 报告不阻断。
+
+## 🌐 Telegram 推送网络故障兜底（2026-10-14 坐实）
+
+- api.telegram.org 直连会被 TLS 拦截（curl 60 证书域名不匹配 / SSL_ERROR_SYSCALL / curl_cffi 报 invalid library）。
+- 本机 `127.0.0.1:7890` 有 HTTP 代理可用：`HTTP_PROXY=http://127.0.0.1:7890 HTTPS_PROXY=... python3 ...` 即恢复。
+- cron 脚本（send_telegram.py）目前不带代理 → 拦截发生时推送静默失败。补推方法：用落盘的 `data/intraday_alert_output.json` 里 `brief` 直接调 `send_message`，不要重跑扫描/不要重复发送。
