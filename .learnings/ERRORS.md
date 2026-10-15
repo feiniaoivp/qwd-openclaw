@@ -225,6 +225,14 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 - 顺延复核：`data/auction/2026-10-13_9_25.json` = 17,249 字节，count=27 真实快照（`snapshot_time 09:25:00`），`decision_2026-10-13.json` 同步产出（10-13 为交易日，is_trading_day=True）→ 连续第 2 个交易日正常，晚启动兜底持续有效。
 - Validation 维持 verified；RC 维持 2 不虚增。若后续再复现（RC→3，跨 10-08/10-09 与复现日 ≥2 任务）再触发 promote 评估。
 
+### Maintenance (2026-10-15 每日维护) — 持续无复现
+- 顺延复核：`data/auction/2026-10-14_9_25.json` = 17,221 字节，count=27 真实快照（`snapshot_time 09:25:00`），`decision_2026-10-14.json` 09:26 同步产出 → 连续第 3 个交易日正常，晚启动兜底持续有效。
+- Validation 维持 verified；RC 维持 2 不虚增。promote 触发条件不变：再复现（RC→3）才评估，否则本条目保持「已销账、持续观察」状态。
+
+### Maintenance (2026-10-16 每日维护) — 持续无复现
+- 顺延复核：`data/auction/2026-10-15_9_25.json` = 17,269 字节，count=27 真实快照（`snapshot_time 09:25:00`），`decision_2026-10-15.json` 09:31 同步产出 → 连续第 4 个交易日正常，晚启动兜底持续有效。
+- Validation 维持 verified；RC 维持 2 不虚增。RC≥3 三模式（silent-orchestrator / cron.silent-noop / 无新增）复核均保持 promoted；`data.datasource-failover` 两条目为同模式跨任务共享计数（RC=2 <3，已去重标注），继续观察。
+
 ## ERR-20261009-QuantPushDetachedOutputLost
 **Date**: 2026-10-09
 **Priority**: high
