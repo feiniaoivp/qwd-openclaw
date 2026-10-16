@@ -176,18 +176,20 @@ def evaluate_stock(cfg: dict, spot: dict) -> list[dict]:
 def main():
     config = load_config()
     stocks_cfg = config.get("stocks", {})
+    derived, prov = derive_alert_levels()
     meta = config.get("_meta", {})
     state = load_state()
     now = datetime.now()
 
-    # 只扫描 config 里有规则的股票
-    from close_scan_v2 import get_fetcher, WATCHLIST
+    # 只扫描有规则（静态配置 ∪ 派生价位）的股票
+    from close_scan_v2 import get_fetcher, WATCHLIST, derive_alert_levels
+    name_by_code = dict(WATCHLIST)
     fetcher = get_fetcher()
     symbols = []
     code_to_meta = {code: cfg for code, cfg in stocks_cfg.items()}
-    # 基于 watchlist 顺序，但只取 config 中定义的
+    # 基于 watchlist 顺序，但只取静态配置或派生价位任一存在的
     for code, name in WATCHLIST:
-        if code in code_to_meta:
+        if code in code_to_meta or code in derived:
             symbols.append(("sh" if code[0] in "69" else "sz") + code)
 
     hq = fetcher.fetch_sina_spot(symbols)
@@ -208,8 +210,19 @@ def main():
             triggered.append(a)
             fired_state[key] = a["price"]
 
-    # 再处理手动配置的预警规则
-    for code, cfg in stocks_cfg.items():
+    # 再处理预警规则（价位已自动派生；静态 levels 仅降级兑底，lock 可豁免）
+    eval_codes = [c for c, _ in WATCHLIST if c in stocks_cfg or c in derived]
+    for code in eval_codes:
+        raw_cfg = stocks_cfg.get(code)
+        dlv = derived.get(code) or {}
+        if not raw_cfg and not dlv:
+            continue
+        cfg = dict(raw_cfg) if raw_cfg else {"name": name_by_code.get(code, code),
+                                             "action": "策略预警", "type": "scan_derived",
+                                             "drop_pct": -5.0, "surge_pct": 5.0}
+        if dlv and not (raw_cfg or {}).get("levels", {}).get("lock"):
+            cfg["levels"] = dict(dlv)  # 派生价位整组覆盖
+        levels_src = f"scan:{prov['data_date']}" if dlv else "static_config(降级)"
         r = hq.get(code)
         if r is None or r["last"] == 0 or r["pre_close"] == 0:
             continue
@@ -217,6 +230,8 @@ def main():
         spot = {"symbol": code, "name": cfg.get("name", code),
                 "price": round(r["last"], 2), "change_pct": round(chg, 2)}
         al = evaluate_stock(cfg, spot)
+        for a in al:
+            a["levels_src"] = levels_src
         if al:
             for a in al:
                 key = f"{a['code']}:{code}"
@@ -240,6 +255,7 @@ def main():
         "total_alerts": len(all_alerts),
         "alerts": all_alerts,
         "triggered_this_run": triggered,
+        "levels_provenance": prov,
     }
 
     # 落盘供 cron/agent 读取
@@ -249,89 +265,6 @@ def main():
 
     # stdout = JSON (供 agent 解析推送)
     print(json.dumps(output, ensure_ascii=False, indent=2, default=str))
-
-
-def load_config() -> dict:
-    if not os.path.exists(CONFIG_FILE):
-        return {}
-    with open(CONFIG_FILE, encoding="utf-8") as f:
-        return json.load(f)
-
-
-def load_state() -> dict:
-    """记录已触发的预警，避免同一价位重复轰炸"""
-    if os.path.exists(STATE_FILE):
-        with open(STATE_FILE, encoding="utf-8") as f:
-            return json.load(f)
-    return {"fired": {}}
-
-
-def save_state(state: dict):
-    os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
-    with open(STATE_FILE, "w", encoding="utf-8") as f:
-        json.dump(state, f, ensure_ascii=False, indent=2)
-
-
-def evaluate_stock(cfg: dict, spot: dict) -> list[dict]:
-    """对单只股票对照规则判定预警"""
-    alerts = []
-    sym = spot["symbol"]
-    price = spot["price"]
-    chg = spot["change_pct"]
-    levels = cfg.get("levels", {})
-    action = cfg.get("action", "")
-    type_ = cfg.get("type", "")
-
-    # 跌破关键位
-    bl = levels.get("break_below")
-    if bl is not None and price > 0 and price <= bl:
-        alerts.append({
-            "code": "break_below", "symbol": sym, "name": cfg.get("name", sym),
-            "price": price, "level": bl, "change_pct": chg,
-            "msg": f"跌破止损位 {bl:.2f} (现{price:.2f}) 应{action}", "action": action, "type": type_,
-            "level_name": "止损/减仓", "severity": "HIGH",
-        })
-
-    # 升破买点
-    ba = levels.get("break_above")
-    if ba is not None and price > 0 and price >= ba:
-        alerts.append({
-            "code": "break_above", "symbol": sym, "name": cfg.get("name", sym),
-            "price": price, "level": ba, "change_pct": chg,
-            "msg": f"升破关键位 {ba:.2f} (现{price:.2f}) 应{action}", "action": action, "type": type_,
-            "level_name": "买点/加仓", "severity": "MEDIUM",
-        })
-
-    # 进入买入区下限 (仅当未被 break_below 触发时用于低吸参考)
-    blz = levels.get("buy_zone_low")
-    if blz is not None and price > 0 and (bl is None or price > bl) and price <= blz:
-        alerts.append({
-            "code": "buy_zone", "symbol": sym, "name": cfg.get("name", sym),
-            "price": price, "level": blz, "change_pct": chg,
-            "msg": f"进入买入参考区 (现{price:.2f} 接近{blz:.2f}) 可考虑低吸", "action": action, "type": type_,
-            "level_name": "回补/低吸", "severity": "LOW",
-        })
-
-    # 急跌 / 急涨 (异常波动)
-    dd = cfg.get("drop_pct")
-    if dd is not None and chg <= dd:
-        alerts.append({
-            "code": "drop_pct", "symbol": sym, "name": cfg.get("name", sym),
-            "price": price, "level": dd, "change_pct": chg,
-            "msg": f"日内跌超{abs(dd):.1f}% ({chg:.1f}%) 注意风控", "action": action, "type": type_,
-            "level_name": "急跌预警", "severity": "HIGH",
-        })
-
-    sg = cfg.get("surge_pct")
-    if sg is not None and chg >= sg:
-        alerts.append({
-            "code": "surge_pct", "symbol": sym, "name": cfg.get("name", sym),
-            "price": price, "level": sg, "change_pct": chg,
-            "msg": f"日内涨超{sg:.1f}% ({chg:.1f}%) 注意止盈/追高风险", "action": action, "type": type_,
-            "level_name": "急涨预警", "severity": "MEDIUM",
-        })
-
-    return alerts
 
 
 if __name__ == "__main__":

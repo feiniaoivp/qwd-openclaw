@@ -123,6 +123,15 @@ def build_message(data: dict, triggered: list = None) -> str:
     if triggered is None:
         triggered = data.get("triggered_this_run", [])
     lines = [f"⚠️ 盘中策略预警 ({t})", "━━━━━━━━━━━━━━━━━"]
+    # 价位口径溯源（自动派生 vs 降级静态，显式标注不静默）
+    prov = data.get("levels_provenance") or {}
+    if prov.get("source"):
+        tag = f"ℹ️ 价位口径: close_scan {prov.get('data_date')} 自动派生"
+        if prov.get("stale"):
+            tag += " ⚠️ 数据滞后建议刷新"
+        lines.append(tag)
+    elif prov.get("warning"):
+        lines.append(f"⚠️ {prov['warning']}")
     sev = {"HIGH": "🔴", "MEDIUM": "🟡", "LOW": "🔵"}
     lname = {"break_below": "跌破止损", "break_above": "升破关键位", "buy_zone": "低吸区", "drop_pct": "急跌预警", "surge_pct": "急涨预警"}
     for a in triggered:

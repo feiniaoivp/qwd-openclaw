@@ -28,7 +28,7 @@ import time
 import math
 import logging
 import socket
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Callable, Optional
 from functools import lru_cache
 
@@ -710,6 +710,96 @@ def load_strategy_alert_config() -> dict:
         log.warning(f"策略预警配置读取失败: {e}")
         return {}
 
+
+# 盘中预警价位派生溯源（最近一次 evaluate_strategy_alerts 的口径来源，供输出层引用）
+_LAST_LEVELS_PROVENANCE: dict = {}
+
+
+def find_latest_close_scan_json() -> Optional[str]:
+    """最新收盘全池扫描 json（analysis/daily/*_close_scan.json 按 mtime 取最新）。"""
+    import glob
+    cands = glob.glob(os.path.join(WORKSPACE, "analysis", "daily", "*_close_scan.json"))
+    if not cands:
+        return None
+    return max(cands, key=os.path.getmtime)
+
+
+def derive_alert_levels(scan_path: Optional[str] = None) -> tuple[dict, dict]:
+    """盘中预警价位自动派生（根除「静态配置 vs 移动市场」漂移，2026-10-16 用户批准）。
+
+    映射（全部来自最新 close_scan 全池实算，随每日 18:30 扫描刷新）:
+      break_below  = stop_long    (ATR 纪律止损)
+      buy_zone_low = support      (近期支撑 → 低吸观察区上沿)
+      break_above  = resistance   (近期阻力 → 突破确认线)
+    drop_pct/surge_pct 为百分比规则不随价漂移，仍走静态配置。
+
+    返回 (levels_by_code, provenance):
+      levels_by_code: {code: {"break_below": v, "buy_zone_low": v, "break_above": v}}
+      provenance: {source, data_date, scan_run_at, coverage, stale, warning}
+    无可用 json 时返回 ({}, provenance[source=None])，调用方必须显式降级标注，
+    禁止静默回退旧价位（对齐「数据降级必须显式标注」红线）。
+    """
+    prov = {"source": None, "data_date": None, "scan_run_at": None,
+            "coverage": 0, "stale": False, "warning": None}
+    path = scan_path or find_latest_close_scan_json()
+    if not path or not os.path.exists(path):
+        prov["warning"] = "未找到任何 *_close_scan.json，预警价位降级为静态配置（可能陈旧）"
+        log.warning(prov["warning"])
+        return {}, prov
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        prov["warning"] = f"close_scan json 解析失败: {e}；预警价位降级为静态配置"
+        log.warning(prov["warning"])
+        return {}, prov
+    prov["source"] = os.path.relpath(path, WORKSPACE)
+    prov["data_date"] = data.get("data_date")
+    prov["scan_run_at"] = data.get("scan_run_at")
+    # 陈旧判定：data_date 应等于最近一个已收盘交易日（is_trading_day SSOT）
+    try:
+        now = datetime.now()
+        d = now.date()
+        # 18:30 扫描约 19:00 前落地：此前 data_date=T-1 属正常，不应误报 stale
+        if is_trading_day(d) and now.hour >= 19:
+            expected = d
+        else:
+            expected = d - timedelta(days=1)
+            for _ in range(10):
+                if is_trading_day(expected):
+                    break
+                expected = expected - timedelta(days=1)
+        if data.get("data_date") and str(data.get("data_date")) < str(expected):
+            prov["stale"] = True
+            prov["warning"] = (f"close_scan 数据日期 {data.get('data_date')} 早于最近已收盘交易日 {expected}，"
+                               f"预警价位可能滞后；建议先跑 close_scan_v2 刷新")
+            log.warning(prov["warning"])
+    except Exception as e:
+        log.warning(f"预警价位陈旧判定失败（不影响派生）: {e}")
+
+    levels_by_code: dict = {}
+    for s in data.get("stocks", []):
+        code = str(s.get("symbol") or "")
+        if not code:
+            continue
+        lv = {}
+        stop = safe_float(s.get("stop_long"), default=None)
+        sup = safe_float(s.get("support"), default=None)
+        res = safe_float(s.get("resistance"), default=None)
+        if stop and float(stop) > 0:
+            lv["break_below"] = round(float(stop), 2)
+        if sup and float(sup) > 0:
+            lv["buy_zone_low"] = round(float(sup), 2)
+        if res and float(res) > 0:
+            lv["break_above"] = round(float(res), 2)
+        if lv:
+            levels_by_code[code] = lv
+    prov["coverage"] = len(levels_by_code)
+    if not levels_by_code:
+        prov["warning"] = "close_scan json 无有效价位字段（stop_long/support/resistance 全缺），降级静态配置"
+        log.warning(prov["warning"])
+    return levels_by_code, prov
+
 def _load_intraday_state() -> dict:
     if os.path.exists(INTRADAY_STATE_FILE):
         try:
@@ -734,8 +824,15 @@ def _mk_alert(code: str, item: dict, scfg: dict, level, msg: str, severity: str)
             "level_name": _ALERT_LABEL.get(code, code), "severity": severity}
 
 def evaluate_strategy_alerts(spot_results: list[dict]) -> tuple[list[dict], list[dict]]:
+    """盘中策略预警评估。价位自 2026-10-16 起从最新 close_scan json 自动派生
+    （break_below=stop_long / buy_zone_low=support / break_above=resistance，
+    随每日 18:30 扫描刷新）；json 缺失时显式降级静态配置并标注
+    levels_src=static_config(降级)。静态 levels.lock=true 可豁免覆盖。"""
     cfg = load_strategy_alert_config()
     stocks_cfg = cfg.get("stocks", {})
+    derived, prov = derive_alert_levels()
+    global _LAST_LEVELS_PROVENANCE
+    _LAST_LEVELS_PROVENANCE = prov
     state = _load_intraday_state()
     fired = state.get("fired", {})
     alerts = []
@@ -744,8 +841,17 @@ def evaluate_strategy_alerts(spot_results: list[dict]) -> tuple[list[dict], list
     for item in spot_results:
         if "error" in item: continue
         sym = item["symbol"]
-        scfg = stocks_cfg.get(sym)
-        if not scfg: continue
+        raw_cfg = stocks_cfg.get(sym)
+        dlv = derived.get(sym) or {}
+        if not raw_cfg and not dlv:
+            continue
+        # 池内新成员（不在静态配置）自动覆盖：合成元数据 + 默认百分比监控
+        scfg = dict(raw_cfg) if raw_cfg else {"name": item.get("name", sym),
+                                              "action": "策略预警", "type": "scan_derived",
+                                              "drop_pct": -5.0, "surge_pct": 5.0}
+        if dlv and not (raw_cfg or {}).get("levels", {}).get("lock"):
+            scfg["levels"] = dict(dlv)  # 派生价位整组覆盖；drop_pct/surge_pct 在 cfg 顶层不受影响
+        levels_src = f"scan:{prov['data_date']}" if dlv else "static_config(降级)"
         price = float(item["price"])
         chg = float(item["change_pct"])
         levels = scfg.get("levels", {})
@@ -756,6 +862,7 @@ def evaluate_strategy_alerts(spot_results: list[dict]) -> tuple[list[dict], list
         if bl is not None and price > 0 and price <= bl:
             msg = f"跌破止损位{bl:.2f} (现{price:.2f}) 应变{action}"
             alert = _mk_alert("break_below", item, scfg, bl, msg, "HIGH")
+            alert["levels_src"] = levels_src
             alerts.append(alert)
             if fired.get(f"break_below:{sym}") != price:
                 triggered.append(alert)
@@ -765,6 +872,7 @@ def evaluate_strategy_alerts(spot_results: list[dict]) -> tuple[list[dict], list
         if ba is not None and price > 0 and price >= ba:
             msg = f"升破关键位{ba:.2f} (现{price:.2f}) 应{action}"
             alert = _mk_alert("break_above", item, scfg, ba, msg, "MEDIUM")
+            alert["levels_src"] = levels_src
             alerts.append(alert)
             if fired.get(f"break_above:{sym}") != price:
                 triggered.append(alert)
@@ -774,6 +882,7 @@ def evaluate_strategy_alerts(spot_results: list[dict]) -> tuple[list[dict], list
         if blz is not None and price > 0 and (bl is None or price > bl) and price <= blz:
             msg = f"进入买入参考区 (现{price:.2f} 接近{blz:.2f}) 可考虑低吸"
             alert = _mk_alert("buy_zone", item, scfg, blz, msg, "LOW")
+            alert["levels_src"] = levels_src
             alerts.append(alert)
             if fired.get(f"buy_zone:{sym}") != price:
                 triggered.append(alert)
@@ -783,6 +892,7 @@ def evaluate_strategy_alerts(spot_results: list[dict]) -> tuple[list[dict], list
         if dd is not None and chg <= dd:
             msg = f"日内跌超{abs(dd):.1f}% ({chg:.1f}%) 注意风控"
             alert = _mk_alert("drop_pct", item, scfg, dd, msg, "HIGH")
+            alert["levels_src"] = levels_src
             alerts.append(alert)
             if fired.get(f"drop_pct:{sym}") != chg:
                 triggered.append(alert)
@@ -792,6 +902,7 @@ def evaluate_strategy_alerts(spot_results: list[dict]) -> tuple[list[dict], list
         if sg is not None and chg >= sg:
             msg = f"日内涨超{sg:.1f}% ({chg:.1f}%) 注意止盈/追高风险"
             alert = _mk_alert("surge_pct", item, scfg, sg, msg, "MEDIUM")
+            alert["levels_src"] = levels_src
             alerts.append(alert)
             if fired.get(f"surge_pct:{sym}") != chg:
                 triggered.append(alert)
@@ -820,6 +931,7 @@ def run_intraday_alert_mode():
         "total_alert_rules": len(alerts),
         "alerts": alerts,
         "triggered_this_run": triggered,
+        "levels_provenance": dict(_LAST_LEVELS_PROVENANCE),
     }
     print(json.dumps(out, ensure_ascii=False, indent=2, default=str))
 

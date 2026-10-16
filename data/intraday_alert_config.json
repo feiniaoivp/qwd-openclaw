@@ -2,7 +2,7 @@
   "_meta": {
     "version": "1.1",
     "created": "2026-08-25",
-    "updated": "2026-09-13",
+    "updated": "2026-10-16",
     "basis": "2026-09-11 close + 09-13 周末资讯(超级央行周/美联储9-16议息)",
     "market_context": "上证3888跌破全部均线，周五放量破位(579亿)。030健康度5/10，仓位上限减半至25%，买入乘数0.5x。核心变量=美联储9/15-16议息(加息概率90%)。策略:防守+等待，不新开仓。",
     "rules": [
@@ -13,10 +13,19 @@
     ],
     "index_levels": {
       "note": "大盘关键位(上证指数)，用于人工盯盘参考；由 push_intraday_alerts 补充推送",
-      "support": [3850.0, 3800.0, 3764.0],
-      "resistance": [3929.0, 3943.0, 3986.0],
+      "support": [
+        3850.0,
+        3800.0,
+        3764.0
+      ],
+      "resistance": [
+        3929.0,
+        3943.0,
+        3986.0
+      ],
       "pivot": 3900.0
-    }
+    },
+    "switch_calibration_20261016": "【17:4x 已实施自动派生，用户批准】盘中预警价位现从最新 close_scan json 自动派生（break_below=stop_long/buy_zone_low=support/break_above=resistance，随每日 18:30 扫描刷新，SSOT=analysis/close_scan_v2.derive_alert_levels）。本文件静态 levels 降级为：①json 缺失时兜底（推送会显式标注 static_config(降级)）②levels.lock=true 可豁免单票覆盖。drop_pct/surge_pct 为百分比规则仍以本文件为准。平高/翰宇的 10-16 手工位已被派生值取代（平高 19.05/19.47/21.09、翰宇 22.17/22.74/26.38）。"
   },
   "stocks": {
     "002413": {
@@ -334,14 +343,15 @@
     },
     "600312": {
       "name": "平高电气",
-      "action": "波段操作",
+      "action": "波段操作·开关确认制",
       "type": "电网装备/特高压",
       "levels": {
-        "break_below": 30.0,
+        "break_below": 19.47,
+        "break_above": 20.84,
         "drop_pct": -5.0,
         "surge_pct": 5.0
       },
-      "note": "GIS全球龙头、远销70+国"
+      "note": "GIS全球龙头。价位自动派生(close_scan口径)：跌破=ATR纪律位、低吸=近期支撑、突破=近期阻力；突破需收盘站稳确认。fib时间窗10-30~11-02(medium)。"
     },
     "002028": {
       "name": "思源电气",
@@ -375,6 +385,19 @@
         "surge_pct": 5.0
       },
       "note": "电缆附件/绝缘材料~74%市占"
+    },
+    "300199": {
+      "name": "翰宇药业",
+      "action": "观察·分歧未解",
+      "type": "医药·多肽",
+      "levels": {
+        "break_below": 24.0,
+        "break_above": 26.38,
+        "buy_zone_low": 24.69,
+        "drop_pct": -5.0,
+        "surge_pct": 5.0
+      },
+      "note": "多肽药。价位自动派生(close_scan口径)。突破26.38需「放量+超大单转正」双条件(10-15/10-16超大单连二日撤离)；fib时间窗10-23~10-26(3源HIGH)。"
     }
   }
 }
