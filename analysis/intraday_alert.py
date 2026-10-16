@@ -176,13 +176,16 @@ def evaluate_stock(cfg: dict, spot: dict) -> list[dict]:
 def main():
     config = load_config()
     stocks_cfg = config.get("stocks", {})
+    # ⚠️ import 必须先于调用（2026-10-16 18:2x 修复）：此前 derive_alert_levels()
+    #    在下方局部 import 之前被调用 → UnboundLocalError，盘中预警 cron 直接崩。
+    #    教训：函数内局部 import 的名字，在函数体内“先使用后绑定”即 UnboundLocalError。
+    from close_scan_v2 import get_fetcher, WATCHLIST, derive_alert_levels
     derived, prov = derive_alert_levels()
     meta = config.get("_meta", {})
     state = load_state()
     now = datetime.now()
 
     # 只扫描有规则（静态配置 ∪ 派生价位）的股票
-    from close_scan_v2 import get_fetcher, WATCHLIST, derive_alert_levels
     name_by_code = dict(WATCHLIST)
     fetcher = get_fetcher()
     symbols = []
