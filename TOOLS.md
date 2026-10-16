@@ -181,10 +181,10 @@ Add whatever helps you do your job. This is your cheat sheet.
 
 ### 单一事实来源（SSOT）
 
-**关注池以 `analysis/fib_extension_scan.py` 的 `WATCHLIST` 为准（当前 35 只）。**
+**关注池以 `analysis/fib_extension_scan.py` 的 `WATCHLIST` 为准（当前 36 只）。**
 任何其他位置不得自行维护股票列表。
 
-必须与 WATCHLIST 保持一致的 4 处：
+必须与 WATCHLIST 保持一致的 5 处：
 
 | 位置 | 形式 |
 |---|---|
@@ -192,6 +192,9 @@ Add whatever helps you do your job. This is your cheat sheet.
 | `analysis_summary_all.md` | 股票集合 == WATCHLIST |
 | `memory/watchlist.md` | 头部「权威清单 N 只」== len(WATCHLIST) |
 | `MEMORY.md` | `Definitive - N stocks` == len(WATCHLIST) |
+| `analysis/adaptive_dual.py` STOCKS | 由 WATCHLIST 派生（禁止硬编码 6 位代码清单，2026-10-16 对齐） |
+
+> 注：`analysis/adaptive_trader.py` 的 STOCKS（27 只）为**有意的核心子集**（无幽灵票），不在此列；若其语义变更需另行评估。
 
 ### 涉及股票列表的脚本必须引用 WATCHLIST
 
@@ -209,6 +212,7 @@ stocks = [("600030", "中信证券"), ...]
 ```bash
 # 单独跑
 python3 scripts/strategy_map_guard.py        # 违规 exit 1
+python3 scripts/strategy_map_guard.py --selftest   # E 检查对抗自测（6 样例，exit 0/1）
 # 已接入：每周六 weekly_full_pipeline.py 步骤 0c + 周一 memory-maintenance-monday 审计
 ```
 

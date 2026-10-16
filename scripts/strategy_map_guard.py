@@ -12,6 +12,8 @@
     B. analysis_summary_all.md 中的股票集合 ⊆ WATCHLIST 且数量 == len(WATCHLIST)
     C. memory/watchlist.md 头部声明的只数 == len(WATCHLIST)
     D. MEMORY.md 的 "Definitive - N stocks" 声明 == len(WATCHLIST)
+    E. 消费端脚本(WATCHLIST_CONSUMER_SCRIPTS) STOCKS 不得硬编码 6 位代码清单
+       (2026-10-16 adaptive_dual 38 vs 36 漂移事故：多福莱特/奔图/中船汉光，缺翰宇)
 
 用法:
     python3 scripts/strategy_map_guard.py            # 检查，违规 exit 1
@@ -31,6 +33,9 @@ MAP_FILE = os.path.join(WORKSPACE, "data", "adaptive_strategy_map.json")
 SUMMARY_MD = os.path.join(WORKSPACE, "analysis_summary_all.md")
 WATCHLIST_MD = os.path.join(WORKSPACE, "memory", "watchlist.md")
 MEMORY_MD = os.path.join(WORKSPACE, "MEMORY.md")
+
+# E. 声明「清单 == WATCHLIST」的消费端脚本（对齐后纳入此清单受守卫保护）
+WATCHLIST_CONSUMER_SCRIPTS = ["analysis/adaptive_dual.py"]
 
 
 def load_watchlist():
@@ -130,8 +135,95 @@ def check_declared_count(path: str, pattern: str, watch: set, label: str):
     return errs
 
 
+def _extract_stocks_block(src: str) -> str:
+    """提取顶层 STOCKS = [ ... ] 块文本（单行推导式或跨行字面量均支持）。
+
+    对抗自测教训（2026-10-16）：闭合后必须复位 in_block，否则恒返回空、
+    E 检查形同虚设（漏报硬编码）。以行尾 ']' 作为块闭合判据。
+    """
+    lines = src.splitlines()
+    out, in_block = [], False
+    for l in lines:
+        if not in_block:
+            if re.match(r"^STOCKS\s*=\s*\[", l):
+                out.append(l)
+                if l.split("#")[0].rstrip().endswith("]"):
+                    break  # 单行块（如 WATCHLIST 推导式）已闭合
+                in_block = True
+            continue
+        out.append(l)
+        # 闭合判据：去行尾注释后以 ']' 结尾（兼容 `]  # 注释` 与 `...,)]`）
+        if l.split("#")[0].rstrip().endswith("]"):
+            in_block = False
+            break
+    # 未闭合到文件尾 = 结构异常，返回空（不误报）
+    return "\n".join(out) if (out and not in_block) else ""
+
+
+def _selftest():
+    """对抗性自测：4 样例全过才算门禁可用（--selftest，exit 0/1）。"""
+    hard = (
+        "STOCKS = [\n"
+        "    (\"002318\",\"久立特材\"),\n"
+        "    (\"300199\",\"翰宇药业\"),  # 注释里的票 (\"601865\",\"福莱特\") 不应触发\n"
+        "]\n"
+    )
+    derived = "from analysis.fib_extension_scan import WATCHLIST\nSTOCKS = [(code, name) for code, name in WATCHLIST.items()]\n"
+    tail_bracket = "STOCKS = [\n    (\"600030\",\"中信证券\"),\n]  # 旧式闭合\n"
+    unclosed = "STOCKS = [\n    (\"600030\",\"中信证券\"),\n"
+    cases = []
+    b = _extract_stocks_block(hard)
+    code_lines = "\n".join(l.split("#")[0] for l in b.splitlines())
+    cases.append(("硬编码跨行检出", bool(re.search(r"\(\s*['\"]?\d{6}['\"]?\s*,", code_lines)), True))
+    cases.append(("注释内票不误触发", "601865" not in code_lines, True))
+    b2 = _extract_stocks_block(derived)
+    cases.append(("单行推导式块可提取", bool(b2) and "WATCHLIST" in b2, True))
+    cases.append(("推导式不误报", not re.search(r"\(\s*['\"]?\d{6}['\"]?\s*,", b2 or ""), True))
+    b3 = _extract_stocks_block(tail_bracket)
+    cases.append(("尾行带]闭合可检出", bool(re.search(r"\(\s*['\"]?\d{6}['\"]?\s*,", b3)), True))
+    b4 = _extract_stocks_block(unclosed)
+    cases.append(("未闭合返回空不误报", b4 == "", True))
+    ok = True
+    for name, got, want in cases:
+        mark = "✅" if got == want else "❌"
+        if got != want:
+            ok = False
+        print(f"  {mark} {name}: got={got}")
+    return 0 if ok else 1
+
+
+def check_consumer_scripts():
+    """E. 消费端脚本 STOCKS 不得硬编码 6 位代码元组（必须引用 WATCHLIST）.
+
+    2026-10-16 adaptive_dual.STOCKS 硬编码 38 只 vs WATCHLIST 36 只漂移：
+    多 3 只已移出关注池的票、缺 1 只新入池票（翰宇），盘前报告漏扫。
+    规约：与 WATCHLIST 一致的清单必须 `from analysis.fib_extension_scan import WATCHLIST` 派生。
+    """
+    errs = []
+    for rel in WATCHLIST_CONSUMER_SCRIPTS:
+        p = os.path.join(WORKSPACE, rel)
+        if not os.path.exists(p):
+            errs.append(f"❌ [E] {rel} 不存在")
+            continue
+        with open(p, encoding="utf-8") as f:
+            src = f.read()
+        block = _extract_stocks_block(src)
+        if not block:
+            continue
+        # 去注释行后找硬编码票元组：(\'600030\' / ("600030",
+        code_lines = "\n".join(l.split("#")[0] for l in block.splitlines())
+        if re.search(r"\(\s*['\"]?\d{6}['\"]?\s*,", code_lines):
+            errs.append(
+                f"❌ [E] {rel} STOCKS 仍含硬编码 6 位代码清单——违反 SSOT 规则，"
+                f"应改为 `from analysis.fib_extension_scan import WATCHLIST` 派生")
+    return errs
+
+
 def main():
     quiet = "--quiet" in sys.argv
+    if "--selftest" in sys.argv:
+        print("🧪 strategy_map_guard E 检查对抗自测")
+        return _selftest()
     if not quiet:
         print("🚦 策略映射 / 关注池口径一致性门禁")
         print("=" * 60)
@@ -151,6 +243,7 @@ def main():
     problems += check_declared_count(
         MEMORY_MD, r"Definitive\s*-\s*(\d+)\s*stocks", watch, "D/MEMORY.md"
     )
+    problems += check_consumer_scripts()
 
     if problems:
         print(f"\n🚨 口径不一致 (WATCHLIST={len(watch)}只):")
@@ -162,7 +255,8 @@ def main():
 
     if not quiet:
         print(f"✅ 口径一致: adaptive_strategy_map / analysis_summary_all.md / "
-              f"watchlist.md / MEMORY.md 均 == WATCHLIST ({len(watch)}只)")
+              f"watchlist.md / MEMORY.md 均 == WATCHLIST ({len(watch)}只)；"
+              f"消费端脚本({len(WATCHLIST_CONSUMER_SCRIPTS)})无硬编码清单")
     return 0
 
 
