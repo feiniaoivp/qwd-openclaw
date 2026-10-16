@@ -233,6 +233,11 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 - 顺延复核：`data/auction/2026-10-15_9_25.json` = 17,269 字节，count=27 真实快照（`snapshot_time 09:25:00`），`decision_2026-10-15.json` 09:31 同步产出 → 连续第 4 个交易日正常，晚启动兜底持续有效。
 - Validation 维持 verified；RC 维持 2 不虚增。RC≥3 三模式（silent-orchestrator / cron.silent-noop / 无新增）复核均保持 promoted；`data.datasource-failover` 两条目为同模式跨任务共享计数（RC=2 <3，已去重标注），继续观察。
 
+### Maintenance (2026-10-17 每日维护) — 持续无复现
+- 顺延复核：`data/auction/2026-10-16_9_25.json` = 17,232 字节，count=27 真实快照（`snapshot_time 09:25:00`），`decision_2026-10-16.json` 09:26 同步产出（10-16 为交易日，is_trading_day=True）→ 连续第 5 个交易日正常，晚启动兜底（commit `344c790`）持续有效。
+- Validation 维持 verified；RC 维持 2 不虚增。promote 触发条件不变：再复现（RC→3）才评估。
+- 全库终态：RC≥3 的 `ops.silent-orchestrator-misjudged-as-hang`（TOOLS.md）与 `cron.silent-noop-fake-ok`（AGENTS.md）均已 promoted，防治规则在各自目标文件中确认在位；本周无新模式达 promote 阈值（RC=2 的 datasource-failover / late-start / gate-path-window-mismatch 均维持观察）。ERRORS.md 无 pending 残留（10-16 sweep 条目已当日分诊 resolved）。
+
 ## ERR-20261009-QuantPushDetachedOutputLost
 **Date**: 2026-10-09
 **Priority**: high
@@ -300,3 +305,49 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 - **Resolved**: 2026-10-11T05:40:00+08:00
 - **Commit/PR**: 691061b
 - **Notes**: glob 取最新 dual + today 兜底；两轮误报根因同一（运行日与产物日错配），Recurrence-Count 记 2。
+
+## [ERR-20261016-C02] openclaw_session_sweep
+
+**Logged**: 2026-10-16T12:33:47.429Z
+**Priority**: medium
+**Status**: resolved
+**Area**: config
+
+### Summary
+Session-end sweep detected 1 possible error in the previous OpenClaw session.
+
+### Error
+```
+Error: Unknown option: --count. Run with --help for usage.
+```
+
+### Context
+- Detected by the self-improvement hook on `/new` (OpenClaw has no per-tool-call hook, so errors are swept from the session transcript at session end)
+- Session key: agent:main:explicit:model-run-79c396a0-c0bb-4353-8d68-eb3269dbf828
+- Session transcript: /Users/duguke/.openclaw/agents/main/sessions/86618f62-8707-45be-b68d-7cb501ae8402.jsonl
+- Excerpts are truncated and redacted; check the transcript for full context
+
+### Suggested Fix
+Triage this entry: if the error was real and non-obvious, keep it and fill in the fix; otherwise mark it resolved or delete it. Before keeping it, grep for its Pattern-Key(s) and fold recurrences into the existing entry (bump Recurrence-Count) instead of duplicating.
+
+### Pattern
+跨工具参数混淆：把内置 `web_search`（Brave）的 `--count` 参数当成了 `prismfy-search` CLI 的 flag。
+实际命令（transcript 复原）：`~/.prismfy/bin/prismfy-search "A股 10月15日 大跌 原因 上证指数" --engine brave --count 6` → `Unknown option: --count`，该会话 2 次 Prismfy 查询全灭，消息面引用回退本地新闻归档（回退已显式声明，合规）。
+
+### Validation
+- 实测 `~/.prismfy/bin/prismfy-search --help`：有效 flag 仅 `--engine/--engines/--time/--domain/--page/--lang/--quota/--raw`，确无 `--count`。
+
+### Disposition
+- retain — 真实、非显然、可复用；已固化到 TOOLS.md Prismfy 节 + `~/self-improving/domains/prismfy-search.md`。
+
+### Resolution
+- **Resolved**: 2026-10-16T21:19:00+08:00
+- **Commit/PR**: N/A（文档/自提升层，无代码变更）
+- **Notes**: SOP：条数控制用 `--raw` 出 JSON 自行截取；报 Unknown option 先 `--help` 对照再重试，不要直接放弃搜索（balanced 模式下 Prismfy 是强制首选，直接回退=合规缺口）。
+
+### Metadata
+- Source: openclaw-error-sweep
+- Reproducible: yes
+- Pattern-Key: prismfy.cli-flag-mismatch
+
+---
