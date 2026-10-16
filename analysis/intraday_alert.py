@@ -220,9 +220,15 @@ def main():
         cfg = dict(raw_cfg) if raw_cfg else {"name": name_by_code.get(code, code),
                                              "action": "策略预警", "type": "scan_derived",
                                              "drop_pct": -5.0, "surge_pct": 5.0}
-        if dlv and not (raw_cfg or {}).get("levels", {}).get("lock"):
+        _locked = bool((raw_cfg or {}).get("levels", {}).get("lock"))
+        if dlv and not _locked:
             cfg["levels"] = dict(dlv)  # 派生价位整组覆盖
-        levels_src = f"scan:{prov['data_date']}" if dlv else "static_config(降级)"
+        if dlv and not _locked:
+            levels_src = f"scan:{prov['data_date']}"
+        elif _locked:
+            levels_src = "static_config(lock)"
+        else:
+            levels_src = "static_config(降级)"
         r = hq.get(code)
         if r is None or r["last"] == 0 or r["pre_close"] == 0:
             continue

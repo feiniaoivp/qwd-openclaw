@@ -121,15 +121,6 @@ def persist_artifacts(data: dict, summary_text: str) -> list:
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(slim, f, ensure_ascii=False, indent=1)
     paths.append(json_path)
-    # 2026-10-16: 预警 levels 每日自动派生（根除 intraday_alert_config 陈旧漂移，
-    # 待批提案获准落地）：跌破=ATR纪律位/低吸=支撑/突破=阻力，pinned 股票除外。
-    # 失败不影响推送主链路，但必须可见（禁静默）。
-    try:
-        from analysis.refresh_alert_levels import update_config_from_scan
-        update_config_from_scan(slim)
-        paths.append("intraday_alert_config.json(levels已刷新)")
-    except Exception as e:
-        print(f"⚠️ [daily_push] 预警 levels 自动派生失败(不影响推送主链路): {e}", flush=True)
     # 2026-10-11(#1): 全量 JSON 落盘到 pipeline_cache，供次日盘前 scan 阶段直接
     # 消费——06:00 开盘前 spot=昨收、K线=到昨收，与昨夜 18:30 扫描数据完全等价，
     # 复用可省一次全池重扫并消除盘前数据源抖动。保留最近 10 份。

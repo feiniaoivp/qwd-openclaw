@@ -849,9 +849,17 @@ def evaluate_strategy_alerts(spot_results: list[dict]) -> tuple[list[dict], list
         scfg = dict(raw_cfg) if raw_cfg else {"name": item.get("name", sym),
                                               "action": "策略预警", "type": "scan_derived",
                                               "drop_pct": -5.0, "surge_pct": 5.0}
-        if dlv and not (raw_cfg or {}).get("levels", {}).get("lock"):
+        # 17:55 撞车合并修复：lock 豁免时 levels_src 必须如实标 static_config(lock)，
+        # 不得标 scan:*（实际用的是静态人工开关位）
+        _locked = bool((raw_cfg or {}).get("levels", {}).get("lock"))
+        if dlv and not _locked:
             scfg["levels"] = dict(dlv)  # 派生价位整组覆盖；drop_pct/surge_pct 在 cfg 顶层不受影响
-        levels_src = f"scan:{prov['data_date']}" if dlv else "static_config(降级)"
+        if dlv and not _locked:
+            levels_src = f"scan:{prov['data_date']}"
+        elif _locked:
+            levels_src = "static_config(lock)"
+        else:
+            levels_src = "static_config(降级)"
         price = float(item["price"])
         chg = float(item["change_pct"])
         levels = scfg.get("levels", {})
