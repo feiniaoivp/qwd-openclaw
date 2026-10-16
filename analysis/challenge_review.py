@@ -915,6 +915,9 @@ def main():
     out_path = os.path.join(DAILY_DIR, f"{args.date}_challenge_review.md")
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(f"# 挑战质疑审查报告 {args.date}\n\n")
+        # 2026-10-16: 头部显式数据日期 —— data_freshness_guard 要求交易日报告标注。
+        # 质疑审查基于最新 agent_runs 当日数据（不重拉行情）→ 数据日期 = 报告日。
+        f.write(f"数据日期: {args.date}\n\n")
         f.write(report)
     print(f"\n📄 质疑报告已保存: {out_path}")
 

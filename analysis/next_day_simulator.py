@@ -558,6 +558,8 @@ def format_markdown(sim: NextDaySimulation) -> str:
     """格式化为 030 标准推演报告"""
     lines = []
     lines.append(f"# 030隔日概率化推演 {sim.date}")
+    # 2026-10-16: 显式数据日期字段 —— data_freshness_guard 要求交易日报告标注数据日期
+    lines.append(f"数据日期: {sim.prev_date}")
     lines.append(f"> 基于 {sim.prev_date} 收盘数据生成 | 生成时间: {sim.generated_at} | 版本: {sim.version}")
     lines.append("")
 

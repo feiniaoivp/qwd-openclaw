@@ -91,25 +91,44 @@ def check_report(path: str):
     #   ③ `数据日期：YYYY-MM-DD |` 等混合
     # (2026-09-28 修复：旧版只支持冒号式，导致表格型报告被误报为「未标注」)
     data_date = None
+    explicit = False
     dm = re.search(
         r"数据日期[\s:：|]+(20\d{2}-\d{2}-\d{2})",
         text,
     )
     if dm:
         data_date = datetime.date.fromisoformat(dm.group(1))
+        explicit = True
     else:
         # 兼容旧报告：把正文中出现（且非标题/非未来）的最近日期视为数据日期线索，
-        # 但不作为通过依据——仅用于生成更精确的告警。
+        # 仅用于生成更精确的告警。
+        # ⚠️ 2026-10-16 修复：此回退**不是**通过依据（下方仍判“未标注”失败），
+        # 也不得被用作「数据滞后」判据——正文引用（memory/2026-10-13.md 等文件路径
+        # 日期、周度小结区间）曾被误读为数据日期 → 误报滞后 2 天（review.md 案例）。
+        # 显式标注才是唯一判据。
         dates = extract_dates(text)
         others = [d for d in dates if d != report_date and d <= report_date]
         data_date = max(others) if others else None
+        explicit = False
 
     if data_date is None:
         msgs.append(
             f"❌ 报告未标注数据日期（无法确认现价/指标基于哪个交易日）\n"
+            f"   文件: {path}\n"
             f"   报告日期={report_date}（交易日）\n"
             f"   修复：在报告头部显式写入 `数据日期: YYYY-MM-DD`，"
             f"并在 data_date < 上一交易日时输出告警。"
+        )
+        return False, msgs
+
+    if not explicit:
+        # 有日期线索但无显式标注 → 按“未标注”判失败（并附线索供修复），
+        # 绝不拿线索日期去判滞后（避免路径/引用日期误报）。
+        msgs.append(
+            f"❌ 报告未标注数据日期（仅从正文推断到 {data_date}，未显式标注，不作依据）\n"
+            f"   文件: {path}\n"
+            f"   报告日期={report_date}（交易日）\n"
+            f"   修复：在报告头部显式写入 `数据日期: YYYY-MM-DD`。"
         )
         return False, msgs
 
