@@ -26,6 +26,14 @@ import pandas as pd
 import pandas_ta as ta
 import numpy as np
 
+import os
+import sys
+
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 DATA_DIR = os.path.join(WORKSPACE, "data")
 FACTOR_SCORES_FILE = os.path.join(WORKSPACE, "data", "factor_scores.json")
@@ -655,7 +663,13 @@ def load_position_plan() -> dict:
     if os.path.exists(path):
         with open(path) as f:
             return json.load(f)
-    return {"buy_signal_multiplier": 1.0, "single_stock_max_pct": 0.05, "total_limit_pct": 0.5}
+    # [2026-10-17] 文件缺失时改现算(SSOT=position_sizer.compute_plan_now),静态50%兜底仅作最后防线
+    try:
+        from analysis.position_sizer import compute_plan_now
+        return compute_plan_now(verbose=False)
+    except Exception as _e:
+        print(f"⚠️ position_plan 现算失败,退静态兜底(50%): {_e}")
+        return {"buy_signal_multiplier": 1.0, "single_stock_max_pct": 0.05, "total_limit_pct": 0.5}
 
 
 def load_market_context() -> dict:
