@@ -16,6 +16,13 @@
 """
 
 import os
+import sys
+
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
 import json
 from datetime import datetime
 from typing import Dict, List, Optional, Any
@@ -536,6 +543,47 @@ def save_plan(plan: PositionPlan):
     path = os.path.join(DATA_DIR, f"position_plan_{plan.date}.json")
     with open(path, "w") as f:
         json.dump(asdict(plan), f, ensure_ascii=False, indent=2, default=str)
+
+
+def compute_plan_now(held_positions: dict = None, watchlist: list = None,
+                     fatal_risk: dict = None, verbose: bool = True) -> dict:
+    """现算仓位计划（单一事实来源）。
+
+    背景（2026-10-17）：position_plan_{date}.json 的写盘链路自 09-08 起无自动化调用方，
+    各消费端 fallback 口径分叉（adaptive_dual→next_day_sim 渲染 0%、
+    signal_arbitrator 静态兜底 50%、portfolio_core 现算 25%）。
+    消费端在文件缺失/为空时应统一调本函数现算，与 portfolio_sim/portfolio_core 同源。
+
+    Returns:
+        dict：与 position_plan_{date}.json 相同结构（buy_signal_multiplier /
+        single_stock_max_pct / single_stock_max_amount / total_limit_pct /
+        total_limit_amount / direction_allocation / risk_warnings）
+    """
+    ctx = load_market_context()
+    sizer = PositionSizer(total_capital=REFERENCE_TOTAL_CAPITAL)
+    fatal = fatal_risk if isinstance(fatal_risk, dict) else ctx.get("fatal_risk")
+    plan_obj = sizer.calculate(
+        market_stage=ctx["market_stage"],
+        emotion_cycle=ctx["emotion_cycle"],
+        health_score=ctx["health_score"],
+        fatal_risk=fatal,
+        held_positions=held_positions if held_positions else ctx.get("held_positions", {}),
+        watchlist=watchlist if watchlist else None,
+    )
+    if verbose:
+        print(f"ℹ️ position_plan 文件缺失，已用 position_sizer 现算: "
+              f"stage={ctx['market_stage']} emo={ctx['emotion_cycle']} "
+              f"health={ctx['health_score']} → total={plan_obj.total_limit_pct:.1%} "
+              f"单股={plan_obj.single_stock_max_pct:.1%} 乘数={plan_obj.buy_signal_multiplier}x")
+    return {
+        "buy_signal_multiplier": plan_obj.buy_signal_multiplier,
+        "single_stock_max_pct": plan_obj.single_stock_max_pct,
+        "single_stock_max_amount": plan_obj.single_stock_max_amount,
+        "total_limit_pct": plan_obj.total_limit_pct,
+        "total_limit_amount": plan_obj.total_limit_amount,
+        "direction_allocation": plan_obj.direction_allocation,
+        "risk_warnings": plan_obj.risk_warnings,
+    }
 
 
 def print_brief(plan: PositionPlan):

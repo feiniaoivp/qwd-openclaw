@@ -1330,6 +1330,17 @@ def main():
             if os.path.exists(plan_path):
                 with open(plan_path) as f:
                     position_plan = json.load(f)
+            if not position_plan:
+                # [2026-10-17] 修复 0% 口径分叉:写盘链路 09-08 起停更,旧逻辑文件缺失时
+                # position_plan 停留 {} → next_day_sim 渲染全 0(与 portfolio_sim 25% 矛盾)。
+                # 改为现算(与 portfolio_sim/portfolio_core 同源,SSOT=position_sizer.compute_plan_now)。
+                try:
+                    from analysis.position_sizer import compute_plan_now
+                    position_plan = compute_plan_now(held_positions=held_positions)
+                except Exception as _e:
+                    print(f"⚠️ position_plan 现算失败,退静态兑底(50%): {_e}")
+                    position_plan = {"buy_signal_multiplier": 1.0, "single_stock_max_pct": 0.05,
+                                     "total_limit_pct": 0.5, "total_limit_amount": 1_500_000}
             
             simulator = NextDaySimulator()
             simulation = simulator.generate(

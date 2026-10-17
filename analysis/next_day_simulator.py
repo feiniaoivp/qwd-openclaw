@@ -14,6 +14,13 @@
 """
 
 import os
+import sys
+
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
 import json
 from datetime import datetime, date
 from typing import Dict, List, Optional, Any
@@ -507,8 +514,13 @@ def load_all_inputs() -> tuple:
         with open(plan_path) as f:
             position_plan = json.load(f)
     else:
-        position_plan = {"buy_signal_multiplier": 1.0, "single_stock_max_pct": 0.05,
-                         "total_limit_pct": 0.5, "total_limit_amount": 1_500_000}
+        try:
+            from analysis.position_sizer import compute_plan_now
+            position_plan = compute_plan_now()
+        except Exception as _e:
+            print(f"⚠️ position_plan 现算失败,退静态兑底(50%): {_e}")
+            position_plan = {"buy_signal_multiplier": 1.0, "single_stock_max_pct": 0.05,
+                             "total_limit_pct": 0.5, "total_limit_amount": 1_500_000}
 
     # 3. 裁决结果
     arbitration_results = []
