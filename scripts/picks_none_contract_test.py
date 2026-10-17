@@ -45,6 +45,17 @@ def t_volume_price():
     check("vp 无价格 → None", tsp.score_volume_price("X", "X", {"change_pct": 3.0}) is None)
     v = tsp.score_volume_price("X", "X", {"price": 10.0, "change_pct": 1.0})
     check("vp 有真实行情 → 数值", isinstance(v, (int, float)) and 0 <= v <= 10, v)
+    # 2026-10-17 方向口径（vp_change_event_study: 2026 大涨日后 5d 超额 -0.44pp）
+    def _vp(chg, turnover=None):
+        d = {"price": 10.0, "change_pct": chg}
+        if turnover is not None:
+            d["turnover_rate"] = turnover
+        return tsp.score_volume_price("X", "X", d)
+    check("vp 大涨≥+5 不加分（拆追高奖励）", _vp(5.5) == _vp(2.5), (_vp(5.5), _vp(2.5)))
+    check("vp 大跌≤-5 不罚（不反向加码）", _vp(-5.5) == _vp(-2.5), (_vp(-5.5), _vp(-2.5)))
+    check("vp −5.5 与 +2.5 同分（方向无关）", _vp(-5.5) == _vp(2.5), (_vp(-5.5), _vp(2.5)))
+    check("vp 形态变化仍识别强弱 |chg|>2>|chg|<0.5", _vp(3.0) > _vp(0.2), (_vp(3.0), _vp(0.2)))
+    check("vp 负向小幅 −0.2 与 +0.2 同分（平盘 −1 未扩大）", _vp(-0.2) == _vp(0.2), (_vp(-0.2), _vp(0.2)))
 
 
 def t_fund_flow():
