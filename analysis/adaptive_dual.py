@@ -889,6 +889,14 @@ def scan_all():
         except Exception:
             er20 = None
         regime_er = (("趋势" if er20 >= 0.25 else "震荡") if er20 is not None else None)
+        # 2026-10-17: 前置5日涨跌（高位双杀/深跌后双卖 标注依据；因果无前视。
+        # 事件研究: 前置仍涨的双卖 -0.79% vs 深跌后双卖 +0.81%，语义相反）
+        try:
+            _c5 = df["close"].astype(float)
+            pre_chg_5d = (round(float(_c5.iloc[-1] / _c5.iloc[-6] - 1) * 100, 2)
+                          if len(_c5) >= 6 else None)
+        except Exception:
+            pre_chg_5d = None
         try:
             _bar_dates.append(df["date"].iloc[-1].strftime("%Y-%m-%d"))
         except Exception as _e:
@@ -1073,6 +1081,7 @@ def scan_all():
             # 2026-10-17: ER20 趋势/震荡标志（已验证分离买入信号价值）
             "er20": er20,
             "regime_er": regime_er,
+            "pre_chg_5d": pre_chg_5d,
             # 030 新增字段
             "arbitration": {
                 "final_action": arbitration_result.final_action.value if arbitration_result else "未裁决",
@@ -1216,8 +1225,8 @@ def format_brief(output):
         order = {"🟢双买": 0, "🔴双卖": 1, "⚡分歧": 2, "⚪双持有": 3}
         all_rows.sort(key=lambda x: order.get(x[0], 9))
         lines.append("📋 **全标的双策略信号总榜**（覆盖 " + str(len(all_rows)) + " 只）")
-        lines.append("| 股票 | 状态 | 策略1 | 策略2 | 现价 | 涨跌 | ER状态 |")
-        lines.append("|:---|:---:|:---|:---|:---:|:---:|:---:|")
+        lines.append("| 股票 | 状态 | 策略1 | 策略2 | 现价 | 涨跌 | ER状态 | 前置5日 |")
+        lines.append("|:---|:---:|:---|:---|:---:|:---:|:---:|:---:|")
         for tag, r in all_rows:
             lbl1 = r["strategies"][0].get("strategy_label", "-").replace("📊 ","").replace("🎯 ","").replace("📈 ","").replace("💹 ","").replace("📉 ","")
             lbl2 = r["strategies"][1].get("strategy_label", "-").replace("📊 ","").replace("🎯 ","").replace("📈 ","").replace("💹 ","").replace("📉 ","")
@@ -1226,7 +1235,9 @@ def format_brief(output):
             price = r.get("price", 0) or 0
             cp = r.get("change_pct") or 0
             reg = r.get("regime_er") or "-"
-            lines.append(f"| {r['name']}({r['symbol']}) | {tag} | {lbl1} {a1} | {lbl2} {a2} | ¥{price:.2f} | {cp:+.2f}% | {reg} |")
+            _pre = r.get("pre_chg_5d")
+            pre_s = f"{_pre:+.2f}%" if _pre is not None else "—"
+            lines.append(f"| {r['name']}({r['symbol']}) | {tag} | {lbl1} {a1} | {lbl2} {a2} | ¥{price:.2f} | {cp:+.2f}% | {reg} | {pre_s} |")
         lines.append("")
 
     # 策略使用分布

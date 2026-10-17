@@ -107,9 +107,25 @@ def main() -> int:
                 "support": (sig or {}).get("support"), "resistance": (sig or {}).get("resistance"),
             })
 
-    if not hits:
-        print(f"ℹ️ {today} 竞价×信号无交集，静默退出")
+    if not hits and not [r for r in auction["rows"] if (r.get("open_chg_pct") or 0) >= 2 and not r.get("is_limit_up")]:
+        print(f"ℹ️ {today} 竞价×信号无交集且无高开回落风险标的，静默退出")
         return 0
+
+    # ── 2026-10-17: 高开回落风险段（竞价研究 be3f8e9: 高开≥2% 盘中-2.02%/胜率11%，次日-1.97%；缩量高开更虚）──
+    fade = []
+    _hit_codes = {h["code"] for h in hits}
+    for r in auction["rows"]:
+        ochg = r.get("open_chg_pct")
+        if ochg is None or ochg < 2 or r.get("is_limit_up") or r.get("code") in _hit_codes:
+            continue
+        vr = r.get("vol_ratio_pct")
+        fade.append({
+            "code": r.get("code", ""), "name": r.get("name", ""),
+            "open_chg_pct": ochg, "vol_ratio_pct": vr,
+            "thin": (vr is not None and vr < 50),
+        })
+    fade.sort(key=lambda x: -x["open_chg_pct"])
+    fade = fade[:10]
 
     hits.sort(key=lambda x: -abs(x["open_chg_pct"]))
     lines = [f"🔔 竞价×信号交集 {today}",
@@ -123,10 +139,17 @@ def main() -> int:
     lines.append("")
     lines.append("—— 竞价数据≠开盘走势，9:30 后需二次确认；明细见拍卖分析推送")
 
+    if fade:
+        lines.append("")
+        lines.append("⚠️ 高开回落风险（研究: 高开≥2% 盘中均值-2.02%/胜率11%，次日-1.97%）")
+        for fd in fade:
+            vol = f" 缩量(量比{fd['vol_ratio_pct']:.0f}%)" if fd["thin"] else ""
+            lines.append(f"  {fd['name']}({fd['code']}) 高开{fd['open_chg_pct']:+.2f}%{vol}")
+
     text = "\n".join(lines)
     out_path = os.path.join(AUCTION_DIR, f"signal_push_{today}.json")
     with open(out_path, "w", encoding="utf-8") as f:
-        json.dump({"date": today, "scan_date": scan_date, "hits": hits}, f, ensure_ascii=False, indent=1)
+        json.dump({"date": today, "scan_date": scan_date, "hits": hits, "fade_risk": fade}, f, ensure_ascii=False, indent=1)
 
     try:
         from send_telegram import send_with_retry
