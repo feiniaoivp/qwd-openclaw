@@ -17,6 +17,7 @@
  "analysis/three_factor_resonance.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 7,
  "analysis/bs_session.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
  "analysis/trader_stock_picks.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
+ "analysis/adaptive_dual.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
  "analysis/premarket_pipeline.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 5,
  "analysis/deep_grid_search.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
  "analysis/strategy_tri_compare.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 2,
@@ -45,6 +46,7 @@
  "analysis/data_layer/router.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 2,
  "scripts/cron_health_check.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 7,
  "scripts/fetch_commodity_fx.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
+ "scripts/param_exec_reconciliation.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
  "scripts/premarket_outlook.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1,
  "scripts/push_utils.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 3,
  "scripts/monitor_embedding_cpu.py#宽泛 except 处理体完全静默（仅 log.debug/pass/return None）": 1

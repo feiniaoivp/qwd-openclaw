@@ -482,6 +482,12 @@
       "level": 33.62,
       "touch_date": "2026-09-23",
       "touch_price": 33.76
+    },
+    "600036:1.0:42.25": {
+      "level_name": "1.0",
+      "level": 42.25,
+      "touch_date": "2026-10-12",
+      "touch_price": 42.76
     }
   },
   "outcomes": {
@@ -565,6 +571,17 @@
         "date": "2026-10-06",
         "price": 32.07,
         "note": "触及后回落至31.37，跌破32.75"
+      }
+    ],
+    "600036": [
+      {
+        "level": "1.0",
+        "touch_date": "2026-10-12",
+        "touch_price": 42.76,
+        "outcome": "pending",
+        "date": "2026-10-12",
+        "price": 42.76,
+        "note": "观察中"
       }
     ]
   },
@@ -703,6 +720,36 @@
     },
     {
       "date": "2026-10-09",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "1/1"
+    },
+    {
+      "date": "2026-10-12",
+      "kind": "verify",
+      "events": 1,
+      "hit_rate": "1/1"
+    },
+    {
+      "date": "2026-10-13",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "1/1"
+    },
+    {
+      "date": "2026-10-14",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "1/1"
+    },
+    {
+      "date": "2026-10-15",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "1/1"
+    },
+    {
+      "date": "2026-10-16",
       "kind": "verify",
       "events": 0,
       "hit_rate": "1/1"

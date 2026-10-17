@@ -1,0 +1,113 @@
+[BS] 登录失败: 网络接收错误。
+[BS] 登录失败，重试 1/1
+[BS] 登录失败，重试 1/1
+[BS] 登录失败，重试 1/1
+[BS] 登录失败，重试 1/1
+[BS] 登录失败，重试 1/1
+[BS] 登录失败，重试 1/1
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 002335 baostock获取失败: 查询失败
+  ⚠️ 科华数据 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 科华数据(002335): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 300748 baostock获取失败: 查询失败
+  ⚠️ 金力永磁 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 金力永磁(300748): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 600160 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 巨化股份 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 巨化股份(600160): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 600346 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 恒力石化 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 恒力石化(600346): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 000708 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 中信特钢 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 中信特钢(000708): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 600660 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 福耀玻璃 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 福耀玻璃(600660): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 600570 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 恒生电子 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 恒生电子(600570): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 605566 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 福莱蒽特 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 福莱蒽特(605566): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 000157 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 中联重科 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 中联重科(000157): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 601061 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 中信金属 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 中信金属(601061): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 600089 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 特变电工 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 特变电工(600089): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 600406 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 国电南瑞 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 国电南瑞(600406): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 000400 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 许继电气 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 许继电气(000400): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 601179 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 中国西电 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 中国西电(601179): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 002028 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 思源电气 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 思源电气(002028): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 002270 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 华明装备 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 华明装备(002270): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 002130 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 沃尔核材 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 沃尔核材(002130): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 600312 baostock获取失败: 查询失败
+[BS] 登录失败: 网络接收错误。
+  ⚠️ 平高电气 akshare失败: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+  ⚠️ 平高电气(600312): 复权源全失败，回退新浪【不复权】669 条 —— 信号/回测口径可能与其它标的不可比

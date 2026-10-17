@@ -167,6 +167,7 @@ cd /Users/duguke/.openclaw/workspace && for f in analysis/*.py scripts/*.py; do 
 - Key 存放：`~/.prismfy/.env` 的 `PRISMFY_API_KEY`（权限 600）
 - 自检：`~/.prismfy/bin/prismfy-search --quota`
 - 套餐：FREE 1000 次/月
+- **有效 flag 仅**：`--engine / --engines / --time / --domain / --page / --lang / --quota / --raw`；**无 `--count`**（那是内置 web_search/Brave 的参数，混用必报 `Unknown option: --count`，10-16 实测 2 次查询全灭）——控制条数用 `--raw` 出 JSON 后自行截取 [来源: prismfy-search --help, .learnings/ERRORS.md ERR-20261016-C02]
 
 ---
 
@@ -184,7 +185,7 @@ Add whatever helps you do your job. This is your cheat sheet.
 **关注池以 `analysis/fib_extension_scan.py` 的 `WATCHLIST` 为准（当前 36 只）。**
 任何其他位置不得自行维护股票列表。
 
-必须与 WATCHLIST 保持一致的 5 处：
+必须与 WATCHLIST 保持一致的 6 处：
 
 | 位置 | 形式 |
 |---|---|
@@ -193,6 +194,7 @@ Add whatever helps you do your job. This is your cheat sheet.
 | `memory/watchlist.md` | 头部「权威清单 N 只」== len(WATCHLIST) |
 | `MEMORY.md` | `Definitive - N stocks` == len(WATCHLIST) |
 | `analysis/adaptive_dual.py` STOCKS | 由 WATCHLIST 派生（禁止硬编码 6 位代码清单，2026-10-16 对齐） |
+| `analysis/backtest_strategies.py` STOCKS | 由 WATCHLIST 派生（调参池源头，2026-10-17 对齐；曾硬编码 35 只缺翰宇导致 tune/diff 三口径分叉） |
 
 > 注：`analysis/adaptive_trader.py` 的 STOCKS（27 只）为**有意的核心子集**（无幽灵票），不在此列；若其语义变更需另行评估。
 

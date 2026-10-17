@@ -1,0 +1,109 @@
+{
+  "date": "2026-10-16",
+  "timestamp": "2026-10-16T15:35:00.391919",
+  "commodities": {
+    "LME_Copper_3M": {
+      "name": "LME铜 3M",
+      "unit": "USD/t",
+      "price": 14441.61,
+      "change": 94.61,
+      "pct_change": 0.6595,
+      "high_usd": 14437.0,
+      "low_usd": 14298.0,
+      "open_usd": 14320.0,
+      "prev_close_usd": 14347.0,
+      "bid_usd": 14435.5,
+      "volume": 6572,
+      "quote_time": "15:34:57",
+      "date": "2026-10-16",
+      "source": "sina_lme_direct",
+      "source_code": "hf_CAD",
+      "note": "LME伦铜直连 (非沪铜代理)"
+    },
+    "Silicon_Steel_50W470": {
+      "name": "钢铁板块代理(热轧卷板连续)",
+      "unit": "元/吨",
+      "price": 3720.0,
+      "change": -9.0,
+      "pct_change": -0.2414,
+      "high": 3740.0,
+      "low": 3666.0,
+      "open": 3731.0,
+      "prev_close": 3729.0,
+      "date": "0",
+      "source": "sina_steel_proxy_HC0",
+      "note": "钢铁板块趋势代理，非硅钢专用价，勿当成本数"
+    },
+    "Silicon_Steel_50W600": {
+      "name": "钢铁板块代理(螺纹钢连续)",
+      "unit": "元/吨",
+      "price": 3538.0,
+      "change": -3.0,
+      "pct_change": -0.0847,
+      "high": 3556.0,
+      "low": 3484.0,
+      "open": 3544.0,
+      "prev_close": 3541.0,
+      "date": "0",
+      "source": "sina_steel_proxy_RB0",
+      "note": "钢铁板块趋势代理，非硅钢专用价，勿当成本数"
+    },
+    "SF6": {
+      "name": "六氟化硫",
+      "unit": "元/吨",
+      "price": null,
+      "source": "manual_entry",
+      "status": "需人工录入 (生意社/百川盈孚需会员)"
+    }
+  },
+  "fx": {
+    "USDCNH": {
+      "name": "离岸人民币",
+      "unit": "元",
+      "price": 6.6866,
+      "change": -0.04,
+      "pct_change": -0.0028,
+      "high": 6.6884,
+      "low": 6.685,
+      "open": 6.6866,
+      "source": "sina_fx"
+    },
+    "EURUSD": {
+      "name": "欧元/美元",
+      "unit": "美元",
+      "price": 1.1242,
+      "change": 0.21,
+      "pct_change": 0.0024,
+      "high": 1.1218,
+      "low": 1.1206,
+      "open": 1.1242,
+      "source": "sina_fx"
+    },
+    "USDSAR": {
+      "name": "美元/沙特里亚尔",
+      "unit": "里亚尔",
+      "price": 3.7526,
+      "change": 0.03,
+      "pct_change": 0.001,
+      "high": 3.7516,
+      "low": 3.7516,
+      "open": 3.7526,
+      "source": "sina_fx"
+    },
+    "DXY": {
+      "name": "美元指数",
+      "unit": "点",
+      "price": 101.7912,
+      "change": 0.0,
+      "pct_change": 0.0,
+      "open": 101.9743,
+      "high": 102.0866,
+      "low": 101.7286,
+      "prev_close": 101.7912,
+      "quote_time": "15:35:01",
+      "date": "2026-10-16",
+      "source": "sina_dxy_direct",
+      "note": "ICE美元指数直连"
+    }
+  }
+}

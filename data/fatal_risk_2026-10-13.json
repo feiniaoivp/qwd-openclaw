@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-13",
+  "check_time": "21:55:32",
+  "triggered": false,
+  "fatal_triggered": false,
+  "high_risk_triggered": false,
+  "action": "NONE",
+  "conditions": [],
+  "recovery_condition": "次日竞价无新增一字跌停 + 封单回落至30亿以下 + 大盘未低开",
+  "min_cash_days": 0,
+  "data_source": "sina_hq + akshare_zt_pool",
+  "checked_stocks": 19
+}
