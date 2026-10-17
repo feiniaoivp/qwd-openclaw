@@ -370,3 +370,19 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Pattern-Key: cron.mcp-add-delivery-override
 
 ---
+
+## ERR-20261017-C02 json int 键序列化后恒为 str——同日两连坑
+
+### Summary
+- **Date**: 2026-10-17T16:0x
+- **Component**: rsi30_event_study / dual_signal_event_study 两研究脚本
+- **Error**: dict 用 int 键 (HORIZONS=(1,5,10)) 建统计表，json.dump 后键变 "1"/"5"；读取/打印处混用 int 与 str 键 → 统计全 None（rsi 研究）与 KeyError 崩溃（dual 研究，且崩在写盘前的 excess 循环导致 5 分钟数据白跑）。
+
+### Resolution
+- **Resolved**: 2026-10-17T16:0x
+- **Notes**: 规约：①研究脚本统计表键一律 str(h) 从建表起统一；②大计算主结果先落盘再打印摘要（dual 研究已改：json.dump 前移）。同类坑当日两发，int/str 键不匹配是 pandas/json 研究脚本高频事故。
+
+### Metadata
+- Source: manual-session
+- Reproducible: yes
+- Pattern-Key: research.json-int-str-keys

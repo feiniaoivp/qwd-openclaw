@@ -64,6 +64,8 @@ END_DATE = datetime.now().strftime("%Y%m%d")
 INITIAL_CAPITAL = 100_000
 COMMISSION = 0.0003
 SLIPPAGE = 0.001
+# 印花税（卖方单边，2023-08-28 起降至 0.05%；2026-10-17 补齐，原模型遗漏）
+STAMP_TAX = 0.0005
 
 
 # ════════════════════════════════════════
@@ -344,7 +346,7 @@ def run_simulation(df, actions):
             elif act["type"] == "SELL" and shares > 0:
                 sell_value = shares * price * (1 - SLIPPAGE)
                 fee = sell_value * COMMISSION
-                net = sell_value - fee
+                net = sell_value - fee - sell_value * STAMP_TAX
                 pnl = net - shares * entry_price * (1 + SLIPPAGE)
                 pnl_pct = round((pnl / (shares * entry_price)) * 100, 2)
                 trades.append({"date": dt, "type": "SELL", "price": price,
@@ -363,7 +365,7 @@ def run_simulation(df, actions):
     if shares > 0:
         sell_value = shares * final_price * (1 - SLIPPAGE)
         fee = sell_value * COMMISSION
-        net = sell_value - fee
+        net = sell_value - fee - sell_value * STAMP_TAX
         pnl = net - shares * entry_price * (1 + SLIPPAGE)
         pnl_pct = round((pnl / (shares * entry_price)) * 100, 2)
         trades.append({"date": str(df.iloc[-1]["date"].date()), "type": "SELL(平)",
