@@ -22760,91 +22760,14 @@
   },
   {
     "date": "2026-10-17",
-    "changed_count": 35,
+    "prev_baseline_date": "2026-08-15",
+    "changed_count": 32,
+    "counts": {
+      "param_changed": 15,
+      "set_changed": 17,
+      "score_only": 3
+    },
     "changes": {
-      "000157": {
-        "prev": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": -28.03
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 40
-            },
-            "score": -22.56
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": -24.52
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": 15.82
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": -37.24
-          }
-        },
-        "new": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": -24.13
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": 8.11
-          }
-        }
-      },
-      "000400": {
-        "prev": {},
-        "new": {
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": -16.67
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": 33.66
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 12
-            },
-            "score": 13.94
-          }
-        }
-      },
       "000708": {
         "prev": {
           "bollinger": {
@@ -22959,52 +22882,6 @@
           }
         }
       },
-      "002028": {
-        "prev": {},
-        "new": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": 48.68
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": 42.27
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 12,
-              "slow": 26
-            },
-            "score": 52.68
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": -11.95
-          }
-        }
-      },
-      "002130": {
-        "prev": {},
-        "new": {
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 40
-            },
-            "score": -5.02
-          }
-        }
-      },
       "002156": {
         "prev": {
           "bollinger": {
@@ -23080,40 +22957,6 @@
               "signal": 9
             },
             "score": 33.95
-          }
-        }
-      },
-      "002270": {
-        "prev": {},
-        "new": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": 62.72
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 40
-            },
-            "score": 13.32
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": 125.33
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": 9.77
           }
         }
       },
@@ -23387,84 +23230,6 @@
           }
         }
       },
-      "300014": {
-        "prev": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": 46.16
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 40
-            },
-            "score": 36.05
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": 39.31
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 12,
-              "slow": 26
-            },
-            "score": -5.16
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 12
-            },
-            "score": 24.67
-          }
-        },
-        "new": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": 16.64
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 40
-            },
-            "score": 9.42
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": 37.41
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 12,
-              "slow": 26
-            },
-            "score": 5.29
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 12
-            },
-            "score": -11.2
-          }
-        }
-      },
       "300124": {
         "prev": {
           "bollinger": {
@@ -23606,55 +23371,6 @@
           }
         }
       },
-      "300719": {
-        "prev": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": -34.74
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 40
-            },
-            "score": -20.05
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": -89.1
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 12,
-              "slow": 26
-            },
-            "score": -15.41
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": -55.85
-          }
-        },
-        "new": {
-          "ema_cross": {
-            "params": {
-              "fast": 12,
-              "slow": 26
-            },
-            "score": -13.24
-          }
-        }
-      },
       "300748": {
         "prev": {
           "bollinger": {
@@ -23733,6 +23449,581 @@
           }
         }
       },
+      "600036": {
+        "prev": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 1.5
+            },
+            "score": -31.79
+          },
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 50
+            },
+            "score": 44.72
+          },
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": -37.67
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 10,
+              "slow": 26
+            },
+            "score": -18.98
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 12
+            },
+            "score": 31.14
+          }
+        },
+        "new": {
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 40
+            },
+            "score": 0.66
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 12,
+              "slow": 26
+            },
+            "score": -0.73
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 9
+            },
+            "score": -8.12
+          }
+        }
+      },
+      "600346": {
+        "prev": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 2.0
+            },
+            "score": -17.97
+          },
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 50
+            },
+            "score": 3.62
+          },
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": -60.48
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 12,
+              "slow": 26
+            },
+            "score": 19.63
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 9
+            },
+            "score": 62.7
+          }
+        },
+        "new": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 2.0
+            },
+            "score": 2.74
+          },
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 40
+            },
+            "score": -8.71
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 12,
+              "slow": 26
+            },
+            "score": 8.34
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 9
+            },
+            "score": 59.85
+          }
+        }
+      },
+      "600584": {
+        "prev": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 1.5
+            },
+            "score": 91.51
+          },
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 40
+            },
+            "score": 78.98
+          },
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": 14.51
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 10,
+              "slow": 26
+            },
+            "score": 165.24
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 12
+            },
+            "score": 263.26
+          }
+        },
+        "new": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 1.5
+            },
+            "score": 43.55
+          },
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 40
+            },
+            "score": 12.37
+          },
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": 32.92
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 10,
+              "slow": 26
+            },
+            "score": 80.06
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 9
+            },
+            "score": 149.36
+          }
+        }
+      },
+      "601061": {
+        "prev": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 2.0
+            },
+            "score": 47.58
+          },
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 50
+            },
+            "score": 39.3
+          },
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": 74.98
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 10,
+              "slow": 26
+            },
+            "score": -2.91
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 9
+            },
+            "score": 64.37
+          }
+        },
+        "new": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 2.0
+            },
+            "score": 38.31
+          },
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 40
+            },
+            "score": 15.18
+          },
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": 90.5
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 10,
+              "slow": 26
+            },
+            "score": 22.55
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 9
+            },
+            "score": 61.42
+          }
+        }
+      },
+      "603308": {
+        "prev": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 2.0
+            },
+            "score": 162.41
+          },
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 40
+            },
+            "score": -16.21
+          },
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": 97.34
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 12,
+              "slow": 26
+            },
+            "score": 220.97
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 9
+            },
+            "score": 138.41
+          }
+        },
+        "new": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 1.5
+            },
+            "score": 98.48
+          },
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": 115.64
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 10,
+              "slow": 26
+            },
+            "score": 17.34
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 9
+            },
+            "score": 8.33
+          }
+        }
+      },
+      "000157": {
+        "prev": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 1.5
+            },
+            "score": -28.03
+          },
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 40
+            },
+            "score": -22.56
+          },
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": -24.52
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 10,
+              "slow": 26
+            },
+            "score": 15.82
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 9
+            },
+            "score": -37.24
+          }
+        },
+        "new": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 1.5
+            },
+            "score": -24.13
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 10,
+              "slow": 26
+            },
+            "score": 8.11
+          }
+        }
+      },
+      "000400": {
+        "prev": {},
+        "new": {
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": -16.67
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 10,
+              "slow": 26
+            },
+            "score": 33.66
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 12
+            },
+            "score": 13.94
+          }
+        }
+      },
+      "002028": {
+        "prev": {},
+        "new": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 1.5
+            },
+            "score": 48.68
+          },
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": 42.27
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 12,
+              "slow": 26
+            },
+            "score": 52.68
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 9
+            },
+            "score": -11.95
+          }
+        }
+      },
+      "002130": {
+        "prev": {},
+        "new": {
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 40
+            },
+            "score": -5.02
+          }
+        }
+      },
+      "002270": {
+        "prev": {},
+        "new": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 1.5
+            },
+            "score": 62.72
+          },
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 40
+            },
+            "score": 13.32
+          },
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": 125.33
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 9
+            },
+            "score": 9.77
+          }
+        }
+      },
+      "300719": {
+        "prev": {
+          "bollinger": {
+            "params": {
+              "length": 20,
+              "std": 2.0,
+              "atr_mult": 1.5
+            },
+            "score": -34.74
+          },
+          "kdj_cci": {
+            "params": {
+              "length": 9,
+              "rsi_threshold": 40
+            },
+            "score": -20.05
+          },
+          "ema_obv": {
+            "params": {
+              "length": 20
+            },
+            "score": -89.1
+          },
+          "ema_cross": {
+            "params": {
+              "fast": 12,
+              "slow": 26
+            },
+            "score": -15.41
+          },
+          "macd": {
+            "params": {
+              "fast": 12,
+              "slow": 26,
+              "signal": 9
+            },
+            "score": -55.85
+          }
+        },
+        "new": {
+          "ema_cross": {
+            "params": {
+              "fast": 12,
+              "slow": 26
+            },
+            "score": -13.24
+          }
+        }
+      },
       "600030": {
         "prev": {
           "bollinger": {
@@ -23801,70 +24092,6 @@
               "signal": 9
             },
             "score": 37.27
-          }
-        }
-      },
-      "600036": {
-        "prev": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": -31.79
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 50
-            },
-            "score": 44.72
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": -37.67
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": -18.98
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 12
-            },
-            "score": 31.14
-          }
-        },
-        "new": {
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 40
-            },
-            "score": 0.66
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 12,
-              "slow": 26
-            },
-            "score": -0.73
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": -8.12
           }
         }
       },
@@ -24006,78 +24233,6 @@
           }
         }
       },
-      "600346": {
-        "prev": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 2.0
-            },
-            "score": -17.97
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 50
-            },
-            "score": 3.62
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": -60.48
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 12,
-              "slow": 26
-            },
-            "score": 19.63
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": 62.7
-          }
-        },
-        "new": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 2.0
-            },
-            "score": 2.74
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 40
-            },
-            "score": -8.71
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 12,
-              "slow": 26
-            },
-            "score": 8.34
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": 59.85
-          }
-        }
-      },
       "600406": {
         "prev": {},
         "new": {
@@ -24176,84 +24331,6 @@
           }
         }
       },
-      "600584": {
-        "prev": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": 91.51
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 40
-            },
-            "score": 78.98
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": 14.51
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": 165.24
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 12
-            },
-            "score": 263.26
-          }
-        },
-        "new": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": 43.55
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 40
-            },
-            "score": 12.37
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": 32.92
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": 80.06
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": 149.36
-          }
-        }
-      },
       "600660": {
         "prev": {
           "bollinger": {
@@ -24316,84 +24393,6 @@
               "signal": 12
             },
             "score": 24.3
-          }
-        }
-      },
-      "601061": {
-        "prev": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 2.0
-            },
-            "score": 47.58
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 50
-            },
-            "score": 39.3
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": 74.98
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": -2.91
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": 64.37
-          }
-        },
-        "new": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 2.0
-            },
-            "score": 38.31
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 40
-            },
-            "score": 15.18
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": 90.5
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": 22.55
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": 61.42
           }
         }
       },
@@ -24605,234 +24604,12 @@
             "score": -4.37
           }
         }
-      },
-      "603308": {
-        "prev": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 2.0
-            },
-            "score": 162.41
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 40
-            },
-            "score": -16.21
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": 97.34
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 12,
-              "slow": 26
-            },
-            "score": 220.97
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": 138.41
-          }
-        },
-        "new": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": 98.48
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": 115.64
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": 17.34
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": 8.33
-          }
-        }
-      },
-      "605566": {
-        "prev": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": 5.16
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 50
-            },
-            "score": 73.86
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": -4.77
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": 7.79
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": 73.34
-          }
-        },
-        "new": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 1.5
-            },
-            "score": -3.79
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 50
-            },
-            "score": 32.05
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": -4.52
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": -12.21
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 9
-            },
-            "score": 69.33
-          }
-        }
-      },
-      "688981": {
-        "prev": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 2.0
-            },
-            "score": 22.54
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 50
-            },
-            "score": 99.71
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": -39.32
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": 60.82
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 12
-            },
-            "score": 50.05
-          }
-        },
-        "new": {
-          "bollinger": {
-            "params": {
-              "length": 20,
-              "std": 2.0,
-              "atr_mult": 2.0
-            },
-            "score": 22.77
-          },
-          "kdj_cci": {
-            "params": {
-              "length": 9,
-              "rsi_threshold": 50
-            },
-            "score": 55.16
-          },
-          "ema_obv": {
-            "params": {
-              "length": 20
-            },
-            "score": -29.49
-          },
-          "ema_cross": {
-            "params": {
-              "fast": 10,
-              "slow": 26
-            },
-            "score": 36.19
-          },
-          "macd": {
-            "params": {
-              "fast": 12,
-              "slow": 26,
-              "signal": 12
-            },
-            "score": 13.16
-          }
-        }
       }
-    }
+    },
+    "score_only_syms": [
+      "300014",
+      "605566",
+      "688981"
+    ]
   }
 ]

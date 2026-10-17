@@ -513,18 +513,29 @@ def build_brief(results=None, as_of=None):
         lines.append(f"(回测摘要解析失败: {e})")
     lines.append("")
 
-    # 二、策略映射变更数（对比 adaptive_params vs prev）
+    # 二、策略/参数变更（三分类: 真变参/策略增删/仅分数漂移 —— 审计 R4, 2026-10-17）
+    # 旧口径 dict 直接比对含分数 → 分数漂移也计入「参数变更」，N 只虚高且误导
     lines.append("二、策略/参数变更")
     try:
-        new_map = _read_json_file(os.path.join(DATA_DIR, "adaptive_params.json")) or {}
-        prev_map = _read_json_file(os.path.join(DATA_DIR, "adaptive_params_prev.json")) or {}
-        new_stocks = new_map.get("stocks", new_map) if isinstance(new_map, dict) else {}
-        prev_stocks = prev_map.get("stocks", prev_map) if isinstance(prev_map, dict) else {}
-        changed = [s for s in new_stocks if s in prev_stocks and new_stocks[s] != prev_stocks[s]]
-        if changed:
-            lines.append(f"本轮参数变更 {len(changed)} 只: " + ", ".join(changed[:12]))
+        from param_evaluate import classify_changes, _load_stocks_map  # 同目录复用, 口径单一
+        new_stocks = _load_stocks_map(os.path.join(DATA_DIR, "adaptive_params.json"))
+        prev_stocks = _load_stocks_map(os.path.join(DATA_DIR, "adaptive_params_prev.json"))
+        cls = classify_changes(prev_stocks, new_stocks)
+        _base = None
+        try:
+            with open(os.path.join(DATA_DIR, "adaptive_params_prev.json"), encoding="utf-8") as _f:
+                _base = (json.load(_f) or {}).get("date")
+        except Exception:
+            _base = None
+        if cls["param_changed"]:
+            lines.append(f"真参数变更 {len(cls['param_changed'])} 只: " + ", ".join(sorted(cls['param_changed'])[:12]))
         else:
-            lines.append("本轮无参数变更（或 prev 缺失）")
+            lines.append("真参数变更 0 只")
+        if cls["set_changed"]:
+            lines.append(f"策略增删 {len(cls['set_changed'])} 只: " + ", ".join(sorted(cls['set_changed'])[:8]))
+        else:
+            lines.append("策略增删 0 只")
+        lines.append(f"仅分数漂移 {len(cls['score_only'])} 只（窗口右移所致, 非调参效果, 不改变信号）｜对照基线: {_base or '未知'}")
     except Exception as e:
         lines.append(f"(变更统计失败: {e})")
     lines.append("")
