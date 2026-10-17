@@ -1024,6 +1024,21 @@ def scan_all():
             except Exception as _e:
                 _gate_blocked = None
 
+        # ── 2026-10-17 Regime×030 联动：ER 震荡态买入乘数 ×0.5 ──
+        # 依据: 21,068 日事件研究——震荡态买入期望≈趋势态0.38×（三年一致
+        # +1.33/+1.15/+0.17 vs +4.14/+1.70/+2.45%），胜率不变但右尾更小左尾更肥。
+        # 只降乘数不禁买（震荡态买入仍为正超额 +0.67% vs 同态基线）。
+        if (regime_er == "震荡" and arbitration_result is not None
+                and "买入" in str(arbitration_result.final_action.value)
+                and arbitration_result.position_mult and arbitration_result.position_mult > 0):
+            arbitration_result.position_mult = round(arbitration_result.position_mult * 0.5, 2)
+            _reg_tag = "[ER震荡态]买入乘数×0.5(震荡态买入期望≈趋势态0.4×,事件研究2026-10-17)"
+            arbitration_result.reason = ((arbitration_result.reason or "") + "；" + _reg_tag).strip("；")
+            try:
+                arbitration_result.arbitration_path.append(_reg_tag)
+            except Exception:
+                pass
+
         results.append({
             "symbol": symbol, "name": name,
             "price": cur_price,
