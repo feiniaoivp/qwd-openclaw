@@ -1,0 +1,65 @@
+{
+ "date": "2026-10-18 05:09",
+ "symptom": "FT中文网 RSS scan 报 EOF；其他源正常",
+ "url": "https://www.ftchinese.com/rss/feed",
+ "layer_matrix": {
+  "dns": {
+   "result": "污染/随机化（每次解析不同）",
+   "evidence": [
+    "dig 首次 118.193.202.219，再次 31.13.96.194 (IE-FACEBOOK-20110418)",
+    "dig @223.5.5.5 -> 198.18.0.4（保留段）",
+    "dns.alidns DoH -> 128.242.240.212；另一轮 -> 66.220.147.11 (Facebook)",
+    "doh.pub -> 172.67.139.110 + 104.21.8.120 (Cloudflare，最像真值)",
+    "AAAA -> 2a03:2880:f127:83:face:b00c:0:25de (Meta IPv6)"
+   ]
+  },
+  "tls_direct": {
+   "result": "ClientHello 后被 EOF/RST",
+   "evidence": [
+    "curl (35) SSL_ERROR_SYSCALL :443；:80 curl(52) Empty reply",
+    "python ssl.SSLEOFError UNEXPECTED_EOF_WHILE_READING",
+    "curl_cffi chrome/safari/edge 全 (35) invalid library 00000000",
+    "--resolve 到 Cloudflare 真 IP 172.67/104.21 仍 (35)",
+    "--resolve 到 128.242.240.212 / 118.193.202.219 仍 (35)"
+   ]
+  },
+  "proxy_7890": {
+   "result": "CONNECT 200 隧道建立后 TLS 仍 EOF",
+   "evidence": [
+    "出口 IP 60.249.85.31（台湾）",
+    "CONNECT tunnel established response 200 -> SSL_ERROR_SYSCALL",
+    "--resolve Cloudflare IP 走代理仍 (35)",
+    "baidu/google 走代理正常 -> 非代理整体故障",
+    "rsshub.app/ftchinese 走代理 403（Cloudflare 挡 RSSHub）"
+   ]
+  },
+  "node_web_fetch": "fetch failed（同一阻断）"
+ },
+ "verdict": "非 blogwatcher bug，是 SNI/域名级网络封锁 + DNS 投毒。同一阻断同时作用于直连 / 代理 / Node fetch / curl_cffi 四路径。换出口节点未验证（FlClash 控制口超时，无法程序化切节点）。",
+ "source_health": [
+  {
+   "name": "FT中文网",
+   "articles": 92,
+   "last_published": "2026-10-14T16:00:00Z",
+   "last_discovered": "2026-10-15T21:56:43.282356+08:00"
+  },
+  {
+   "name": "A股动态",
+   "articles": 701,
+   "last_published": "2026-10-17T20:58:00Z",
+   "last_discovered": "2026-10-18T04:59:46.545139+08:00"
+  },
+  {
+   "name": "中国财经证券",
+   "articles": 227,
+   "last_published": "2026-10-17T01:14:16Z",
+   "last_discovered": "2026-10-18T04:59:46.42425+08:00"
+  }
+ ],
+ "options": [
+  "A 保留源、标注降级（每日 scan 会持续刷 EOF 噪声）",
+  "B 移除 FT 源（blogwatcher remove FT中文网）",
+  "C wrapper 注入代理/DoH（Go 二进制无 proxy 配置；HTTPS_PROXY 对 Go net/http 默认不生效）",
+  "D 换 RSSHub 公共实例（rsshub.app 403，需另找）"
+ ]
+}
