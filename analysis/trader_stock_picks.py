@@ -7,6 +7,10 @@ chip structure, volume-price, fund flow, fundamentals, technical.
 总分 = 有效维度均值 ×5 归一到 50 制，输出携带 valid_dims / dims_available，
 供消费方展示「口径 x/5 维」。根因教训：10-05「fallback 默认值把贵票伪装成中档票」
 的评分版（10-08 官方五维 Top1=福莱蒽特 29.0，RSI70 超买被筹码+资金双 5.0 托底）。
+2026-10-17 残余清理（10-08 立项第 4 条收尾）：①维内隐性中性填充清零——
+main_net_in / pe/pb/roe / dif/dea/rsi 缺失一律 None（旧 `or 0`/`or 50` 把未观测洗成中性）；
+②移除 RSI<30 加 2 分的「超卖是买点」左侧假设，超卖降级为 catalyst 信息；
+③stale 注释纠正（下游已不回退 5.0）。
 """
 
 
@@ -20,7 +24,7 @@ for _p in (_WORKSPACE, _os.path.join(_WORKSPACE, "analysis")):
         _sys.path.insert(0, _p)
 
 import os, json, time, math
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import pandas as pd
 
 try:
@@ -149,7 +153,8 @@ def get_technical_from_hist(symbol: str, name: str) -> Dict[str, Any]:
             "dea": float(dea.iloc[-1]),
             "rsi": float(rsi.iloc[-1]),
         }
-        # NaN 防御：任一指标 NaN 视为该票技术数据不可用（下游回退 5.0，而非静默错分）
+        # NaN 防御：任一指标 NaN 视为该票技术数据不可用（下游 score_technical 返回 None，
+        # 该维退出计分——2026-10-09 结构改造后行为；原「下游回退 5.0」注释 stale，10-17 纠正）
         if any(v != v for v in latest.values()):  # NaN check
             import logging
             logging.getLogger(__name__).warning(f"get_technical_from_hist({symbol}) 指标含 NaN: {latest}")
@@ -202,7 +207,11 @@ def score_fund_flow(symbol: str, name: str) -> float:
     if not data:
         # 2026-10-09：缺失即 None，禁止 5.0 托底（moneyflow 双路失败时资金维退出排序）
         return None
-    main_net_in = data.get("main_net_in") or 0
+    main_net_in = data.get("main_net_in")
+    if main_net_in is None:
+        # 2026-10-17 残余清理：维内隐性填充——资金维取到数据但 main_net_in 缺失时，
+        # 旧 `or 0` 把「未观测」洗成 0 → 中性 5.0 伪装。缺字段 = 维不可用 = None。
+        return None
     # Normalize roughly: assume +/- 1e8 is strong
     # Convert to 0-10 scale
     # Simple: if main_net_in > 0 => bullish, else bearish
@@ -218,9 +227,16 @@ def score_fundamentals(symbol: str, name: str) -> float:
     if not data:
         # 2026-10-09：baostock 完全取不到 PE/PB/ROE → None（旧 5.0 把高估值票伪装成中档票）
         return None
-    pe = data.get("pe") or 0
-    pb = data.get("pb") or 0
-    roe = data.get("roe") or 0   # 修复：原代码 key 写成 "roe, 0" 导致恒为 None 且比较崩溃
+    pe = data.get("pe")
+    pb = data.get("pb")
+    roe = data.get("roe")   # 修复：原代码 key 写成 "roe, 0" 导致恒为 None 且比较崩溃
+    # 2026-10-17 残余清理：部分缺失时旧 `or 0` 把缺失子字段静默中性化。
+    # 与技术维 NaN 防御同口径：三要素任一缺失 = 维不可用 = None（可见告警）。
+    if pe is None or pb is None or roe is None:
+        import logging
+        logging.getLogger(__name__).warning(
+            f"score_fundamentals({symbol}) 基本面字段不完整 pe={pe} pb={pb} roe={roe} → 该维 None")
+        return None
     score = 5.0
     # PE lower better (but not too low)
     if 0 < pe < 15:
@@ -241,26 +257,38 @@ def score_fundamentals(symbol: str, name: str) -> float:
         score -= 1
     return max(0, min(10, score))
 
-def score_technical(symbol: str, name: str) -> float:
-    """Technical score based on MACD, RSI, etc from historical signal."""
-    tech = get_technical_from_hist(symbol, name)
+def score_technical(symbol: str, name: str, tech: Optional[dict] = None) -> float:
+    """Technical score based on MACD, RSI, etc from historical signal.
+
+    2026-10-17 复核（10-08 立项第 4 条）：移除「RSI<30 加 2 分」的左侧假设——
+    强度排序里超卖不是强势，未确认的猜底不应加分；保留 RSI>70 减 2（对已观测
+    极值的惩罚）。超卖状态降级为 catalyst 信息。可逆：若回测证明左侧加分有
+    超额收益，改回并附证据。tech 可外部传入（get_trader_picks 单趟取数复用）。
+    """
+    if tech is None:
+        tech = get_technical_from_hist(symbol, name)
     if not tech:
         # 2026-10-09：指标不可得 → None（旧 5.0 让 NaN 防御变成中性分伪装）
         return None
     score = 5.0
     # MACD: dif > dea => bullish
     # 注：key 契约 2026-10-08 已修复（get_technical_from_hist 现保证 dif/dea/rsi 存在）
-    dif = tech.get("dif") or 0
-    dea = tech.get("dea") or 0
+    # 2026-10-17 残余清理：`or 0`/`or 50` 是维内隐性中性填充——键缺失时伪装成
+    # dif/dea=0、rsi=50 中性。与「缺即 None」口径统一：任一键缺失 → None（可见告警）。
+    dif = tech.get("dif")
+    dea = tech.get("dea")
+    rsi = tech.get("rsi")
+    if dif is None or dea is None or rsi is None:
+        import logging
+        logging.getLogger(__name__).warning(
+            f"score_technical({symbol}) 技术字段不完整 dif={dif} dea={dea} rsi={rsi} → 该维 None")
+        return None
     if dif > dea:
         score += 2
     else:
         score -= 2
-    # RSI: 30-70 neutral, <30 oversold => bullish, >70 overbought => bearish
-    rsi = tech.get("rsi") or 50
-    if rsi < 30:
-        score += 2
-    elif rsi > 70:
+    # RSI 口径（2026-10-17）：仅保留超买惩罚；超卖不再加分（左侧假设移除）
+    if rsi > 70:
         score -= 2
     # MACD histogram rising?
     macd = tech.get("macd", 0)
@@ -300,19 +328,28 @@ def get_trader_picks(watchlist: List[tuple]) -> List[Dict[str, Any]]:
 
     results: List[Dict[str, Any]] = []
     for symbol, name in watchlist:
+        # 技术维单趟取数：同一份 tech 供打分与 catalyst 使用（2026-10-17）
+        _tech = get_technical_from_hist(symbol, name)
+        _rsi = (_tech or {}).get("rsi")
         dims: Dict[str, Any] = {
             "chip": score_chip_structure(symbol),
             "volume_price": score_volume_price(symbol, name, spot_map.get(symbol, {})),
             "fund_flow": score_fund_flow(symbol, name),
             "fundamentals": score_fundamentals(symbol, name),
-            "technical": score_technical(symbol, name),
+            "technical": score_technical(symbol, name, tech=_tech),
         }
         valid = {k: float(v) for k, v in dims.items() if v is not None}
         dims_available = list(valid.keys())
         total = round(sum(valid.values()) / len(valid) * 5.0, 2) if valid else None
 
         stage = _infer_stage(valid)
+        # catalyst：仅陈述已观测事实，不做方向加工（2026-10-17 RSI 口径配套）
         catalyst = "待定"
+        if _rsi is not None:
+            if _rsi < 30:
+                catalyst = f"RSI超卖({_rsi:.0f})，左侧信号未确认"
+            elif _rsi > 70:
+                catalyst = f"RSI超买({_rsi:.0f})"
         if total is None:
             action, reason = "N/A", "全部维度数据缺失，无法评估"
         elif total >= 35:

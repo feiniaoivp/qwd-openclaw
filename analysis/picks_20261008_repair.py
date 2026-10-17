@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """One-off: 2026-10-08 trader picks with repaired technical dim (真实 RSI/MACD),
-fund_flow explicitly excluded (moneyflow_em 双路失败), chip explicitly defaulted."""
+fund_flow explicitly excluded (moneyflow_em 双路失败), chip explicitly defaulted.
+
+⚠️ 2026-10-17 注：本脚本是一次性历史产物，内嵌的 technical_real 复刻了当时的
+score_technical 公式（含 RSI<30 +2 左侧加分）。SSOT 口径已于 2026-10-17 变更
+（RSI<30 不再加分、字段缺失一律 None），两者故意不再一致——重跑本脚本所得
+结果不代表现行 SSOT 口径，仅供历史对照。
+"""
 import os, sys, json
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
