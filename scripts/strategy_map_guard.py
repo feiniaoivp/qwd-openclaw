@@ -35,7 +35,7 @@ WATCHLIST_MD = os.path.join(WORKSPACE, "memory", "watchlist.md")
 MEMORY_MD = os.path.join(WORKSPACE, "MEMORY.md")
 
 # E. 声明「清单 == WATCHLIST」的消费端脚本（对齐后纳入此清单受守卫保护）
-WATCHLIST_CONSUMER_SCRIPTS = ["analysis/adaptive_dual.py"]
+WATCHLIST_CONSUMER_SCRIPTS = ["analysis/adaptive_dual.py", "analysis/backtest_strategies.py", "analysis/param_tune.py"]
 
 
 def load_watchlist():

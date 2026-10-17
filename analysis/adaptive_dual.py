@@ -211,7 +211,19 @@ def detect_distribution_patterns(df: pd.DataFrame, lookback: int = 5) -> list:
 
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
 OUTPUT_DIR = os.path.join(WORKSPACE, "analysis", "daily")
-VALIDATION_FILE = os.path.join(WORKSPACE, "analysis", "validation_2026-08-01.json")
+def _resolve_latest_validation_file():
+    """动态解析最新 validation_*.json（文件名含日期，字典序=时间序，取最大）。
+    修复(2026-10-17): 曾硬编码 validation_2026-08-01.json（29 只），8 月后新增的
+    电网 8 只+翰宇不在兜底名单 → param_signal_diff 旧参数侧报「一侧无策略」，
+    连续 2 期（10-10/10-17）跳过 8 只。无任何 validation 文件时回退 08-01 旧文件。"""
+    import glob as _glob
+    _files = _glob.glob(os.path.join(WORKSPACE, "analysis", "validation_*.json"))
+    if not _files:
+        return os.path.join(WORKSPACE, "analysis", "validation_2026-08-01.json")
+    return max(_files)
+
+
+VALIDATION_FILE = _resolve_latest_validation_file()
 PARAMS_FILE = os.path.join(WORKSPACE, "data", "adaptive_params.json")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 

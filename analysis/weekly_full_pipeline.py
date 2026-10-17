@@ -538,9 +538,11 @@ def build_brief(results=None, as_of=None):
         keep = []
         for ln in diff_txt.splitlines():
             ln = ln.strip()
-            if any(k in ln for k in ["方向反转", "新出现卖出", "新出现买入", "策略切换但", "差异榜摘要", "🔁", "🔴 新", "🟢 新", "🔄 策略", "跳过", "无差异", "反转", "新卖", "新买"]):
+            # 明细行（如 "中信证券(600030): 旧[...] -> 新[...]"）不含关键词，曾全被过滤，
+            # 导致简报只剩表头无明细、读者看不到新卖/切换具体是哪几只（2026-10-17 修复）
+            if any(k in ln for k in ["方向反转", "新出现卖出", "新出现买入", "策略切换但", "差异榜摘要", "🔁", "🔴 新", "🟢 新", "🔄 策略", "跳过", "无差异", "反转", "新卖", "新买"]) or ("旧[" in ln and "新[" in ln):
                 keep.append(ln)
-        lines.append("\n".join(keep[:15]) if keep else diff_txt[:400].strip())
+        lines.append("\n".join(keep[:28]) if keep else diff_txt[:400].strip())
     else:
         lines.append("(param_signal_diff 无输出/未生成)")
     lines.append("")

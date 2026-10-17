@@ -39,6 +39,7 @@ from analysis.data_layer import get_router
 from analysis.bs_session import ensure_login
 
 PARAMS_FILE = os.path.join(WORKSPACE, "data", "adaptive_params.json")
+PREV_PARAMS_FILE = os.path.join(WORKSPACE, "data", "adaptive_params_prev.json")
 STRATEGY_MAP_FILE = os.path.join(WORKSPACE, "data", "adaptive_strategy_map.json")
 CACHE_DIR = os.path.join(WORKSPACE, "data", "param_tune_cache")
 
@@ -566,6 +567,15 @@ def main():
     
     # 保存完整结果
     os.makedirs(os.path.dirname(PARAMS_FILE), exist_ok=True)
+    # 轮转: 旧参数 → adaptive_params_prev.json（修复 2026-10-17: prev 自 08-15 起无人写入冻结，
+    # param_signal_diff/param_evaluate 的「上轮参数」名不副实；对齐 strategy_map 的轮转模式）
+    try:
+        if os.path.exists(PARAMS_FILE):
+            import shutil as _shutil
+            _shutil.copy2(PARAMS_FILE, PREV_PARAMS_FILE)
+            print(f"  ♻️ 旧参数已轮转至 {PREV_PARAMS_FILE}")
+    except Exception as e:
+        print(f"  ⚠️ 参数轮转失败(不阻断): {e}")
     output = {"date": today, "mode": mode_label, "fast": fast_mode, "incremental": incremental, "stocks": results}
     with open(PARAMS_FILE, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
