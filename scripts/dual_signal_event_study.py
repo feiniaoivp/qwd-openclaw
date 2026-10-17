@@ -25,6 +25,7 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
 logging.getLogger().setLevel(logging.ERROR)
 
 import pandas as pd
+import numpy as np
 
 try:
     import pandas_ta as ta
@@ -40,14 +41,18 @@ HORIZONS = (1, 5, 10)
 ER_WIN = 20
 ER_TH = 0.25      # 事前设定（非数据调优）：ER>=0.25 视为趋势态
 ADX_TH = 20.0     # 业界标准阈值
+CHOP_TH = 61.8    # P1 政权检测器阈值
+ZONE_TH = 0.3     # P1 夹缝阈值 (EMA gap / ATR)
 
 
 def regime_series(df):
-    """全序列一次算好 ER20 与 ADX14（均为因果指标，按日索引无前视）。"""
+    """全序列一次算好 ER20 / ADX14 / P1组件（CHOP、EMA gap/ATR），均为因果指标按日索引。"""
     close = df["close"].astype(float).reset_index(drop=True)
     diff = close.diff().abs()
     er = (close.diff(ER_WIN).abs() / diff.rolling(ER_WIN).sum()).fillna(0.0)
     adx_s = None
+    chop_s = pd.Series([50.0] * len(close))
+    gap_s = pd.Series([0.0] * len(close))
     if _HAS_TA:
         try:
             adx_df = ta.adx(df["high"], df["low"], df["close"], length=14)
@@ -55,7 +60,21 @@ def regime_series(df):
             adx_s = adx_df[col].reset_index(drop=True)
         except Exception:
             adx_s = None
-    return er, adx_s
+        try:
+            # P1 compute_chop 同式: ATR(length=1) 滚动和 / 振幅
+            atr1 = ta.atr(df["high"], df["low"], df["close"], length=1)
+            atr_sum = atr1.rolling(14).sum()
+            hh = df["high"].rolling(14).max()
+            ll = df["low"].rolling(14).min()
+            rng = (hh - ll).replace(0, np.nan)
+            chop_s = (100 * np.log10(atr_sum / rng) / np.log10(14)).fillna(50.0)
+            ema12 = ta.ema(df["close"], length=12)
+            ema26 = ta.ema(df["close"], length=26)
+            atr14 = ta.atr(df["high"], df["low"], df["close"], length=14)
+            gap_s = ((ema12 - ema26).abs() / atr14.replace(0, np.nan)).fillna(0.0)
+        except Exception:
+            pass
+    return er, adx_s, chop_s, gap_s
 
 
 def classify(a1: str, a2: str):
@@ -92,7 +111,7 @@ def main():
             skipped.append(f"{name}(数据不足)")
             continue
         close = df["close"].astype(float).reset_index(drop=True)
-        er_s, adx_s = regime_series(df)
+        er_s, adx_s, chop_s, gap_s = regime_series(df)
         if "date" in df.columns:
             dates = df["date"].astype(str).reset_index(drop=True)
         else:
@@ -126,6 +145,8 @@ def main():
             er_v = round(float(er_s.iloc[i]), 4) if pd.notna(er_s.iloc[i]) else None
             adx_v = (round(float(adx_s.iloc[i]), 2)
                      if adx_s is not None and pd.notna(adx_s.iloc[i]) else None)
+            p1_chop = bool(chop_s.iloc[i] > CHOP_TH)
+            p1_zone = bool(gap_s.iloc[i] < ZONE_TH)
             rows.append({
                 "symbol": sym, "name": name, "date": str(dates.iloc[i]),
                 "cls": classify(actions[0], actions[1]),
@@ -134,6 +155,10 @@ def main():
                 "er20": er_v, "adx14": adx_v,
                 "regime_er": ("trend" if er_v is not None and er_v >= ER_TH else "chop") if er_v is not None else None,
                 "regime_adx": ("trend" if adx_v is not None and adx_v >= ADX_TH else "chop") if adx_v is not None else None,
+                "chop_idx": round(float(chop_s.iloc[i]), 1),
+                "ema_gap_atr": round(float(gap_s.iloc[i]), 2),
+                "p1_chop": p1_chop, "p1_zone": p1_zone,
+                "p1_avoid": p1_chop or p1_zone,
             })
         print(f"[study] {name} 完成 ({time.time()-t0:.0f}s)", flush=True)
 
