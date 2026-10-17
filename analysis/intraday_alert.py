@@ -43,11 +43,23 @@ def load_config() -> dict:
 
 
 def load_state() -> dict:
-    """记录已触发的预警，避免同一价位重复轰炸"""
+    """记录已触发的预警，避免同一价位重复轰炸（当日去重，跨日自动重置）。
+
+    修复 2026-10-17: 旧实现 fired 只增不减、跨日/跨周累积，导致:
+    ① 僵尸预警(收盘已收复触发位但状态未清, 48 条中实测 11 条)；
+    ② 同价位永久静音(跌破→收复→同价再跌破不告警, 回踩确认漏报)；
+    ③ weekly_review 将累积 state 误读为「本周 N 条」(口径虚高)。
+    跨日重置一处修复同时解决三题（原注释「每天重置更干净」意图落地）。
+    """
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE, encoding="utf-8") as f:
-            return json.load(f)
-    return {"fired": {}}
+            state = json.load(f)
+    else:
+        state = {"fired": {}}
+    today = datetime.now().strftime("%Y-%m-%d")
+    if state.get("date") != today:
+        state = {"date": today, "fired": {}}
+    return state
 
 
 def save_state(state: dict):

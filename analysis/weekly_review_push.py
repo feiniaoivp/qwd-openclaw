@@ -98,12 +98,15 @@ def run_weekly_review():
             with open(alert_file) as f:
                 alert_state = json.load(f)
             fired = alert_state.get("fired", {})
+            snap_date = alert_state.get("date", "未标注")
             if fired:
-                lines.append(f"🔔 盘中预警记录: {len(fired)} 条")
+                # 修复 2026-10-17: state 现为当日去重快照(跨日自动重置)，
+                # 不再是累积值 —— 旧文案「本周 N 条」口径虚高(曾把历史残留全算进去)
+                lines.append(f"🔔 预警快照({snap_date}): {len(fired)} 条未清触发位（当日去重口径, 非本周累计）")
                 for k, v in list(fired.items())[:5]:
                     lines.append(f"  {k}: {v}")
             else:
-                lines.append("🔔 盘中预警: 本周无触发")
+                lines.append(f"🔔 预警快照({snap_date}): 无未清触发位")
             lines.append("")
     except Exception as e:
         lines.append(f"⚠️ 预警记录读取失败: {e}")
