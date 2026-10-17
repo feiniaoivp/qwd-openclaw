@@ -95,10 +95,13 @@ def main():
             for h in HORIZONS:
                 if i + h < n:
                     fwd[str(h)] = round(float(close.iloc[i + h] / close.iloc[i] - 1), 5)
+            # 前置收益（检验双卖=洗盘末端假设：双卖事件前置跌幅应大于分歧卖）
+            pre_5d = round(float(close.iloc[i] / close.iloc[i - 5] - 1), 5)
             rows.append({
                 "symbol": sym, "name": name, "date": str(dates.iloc[i]),
                 "cls": classify(actions[0], actions[1]),
                 "actions": actions, "close": float(close.iloc[i]), "fwd": fwd,
+                "pre_5d": pre_5d,
             })
         print(f"[study] {name} 完成 ({time.time()-t0:.0f}s)", flush=True)
 
@@ -122,6 +125,7 @@ def main():
         out["classes"][cls] = {
             "count": len(sub),
             "fwd": {h: stats([r["fwd"][str(h)] for r in sub if str(h) in r["fwd"]]) for h in HORIZONS},
+            "pre_5d": stats([r.get("pre_5d") for r in sub if r.get("pre_5d") is not None]),
         }
     for cls in out["classes"]:
         for h in HORIZONS:
@@ -151,7 +155,9 @@ def main():
             ex = info[f"excess_{h}d"]
             if ev:
                 parts.append(f"+{h}d {ev['mean']:+.2%}(胜率{ev['win_rate']:.0%},超额{ex:+.2%})")
-        print(f"[study] {cls}: {info['count']}日 | " + " | ".join(parts))
+        pre = info.get("pre_5d")
+        pre_str = f" | 前置5日 {pre['mean']:+.2%}(中位{pre['median']:+.2%})" if pre else ""
+        print(f"[study] {cls}: {info['count']}日 | " + " | ".join(parts) + pre_str)
     print(f"[study] 已写 {path} | 总耗时 {time.time()-t0:.0f}s")
 
 

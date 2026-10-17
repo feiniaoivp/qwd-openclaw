@@ -1119,6 +1119,7 @@ def format_brief(output):
 
     # 分歧股
     rows = []
+    n_dis_sell = n_dis_buy = n_dis_clash = 0
     for r in output["details"]:
         if "strategies" not in r or len(r["strategies"]) < 2:
             continue
@@ -1126,8 +1127,17 @@ def format_brief(output):
         acts2 = [("卖出" in x.get("action","")) for x in r["strategies"]]
         if sum(acts) == 1 or sum(acts2) == 1:
             rows.append(r)
+            # 2026-10-17 细分计数：事件研究显示分歧卖为三年稳定负超额信号（-0.23~-0.34%/5d），
+            # 双卖符号不稳，故单列分歧卖供简报引用
+            if sum(acts) == 1 and sum(acts2) == 1:
+                n_dis_clash += 1
+            elif sum(acts2) == 1:
+                n_dis_sell += 1
+            else:
+                n_dis_buy += 1
     if rows:
-        lines.append("⚡ **双策略分歧**")
+        sub = f"（卖 {n_dis_sell} / 买 {n_dis_buy}" + (f" / 对撞 {n_dis_clash}" if n_dis_clash else "") + "）"
+        lines.append(f"⚡ **双策略分歧**{sub}")
         lines.append("| 股票 | 策略1 | 策略2 | 现价 |")
         lines.append("|:---|:---|:---|:---:|")
         for r in rows:
