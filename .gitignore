@@ -82,3 +82,6 @@ scripts/cron_health_check.py
 
 # ── Wiki 归档（可选，体积大时忽略）──
 wiki/sources/investment-philosophy-*.md
+
+# 研究用价格缓存（可随时重建，不进版本库）
+data/research_price_cache/
