@@ -134,6 +134,21 @@ def main():
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1, default=str)
 
+    # 降簇映射落盘（同簇持仓上限的据源；月度重跑本脚本即刷新）
+    sym_to_cluster = {}
+    for gi, g in enumerate(groups):
+        for s in g:
+            sym_to_cluster[s] = f"C{gi+1:02d}"
+    clu_path = os.path.join(WORKSPACE, "data/corr_clusters.json")
+    with open(clu_path, "w", encoding="utf-8") as f:
+        json.dump({
+            "date": "2026-10-17", "window": START_DATE,
+            "method": "pearson_daily_threshold_0.55_union_find",
+            "threshold": 0.55, "clusters": {f"C{i+1:02d}": g for i, g in enumerate(sorted(groups, key=len, reverse=True))},
+            "symbol_to_cluster": sym_to_cluster,
+        }, f, ensure_ascii=False, indent=1)
+    print(f"[corr] 簇映射已写 {clu_path} ({len(sym_to_cluster)} 票入簇)")
+
     print(f"[corr] 覆盖 {N} 只 | 平均两两相关 {avg_pair:+.3f} | 有效N {eff_n:.1f} / 名义 {N}")
     print(f"[corr] 板块内 {out['within_sector_corr']} vs 跨板块 {out['across_sector_corr']}")
     print(f"[corr] 相关簇(>0.55): " + " | ".join(

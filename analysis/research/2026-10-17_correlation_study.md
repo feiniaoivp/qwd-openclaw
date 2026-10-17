@@ -43,3 +43,11 @@
 ```bash
 python3 scripts/correlation_study.py   # ~5s（baostock）
 ```
+
+## 落地（同日，用户批准）
+
+- **簇映射数据源**: `data/corr_clusters.json`（correlation_study.py 每次运行自动刷新，月度重跑即更新；C01=券商5/C02=电网5/C03=半导体3/C04=锂2 + 25 单例簇）
+- **接线**: `portfolio_core.run_portfolio_scan` 信号链「重复BUY钝化」之后、「去重」之前插入 `_apply_cluster_cap`——同簇已持仓（含本轮已建）≥2 → 买入降级持有 + 阻断执行 + reason 留痕
+- **安全设计**: fail-open（映射缺失/票未入簇/异常 → 不拦截仅告警）；只拦买入不动卖出/止损；计数含本轮已建仓票（execute_trade 即时置位）
+- **验证**: 5 场景单测全过（同簇2拦截/1放行/未入簇放行/卖出不拦/映射核对）；周末不 FORCE_RUN（避免触碰生产 state），周一 15:40 portfolio-sim-daily 实盘首验
+- 可逆: 删 chain 里 2 行 + helper 即回滚

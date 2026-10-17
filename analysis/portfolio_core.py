@@ -948,6 +948,49 @@ def calc_position_value(pos: Dict, price: float) -> float:
 # ══════════════════════════════════════════
 # 主扫描流程（供模拟盘/实盘调用）
 # ═══════════════════════════════════════════
+def _load_corr_clusters():
+    """读取相关簇映射（data/corr_clusters.json，correlation_study.py 月度刷新）。
+    fail-open: 文件缺失/损坏返回空 dict（上限不生效，仅告警）。"""
+    path = os.path.join(WORKSPACE, "data", "corr_clusters.json")
+    try:
+        with open(path) as f:
+            d = json.load(f)
+        return d.get("symbol_to_cluster", {})
+    except Exception as e:
+        print(f"⚠️ 同簇上限: 簇映射不可用({e})，fail-open 跳过")
+        return {}
+
+
+def _apply_cluster_cap(signal, pos, state, should_exec, sym, sym_to_cluster, name):
+    """同相关簇持仓上限 ≤2（2026-10-17，相关性研究 91ff2af: 有效N 3.2/36）。
+
+    规则: 候选买入票所属簇内已持仓(含本轮已建)≥2 → 降级为持有并阻断执行。
+    fail-open: 票未入簇/映射缺失 → 不拦截。只限买入，不动卖出/止损。
+    计数含本轮扫描中已建仓的票（execute_trade 即时置 position=True）。
+    """
+    try:
+        if "买入" not in str(signal.get("action", "")):
+            return signal, should_exec
+        cluster = sym_to_cluster.get(sym)
+        if not cluster:
+            return signal, should_exec
+        held = 0
+        for other_sym, other in (state.get("positions") or {}).items():
+            if other_sym == sym:
+                continue
+            if other.get("position") and sym_to_cluster.get(other_sym) == cluster:
+                held += 1
+        if held >= 2:
+            signal["action"] = "持有"
+            signal["reason"] = (signal.get("reason", "") +
+                f" | [同簇上限≤2]{cluster}已持仓{held}只(相关性研究: 有效N 3.2/36)，禁止第{held+1}只").strip()
+            print(f"  ⚠️ {name}({sym}) 同簇上限拦截: {cluster}已持仓{held}只")
+            return signal, False
+    except Exception as e:
+        print(f"⚠️ 同簇上限检查异常({name}): {e}，fail-open 放行")
+    return signal, should_exec
+
+
 def run_portfolio_scan(
     stocks: List[Tuple[str, str]],
     fetch_data_func,  # 签名: fetch_data(symbol) -> DataFrame
@@ -972,6 +1015,8 @@ def run_portfolio_scan(
     RiskGuard.refresh()
     fatal_risk = RiskGuard.get_fatal_risk()
     position_plan = RiskGuard.get_position_plan()
+    # 同相关簇映射（2026-10-17 同簇持仓上限≤2 数据源；fail-open）
+    cluster_map = _load_corr_clusters()
 
     # 同步策略映射（含 bucket）
     sync_strategy_map(state, strategy_map, default_strategy)
@@ -1030,6 +1075,9 @@ def run_portfolio_scan(
         signal = RiskGuard.check_strategy_switch(signal, pos)
         # 重复 BUY 钝化
         signal, should_exec = RiskGuard.apply_buy_streak_dampening(signal, pos)
+        # 同相关簇持仓上限 ≤2（2026-10-17；只在买入链尾部、去重之前拦截）
+        signal, should_exec = _apply_cluster_cap(
+            signal, pos, state, should_exec, sym, cluster_map, name)
         # 去重（统一用真实交易日 today_str；data_date 仅用于诊断/滞后检测）
         data_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
         if not RiskGuard.check_dedup(signal, pos, today_str):
