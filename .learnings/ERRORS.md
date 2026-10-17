@@ -351,3 +351,22 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Pattern-Key: prismfy.cli-flag-mismatch
 
 ---
+
+## ERR-20261017-C01 cron MCP add 忽略 delivery:none 落库成 announce（10-06 教训新变体）
+
+### Summary
+- **Date**: 2026-10-17T10:00:00+08:00
+- **Component**: cron MCP tool (action=add) — daily-evening-brief-push 新建
+- **Error**: 调用 add 时显式传 `delivery={"mode":"none"}`，响应体却返回 `"delivery": {"mode": "announce"}`（无 channel/to）。若不修正，每次运行本体成功后 announce 无目标报错 → job 被误标 error（同 10-06 6/6 全灭事故同根因）。
+
+### Resolution
+- **Resolved**: 2026-10-17T10:00:00+08:00
+- **Fix**: add 后立即用 update（完整 UUID）重写 `delivery={"mode":"none"}`，response 复核为 none 才算建好。
+- **Notes**: 规约升级：**agentTurn/脚本自推型 job 的「add→复核 delivery==none→不符即 update」是三步固定动作**，不能假设 add 参数会原样落库。与 MEMORY.md [2026-10-06]（cron edit --command 隐式改 announce）同族，第二处入口确认。
+
+### Metadata
+- Source: manual-session
+- Reproducible: yes
+- Pattern-Key: cron.mcp-add-delivery-override
+
+---
