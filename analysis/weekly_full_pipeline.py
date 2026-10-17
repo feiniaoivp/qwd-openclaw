@@ -270,6 +270,15 @@ def main():
     if not r["success"]:
         print("⚠️ agent 降级链防护被破坏（见上方），盘前报告可能再次静默复用僵尸缓存（不阻断流水线）...")
 
+    # 步骤 0k: 五维评分 None 契约门禁（2026-10-17 新增，纯逻辑合成输入秒级）
+    # 背景：10-08 立项「隐性 5.0 填充」改造（98820ca + 3977840）。缺数据必须 None，
+    # 禁止 or 0/or 50/5.0 托底；RSI<30 不加分口径一并锁定。防未来改码回潮。
+    print("\n🚦 步骤 0k/9: 五维评分 None 契约门禁 (picks_none_contract_test.py)")
+    r = run_script("../scripts/picks_none_contract_test.py", timeout=60)
+    results["picks_none_contract"] = r
+    if not r["success"]:
+        print("⚠️ 五维评分 None 契约被破坏（见上方），缺失数据可能再次伪装成中性/强势分（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = _resume_skip("backtest", resume_record)

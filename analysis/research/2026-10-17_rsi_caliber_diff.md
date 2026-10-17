@@ -42,3 +42,9 @@
 ## 数据
 
 - e2e 全量: `analysis/research/2026-10-17_rsi_caliber_e2e.json`（picks_full 含每只票的 dims/catalyst/advice）
+
+## 同日后续完善（14:47~15:0x）
+
+1. **chip 维数据源探测**：`stock_cyq_em`（东财筹码分布）在 akshare 1.18.64 存在但端点挂起 >90s（潮汐拦截，同 10-09 playbook 判定）→ chip 恒 None 正式记为已知限制，4/5 口径为诚实现状；`_infer_stage` 吸筹分支保持 None 安全（不触发）。
+2. **None 契约机器门禁落地**（三层防线第②③层）：`scripts/picks_none_contract_test.py`——25 项合成输入断言锁定五维契约（缺维 None / 总分均值×5 / 全缺→无法评估 / 推送表「—」+口径 / RSI 新口径），纯逻辑零网络秒级；已接入周六流水线**步骤 0k**。
+3. **vp 维「波动=强」假设量化**：`abs(change_pct)>5 → +2` 今日零样本触发；方向性假设（跌 5% 同样加分）留待下次口径评审，暂不改。
