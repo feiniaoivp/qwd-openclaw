@@ -862,6 +862,16 @@ def scan_all():
 
         change_pct = calc_change_pct(df)
         cur_price = float(df.iloc[-1]["close"])
+        # 2026-10-17: ER20 效率比——事件研究验证的趋势态标志（因果无前视；
+        # ER>=0.25 事前阈值；逐票级而非池级，池广度已验证无分离力）
+        try:
+            _c = df["close"].astype(float)
+            _diff = _c.diff().abs()
+            _den = float(_diff.rolling(20).sum().iloc[-1])
+            er20 = round(float(_c.diff(20).abs().iloc[-1] / _den), 4) if len(_c) > 20 and _den > 0 else None
+        except Exception:
+            er20 = None
+        regime_er = (("趋势" if er20 >= 0.25 else "震荡") if er20 is not None else None)
         try:
             _bar_dates.append(df["date"].iloc[-1].strftime("%Y-%m-%d"))
         except Exception as _e:
@@ -1028,6 +1038,9 @@ def scan_all():
             "is_core_moat": is_core,
             # P1 政权信息
             "regime": regime_info,
+            # 2026-10-17: ER20 趋势/震荡标志（已验证分离买入信号价值）
+            "er20": er20,
+            "regime_er": regime_er,
             # 030 新增字段
             "arbitration": {
                 "final_action": arbitration_result.final_action.value if arbitration_result else "未裁决",
@@ -1171,8 +1184,8 @@ def format_brief(output):
         order = {"🟢双买": 0, "🔴双卖": 1, "⚡分歧": 2, "⚪双持有": 3}
         all_rows.sort(key=lambda x: order.get(x[0], 9))
         lines.append("📋 **全标的双策略信号总榜**（覆盖 " + str(len(all_rows)) + " 只）")
-        lines.append("| 股票 | 状态 | 策略1 | 策略2 | 现价 | 涨跌 |")
-        lines.append("|:---|:---:|:---|:---|:---:|:---:|")
+        lines.append("| 股票 | 状态 | 策略1 | 策略2 | 现价 | 涨跌 | ER状态 |")
+        lines.append("|:---|:---:|:---|:---|:---:|:---:|:---:|")
         for tag, r in all_rows:
             lbl1 = r["strategies"][0].get("strategy_label", "-").replace("📊 ","").replace("🎯 ","").replace("📈 ","").replace("💹 ","").replace("📉 ","")
             lbl2 = r["strategies"][1].get("strategy_label", "-").replace("📊 ","").replace("🎯 ","").replace("📈 ","").replace("💹 ","").replace("📉 ","")
@@ -1180,7 +1193,8 @@ def format_brief(output):
             a2 = r["strategies"][1].get("action", "").split(" ")[0]
             price = r.get("price", 0) or 0
             cp = r.get("change_pct") or 0
-            lines.append(f"| {r['name']}({r['symbol']}) | {tag} | {lbl1} {a1} | {lbl2} {a2} | ¥{price:.2f} | {cp:+.2f}% |")
+            reg = r.get("regime_er") or "-"
+            lines.append(f"| {r['name']}({r['symbol']}) | {tag} | {lbl1} {a1} | {lbl2} {a2} | ¥{price:.2f} | {cp:+.2f}% | {reg} |")
         lines.append("")
 
     # 策略使用分布
@@ -1313,6 +1327,17 @@ def main():
                 f.write(f"\n### {r['name']}({r['symbol']}) — {r.get('error','')}\n")
                 continue
             f.write(f"\n### {r['name']}({r['symbol']}) 现价¥{(r.get('price') or 0):.2f} ({r.get('change_pct') or 0:+.2f}%) [{r['consensus']}]\n")
+            # 2026-10-17: ER20 状态行 + 复活 P1 政权检测展示（原计算后即弃）
+            _reg_parts = []
+            if r.get("regime_er"):
+                _reg_parts.append(f"状态={r['regime_er']}(ER20={r.get('er20')})" if r.get("er20") is not None else f"状态={r['regime_er']}")
+            _rg = r.get("regime") or {}
+            if _rg.get("regime"):
+                _reg_parts.append(f"政权={_rg['regime']}(ADX {_rg.get('adx', 0):.1f}, CHOP {_rg.get('chop', 0):.1f})")
+            if _rg.get("avoid_trade"):
+                _reg_parts.append("⚠️建议回避")
+            if _reg_parts:
+                f.write("- **🌊 状态**: " + " | ".join(_reg_parts) + "\n")
             for sg in r["strategies"]:
                 score = sg.get("validation_score", "?")
                 f.write(f"- **{sg.get('strategy_label')}** (score={score}): {sg.get('action')} — {sg.get('reason')}\n")

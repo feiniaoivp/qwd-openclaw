@@ -26,11 +26,36 @@ logging.getLogger().setLevel(logging.ERROR)
 
 import pandas as pd
 
+try:
+    import pandas_ta as ta
+    _HAS_TA = True
+except Exception:
+    _HAS_TA = False
+
 from analysis.adaptive_dual import load_dual_strategy_map, fetch_data, SIGNAL_FUNCS, STOCKS
 
 WARMUP = 70
 START = "20240101"
 HORIZONS = (1, 5, 10)
+ER_WIN = 20
+ER_TH = 0.25      # 事前设定（非数据调优）：ER>=0.25 视为趋势态
+ADX_TH = 20.0     # 业界标准阈值
+
+
+def regime_series(df):
+    """全序列一次算好 ER20 与 ADX14（均为因果指标，按日索引无前视）。"""
+    close = df["close"].astype(float).reset_index(drop=True)
+    diff = close.diff().abs()
+    er = (close.diff(ER_WIN).abs() / diff.rolling(ER_WIN).sum()).fillna(0.0)
+    adx_s = None
+    if _HAS_TA:
+        try:
+            adx_df = ta.adx(df["high"], df["low"], df["close"], length=14)
+            col = [c for c in adx_df.columns if c.upper().startswith("ADX")][0]
+            adx_s = adx_df[col].reset_index(drop=True)
+        except Exception:
+            adx_s = None
+    return er, adx_s
 
 
 def classify(a1: str, a2: str):
@@ -67,6 +92,7 @@ def main():
             skipped.append(f"{name}(数据不足)")
             continue
         close = df["close"].astype(float).reset_index(drop=True)
+        er_s, adx_s = regime_series(df)
         if "date" in df.columns:
             dates = df["date"].astype(str).reset_index(drop=True)
         else:
@@ -97,11 +123,17 @@ def main():
                     fwd[str(h)] = round(float(close.iloc[i + h] / close.iloc[i] - 1), 5)
             # 前置收益（检验双卖=洗盘末端假设：双卖事件前置跌幅应大于分歧卖）
             pre_5d = round(float(close.iloc[i] / close.iloc[i - 5] - 1), 5)
+            er_v = round(float(er_s.iloc[i]), 4) if pd.notna(er_s.iloc[i]) else None
+            adx_v = (round(float(adx_s.iloc[i]), 2)
+                     if adx_s is not None and pd.notna(adx_s.iloc[i]) else None)
             rows.append({
                 "symbol": sym, "name": name, "date": str(dates.iloc[i]),
                 "cls": classify(actions[0], actions[1]),
                 "actions": actions, "close": float(close.iloc[i]), "fwd": fwd,
                 "pre_5d": pre_5d,
+                "er20": er_v, "adx14": adx_v,
+                "regime_er": ("trend" if er_v is not None and er_v >= ER_TH else "chop") if er_v is not None else None,
+                "regime_adx": ("trend" if adx_v is not None and adx_v >= ADX_TH else "chop") if adx_v is not None else None,
             })
         print(f"[study] {name} 完成 ({time.time()-t0:.0f}s)", flush=True)
 
