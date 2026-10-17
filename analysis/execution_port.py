@@ -11,7 +11,16 @@ ExecutionPort - 统一执行接口抽象层
 核心原则：策略信号生成、风控、仓位管理完全复用，仅执行层可替换。
 """
 
+
 from __future__ import annotations
+
+import os
+import sys
+
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 import abc
 import json

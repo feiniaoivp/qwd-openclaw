@@ -19,7 +19,16 @@ East Money 资金流数据获取模块 (moneyflow_em)
 用法：
     from analysis.moneyflow_em import index_flow, stock_flow, industry_flow_rank, northbound_summary
 """
+
 from __future__ import annotations
+
+import os
+import sys
+
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 import time
 import json

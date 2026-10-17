@@ -9,7 +9,16 @@
     md = render_moneyflow(scan_output["moneyflow"])
 """
 
+
 from __future__ import annotations
+
+import os
+import sys
+
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 from typing import Any, Dict, List, Optional
 

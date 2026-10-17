@@ -17,6 +17,15 @@
     # 或者一次性算完：实测 vs 随机
     excess, ci, passed = compare_to_random(observed=0.65, n_obs=100, n_rand=1000, hit_prob=0.63)
 """
+
+import os
+import sys
+
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
 import numpy as np
 import math
 from typing import Tuple, Optional

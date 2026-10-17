@@ -30,7 +30,16 @@
   - 显式暴露 `network_timeout_guard` 上下文管理器，供零散调用点临时收紧。
 """
 
+
 from __future__ import annotations
+
+import os
+import sys
+
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 import os
 import socket
