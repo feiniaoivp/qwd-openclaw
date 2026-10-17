@@ -183,13 +183,17 @@ def score_volume_price(symbol: str, name: str, spot_item: dict) -> float:
     score = 5.0  # base
     # 2026-10-17 口径修正（依据 scripts/vp_change_event_study.py 事件研究，
     # analysis/research/2026-10-17_vp_change_event_study.json）：
-    # 旧 |chg|>5 → +2 方向无关加分；分方向���年基线显示 2026 震荡市
+    # 旧 |chg|>5 → +2 方向无关加分；分方向分年基线显示 2026 震荡市
     # 大涨日(≥+5)后 5d 超额 -0.44pp（追高被惩罚），大跌日后 +2.22pp（均值回归）。
-    # 但 2025 分年结论方向不稳（大跌后 -0.55pp）→ 按 RSI30 事件研究先例
-    # 「不稳信号不进打分」，仅拆掉被证伪的追高奖励，不反向加码。
-    # 保留小幅 |chg|>2 → +1（强弱识别，非追高奖励，未单独证伪）。
+    # 2026-10-17 中间版（3ff20d0）：统一 |chg|>2 → +1，仅拆追高奖励。
+    # 2026-10-18 用户拍板「涨>5% 削分」：涨幅>5% 改 -1（与平盘同档——追高不再
+    # 得正分；事件研究只证伪正分、未支持深罚，故削到平盘档而非更深）。
+    # 跌幅>5% 归 +1 档（大跌后 +2.22pp 为证据最强方向，保留均值回归加分）。
+    # 中幅 |chg|>2 → +1 保留（强弱识别，未单独证伪）。
     change_pct = spot_item.get("change_pct", 0) or 0
-    if abs(change_pct) > 2:
+    if change_pct > 5:
+        score -= 1  # 追高削分：大涨日后 5d 超额为负，与平盘同档
+    elif abs(change_pct) > 2:
         score += 1
     elif abs(change_pct) < 0.5:
         score -= 1

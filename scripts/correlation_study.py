@@ -5,10 +5,15 @@
 方法: 2024-01-01~now 日收益 Pearson 相关矩阵 → 平均两两相关、分层聚类(简化: 相关>阈值并查集)、
       有效 N = 1/Σ(1/N)²（等权假设）、板块内 vs 跨板块相关对比。
 数据: baostock 日线（与回测同源）。
-产出: analysis/research/2026-10-17_correlation_study.json
+产出: analysis/research/<今日>_correlation_study.json + data/corr_clusters.json（月度刷新）
+月度调度: cron corr-clusters-monthly-refresh（每月1日 06:30）——2026-10-18 用户拍板接入，
+根因: 相关性结构随 regime 漂移（2026 券商/锂簇解体），簇映射不更新即成僵尸约束。
+
+2026-10-18 修正: 输出文件名与 date 字段改为动态取今日（带日期资源硬编码会静默过期）。
 """
 import os
 import sys
+from datetime import date
 import json
 import logging
 import time
@@ -165,8 +170,9 @@ def main():
             top_pairs.append((round(float(corr.loc[a, b]), 3), a, b))
     top_pairs.sort(reverse=True)
 
+    today = date.today().isoformat()
     out = {
-        "date": "2026-10-17", "window": START_DATE, "stocks": N,
+        "date": today, "window": START_DATE, "stocks": N,
         "avg_pairwise_corr": round(avg_pair, 3),
         "median_pairwise_corr": round(med_pair, 3),
         "effective_n": round(eff_n, 1),
@@ -180,7 +186,7 @@ def main():
         "yearly_breakdown": yearly,
         "skipped": skipped,
     }
-    path = os.path.join(WORKSPACE, "analysis/research/2026-10-17_correlation_study.json")
+    path = os.path.join(WORKSPACE, f"analysis/research/{today}_correlation_study.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1, default=str)
 
@@ -192,7 +198,7 @@ def main():
     clu_path = os.path.join(WORKSPACE, "data/corr_clusters.json")
     with open(clu_path, "w", encoding="utf-8") as f:
         json.dump({
-            "date": "2026-10-17", "window": START_DATE,
+            "date": today, "window": START_DATE,
             "method": "pearson_daily_threshold_0.55_union_find",
             "threshold": 0.55, "clusters": {f"C{i+1:02d}": g for i, g in enumerate(sorted(groups, key=len, reverse=True))},
             "symbol_to_cluster": sym_to_cluster,
