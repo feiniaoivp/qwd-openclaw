@@ -1,0 +1,1730 @@
+{
+ "date": "2026-10-17",
+ "window": "20240101~20261017",
+ "candidates": [
+  "布林带+ATR",
+  "KDJ+CCI",
+  "EMA+OBV",
+  "EMA12/26金叉(基准C)",
+  "纯MACD(基准B)",
+  "牛市趋势跟踪",
+  "买入并持有(个股)"
+ ],
+ "stocks_evaluated": 36,
+ "skipped": [],
+ "unmapped_note": [
+  "中信特钢(000708)=ema_adaptive_vol",
+  "福耀玻璃(600660)=ema_adaptive_vol",
+  "恒生电子(600570)=ema_adaptive_vol"
+ ],
+ "mapped_avg_rank": 2.36,
+ "random_baseline_rank": 4.0,
+ "mapped_top1_pct": 0.273,
+ "mapped_vs_benchC_wins": "14/33",
+ "portfolio": {
+  "mapped_mean_return": 57.27,
+  "fixed_mean_return": {
+   "布林带+ATR": 32.73,
+   "KDJ+CCI": 4.78,
+   "EMA+OBV": 19.54,
+   "EMA12/26金叉(基准C)": 52.94,
+   "纯MACD(基准B)": 29.19,
+   "牛市趋势跟踪": -2.29,
+   "买入并持有(个股)": 46.26
+  }
+ },
+ "matrix": {
+  "600030": {
+   "name": "中信证券",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 49.79,
+     "sharpe": 0.675,
+     "max_dd": -19.82,
+     "trades": 8
+    },
+    "KDJ+CCI": {
+     "total_return": 1.32,
+     "sharpe": -0.259,
+     "max_dd": -8.6,
+     "trades": 9
+    },
+    "EMA+OBV": {
+     "total_return": 34.85,
+     "sharpe": 0.463,
+     "max_dd": -19.65,
+     "trades": 26
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 51.2,
+     "sharpe": 0.63,
+     "max_dd": -24.27,
+     "trades": 9
+    },
+    "纯MACD(基准B)": {
+     "total_return": 52.03,
+     "sharpe": 0.65,
+     "max_dd": -15.55,
+     "trades": 22
+    },
+    "牛市趋势跟踪": {
+     "total_return": -15.85,
+     "sharpe": -1.468,
+     "max_dd": -15.85,
+     "trades": 18
+    },
+    "买入并持有(个股)": {
+     "total_return": 38.69,
+     "sharpe": 0.373,
+     "max_dd": -30.5,
+     "trades": 1
+    }
+   }
+  },
+  "601066": {
+   "name": "中信建投",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 5.86,
+     "sharpe": 0.004,
+     "max_dd": -27.89,
+     "trades": 12
+    },
+    "KDJ+CCI": {
+     "total_return": -2.21,
+     "sharpe": -0.472,
+     "max_dd": -12.78,
+     "trades": 10
+    },
+    "EMA+OBV": {
+     "total_return": -21.49,
+     "sharpe": -0.639,
+     "max_dd": -24.52,
+     "trades": 28
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 25.86,
+     "sharpe": 0.283,
+     "max_dd": -28.92,
+     "trades": 10
+    },
+    "纯MACD(基准B)": {
+     "total_return": 2.53,
+     "sharpe": -0.048,
+     "max_dd": -40.16,
+     "trades": 25
+    },
+    "牛市趋势跟踪": {
+     "total_return": -22.62,
+     "sharpe": -1.328,
+     "max_dd": -23.0,
+     "trades": 15
+    },
+    "买入并持有(个股)": {
+     "total_return": 2.64,
+     "sharpe": -0.036,
+     "max_dd": -33.55,
+     "trades": 1
+    }
+   }
+  },
+  "600036": {
+   "name": "招商银行",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": -8.01,
+     "sharpe": -0.388,
+     "max_dd": -14.37,
+     "trades": 15
+    },
+    "KDJ+CCI": {
+     "total_return": 25.38,
+     "sharpe": 0.72,
+     "max_dd": -9.6,
+     "trades": 7
+    },
+    "EMA+OBV": {
+     "total_return": -3.17,
+     "sharpe": -0.241,
+     "max_dd": -16.57,
+     "trades": 40
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 4.48,
+     "sharpe": -0.026,
+     "max_dd": -17.89,
+     "trades": 10
+    },
+    "纯MACD(基准B)": {
+     "total_return": 27.05,
+     "sharpe": 0.46,
+     "max_dd": -15.61,
+     "trades": 26
+    },
+    "牛市趋势跟踪": {
+     "total_return": 7.24,
+     "sharpe": 0.076,
+     "max_dd": -7.22,
+     "trades": 25
+    },
+    "买入并持有(个股)": {
+     "total_return": 78.47,
+     "sharpe": 1.06,
+     "max_dd": -21.19,
+     "trades": 1
+    }
+   }
+  },
+  "601995": {
+   "name": "中金公司",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": -7.85,
+     "sharpe": -0.231,
+     "max_dd": -27.02,
+     "trades": 10
+    },
+    "KDJ+CCI": {
+     "total_return": 9.46,
+     "sharpe": 0.175,
+     "max_dd": -8.4,
+     "trades": 9
+    },
+    "EMA+OBV": {
+     "total_return": -25.99,
+     "sharpe": -1.094,
+     "max_dd": -26.38,
+     "trades": 24
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": -17.61,
+     "sharpe": -0.359,
+     "max_dd": -33.39,
+     "trades": 13
+    },
+    "纯MACD(基准B)": {
+     "total_return": -4.25,
+     "sharpe": -0.147,
+     "max_dd": -32.04,
+     "trades": 23
+    },
+    "牛市趋势跟踪": {
+     "total_return": -6.84,
+     "sharpe": -0.611,
+     "max_dd": -15.54,
+     "trades": 16
+    },
+    "买入并持有(个股)": {
+     "total_return": -12.3,
+     "sharpe": -0.214,
+     "max_dd": -28.09,
+     "trades": 1
+    }
+   }
+  },
+  "000987": {
+   "name": "越秀资本",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 82.19,
+     "sharpe": 0.881,
+     "max_dd": -22.21,
+     "trades": 9
+    },
+    "KDJ+CCI": {
+     "total_return": -14.66,
+     "sharpe": -0.665,
+     "max_dd": -20.73,
+     "trades": 14
+    },
+    "EMA+OBV": {
+     "total_return": -37.06,
+     "sharpe": -1.049,
+     "max_dd": -38.81,
+     "trades": 26
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 48.28,
+     "sharpe": 0.486,
+     "max_dd": -31.13,
+     "trades": 10
+    },
+    "纯MACD(基准B)": {
+     "total_return": 70.55,
+     "sharpe": 0.664,
+     "max_dd": -28.64,
+     "trades": 24
+    },
+    "牛市趋势跟踪": {
+     "total_return": -14.16,
+     "sharpe": -1.645,
+     "max_dd": -14.16,
+     "trades": 10
+    },
+    "买入并持有(个股)": {
+     "total_return": 28.52,
+     "sharpe": 0.205,
+     "max_dd": -38.6,
+     "trades": 1
+    }
+   }
+  },
+  "600584": {
+   "name": "长电科技",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 80.57,
+     "sharpe": 0.642,
+     "max_dd": -24.56,
+     "trades": 10
+    },
+    "KDJ+CCI": {
+     "total_return": 53.83,
+     "sharpe": 0.994,
+     "max_dd": -11.4,
+     "trades": 9
+    },
+    "EMA+OBV": {
+     "total_return": 22.3,
+     "sharpe": 0.217,
+     "max_dd": -22.85,
+     "trades": 26
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 121.76,
+     "sharpe": 0.774,
+     "max_dd": -32.32,
+     "trades": 8
+    },
+    "纯MACD(基准B)": {
+     "total_return": 96.83,
+     "sharpe": 0.745,
+     "max_dd": -30.86,
+     "trades": 23
+    },
+    "牛市趋势跟踪": {
+     "total_return": -25.32,
+     "sharpe": -0.961,
+     "max_dd": -25.32,
+     "trades": 20
+    },
+    "买入并持有(个股)": {
+     "total_return": 93.73,
+     "sharpe": 0.494,
+     "max_dd": -46.59,
+     "trades": 1
+    }
+   }
+  },
+  "688981": {
+   "name": "中芯国际",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 73.31,
+     "sharpe": 0.524,
+     "max_dd": -34.91,
+     "trades": 12
+    },
+    "KDJ+CCI": {
+     "total_return": 64.07,
+     "sharpe": 0.77,
+     "max_dd": -20.82,
+     "trades": 9
+    },
+    "EMA+OBV": {
+     "total_return": -27.08,
+     "sharpe": -0.539,
+     "max_dd": -37.65,
+     "trades": 39
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 111.76,
+     "sharpe": 0.68,
+     "max_dd": -24.23,
+     "trades": 7
+    },
+    "纯MACD(基准B)": {
+     "total_return": 59.55,
+     "sharpe": 0.413,
+     "max_dd": -42.06,
+     "trades": 23
+    },
+    "牛市趋势跟踪": {
+     "total_return": -6.56,
+     "sharpe": -0.473,
+     "max_dd": -13.84,
+     "trades": 11
+    },
+    "买入并持有(个股)": {
+     "total_return": 89.0,
+     "sharpe": 0.476,
+     "max_dd": -40.18,
+     "trades": 1
+    }
+   }
+  },
+  "002156": {
+   "name": "通富微电",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 125.86,
+     "sharpe": 0.884,
+     "max_dd": -29.98,
+     "trades": 9
+    },
+    "KDJ+CCI": {
+     "total_return": -3.77,
+     "sharpe": -0.215,
+     "max_dd": -22.15,
+     "trades": 10
+    },
+    "EMA+OBV": {
+     "total_return": 97.76,
+     "sharpe": 0.754,
+     "max_dd": -35.39,
+     "trades": 28
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 115.79,
+     "sharpe": 0.655,
+     "max_dd": -35.43,
+     "trades": 9
+    },
+    "纯MACD(基准B)": {
+     "total_return": 93.03,
+     "sharpe": 0.607,
+     "max_dd": -46.73,
+     "trades": 20
+    },
+    "牛市趋势跟踪": {
+     "total_return": 40.5,
+     "sharpe": 0.516,
+     "max_dd": -15.59,
+     "trades": 21
+    },
+    "买入并持有(个股)": {
+     "total_return": 110.2,
+     "sharpe": 0.52,
+     "max_dd": -38.13,
+     "trades": 1
+    }
+   }
+  },
+  "002413": {
+   "name": "雷科防务",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 8.41,
+     "sharpe": 0.025,
+     "max_dd": -61.56,
+     "trades": 16
+    },
+    "KDJ+CCI": {
+     "total_return": -19.95,
+     "sharpe": -0.761,
+     "max_dd": -35.85,
+     "trades": 13
+    },
+    "EMA+OBV": {
+     "total_return": 5.47,
+     "sharpe": -0.002,
+     "max_dd": -44.46,
+     "trades": 14
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 53.65,
+     "sharpe": 0.327,
+     "max_dd": -49.55,
+     "trades": 10
+    },
+    "纯MACD(基准B)": {
+     "total_return": 30.65,
+     "sharpe": 0.192,
+     "max_dd": -64.16,
+     "trades": 24
+    },
+    "牛市趋势跟踪": {
+     "total_return": -25.35,
+     "sharpe": -1.003,
+     "max_dd": -28.9,
+     "trades": 12
+    },
+    "买入并持有(个股)": {
+     "total_return": 43.59,
+     "sharpe": 0.214,
+     "max_dd": -62.8,
+     "trades": 1
+    }
+   }
+  },
+  "300014": {
+   "name": "亿纬锂能",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 61.85,
+     "sharpe": 0.484,
+     "max_dd": -28.76,
+     "trades": 10
+    },
+    "KDJ+CCI": {
+     "total_return": 28.96,
+     "sharpe": 0.482,
+     "max_dd": -14.17,
+     "trades": 9
+    },
+    "EMA+OBV": {
+     "total_return": 43.17,
+     "sharpe": 0.366,
+     "max_dd": -27.26,
+     "trades": 23
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 3.59,
+     "sharpe": -0.018,
+     "max_dd": -40.41,
+     "trades": 12
+    },
+    "纯MACD(基准B)": {
+     "total_return": 0.34,
+     "sharpe": -0.049,
+     "max_dd": -46.17,
+     "trades": 25
+    },
+    "牛市趋势跟踪": {
+     "total_return": 57.99,
+     "sharpe": 1.1,
+     "max_dd": -10.21,
+     "trades": 10
+    },
+    "买入并持有(个股)": {
+     "total_return": 18.73,
+     "sharpe": 0.086,
+     "max_dd": -47.7,
+     "trades": 1
+    }
+   }
+  },
+  "002466": {
+   "name": "天齐锂业",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 55.09,
+     "sharpe": 0.512,
+     "max_dd": -28.66,
+     "trades": 10
+    },
+    "KDJ+CCI": {
+     "total_return": -48.4,
+     "sharpe": -1.374,
+     "max_dd": -49.01,
+     "trades": 20
+    },
+    "EMA+OBV": {
+     "total_return": 59.1,
+     "sharpe": 0.656,
+     "max_dd": -17.65,
+     "trades": 14
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 87.52,
+     "sharpe": 0.699,
+     "max_dd": -26.26,
+     "trades": 6
+    },
+    "纯MACD(基准B)": {
+     "total_return": -20.29,
+     "sharpe": -0.287,
+     "max_dd": -44.27,
+     "trades": 25
+    },
+    "牛市趋势跟踪": {
+     "total_return": 15.14,
+     "sharpe": 0.28,
+     "max_dd": -9.73,
+     "trades": 6
+    },
+    "买入并持有(个股)": {
+     "total_return": -30.65,
+     "sharpe": -0.312,
+     "max_dd": -54.65,
+     "trades": 1
+    }
+   }
+  },
+  "300285": {
+   "name": "国瓷材料",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 106.29,
+     "sharpe": 0.64,
+     "max_dd": -37.38,
+     "trades": 12
+    },
+    "KDJ+CCI": {
+     "total_return": 32.15,
+     "sharpe": 0.461,
+     "max_dd": -17.18,
+     "trades": 9
+    },
+    "EMA+OBV": {
+     "total_return": 99.35,
+     "sharpe": 0.687,
+     "max_dd": -35.8,
+     "trades": 30
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 103.83,
+     "sharpe": 0.551,
+     "max_dd": -50.63,
+     "trades": 10
+    },
+    "纯MACD(基准B)": {
+     "total_return": 322.37,
+     "sharpe": 1.389,
+     "max_dd": -28.64,
+     "trades": 20
+    },
+    "牛市趋势跟踪": {
+     "total_return": 22.97,
+     "sharpe": 0.367,
+     "max_dd": -10.72,
+     "trades": 10
+    },
+    "买入并持有(个股)": {
+     "total_return": 103.97,
+     "sharpe": 0.453,
+     "max_dd": -56.23,
+     "trades": 1
+    }
+   }
+  },
+  "603308": {
+   "name": "应流股份",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 161.03,
+     "sharpe": 1.067,
+     "max_dd": -26.38,
+     "trades": 12
+    },
+    "KDJ+CCI": {
+     "total_return": -4.44,
+     "sharpe": -0.19,
+     "max_dd": -27.07,
+     "trades": 13
+    },
+    "EMA+OBV": {
+     "total_return": 81.36,
+     "sharpe": 0.699,
+     "max_dd": -27.69,
+     "trades": 30
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 337.93,
+     "sharpe": 1.537,
+     "max_dd": -21.73,
+     "trades": 6
+    },
+    "纯MACD(基准B)": {
+     "total_return": 114.88,
+     "sharpe": 0.793,
+     "max_dd": -41.54,
+     "trades": 23
+    },
+    "牛市趋势跟踪": {
+     "total_return": 16.03,
+     "sharpe": 0.295,
+     "max_dd": -12.09,
+     "trades": 6
+    },
+    "买入并持有(个股)": {
+     "total_return": 134.59,
+     "sharpe": 0.611,
+     "max_dd": -61.3,
+     "trades": 1
+    }
+   }
+  },
+  "300124": {
+   "name": "汇川技术",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 22.2,
+     "sharpe": 0.219,
+     "max_dd": -36.01,
+     "trades": 11
+    },
+    "KDJ+CCI": {
+     "total_return": -12.4,
+     "sharpe": -0.55,
+     "max_dd": -18.19,
+     "trades": 15
+    },
+    "EMA+OBV": {
+     "total_return": -1.22,
+     "sharpe": -0.148,
+     "max_dd": -27.76,
+     "trades": 24
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 35.48,
+     "sharpe": 0.337,
+     "max_dd": -26.18,
+     "trades": 7
+    },
+    "纯MACD(基准B)": {
+     "total_return": -7.77,
+     "sharpe": -0.16,
+     "max_dd": -38.89,
+     "trades": 26
+    },
+    "牛市趋势跟踪": {
+     "total_return": -17.21,
+     "sharpe": -0.95,
+     "max_dd": -19.55,
+     "trades": 15
+    },
+    "买入并持有(个股)": {
+     "total_return": -18.31,
+     "sharpe": -0.235,
+     "max_dd": -43.44,
+     "trades": 1
+    }
+   }
+  },
+  "601100": {
+   "name": "恒立液压",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": -2.71,
+     "sharpe": -0.122,
+     "max_dd": -40.13,
+     "trades": 13
+    },
+    "KDJ+CCI": {
+     "total_return": -12.03,
+     "sharpe": -0.705,
+     "max_dd": -15.52,
+     "trades": 7
+    },
+    "EMA+OBV": {
+     "total_return": -25.81,
+     "sharpe": -0.543,
+     "max_dd": -28.5,
+     "trades": 44
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 1.8,
+     "sharpe": -0.042,
+     "max_dd": -36.75,
+     "trades": 12
+    },
+    "纯MACD(基准B)": {
+     "total_return": -11.51,
+     "sharpe": -0.209,
+     "max_dd": -45.17,
+     "trades": 29
+    },
+    "牛市趋势跟踪": {
+     "total_return": 5.69,
+     "sharpe": 0.004,
+     "max_dd": -10.69,
+     "trades": 8
+    },
+    "买入并持有(个股)": {
+     "total_return": 44.48,
+     "sharpe": 0.287,
+     "max_dd": -35.74,
+     "trades": 1
+    }
+   }
+  },
+  "002318": {
+   "name": "久立特材",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 26.41,
+     "sharpe": 0.327,
+     "max_dd": -22.14,
+     "trades": 12
+    },
+    "KDJ+CCI": {
+     "total_return": -7.48,
+     "sharpe": -0.414,
+     "max_dd": -20.07,
+     "trades": 11
+    },
+    "EMA+OBV": {
+     "total_return": -4.6,
+     "sharpe": -0.21,
+     "max_dd": -25.86,
+     "trades": 32
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 32.83,
+     "sharpe": 0.374,
+     "max_dd": -20.39,
+     "trades": 8
+    },
+    "纯MACD(基准B)": {
+     "total_return": -22.69,
+     "sharpe": -0.446,
+     "max_dd": -37.13,
+     "trades": 24
+    },
+    "牛市趋势跟踪": {
+     "total_return": -17.62,
+     "sharpe": -1.009,
+     "max_dd": -27.09,
+     "trades": 21
+    },
+    "买入并持有(个股)": {
+     "total_return": -5.19,
+     "sharpe": -0.119,
+     "max_dd": -50.06,
+     "trades": 1
+    }
+   }
+  },
+  "300719": {
+   "name": "安达维尔",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 33.08,
+     "sharpe": 0.212,
+     "max_dd": -39.01,
+     "trades": 14
+    },
+    "KDJ+CCI": {
+     "total_return": -23.54,
+     "sharpe": -0.844,
+     "max_dd": -27.51,
+     "trades": 14
+    },
+    "EMA+OBV": {
+     "total_return": -25.85,
+     "sharpe": -0.444,
+     "max_dd": -50.24,
+     "trades": 29
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 22.02,
+     "sharpe": 0.112,
+     "max_dd": -46.44,
+     "trades": 11
+    },
+    "纯MACD(基准B)": {
+     "total_return": 16.15,
+     "sharpe": 0.086,
+     "max_dd": -53.34,
+     "trades": 24
+    },
+    "牛市趋势跟踪": {
+     "total_return": -24.67,
+     "sharpe": -1.238,
+     "max_dd": -24.67,
+     "trades": 13
+    },
+    "买入并持有(个股)": {
+     "total_return": -7.89,
+     "sharpe": -0.079,
+     "max_dd": -60.87,
+     "trades": 1
+    }
+   }
+  },
+  "002335": {
+   "name": "科华数据",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 8.21,
+     "sharpe": 0.027,
+     "max_dd": -45.27,
+     "trades": 15
+    },
+    "KDJ+CCI": {
+     "total_return": 7.8,
+     "sharpe": 0.058,
+     "max_dd": -15.84,
+     "trades": 8
+    },
+    "EMA+OBV": {
+     "total_return": 37.89,
+     "sharpe": 0.367,
+     "max_dd": -24.55,
+     "trades": 22
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 8.43,
+     "sharpe": 0.023,
+     "max_dd": -54.52,
+     "trades": 14
+    },
+    "纯MACD(基准B)": {
+     "total_return": 11.2,
+     "sharpe": 0.049,
+     "max_dd": -35.02,
+     "trades": 30
+    },
+    "牛市趋势跟踪": {
+     "total_return": 26.2,
+     "sharpe": 0.598,
+     "max_dd": -8.3,
+     "trades": 5
+    },
+    "买入并持有(个股)": {
+     "total_return": 36.39,
+     "sharpe": 0.172,
+     "max_dd": -52.1,
+     "trades": 1
+    }
+   }
+  },
+  "300748": {
+   "name": "金力永磁",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 34.82,
+     "sharpe": 0.261,
+     "max_dd": -38.24,
+     "trades": 10
+    },
+    "KDJ+CCI": {
+     "total_return": 7.6,
+     "sharpe": 0.065,
+     "max_dd": -8.46,
+     "trades": 9
+    },
+    "EMA+OBV": {
+     "total_return": 27.26,
+     "sharpe": 0.192,
+     "max_dd": -44.15,
+     "trades": 25
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 72.01,
+     "sharpe": 0.452,
+     "max_dd": -38.64,
+     "trades": 8
+    },
+    "纯MACD(基准B)": {
+     "total_return": 4.26,
+     "sharpe": -0.011,
+     "max_dd": -43.93,
+     "trades": 24
+    },
+    "牛市趋势跟踪": {
+     "total_return": -21.71,
+     "sharpe": -0.718,
+     "max_dd": -23.83,
+     "trades": 19
+    },
+    "买入并持有(个股)": {
+     "total_return": 14.98,
+     "sharpe": 0.059,
+     "max_dd": -51.57,
+     "trades": 1
+    }
+   }
+  },
+  "600160": {
+   "name": "巨化股份",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 9.6,
+     "sharpe": 0.053,
+     "max_dd": -32.6,
+     "trades": 16
+    },
+    "KDJ+CCI": {
+     "total_return": 3.35,
+     "sharpe": -0.061,
+     "max_dd": -18.42,
+     "trades": 9
+    },
+    "EMA+OBV": {
+     "total_return": 68.78,
+     "sharpe": 0.741,
+     "max_dd": -31.85,
+     "trades": 26
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 41.21,
+     "sharpe": 0.397,
+     "max_dd": -28.19,
+     "trades": 9
+    },
+    "纯MACD(基准B)": {
+     "total_return": 19.32,
+     "sharpe": 0.16,
+     "max_dd": -27.39,
+     "trades": 31
+    },
+    "牛市趋势跟踪": {
+     "total_return": 13.18,
+     "sharpe": 0.204,
+     "max_dd": -11.55,
+     "trades": 16
+    },
+    "买入并持有(个股)": {
+     "total_return": 88.25,
+     "sharpe": 0.573,
+     "max_dd": -46.34,
+     "trades": 1
+    }
+   }
+  },
+  "600346": {
+   "name": "恒力石化",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": -12.44,
+     "sharpe": -0.319,
+     "max_dd": -32.07,
+     "trades": 14
+    },
+    "KDJ+CCI": {
+     "total_return": -6.61,
+     "sharpe": -0.608,
+     "max_dd": -14.66,
+     "trades": 9
+    },
+    "EMA+OBV": {
+     "total_return": -8.42,
+     "sharpe": -0.319,
+     "max_dd": -32.91,
+     "trades": 28
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 11.09,
+     "sharpe": 0.07,
+     "max_dd": -28.24,
+     "trades": 12
+    },
+    "纯MACD(基准B)": {
+     "total_return": 28.84,
+     "sharpe": 0.301,
+     "max_dd": -22.87,
+     "trades": 18
+    },
+    "牛市趋势跟踪": {
+     "total_return": -18.57,
+     "sharpe": -0.567,
+     "max_dd": -29.04,
+     "trades": 30
+    },
+    "买入并持有(个股)": {
+     "total_return": 27.15,
+     "sharpe": 0.197,
+     "max_dd": -42.76,
+     "trades": 1
+    }
+   }
+  },
+  "000708": {
+   "name": "中信特钢",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": -17.12,
+     "sharpe": -0.504,
+     "max_dd": -26.15,
+     "trades": 12
+    },
+    "KDJ+CCI": {
+     "total_return": 1.09,
+     "sharpe": -0.133,
+     "max_dd": -16.02,
+     "trades": 13
+    },
+    "EMA+OBV": {
+     "total_return": -28.76,
+     "sharpe": -0.848,
+     "max_dd": -35.32,
+     "trades": 36
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": -14.02,
+     "sharpe": -0.37,
+     "max_dd": -23.76,
+     "trades": 9
+    },
+    "纯MACD(基准B)": {
+     "total_return": -12.34,
+     "sharpe": -0.316,
+     "max_dd": -33.03,
+     "trades": 25
+    },
+    "牛市趋势跟踪": {
+     "total_return": 9.43,
+     "sharpe": 0.097,
+     "max_dd": -18.84,
+     "trades": 28
+    },
+    "买入并持有(个股)": {
+     "total_return": 6.59,
+     "sharpe": 0.012,
+     "max_dd": -35.52,
+     "trades": 1
+    }
+   }
+  },
+  "600660": {
+   "name": "福耀玻璃",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 14.48,
+     "sharpe": 0.223,
+     "max_dd": -12.35,
+     "trades": 11
+    },
+    "KDJ+CCI": {
+     "total_return": -1.62,
+     "sharpe": -0.402,
+     "max_dd": -9.97,
+     "trades": 7
+    },
+    "EMA+OBV": {
+     "total_return": -18.12,
+     "sharpe": -0.737,
+     "max_dd": -31.46,
+     "trades": 41
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": -1.53,
+     "sharpe": -0.159,
+     "max_dd": -20.38,
+     "trades": 12
+    },
+    "纯MACD(基准B)": {
+     "total_return": 38.5,
+     "sharpe": 0.605,
+     "max_dd": -29.72,
+     "trades": 24
+    },
+    "牛市趋势跟踪": {
+     "total_return": -11.36,
+     "sharpe": -1.194,
+     "max_dd": -15.99,
+     "trades": 16
+    },
+    "买入并持有(个股)": {
+     "total_return": 60.52,
+     "sharpe": 0.663,
+     "max_dd": -32.79,
+     "trades": 1
+    }
+   }
+  },
+  "600570": {
+   "name": "恒生电子",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 42.24,
+     "sharpe": 0.448,
+     "max_dd": -19.01,
+     "trades": 11
+    },
+    "KDJ+CCI": {
+     "total_return": -11.52,
+     "sharpe": -0.485,
+     "max_dd": -15.6,
+     "trades": 16
+    },
+    "EMA+OBV": {
+     "total_return": 7.39,
+     "sharpe": 0.028,
+     "max_dd": -24.92,
+     "trades": 25
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 58.57,
+     "sharpe": 0.542,
+     "max_dd": -25.47,
+     "trades": 7
+    },
+    "纯MACD(基准B)": {
+     "total_return": 50.01,
+     "sharpe": 0.462,
+     "max_dd": -29.37,
+     "trades": 20
+    },
+    "牛市趋势跟踪": {
+     "total_return": 0.92,
+     "sharpe": -2.627,
+     "max_dd": -0.13,
+     "trades": 1
+    },
+    "买入并持有(个股)": {
+     "total_return": -27.94,
+     "sharpe": -0.32,
+     "max_dd": -51.19,
+     "trades": 1
+    }
+   }
+  },
+  "605566": {
+   "name": "福莱蒽特",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": -7.41,
+     "sharpe": -0.174,
+     "max_dd": -27.95,
+     "trades": 13
+    },
+    "KDJ+CCI": {
+     "total_return": 1.62,
+     "sharpe": -0.115,
+     "max_dd": -16.62,
+     "trades": 8
+    },
+    "EMA+OBV": {
+     "total_return": 8.76,
+     "sharpe": 0.046,
+     "max_dd": -24.63,
+     "trades": 29
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": -17.19,
+     "sharpe": -0.231,
+     "max_dd": -46.08,
+     "trades": 12
+    },
+    "纯MACD(基准B)": {
+     "total_return": 65.27,
+     "sharpe": 0.553,
+     "max_dd": -29.11,
+     "trades": 22
+    },
+    "牛市趋势跟踪": {
+     "total_return": -6.07,
+     "sharpe": -0.514,
+     "max_dd": -9.61,
+     "trades": 14
+    },
+    "买入并持有(个股)": {
+     "total_return": 17.8,
+     "sharpe": 0.08,
+     "max_dd": -58.5,
+     "trades": 1
+    }
+   }
+  },
+  "000157": {
+   "name": "中联重科",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": -16.05,
+     "sharpe": -0.469,
+     "max_dd": -26.6,
+     "trades": 16
+    },
+    "KDJ+CCI": {
+     "total_return": 3.39,
+     "sharpe": -0.071,
+     "max_dd": -16.05,
+     "trades": 10
+    },
+    "EMA+OBV": {
+     "total_return": 4.75,
+     "sharpe": -0.017,
+     "max_dd": -24.36,
+     "trades": 21
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": -9.22,
+     "sharpe": -0.285,
+     "max_dd": -22.17,
+     "trades": 10
+    },
+    "纯MACD(基准B)": {
+     "total_return": -24.42,
+     "sharpe": -0.545,
+     "max_dd": -33.63,
+     "trades": 28
+    },
+    "牛市趋势跟踪": {
+     "total_return": 1.0,
+     "sharpe": -0.177,
+     "max_dd": -10.89,
+     "trades": 21
+    },
+    "买入并持有(个股)": {
+     "total_return": 1.57,
+     "sharpe": -0.047,
+     "max_dd": -39.68,
+     "trades": 1
+    }
+   }
+  },
+  "601061": {
+   "name": "中信金属",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 5.45,
+     "sharpe": -0.002,
+     "max_dd": -26.06,
+     "trades": 13
+    },
+    "KDJ+CCI": {
+     "total_return": 11.6,
+     "sharpe": 0.171,
+     "max_dd": -13.73,
+     "trades": 7
+    },
+    "EMA+OBV": {
+     "total_return": 32.21,
+     "sharpe": 0.369,
+     "max_dd": -29.06,
+     "trades": 24
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 7.97,
+     "sharpe": 0.029,
+     "max_dd": -47.28,
+     "trades": 12
+    },
+    "纯MACD(基准B)": {
+     "total_return": 17.99,
+     "sharpe": 0.145,
+     "max_dd": -31.23,
+     "trades": 25
+    },
+    "牛市趋势跟踪": {
+     "total_return": -8.62,
+     "sharpe": -0.438,
+     "max_dd": -21.4,
+     "trades": 22
+    },
+    "买入并持有(个股)": {
+     "total_return": 38.43,
+     "sharpe": 0.265,
+     "max_dd": -41.27,
+     "trades": 1
+    }
+   }
+  },
+  "600089": {
+   "name": "特变电工",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 45.09,
+     "sharpe": 0.471,
+     "max_dd": -26.02,
+     "trades": 10
+    },
+    "KDJ+CCI": {
+     "total_return": -14.14,
+     "sharpe": -0.531,
+     "max_dd": -26.92,
+     "trades": 15
+    },
+    "EMA+OBV": {
+     "total_return": 27.0,
+     "sharpe": 0.301,
+     "max_dd": -40.16,
+     "trades": 28
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 82.91,
+     "sharpe": 0.769,
+     "max_dd": -24.62,
+     "trades": 9
+    },
+    "纯MACD(基准B)": {
+     "total_return": 11.93,
+     "sharpe": 0.083,
+     "max_dd": -26.22,
+     "trades": 25
+    },
+    "牛市趋势跟踪": {
+     "total_return": 1.65,
+     "sharpe": -0.161,
+     "max_dd": -10.73,
+     "trades": 9
+    },
+    "买入并持有(个股)": {
+     "total_return": 30.21,
+     "sharpe": 0.225,
+     "max_dd": -46.85,
+     "trades": 1
+    }
+   }
+  },
+  "600406": {
+   "name": "国电南瑞",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 8.52,
+     "sharpe": 0.067,
+     "max_dd": -18.57,
+     "trades": 13
+    },
+    "KDJ+CCI": {
+     "total_return": -5.12,
+     "sharpe": -0.738,
+     "max_dd": -7.28,
+     "trades": 8
+    },
+    "EMA+OBV": {
+     "total_return": -4.48,
+     "sharpe": -0.229,
+     "max_dd": -31.73,
+     "trades": 35
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": -12.25,
+     "sharpe": -0.375,
+     "max_dd": -27.17,
+     "trades": 12
+    },
+    "纯MACD(基准B)": {
+     "total_return": -27.46,
+     "sharpe": -0.724,
+     "max_dd": -42.34,
+     "trades": 31
+    },
+    "牛市趋势跟踪": {
+     "total_return": -19.03,
+     "sharpe": -1.193,
+     "max_dd": -19.33,
+     "trades": 18
+    },
+    "买入并持有(个股)": {
+     "total_return": 10.88,
+     "sharpe": 0.076,
+     "max_dd": -29.42,
+     "trades": 1
+    }
+   }
+  },
+  "000400": {
+   "name": "许继电气",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": -41.68,
+     "sharpe": -1.119,
+     "max_dd": -44.13,
+     "trades": 14
+    },
+    "KDJ+CCI": {
+     "total_return": 6.7,
+     "sharpe": 0.037,
+     "max_dd": -17.26,
+     "trades": 11
+    },
+    "EMA+OBV": {
+     "total_return": 0.19,
+     "sharpe": -0.12,
+     "max_dd": -22.63,
+     "trades": 24
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 31.68,
+     "sharpe": 0.323,
+     "max_dd": -31.55,
+     "trades": 10
+    },
+    "纯MACD(基准B)": {
+     "total_return": -32.54,
+     "sharpe": -0.621,
+     "max_dd": -46.77,
+     "trades": 28
+    },
+    "牛市趋势跟踪": {
+     "total_return": -6.91,
+     "sharpe": -0.401,
+     "max_dd": -19.37,
+     "trades": 18
+    },
+    "买入并持有(个股)": {
+     "total_return": 5.62,
+     "sharpe": 0.0,
+     "max_dd": -41.47,
+     "trades": 1
+    }
+   }
+  },
+  "601179": {
+   "name": "中国西电",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 70.98,
+     "sharpe": 0.662,
+     "max_dd": -33.36,
+     "trades": 11
+    },
+    "KDJ+CCI": {
+     "total_return": -1.04,
+     "sharpe": -0.203,
+     "max_dd": -14.38,
+     "trades": 9
+    },
+    "EMA+OBV": {
+     "total_return": 46.13,
+     "sharpe": 0.399,
+     "max_dd": -40.49,
+     "trades": 36
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 118.89,
+     "sharpe": 0.828,
+     "max_dd": -36.5,
+     "trades": 8
+    },
+    "纯MACD(基准B)": {
+     "total_return": 5.09,
+     "sharpe": -0.005,
+     "max_dd": -39.62,
+     "trades": 25
+    },
+    "牛市趋势跟踪": {
+     "total_return": -4.11,
+     "sharpe": -0.256,
+     "max_dd": -20.09,
+     "trades": 17
+    },
+    "买入并持有(个股)": {
+     "total_return": 126.6,
+     "sharpe": 0.699,
+     "max_dd": -45.9,
+     "trades": 1
+    }
+   }
+  },
+  "002028": {
+   "name": "思源电气",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 27.92,
+     "sharpe": 0.276,
+     "max_dd": -26.59,
+     "trades": 15
+    },
+    "KDJ+CCI": {
+     "total_return": -13.2,
+     "sharpe": -1.421,
+     "max_dd": -15.35,
+     "trades": 4
+    },
+    "EMA+OBV": {
+     "total_return": -4.29,
+     "sharpe": -0.135,
+     "max_dd": -33.4,
+     "trades": 48
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 73.77,
+     "sharpe": 0.631,
+     "max_dd": -37.86,
+     "trades": 11
+    },
+    "纯MACD(基准B)": {
+     "total_return": -4.04,
+     "sharpe": -0.12,
+     "max_dd": -37.07,
+     "trades": 34
+    },
+    "牛市趋势跟踪": {
+     "total_return": -11.38,
+     "sharpe": -0.631,
+     "max_dd": -20.84,
+     "trades": 13
+    },
+    "买入并持有(个股)": {
+     "total_return": 125.35,
+     "sharpe": 0.768,
+     "max_dd": -49.73,
+     "trades": 1
+    }
+   }
+  },
+  "002270": {
+   "name": "华明装备",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 40.77,
+     "sharpe": 0.452,
+     "max_dd": -18.47,
+     "trades": 10
+    },
+    "KDJ+CCI": {
+     "total_return": 19.65,
+     "sharpe": 0.28,
+     "max_dd": -26.58,
+     "trades": 11
+    },
+    "EMA+OBV": {
+     "total_return": 66.13,
+     "sharpe": 0.7,
+     "max_dd": -25.63,
+     "trades": 28
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 115.67,
+     "sharpe": 0.978,
+     "max_dd": -29.05,
+     "trades": 5
+    },
+    "纯MACD(基准B)": {
+     "total_return": -14.04,
+     "sharpe": -0.243,
+     "max_dd": -46.35,
+     "trades": 30
+    },
+    "牛市趋势跟踪": {
+     "total_return": 18.76,
+     "sharpe": 0.318,
+     "max_dd": -14.14,
+     "trades": 4
+    },
+    "买入并持有(个股)": {
+     "total_return": 45.42,
+     "sharpe": 0.297,
+     "max_dd": -54.38,
+     "trades": 1
+    }
+   }
+  },
+  "002130": {
+   "name": "沃尔核材",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 46.79,
+     "sharpe": 0.354,
+     "max_dd": -47.82,
+     "trades": 11
+    },
+    "KDJ+CCI": {
+     "total_return": 40.3,
+     "sharpe": 0.726,
+     "max_dd": -18.64,
+     "trades": 8
+    },
+    "EMA+OBV": {
+     "total_return": 68.51,
+     "sharpe": 0.538,
+     "max_dd": -29.55,
+     "trades": 24
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 71.7,
+     "sharpe": 0.414,
+     "max_dd": -42.24,
+     "trades": 13
+    },
+    "纯MACD(基准B)": {
+     "total_return": 9.63,
+     "sharpe": 0.035,
+     "max_dd": -52.71,
+     "trades": 23
+    },
+    "牛市趋势跟踪": {
+     "total_return": -6.91,
+     "sharpe": -0.246,
+     "max_dd": -21.42,
+     "trades": 13
+    },
+    "买入并持有(个股)": {
+     "total_return": 88.81,
+     "sharpe": 0.407,
+     "max_dd": -57.78,
+     "trades": 1
+    }
+   }
+  },
+  "600312": {
+   "name": "平高电气",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": -16.21,
+     "sharpe": -0.402,
+     "max_dd": -30.88,
+     "trades": 13
+    },
+    "KDJ+CCI": {
+     "total_return": 19.56,
+     "sharpe": 0.446,
+     "max_dd": -8.72,
+     "trades": 7
+    },
+    "EMA+OBV": {
+     "total_return": 17.63,
+     "sharpe": 0.217,
+     "max_dd": -23.47,
+     "trades": 24
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 1.29,
+     "sharpe": -0.054,
+     "max_dd": -35.42,
+     "trades": 11
+    },
+    "纯MACD(基准B)": {
+     "total_return": 39.05,
+     "sharpe": 0.418,
+     "max_dd": -29.37,
+     "trades": 21
+    },
+    "牛市趋势跟踪": {
+     "total_return": -10.93,
+     "sharpe": -0.584,
+     "max_dd": -15.07,
+     "trades": 15
+    },
+    "买入并持有(个股)": {
+     "total_return": 72.2,
+     "sharpe": 0.534,
+     "max_dd": -33.82,
+     "trades": 1
+    }
+   }
+  },
+  "300199": {
+   "name": "翰宇药业",
+   "strategies": {
+    "布林带+ATR": {
+     "total_return": 2.52,
+     "sharpe": -0.028,
+     "max_dd": -37.97,
+     "trades": 13
+    },
+    "KDJ+CCI": {
+     "total_return": 10.1,
+     "sharpe": 0.139,
+     "max_dd": -10.67,
+     "trades": 7
+    },
+    "EMA+OBV": {
+     "total_return": -14.32,
+     "sharpe": -0.302,
+     "max_dd": -39.99,
+     "trades": 13
+    },
+    "EMA12/26金叉(基准C)": {
+     "total_return": 8.84,
+     "sharpe": 0.025,
+     "max_dd": -39.09,
+     "trades": 13
+    },
+    "纯MACD(基准B)": {
+     "total_return": 33.86,
+     "sharpe": 0.208,
+     "max_dd": -28.65,
+     "trades": 21
+    },
+    "牛市趋势跟踪": {
+     "total_return": -11.62,
+     "sharpe": -0.422,
+     "max_dd": -22.5,
+     "trades": 16
+    },
+    "买入并持有(个股)": {
+     "total_return": 84.56,
+     "sharpe": 0.392,
+     "max_dd": -45.29,
+     "trades": 1
+    }
+   }
+  }
+ }
+}
