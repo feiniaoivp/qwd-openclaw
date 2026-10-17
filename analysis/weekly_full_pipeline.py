@@ -288,12 +288,19 @@ def main():
     if not r["success"]:
         print("⚠️ 回测失败，继续后续步骤...")
     
-    # 步骤 2: 参数调优 (强制快速模式 --fast，约6分钟/35只)
-    print("\n⚙️ 步骤 2/8: 参数调优快速模式 (param_tune.py --fast)")
-    r = _resume_skip("param_tune", resume_record)
-    if r is None:
-        r = run_script("param_tune.py", ["--fast"], timeout=1800)  # 30分钟上限，足够覆盖快速模式(约6分钟)+缓冲
-    results["param_tune"] = r
+    # 步骤 2: 参数调优 —— R5 双周制(2026-10-17 用户批准): 偶数 ISO 周才重调，跳过周其余步骤照常
+    # (diff/evaluate 对未变参数自动报「无变更/不可归因」，数据链路不受影响；--force-tune 可强制)
+    import datetime as _dt
+    _iso_week = _dt.date.today().isocalendar()[1]
+    if (_iso_week % 2 != 0) and ("--force-tune" not in sys.argv):
+        print(f"\n⏭️ 步骤 2/8: 双周调参跳过周 (ISO 第{_iso_week}周) —— 参数不重调 (--force-tune 可强制)")
+        results["param_tune"] = {"success": True, "skipped": "biweekly", "stdout": f"skipped iso_week={_iso_week}"}
+    else:
+        print("\n⚙️ 步骤 2/8: 参数调优快速模式 (param_tune.py --fast)")
+        r = _resume_skip("param_tune", resume_record)
+        if r is None:
+            r = run_script("param_tune.py", ["--fast"], timeout=1800)  # 30分钟上限，足够覆盖快速模式(约6分钟)+缓冲
+        results["param_tune"] = r
     if not r["success"]:
         print("⚠️ 参数调优失败，继续后续步骤...")
     
@@ -516,6 +523,8 @@ def build_brief(results=None, as_of=None):
     # 二、策略/参数变更（三分类: 真变参/策略增删/仅分数漂移 —— 审计 R4, 2026-10-17）
     # 旧口径 dict 直接比对含分数 → 分数漂移也计入「参数变更」，N 只虚高且误导
     lines.append("二、策略/参数变更")
+    if isinstance(results.get("param_tune"), dict) and results["param_tune"].get("skipped"):
+        lines.append("⏭️ 本周为双周调参跳过周（R5），参数未重调；下列对比为与基线的存量差异")
     try:
         from param_evaluate import classify_changes, _load_stocks_map  # 同目录复用, 口径单一
         new_stocks = _load_stocks_map(os.path.join(DATA_DIR, "adaptive_params.json"))

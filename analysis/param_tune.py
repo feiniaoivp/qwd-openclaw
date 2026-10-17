@@ -314,14 +314,26 @@ def _fetch_daily_worker(args):
 
 def _tune_worker(args):
     """子进程用的参数搜索函数 (模块级，可被 pickle)"""
-    sym, name, df, grids, fast_mode, top_k = args
+    sym, name, df, grids, fast_mode, top_k = args[0], args[1], args[2], args[3], args[4], args[5]
+    current_strat_params = args[6] if len(args) > 6 else None
+    switch_margin = args[7] if len(args) > 7 else 5.0
     if df is None or len(df) < 150:
         return sym, {"error": "数据不足", "name": name}
-    return sym, tune_single_stock(sym, name, df, grids, fast_mode, top_k)
+    return sym, tune_single_stock(sym, name, df, grids, fast_mode, top_k,
+                                  current_strat_params=current_strat_params,
+                                  switch_margin=switch_margin)
 
 def tune_single_stock(symbol: str, name: str, df: pd.DataFrame, 
-                      grids: Dict, fast_mode: bool, top_k: int) -> Dict:
-    """单只股票的参数搜索，返回最优 Top-K 组合"""
+                      grids: Dict, fast_mode: bool, top_k: int,
+                      current_strat_params: Optional[Dict] = None,
+                      switch_margin: float = 5.0) -> Dict:
+    """单只股票的参数搜索，返回最优 Top-K 组合。
+
+    R5 稳定性门槛 (2026-10-17): 若传入 current_strat_params（现役参数），则对每策略
+    在【同一窗口】下给现役参数打分——新参得分未高出现参 switch_margin 分以上时，
+    保留现役参数不切换（recorded in details[strat]['stability_gate']）。
+    解决: 跨窗口比分是移动靶（审计 F3，分数中位 Δ 连续 12 轮为负），微小分差
+    导致参数周对周振荡/无谓切换。"""
     stock_detail = {}
     stock_best = []  # List of (score, sname, params, agg)
     
@@ -382,6 +394,30 @@ def tune_single_stock(symbol: str, name: str, df: pd.DataFrame,
                 "avg_trades": combo_best[2]["avg_trades"],
             }
         
+        # ── 稳定性门槛 (R5): 同窗口给现役参数打分, 分差不足则不切换 ──
+        cur_params = (current_strat_params or {}).get(sname)
+        if combo_best and cur_params and combo_best[1] != cur_params:
+            wmetrics_cur = {}
+            for wname, years_back in ([FAST_WINDOW] if fast_mode else WINDOWS):
+                wdf = slice_window(df, years_back)
+                wmetrics_cur[wname] = score_strategy_params(wdf, func, cur_params)
+            cur_agg = aggregate_score(wmetrics_cur)
+            if cur_agg and combo_best[0] < cur_agg["score"] + switch_margin:
+                _prev_detail = stock_detail.get(sname) or {}
+                stock_detail[sname] = {
+                    **_prev_detail,
+                    "best_params": cur_params,
+                    "best_score": cur_agg["score"],
+                    "best_agg": cur_agg,
+                    "stability_gate": {
+                        "grid_best_params": combo_best[1],
+                        "grid_best_score": combo_best[0],
+                        "current_score": cur_agg["score"],
+                        "margin": switch_margin,
+                    },
+                }
+                combo_best = (cur_agg["score"], cur_params, cur_agg)
+
         if combo_best:
             stock_best.append((combo_best[0], sname, combo_best[1], combo_best[2]))
     
@@ -492,12 +528,15 @@ def main():
     parser.add_argument("--incremental", action="store_true", help="增量模式 (仅重新调优需更新的股票)")
     parser.add_argument("--top-k", type=int, default=1, help="每只股票输出 Top K 组合")
     parser.add_argument("--workers", type=int, default=4, help="并行工作进程数")
+    parser.add_argument("--switch-margin", type=float, default=float(os.environ.get("PARAM_SWITCH_MARGIN") or 5.0),
+                        help="R5 稳定性门槛: 新参须比现参(同窗口)高此分才切换; 0=关闭门槛")
     args = parser.parse_args()
     
     fast_mode = args.fast
     incremental = args.incremental
     write = args.write
     top_k = args.top_k
+    switch_margin = args.switch_margin
     workers = min(args.workers, os.cpu_count() or 4)
 
     # 2026-09-28：--fast 只有单窗口，写回会违反跨窗口护栏 → 直接拒绝组合
@@ -550,11 +589,25 @@ def main():
             else:
                 print(f"  ❌ {name}({sym}): 数据不足")
     
+    # R5 稳定性门槛基线: 调参开始前的现役参数（此刻 adaptive_params.json 尚未被覆盖）
+    current_params_map = {}
+    try:
+        with open(PARAMS_FILE) as _f:
+            current_params_map = {
+                sym: {k: v.get("best_params") for k, v in (info.get("details") or {}).items()
+                      if isinstance(v, dict) and v.get("best_params")}
+                for sym, info in (json.load(_f).get("stocks") or {}).items() if isinstance(info, dict)
+            }
+        print(f"🛡️ 稳定性门槛启用: margin={switch_margin} (现役参数基线 {len(current_params_map)} 只; PARAM_SWITCH_MARGIN 可调, 0=关闭)")
+    except Exception as _e:
+        print(f"⚠️ 读取现役参数失败, 稳定性门槛本次不启用: {_e}")
+
     # 并行参数搜索
     print(f"\n🔍 并行参数搜索 (workers={workers})...")
     results = {}
     
-    tune_items = [(sym, name, data_cache[sym], grids, fast_mode, top_k) for sym, name in stocks if sym in data_cache]
+    tune_items = [(sym, name, data_cache[sym], grids, fast_mode, top_k,
+                   current_params_map.get(sym), switch_margin) for sym, name in stocks if sym in data_cache]
     with ProcessPoolExecutor(max_workers=workers) as executor:
         futures = {executor.submit(_tune_worker, item): item[0] for item in tune_items}
         for fut in as_completed(futures):
