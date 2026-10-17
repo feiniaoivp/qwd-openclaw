@@ -101,6 +101,55 @@ def main():
     groups = cluster_corr(corr, 0.55)
     sec = {s: SECTOR.get(s, "?") for s in keep}
 
+    # ---- 分年拆解（2026-10-17 稳健性检验：相关簇结构是否随 regime 漂移？）----
+    # 问题: 同簇上限≤2 门禁用的是全期(2024~now)相关矩阵；若簇只在 2024 趋势年成立、
+    #       2026 震荡年已解体，则门禁在当前行情下会误拦（或漏拦）。
+    def _year_block(year: str):
+        mask = [str(d).startswith(year) for d in rets.index]
+        sub = rets.loc[mask]
+        if len(sub) < 120:
+            return None
+        c = sub.corr()
+        iu2 = np.triu_indices_from(c.values, k=1)
+        pr2 = c.values[iu2]
+        a2 = float(np.mean(pr2))
+        n2 = c.shape[0]
+        yg = cluster_corr(c, 0.55)
+        ym = [g for g in yg if len(g) >= 2]
+        # 全期多票簇在该年的存续情况
+        surv = []
+        for g in sorted((x for x in groups if len(x) >= 2), key=len, reverse=True):
+            gs = set(g)
+            w = []
+            mem = list(g)
+            for i, a in enumerate(mem):
+                for b in mem[i + 1:]:
+                    w.append(float(c.loc[a, b]))
+            # 该年并查集里含 g 首元素的连通分量
+            host = next((set(x) for x in yg if mem[0] in x), set())
+            surv.append({
+                "members": mem,
+                "avg_within_year_corr": round(float(np.mean(w)), 3),
+                "min_within_year_corr": round(float(min(w)), 3),
+                "still_linked_0.55": gs.issubset(host),
+            })
+        # 该年新出现（全期没有）的多票簇
+        full_sets = {frozenset(x) for x in groups if len(x) >= 2}
+        new_c = [sorted(x) for x in ym if frozenset(x) not in full_sets]
+        return {
+            "days": len(sub),
+            "avg_pairwise_corr": round(a2, 3),
+            "effective_n": round(n2 / (1 + (n2 - 1) * a2), 1),
+            "clusters": [sorted(g) for g in sorted(yg, key=len, reverse=True) if len(g) >= 2],
+            "clustered_stocks": sum(len(g) for g in yg if len(g) >= 2),
+            "full_period_cluster_survival": surv,
+            "new_clusters_vs_full": new_c,
+        }
+
+    years = sorted({str(d)[:4] for d in rets.index})
+    yearly = {y: _year_block(y) for y in years}
+    yearly = {y: v for y, v in yearly.items() if v}
+
     # 板块内 vs 跨板块
     within, across = [], []
     syms = list(corr.columns)
@@ -128,6 +177,7 @@ def main():
             {"stocks": [{"symbol": s, "sector": sec.get(s, "?")} for s in g],
              "size": len(g)} for g in sorted(groups, key=len, reverse=True) if len(g) >= 2],
         "top10_pairs": top_pairs[:10],
+        "yearly_breakdown": yearly,
         "skipped": skipped,
     }
     path = os.path.join(WORKSPACE, "analysis/research/2026-10-17_correlation_study.json")
@@ -154,6 +204,17 @@ def main():
     print(f"[corr] 相关簇(>0.55): " + " | ".join(
         f"{[x['symbol'] for x in g['stocks']]}" for g in out['corr_clusters(>0.55)'][:6]))
     print(f"[corr] Top5 相关对: {top_pairs[:5]}")
+    print(f"[corr] === 分年拆解 ===")
+    for y, blk in yearly.items():
+        if not blk:
+            continue
+        print(f"[corr] {y}: 平均相关 {blk['avg_pairwise_corr']:+.3f} | 有效N {blk['effective_n']} | "
+              f"入簇 {blk['clustered_stocks']} 只 | 多票簇 {len(blk['clusters'])} 个")
+        for s in blk["full_period_cluster_survival"]:
+            sec1 = SECTOR.get(s['members'][0], '?')
+            print(f"[corr]   [{sec1}] {s['members']} "
+                  f"年均 {s['avg_within_year_corr']:+.3f} 最低 {s['min_within_year_corr']:+.3f} "
+                  f"存续={'✅' if s['still_linked_0.55'] else '❌'}")
     print(f"[corr] 已写 {path} | 耗时 {time.time()-t0:.0f}s")
 
 

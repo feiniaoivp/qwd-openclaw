@@ -426,4 +426,4 @@ rg -n 'breakpoint\(|pdb\.set_trace|debugpy\.' --type py   # 人工快速版
 
 - api.telegram.org 直连会被 TLS 拦截（curl 60 证书域名不匹配 / SSL_ERROR_SYSCALL / curl_cffi 报 invalid library）。
 - 本机 `127.0.0.1:7890` 有 HTTP 代理可用：`HTTP_PROXY=http://127.0.0.1:7890 HTTPS_PROXY=... python3 ...` 即恢复。
-- cron 脚本（send_telegram.py）目前不带代理 → 拦截发生时推送静默失败。补推方法：用落盘的 `data/intraday_alert_output.json` 里 `brief` 直接调 `send_message`，不要重跑扫描/不要重复发送。
+- cron 脚本（send_telegram.py）✅ 2026-10-16 起已内置代理兜底：直连失败 → 自动探测并走 `127.0.0.1:7890`，脚本层自愈（10-15 前的「不带代理静默失败」已修复）。Gateway announce 层仍无代理（fallbackUsed 只是目标解析回退，非传输层），TLS 潮汐窗内 gateway 直接投递仍会 delivered=false（best-effort job 降级 diagnostic，不误标 error）。补推方法：用落盘的 `data/intraday_alert_output.json` 里 `brief` 直接调 `send_message`，不要重跑扫描/不要重复发送。
