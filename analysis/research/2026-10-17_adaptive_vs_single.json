@@ -8,6 +8,7 @@
   "EMA12/26金叉(基准C)",
   "纯MACD(基准B)",
   "牛市趋势跟踪",
+  "波动自适应EMA",
   "买入并持有(个股)"
  ],
  "stocks_evaluated": 36,
@@ -17,9 +18,9 @@
   "福耀玻璃(600660)=ema_adaptive_vol",
   "恒生电子(600570)=ema_adaptive_vol"
  ],
- "mapped_avg_rank": 2.36,
- "random_baseline_rank": 4.0,
- "mapped_top1_pct": 0.273,
+ "mapped_avg_rank": 2.82,
+ "random_baseline_rank": 4.5,
+ "mapped_top1_pct": 0.212,
  "mapped_vs_benchC_wins": "14/33",
  "portfolio": {
   "mapped_mean_return": 57.27,
@@ -30,6 +31,7 @@
    "EMA12/26金叉(基准C)": 52.94,
    "纯MACD(基准B)": 29.19,
    "牛市趋势跟踪": -2.29,
+   "波动自适应EMA": 46.51,
    "买入并持有(个股)": 46.26
   }
  },
@@ -72,6 +74,12 @@
      "sharpe": -1.468,
      "max_dd": -15.85,
      "trades": 18
+    },
+    "波动自适应EMA": {
+     "total_return": 44.59,
+     "sharpe": 0.532,
+     "max_dd": -22.83,
+     "trades": 12
     },
     "买入并持有(个股)": {
      "total_return": 38.69,
@@ -120,6 +128,12 @@
      "max_dd": -23.0,
      "trades": 15
     },
+    "波动自适应EMA": {
+     "total_return": 9.89,
+     "sharpe": 0.058,
+     "max_dd": -35.4,
+     "trades": 8
+    },
     "买入并持有(个股)": {
      "total_return": 2.64,
      "sharpe": -0.036,
@@ -166,6 +180,12 @@
      "sharpe": 0.076,
      "max_dd": -7.22,
      "trades": 25
+    },
+    "波动自适应EMA": {
+     "total_return": 12.86,
+     "sharpe": 0.153,
+     "max_dd": -21.03,
+     "trades": 7
     },
     "买入并持有(个股)": {
      "total_return": 78.47,
@@ -214,6 +234,12 @@
      "max_dd": -15.54,
      "trades": 16
     },
+    "波动自适应EMA": {
+     "total_return": -20.17,
+     "sharpe": -0.527,
+     "max_dd": -26.46,
+     "trades": 8
+    },
     "买入并持有(个股)": {
      "total_return": -12.3,
      "sharpe": -0.214,
@@ -260,6 +286,12 @@
      "sharpe": -1.645,
      "max_dd": -14.16,
      "trades": 10
+    },
+    "波动自适应EMA": {
+     "total_return": 27.41,
+     "sharpe": 0.281,
+     "max_dd": -33.0,
+     "trades": 9
     },
     "买入并持有(个股)": {
      "total_return": 28.52,
@@ -308,6 +340,12 @@
      "max_dd": -25.32,
      "trades": 20
     },
+    "波动自适应EMA": {
+     "total_return": 109.48,
+     "sharpe": 0.659,
+     "max_dd": -42.71,
+     "trades": 7
+    },
     "买入并持有(个股)": {
      "total_return": 93.73,
      "sharpe": 0.494,
@@ -354,6 +392,12 @@
      "sharpe": -0.473,
      "max_dd": -13.84,
      "trades": 11
+    },
+    "波动自适应EMA": {
+     "total_return": 194.37,
+     "sharpe": 0.987,
+     "max_dd": -32.33,
+     "trades": 6
     },
     "买入并持有(个股)": {
      "total_return": 89.0,
@@ -402,6 +446,12 @@
      "max_dd": -15.59,
      "trades": 21
     },
+    "波动自适应EMA": {
+     "total_return": 124.4,
+     "sharpe": 0.687,
+     "max_dd": -34.64,
+     "trades": 8
+    },
     "买入并持有(个股)": {
      "total_return": 110.2,
      "sharpe": 0.52,
@@ -448,6 +498,12 @@
      "sharpe": -1.003,
      "max_dd": -28.9,
      "trades": 12
+    },
+    "波动自适应EMA": {
+     "total_return": 137.5,
+     "sharpe": 0.779,
+     "max_dd": -46.55,
+     "trades": 8
     },
     "买入并持有(个股)": {
      "total_return": 43.59,
@@ -496,6 +552,12 @@
      "max_dd": -10.21,
      "trades": 10
     },
+    "波动自适应EMA": {
+     "total_return": 0.95,
+     "sharpe": -0.036,
+     "max_dd": -52.8,
+     "trades": 6
+    },
     "买入并持有(个股)": {
      "total_return": 18.73,
      "sharpe": 0.086,
@@ -542,6 +604,12 @@
      "sharpe": 0.28,
      "max_dd": -9.73,
      "trades": 6
+    },
+    "波动自适应EMA": {
+     "total_return": 31.89,
+     "sharpe": 0.249,
+     "max_dd": -35.74,
+     "trades": 5
     },
     "买入并持有(个股)": {
      "total_return": -30.65,
@@ -590,6 +658,12 @@
      "max_dd": -10.72,
      "trades": 10
     },
+    "波动自适应EMA": {
+     "total_return": 164.58,
+     "sharpe": 0.721,
+     "max_dd": -59.28,
+     "trades": 6
+    },
     "买入并持有(个股)": {
      "total_return": 103.97,
      "sharpe": 0.453,
@@ -636,6 +710,12 @@
      "sharpe": 0.295,
      "max_dd": -12.09,
      "trades": 6
+    },
+    "波动自适应EMA": {
+     "total_return": 179.65,
+     "sharpe": 0.965,
+     "max_dd": -54.59,
+     "trades": 5
     },
     "买入并持有(个股)": {
      "total_return": 134.59,
@@ -684,6 +764,12 @@
      "max_dd": -19.55,
      "trades": 15
     },
+    "波动自适应EMA": {
+     "total_return": 23.02,
+     "sharpe": 0.18,
+     "max_dd": -33.0,
+     "trades": 8
+    },
     "买入并持有(个股)": {
      "total_return": -18.31,
      "sharpe": -0.235,
@@ -729,6 +815,12 @@
      "total_return": 5.69,
      "sharpe": 0.004,
      "max_dd": -10.69,
+     "trades": 8
+    },
+    "波动自适应EMA": {
+     "total_return": 58.58,
+     "sharpe": 0.476,
+     "max_dd": -33.89,
      "trades": 8
     },
     "买入并持有(个股)": {
@@ -778,6 +870,12 @@
      "max_dd": -27.09,
      "trades": 21
     },
+    "波动自适应EMA": {
+     "total_return": -21.75,
+     "sharpe": -0.395,
+     "max_dd": -47.54,
+     "trades": 6
+    },
     "买入并持有(个股)": {
      "total_return": -5.19,
      "sharpe": -0.119,
@@ -824,6 +922,12 @@
      "sharpe": -1.238,
      "max_dd": -24.67,
      "trades": 13
+    },
+    "波动自适应EMA": {
+     "total_return": -5.98,
+     "sharpe": -0.115,
+     "max_dd": -41.6,
+     "trades": 10
     },
     "买入并持有(个股)": {
      "total_return": -7.89,
@@ -872,6 +976,12 @@
      "max_dd": -8.3,
      "trades": 5
     },
+    "波动自适应EMA": {
+     "total_return": 15.2,
+     "sharpe": 0.066,
+     "max_dd": -61.09,
+     "trades": 7
+    },
     "买入并持有(个股)": {
      "total_return": 36.39,
      "sharpe": 0.172,
@@ -918,6 +1028,12 @@
      "sharpe": -0.718,
      "max_dd": -23.83,
      "trades": 19
+    },
+    "波动自适应EMA": {
+     "total_return": 38.08,
+     "sharpe": 0.237,
+     "max_dd": -38.53,
+     "trades": 7
     },
     "买入并持有(个股)": {
      "total_return": 14.98,
@@ -966,6 +1082,12 @@
      "max_dd": -11.55,
      "trades": 16
     },
+    "波动自适应EMA": {
+     "total_return": 29.0,
+     "sharpe": 0.25,
+     "max_dd": -31.97,
+     "trades": 9
+    },
     "买入并持有(个股)": {
      "total_return": 88.25,
      "sharpe": 0.573,
@@ -1012,6 +1134,12 @@
      "sharpe": -0.567,
      "max_dd": -29.04,
      "trades": 30
+    },
+    "波动自适应EMA": {
+     "total_return": -16.04,
+     "sharpe": -0.267,
+     "max_dd": -49.98,
+     "trades": 5
     },
     "买入并持有(个股)": {
      "total_return": 27.15,
@@ -1060,6 +1188,12 @@
      "max_dd": -18.84,
      "trades": 28
     },
+    "波动自适应EMA": {
+     "total_return": 13.89,
+     "sharpe": 0.146,
+     "max_dd": -17.21,
+     "trades": 6
+    },
     "买入并持有(个股)": {
      "total_return": 6.59,
      "sharpe": 0.012,
@@ -1106,6 +1240,12 @@
      "sharpe": -1.194,
      "max_dd": -15.99,
      "trades": 16
+    },
+    "波动自适应EMA": {
+     "total_return": -11.73,
+     "sharpe": -0.391,
+     "max_dd": -27.86,
+     "trades": 9
     },
     "买入并持有(个股)": {
      "total_return": 60.52,
@@ -1154,6 +1294,12 @@
      "max_dd": -0.13,
      "trades": 1
     },
+    "波动自适应EMA": {
+     "total_return": 4.81,
+     "sharpe": -0.008,
+     "max_dd": -51.35,
+     "trades": 5
+    },
     "买入并持有(个股)": {
      "total_return": -27.94,
      "sharpe": -0.32,
@@ -1200,6 +1346,12 @@
      "sharpe": -0.514,
      "max_dd": -9.61,
      "trades": 14
+    },
+    "波动自适应EMA": {
+     "total_return": -15.89,
+     "sharpe": -0.213,
+     "max_dd": -55.5,
+     "trades": 13
     },
     "买入并持有(个股)": {
      "total_return": 17.8,
@@ -1248,6 +1400,12 @@
      "max_dd": -10.89,
      "trades": 21
     },
+    "波动自适应EMA": {
+     "total_return": 0.44,
+     "sharpe": -0.094,
+     "max_dd": -21.79,
+     "trades": 9
+    },
     "买入并持有(个股)": {
      "total_return": 1.57,
      "sharpe": -0.047,
@@ -1294,6 +1452,12 @@
      "sharpe": -0.438,
      "max_dd": -21.4,
      "trades": 22
+    },
+    "波动自适应EMA": {
+     "total_return": 46.03,
+     "sharpe": 0.424,
+     "max_dd": -38.19,
+     "trades": 9
     },
     "买入并持有(个股)": {
      "total_return": 38.43,
@@ -1342,6 +1506,12 @@
      "max_dd": -10.73,
      "trades": 9
     },
+    "波动自适应EMA": {
+     "total_return": 90.36,
+     "sharpe": 0.869,
+     "max_dd": -22.51,
+     "trades": 8
+    },
     "买入并持有(个股)": {
      "total_return": 30.21,
      "sharpe": 0.225,
@@ -1388,6 +1558,12 @@
      "sharpe": -1.193,
      "max_dd": -19.33,
      "trades": 18
+    },
+    "波动自适应EMA": {
+     "total_return": -14.26,
+     "sharpe": -0.407,
+     "max_dd": -26.4,
+     "trades": 14
     },
     "买入并持有(个股)": {
      "total_return": 10.88,
@@ -1436,6 +1612,12 @@
      "max_dd": -19.37,
      "trades": 18
     },
+    "波动自适应EMA": {
+     "total_return": -13.9,
+     "sharpe": -0.326,
+     "max_dd": -33.62,
+     "trades": 12
+    },
     "买入并持有(个股)": {
      "total_return": 5.62,
      "sharpe": 0.0,
@@ -1483,6 +1665,12 @@
      "max_dd": -20.09,
      "trades": 17
     },
+    "波动自适应EMA": {
+     "total_return": 145.69,
+     "sharpe": 0.974,
+     "max_dd": -31.51,
+     "trades": 6
+    },
     "买入并持有(个股)": {
      "total_return": 126.6,
      "sharpe": 0.699,
@@ -1528,6 +1716,12 @@
      "total_return": -11.38,
      "sharpe": -0.631,
      "max_dd": -20.84,
+     "trades": 13
+    },
+    "波动自适应EMA": {
+     "total_return": 30.41,
+     "sharpe": 0.254,
+     "max_dd": -44.92,
      "trades": 13
     },
     "买入并持有(个股)": {
@@ -1577,6 +1771,12 @@
      "max_dd": -14.14,
      "trades": 4
     },
+    "波动自适应EMA": {
+     "total_return": -7.36,
+     "sharpe": -0.371,
+     "max_dd": -19.77,
+     "trades": 3
+    },
     "买入并持有(个股)": {
      "total_return": 45.42,
      "sharpe": 0.297,
@@ -1623,6 +1823,12 @@
      "sharpe": -0.246,
      "max_dd": -21.42,
      "trades": 13
+    },
+    "波动自适应EMA": {
+     "total_return": 26.55,
+     "sharpe": 0.153,
+     "max_dd": -49.52,
+     "trades": 8
     },
     "买入并持有(个股)": {
      "total_return": 88.81,
@@ -1671,6 +1877,12 @@
      "max_dd": -15.07,
      "trades": 15
     },
+    "波动自适应EMA": {
+     "total_return": 33.96,
+     "sharpe": 0.274,
+     "max_dd": -33.32,
+     "trades": 6
+    },
     "买入并持有(个股)": {
      "total_return": 72.2,
      "sharpe": 0.534,
@@ -1717,6 +1929,12 @@
      "sharpe": -0.422,
      "max_dd": -22.5,
      "trades": 16
+    },
+    "波动自适应EMA": {
+     "total_return": 75.42,
+     "sharpe": 0.418,
+     "max_dd": -36.65,
+     "trades": 8
     },
     "买入并持有(个股)": {
      "total_return": 84.56,

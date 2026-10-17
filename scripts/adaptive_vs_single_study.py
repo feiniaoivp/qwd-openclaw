@@ -38,6 +38,7 @@ CN2EN = {
     "EMA12/26金叉(基准C)": "ema_cross",
     "纯MACD(基准B)": "macd",
     "牛市趋势跟踪": "bull_trend",
+    "波动自适应EMA": "ema_adaptive_vol",
     "买入并持有(个股)": "buy_and_hold",
 }
 SKIP = {"沪深300基准", "中证500基准"}

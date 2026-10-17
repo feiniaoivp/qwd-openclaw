@@ -765,6 +765,16 @@ def strategy_index_benchmark_cached(df, index_code="sh.000300", index_name="沪�
     return actions
 
 
+def strategy_ema_adaptive_vol(df):
+    """波动自适应EMA（生产实现在 adaptive_dual；2026-10-17 补入回测候选集）。
+
+    背景: 3/36 票映射该策略但周回测候选集缺失，无法被周六流水线再验证。
+    """
+    from analysis.adaptive_dual import ema_adaptive_vol_actions  # 惰性 import 防循环
+    actions, _ctx = ema_adaptive_vol_actions(df)
+    return actions
+
+
 ALL_STRATEGIES = [
     ("布林带+ATR", strategy_bollinger_atr),
     ("KDJ+CCI", strategy_kdj_cci),
@@ -772,6 +782,7 @@ ALL_STRATEGIES = [
     ("EMA12/26金叉(基准C)", strategy_ema_cross),
     ("纯MACD(基准B)", strategy_macd),
     ("牛市趋势跟踪", strategy_bull_trend_follow),
+    ("波动自适应EMA", strategy_ema_adaptive_vol),
     ("买入并持有(个股)", strategy_buy_and_hold),
     ("沪深300基准", lambda df: strategy_index_benchmark_cached(df, "sh.000300", "沪深300")),
     ("中证500基准", lambda df: strategy_index_benchmark_cached(df, "sh.000905", "中证500")),
