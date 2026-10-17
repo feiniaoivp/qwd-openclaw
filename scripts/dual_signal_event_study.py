@@ -133,6 +133,11 @@ def main():
     path = os.path.join(WORKSPACE, "analysis/research/2026-10-17_dual_signal_event_study.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
+    # 事件明细单独落盘（供离线稳健性分析：分年/个股集中度/去重/bootstrap）
+    rows_path = os.path.join(WORKSPACE, "analysis/research/dual_signal_eval_days.json")
+    with open(rows_path, "w", encoding="utf-8") as f:
+        json.dump(rows, f, ensure_ascii=False)
+    print(f"[study] 明细已写 {rows_path} ({len(rows)} 行)")
 
     print(f"[study] 评估日 {len(rows)} | 评估失败日 {eval_fail_days} | 跳过 {skipped}")
     print(f"[study] 基线: " + " | ".join(
