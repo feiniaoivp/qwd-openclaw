@@ -24,6 +24,8 @@ Investigate `analysis/weekly_full_pipeline.py`; check for deadlocks/infinite loo
 - See Also: ERR-20261006-PM (same pattern), LEARNINGS cron.silent-noop-fake-ok (同主题：表面状态不可信)
 - Promoted: TOOLS.md「🔴 长跑 pipeline 卡死判定规则」(2026-10-07 提升；2026-10-09 维护复核确认生效，Source: .learnings/ERRORS.md#ERR-20260926-WBP)
 
+> **[2026-10-19 每日维护 · 第2轮]** RC≥3 共享计数条目（跨 3 任务 30 天内）终态复核：TOOLS.md 规则在位（grep 确认「长跑 pipeline 卡死判定规则」章节存在），无新复发，RC 维持 3 不虚增，保持 promoted。
+
 > **[2026-10-10 维护去重]** 本条目与 ERR-20261006-PM 同 Pattern-Key `ops.silent-orchestrator-misjudged-as-hang`
 > （Recurrence-Count=3 共享计数，First-Seen 2026-09-26）。已合并为一条模式，保留两条作为
 > 不同任务的实证记录，不再重复计入。防治规则已落地 TOOLS.md 同名章节。
@@ -95,7 +97,7 @@ cron `quant-backtest-daily` 运行 `analysis/quant_push.py` 报
 - 若明晚仍失败：检查本机 Clash TUN 是否干扰 baostock 长连接（机器上有 ~/.config/clash）。
 **Pattern-Key**: data.datasource-failover
 - See Also: ERR-20261005-ZL (data.datasource-failover same pattern, zhonglian task)
-- Recurrence-Count: 2
+- Recurrence-Count: 2（与 ERR-20261005-ZL 共享计数，跨 quant-backtest / zhonglian-monitor 两任务；10-19 维护去重标注，勿逐条把 2 当本条独立复发次数）
 - First-Seen: 2026-10-02
 - Last-Seen: 2026-10-05
 
@@ -137,9 +139,11 @@ skill 周期性复核发现遗留待办「zhonglian_monitor.py 接入降级链�
 端到端实测通过（data_date 2026-10-09, price 6.04），commit 500dfda。
 **Pattern-Key**: data.datasource-failover
 - See Also: ERR-20261002-BSL (data.datasource-failover same pattern, quant-backtest task)
-- Recurrence-Count: 2
+- Recurrence-Count: 2（与 ERR-20261002-BSL 共享计数，同模式跨任务；10-19 维护去重标注）
 - First-Seen: 2026-10-02
 - Last-Seen: 2026-10-05
+
+> **[2026-10-19 每日维护]** `data.datasource-failover` 两条目为同模式共享计数（RC=2 < 3，跨 2 任务，30 天窗口内），未达 promote 阈值；修复已全部在位（backtest_strategies 降级链 + bs_session 负缓存 + zhonglian_monitor 三源降级 commit 500dfda），维持 resolved + 观察。若第三次复发（任一主源失败且降级链被绕过）则 bump 至 3 并评估提升。
 
 ---
 
@@ -245,6 +249,10 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 - 顺延复核：`data/auction/2026-10-16_9_25.json` = 17,232 字节、`snapshot_time 09:25:00`、`count=27`（脚本实测读出），`decision_2026-10-16.json` 09:26 同步产出 → 连续第 5 个交易日正常（10-14/15/16 三份快照均 27/27 全量）。
 - 10-17 为周六非交易日，无快照属预期；因此本次可核对的最新交易日仍为 10-16，无新证据。
 - Validation 维持 verified；RC 维持 2 不虚增。promote 触发条件不变：再复现（RC→3）才评估。
+
+### Maintenance (2026-10-19 每日维护) — 无新交易日证据
+- `data/auction/` 最新仍为 10-16（17,232 B / count=27，ls 实测）；10-17（六）/10-18（日）非交易日，无快照属预期。下一核对点：10-19（周一）09:25 快照非空则连续第 6 交易日。
+- Validation 维持 verified；RC 维持 2 不虚增；promote 触发条件不变（再复现 RC→3 才评估）。
 
 ## ERR-20261009-QuantPushDetachedOutputLost
 **Date**: 2026-10-09
@@ -434,6 +442,7 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - 触发：同根因跨 ≥4 个任务（09-17 net_guard 立项 / 09-29 baostock 常驻会话 / 10-02 回测登录 / 10-18 RiskGuard），30 天窗口内，RC=4 ≥ 3，且此前无防治规则落在 TOOLS.md/AGENTS.md（护栏只有代码，没有行为规则）。
 - 验证：`analysis/portfolio_core.py:668-672` 修复在位；`grep -rl net_guard analysis scripts` = 80 文件已接线，但 09-30 遗留项（bs_session 旧连接先于护栏）仍未闭环 → 规则强调「函数体内自带超时」而非仅入口接线。
 - 写入：TOOLS.md「🔴 网络调用超时铁律」三条判据（函数体内护栏 / 超时必降级可见 / sample 诊断）。
+- 复核（10-19 第 2 轮维护）：TOOLS.md「🔴 网络调用超时铁律」在位（grep 确认章节存在），RC=4 跨 4 任务共享计数为终态，无新复发，保持 promoted。
 
 ## ERR-20261018-C02 三臂 A/B 结果逐字节相同 = 门禁不在执行路径的信号
 - cluster cap 三臂（prod/roll/off）回测权益/交易完全相同 → run_backtest 主循环不含簇拦截（只在 run_portfolio_scan）。
