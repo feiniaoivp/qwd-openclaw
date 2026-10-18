@@ -70,32 +70,41 @@ def fund_score(r):
     return sum(parts) / len(parts) * 100 if parts else None
 
 
-def main():
-    fund_hist = {s: sorted(v, key=lambda x: x["pub"])
-                 for s, v in json.load(open(FUND)).items()}
-    breadth = json.load(open(BREADTH))
-    prices = load_prices()
-    IDX = {sym: {str(d)[:10]: k for k, d in enumerate(ser.index)} for sym, ser in prices.items()}
-
+def build_baselines(prices, hold=HOLD):
+    """全池当日均收益基线（理想臂 close/现实臂 open)。2026-10-19 抽出供监测复用。"""
     benchI, benchR = defaultdict(list), defaultdict(list)
     for sym, ser in prices.items():
         c = ser["close"].values
         o = ser["open"].values
         ds = list(ser.index)
         for i in range(len(c)):
-            if c[i] > 0 and i + HOLD < len(c):
-                benchI[ds[i]].append((c[i + HOLD] / c[i] - 1) * 100)
-            if i + 1 + HOLD < len(c) and o[i + 1] > 0 and c[i] > 0:
-                benchR[ds[i]].append((c[i + 1 + HOLD] / o[i + 1] - 1) * 100)
+            if c[i] > 0 and i + hold < len(c):
+                benchI[ds[i]].append((c[i + hold] / c[i] - 1) * 100)
+            if i + 1 + hold < len(c) and o[i + 1] > 0 and c[i] > 0:
+                benchR[ds[i]].append((c[i + 1 + hold] / o[i + 1] - 1) * 100)
     bI = {d: sum(v) / len(v) for d, v in benchI.items() if v}
     bR = {d: sum(v) / len(v) for d, v in benchR.items() if v}
+    return bI, bR
 
-    rows = json.load(open(EVAL))
-    sigs = [r for r in rows if any("买入" in str(a) for a in (r.get("actions") or []))]
 
+def build_clash_samples(fund_hist, breadth, prices, IDX, bI, bR, hold=HOLD):
+    """构建「可评估」对撞买入信号样本（2026-10-19 从 main() 抽出为模块级）。
+
+    为什么抽出：clash_ushape_monitor.py 需要**完全相同**的样本口径做 U 型假设
+    的样本监测与 >100 条后的自动重测。样本定义是研究结论的一部分，两处各写
+    一份必然漂移（同 is_trading_day 三实现教训）。
+
+    口径（与 2026-10-18 反事实报告一致，不得改动；改动需重跑全部下游）：
+      * 买入信号且 cls == "分歧对撞"
+      * 价格缓存可定位该日，且 i+1+hold 不越界（现实臂可算）
+      * 该日有已披露财报（fund 可算）且 breadth 有该日
+    返回 list[dict]: sym/name/date/year/fund/sent/exI/exR
+    """
     clash = []
-    for s in sigs:
+    for s in json.load(open(EVAL)):
         if s.get("cls") != "分歧对撞":
+            continue
+        if not any("买入" in str(a) for a in (s.get("actions") or [])):
             continue
         sym = str(s.get("symbol") or "")
         d = str(s.get("date") or "")[:10]
@@ -106,7 +115,7 @@ def main():
         c = ser["close"].values
         o = ser["open"].values
         n = len(c)
-        if i + 1 + HOLD >= n or c[i] <= 0 or o[i + 1] <= 0 or d not in bI or d not in bR:
+        if i + 1 + hold >= n or c[i] <= 0 or o[i + 1] <= 0 or d not in bI or d not in bR:
             continue
         fr = None
         for r in fund_hist.get(sym, []):
@@ -125,9 +134,23 @@ def main():
         clash.append({
             "sym": sym, "name": s.get("name"), "date": d, "year": d[:4],
             "fund": fund, "sent": sent,
-            "exI": (c[i + HOLD] / c[i] - 1) * 100 - bI[d],
-            "exR": (c[i + 1 + HOLD] / o[i + 1] - 1) * 100 - bR[d],
+            "exI": (c[i + hold] / c[i] - 1) * 100 - bI[d],
+            "exR": (c[i + 1 + hold] / o[i + 1] - 1) * 100 - bR[d],
         })
+    return clash
+
+
+def main():
+    fund_hist = {s: sorted(v, key=lambda x: x["pub"])
+                 for s, v in json.load(open(FUND)).items()}
+    breadth = json.load(open(BREADTH))
+    prices = load_prices()
+    IDX = {sym: {str(d)[:10]: k for k, d in enumerate(ser.index)} for sym, ser in prices.items()}
+
+    bI, bR = build_baselines(prices)
+    clash = build_clash_samples(fund_hist, breadth, prices, IDX, bI, bR)
+    sigs = [r for r in json.load(open(EVAL))
+            if any("买入" in str(a) for a in (r.get("actions") or []))]
 
     print(f"对撞买入信号（可评估）: {len(clash)} 条")
     by_year = defaultdict(int)

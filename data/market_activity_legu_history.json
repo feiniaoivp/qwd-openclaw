@@ -1,0 +1,20 @@
+{
+ "2026-10-16": {
+  "up": 3061.0,
+  "limit_up": 61.0,
+  "real_limit_up": 55.0,
+  "st_limit_up": 0.0,
+  "down": 2023.0,
+  "limit_down": 11.0,
+  "real_limit_down": 10.0,
+  "st_limit_down": 1.0,
+  "flat": 132.0,
+  "halt": 10.0,
+  "active_pct": 58.57,
+  "up_ratio": 0.6021,
+  "prod_sentiment": 59.7,
+  "stat_date": "2026-10-16",
+  "source": "akshare stock_market_activity_legu",
+  "captured_at": "2026-10-19T07:26:31"
+ }
+}

@@ -187,8 +187,8 @@ def load_chip_metrics(symbol: str, price_ref: str = None):
     旧实现只取 `df.iloc[-1]`，完全不看这一行有多旧。缓存冻结时
     `cost_bias = close(T)/avg_cost(T0) - 1` 会拿新价减旧成本 → 上行行情里该值被
     系统性推高，−0.20 深度折价档永不触发（加分项静默失效）；下行则批量误报折价。
-    现按 analysis/chip_freshness 判定：滞后 > STALE_CRITICAL_DAYS(默认10) 交易日
-    → 返回 None（该维退出计分，走「缺失不填充」纪律），并输出可见告警。
+    现按 analysis/chip_freshness 判定：滞后 > STALE_CRITICAL_DAYS(默认12，2026-10-19
+    证据化 10→12) 交易日 → 返回 None（该维退出计分，走「缺失不填充」纪律），并输出可见告警。
     滞后在 (MAX_LAG_DAYS, STALE_CRITICAL_DAYS] 之间仍可用但告警。
 
     `price_ref` 可外部注入基准日（测试/批量场景可避免逐票重启读价格缓存）。

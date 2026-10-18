@@ -28,8 +28,15 @@ close_scan / 研究脚本写的那份），而不是 `date.today()`——非交�
 ----
 * `MAX_LAG_DAYS = 5` 个**交易日**（约一周）。A 股正常一周 5 个交易日，周流水线每周刷一次，
   超过 5 个交易日说明至少漏了一轮刷新。
-* 超过 `STALE_CRITICAL_DAYS = 10` 个交易日 → 视为"维度不可信"，生产侧该维返回 None
+  【2026-10-19 证据化】MAX_LAG 是**刷新节奏参数**而非统计量：实证（
+  `analysis/research/2026-10-19_chip_freshness_threshold_evidence.md`，36 只全历史
+  frozen=cost_bias(T-L) vs fresh=cost_bias(T)）确认 L=5 处失真有界
+  （误加分 2.08%/漏加分 2.50%/|bias| 0.11pp），节奏可接受，维持 5。
+* 超过 `STALE_CRITICAL_DAYS = 12` 个交易日 → 视为“维度不可信”，生产侧该维返回 None
   （宁缺毋滥：与 2026-10-09「缺失不填充」纪律一致，且比用错数据打分更安全）。
+  【2026-10-19 证据化，10→12】误加分主风险向是**上行行情**（冻结值比新值更负 → 虚报
+  折价）：实测上行 p_false 在 L=13 首次越过 5%（5.20%），取“最坏 regime p_false≤5%”
+  的最大 L=12；同时为春节等长假+漏刷一周场景保留裕度（曲线平缓无悬崖，详见证报告）。
 
 本模块只做判定，不做重算（重算需要 baostock，放在 chip_distribution_study 里）。
 """
@@ -45,7 +52,9 @@ PRICE_CACHE_DIR = os.path.join(WORKSPACE, "data", "research_price_cache")
 # 允许滞后的交易日数
 MAX_LAG_DAYS = int(os.getenv("CHIP_MAX_LAG_DAYS", "5"))
 # 超过此滞后 → 维度判定为不可信（返回 None 而不是旧分）
-STALE_CRITICAL_DAYS = int(os.getenv("CHIP_STALE_CRITICAL_DAYS", "10"))
+# 2026-10-19 证据化 10→12：最坏 regime(上行) p_false≤5% 的最大 L（见
+# analysis/research/2026-10-19_chip_freshness_threshold_evidence.md）
+STALE_CRITICAL_DAYS = int(os.getenv("CHIP_STALE_CRITICAL_DAYS", "12"))
 
 
 def _norm_date(v):

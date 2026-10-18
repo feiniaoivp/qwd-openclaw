@@ -171,6 +171,34 @@ def t_refresh_sync_criterion():
           "仍存在旧的无条件命中")
 
 
+def t_evidence_alignment():
+    """[8] 阈值默认值与证据报告对齐（2026-10-19 阈值证据化新增）。
+
+    防回归：以后有人（包括未来的我）凭直觉改阈值默认值，必须先重跑
+    scripts/chip_freshness_evidence.py 并同步证据报告，否则本测试拦下。
+    """
+    print("\n[8] 阈值默认值与证据报告对齐")
+    import json as _json
+    ev_path = os.path.join(
+        WORKSPACE, "analysis", "research",
+        "2026-10-19_chip_freshness_threshold_evidence.json")
+    if not os.path.exists(ev_path):
+        check("证据报告存在", False, ev_path)
+        return
+    ev = _json.load(open(ev_path))
+    final = ev.get("final") or {}
+    src = open(os.path.join(WORKSPACE, "analysis", "chip_freshness.py")).read()
+    import re as _re
+    m_max = _re.search(r'CHIP_MAX_LAG_DAYS",\s*"(\d+)"', src)
+    m_stale = _re.search(r'CHIP_STALE_CRITICAL_DAYS",\s*"(\d+)"', src)
+    check("MAX_LAG_DAYS 默认值 == 证据 final",
+          m_max and int(m_max.group(1)) == final.get("max_lag_days"),
+          f"src={m_max.group(1) if m_max else None} ev={final.get('max_lag_days')}")
+    check("STALE_CRITICAL_DAYS 默认值 == 证据 final",
+          m_stale and int(m_stale.group(1)) == final.get("stale_critical_days"),
+          f"src={m_stale.group(1) if m_stale else None} ev={final.get('stale_critical_days')}")
+
+
 def main():
     global TMP
     TMP = tempfile.mkdtemp(prefix="chipfresh_")
@@ -180,6 +208,7 @@ def main():
         t_load_chip_metrics_stale_none()
         t_incremental_equals_full()
         t_refresh_sync_criterion()
+        t_evidence_alignment()
     finally:
         shutil.rmtree(TMP, ignore_errors=True)
 

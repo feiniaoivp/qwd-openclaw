@@ -308,6 +308,15 @@ def main():
     if not r["success"]:
         print("⚠️ chip 新鲜度契约被破坏（见上方），第 5 维可能拿旧筹码打分（不阻断流水线）...")
 
+    # 步骤 0u: 对撞 U 型假设样本监测（2026-10-19 新增，10-18 反事实报告遗留 TODO）
+    # --replay 先重放刷新评估日明细（样本能自然增长的唯一途径），失败降级用旧明细；
+    # 计数 >100 自动跑 U 型重测并落盘报告。监测型步骤，不阻断。
+    print("\n📈 步骤 0u/9: 对撞 U 型假设样本监测 (clash_ushape_monitor.py --replay)")
+    r = run_script("../scripts/clash_ushape_monitor.py", args=["--replay"], timeout=1200)
+    results["clash_ushape_monitor"] = r
+    if not r["success"]:
+        print("⚠️ 对撞样本监测失败（评估明细缺失/损坏？见上方），不阻断流水线...")
+
     # 步骤 0n: 单簇市值暴露上限契约门禁（2026-10-18 新增，纯逻辑合成输入秒级）
     # 背景：只数≤2 口径在组合评分卡(ef81ed2)中证明对收益/回撤均无保护 →
     # 升级为组合层单簇市值占比≤25%(持仓期持续生效)。本门禁锁 12 场景语义:
