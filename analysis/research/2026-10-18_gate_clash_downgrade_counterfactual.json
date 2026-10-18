@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-18",
+  "n_clash": 41,
+  "clash_exI": -0.833,
+  "clash_exR": 0.28,
+  "sweep": {
+    "90": {
+      "blocked_n": 6,
+      "passed_n": 35,
+      "blocked_exI": -2.485,
+      "passed_exI": -0.55,
+      "blocked_exR": 1.23,
+      "passed_exR": 0.117
+    },
+    "80": {
+      "blocked_n": 11,
+      "passed_n": 30,
+      "blocked_exI": -0.76,
+      "passed_exI": -0.86,
+      "blocked_exR": 1.894,
+      "passed_exR": -0.311
+    },
+    "75": {
+      "blocked_n": 15,
+      "passed_n": 26,
+      "blocked_exI": -0.247,
+      "passed_exI": -1.171,
+      "blocked_exR": 2.356,
+      "passed_exR": -0.917
+    },
+    "60": {
+      "blocked_n": 24,
+      "passed_n": 17,
+      "blocked_exI": -1.589,
+      "passed_exI": 0.235,
+      "blocked_exR": 0.137,
+      "passed_exR": 0.483
+    },
+    "45": {
+      "blocked_n": 34,
+      "passed_n": 7,
+      "blocked_exI": -1.156,
+      "passed_exI": 0.737,
+      "blocked_exR": 0.023,
+      "passed_exR": 1.529
+    }
+  },
+  "note": "反事实，未改生产；接线需三调用方按 cls 传 tech_score"
+}
