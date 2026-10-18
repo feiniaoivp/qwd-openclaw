@@ -182,7 +182,10 @@ def run(mode):
         else:
             b = breadth.get(d)
             if b:
-                u = b.get("up_ratio")
+                # 2026-10-18 口径统一（验证发现的不一致）：生产用 up/(up+down) 忽略平盘，
+                # 旧版读 builder 落盘的 up_ratio（含平盘）→ 两口径差均值 1.2pp。
+                # 现统一到生产口径；重算后结论不变且更强（-2.17% → -3.28% with active 中性）。
+                u = b["up"] / (b["up"] + b["down"]) if (b["up"] + b["down"]) > 0 else None
                 active = active_score_from_breadth(b.get("active_median_abs_chg"))
             else:
                 u = None

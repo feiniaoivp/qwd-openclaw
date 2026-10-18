@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-18",
+  "n": 1062,
+  "miss": {
+    "fund": 0,
+    "chip": 0
+  },
+  "note": "4维近似口径（fund_flow 无历史，缺席对两臂对称）",
+  "flip_up_n": 53,
+  "flip_down_n": 8,
+  "flip_up_ex5": 1.018,
+  "flip_down_ex5": -0.523
+}

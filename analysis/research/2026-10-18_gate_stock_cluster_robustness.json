@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-18",
+  "line": 55.0,
+  "n_signals": 1062,
+  "n_low": 29,
+  "base_diff": -3.28,
+  "loso": {
+    "range": [
+      -3.731,
+      -2.557
+    ],
+    "negative_after_drop": "35/35",
+    "weakest5": [
+      {
+        "drop": "中芯国际(688981)",
+        "low_n": 2,
+        "diff": -3.731
+      },
+      {
+        "drop": "天齐锂业(002466)",
+        "low_n": 6,
+        "diff": -3.513
+      },
+      {
+        "drop": "中信金属(601061)",
+        "low_n": 2,
+        "diff": -3.416
+      },
+      {
+        "drop": "思源电气(002028)",
+        "low_n": 0,
+        "diff": -3.345
+      },
+      {
+        "drop": "恒立液压(601100)",
+        "low_n": 0,
+        "diff": -3.339
+      }
+    ]
+  },
+  "cluster_bootstrap": {
+    "ci95": [
+      -5.754,
+      -1.391
+    ],
+    "significant": true,
+    "p_le0": 0.998
+  },
+  "paired": {
+    "n_pairs": 9,
+    "mean": -4.524,
+    "negative": 9
+  }
+}
