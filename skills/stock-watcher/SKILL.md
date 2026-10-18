@@ -1,11 +1,11 @@
 ---
 name: stock-watcher
-description: Manage and monitor a personal stock watchlist with support for adding, removing, listing stocks, and summarizing their recent performance using data from 10jqka.com.cn. Use when the user wants to track specific stocks, get performance summaries, or manage their watchlist.
+description: Manage and monitor a personal stock watchlist with support for adding, removing, listing stocks, and summarizing their recent performance using real-time quotes from hq.sinajs.cn (新浪行情). Use when the user wants to track specific stocks, get performance summaries, or manage their watchlist.
 ---
 
 # Stock Watcher Skill
 
-This skill provides comprehensive stock watchlist management capabilities, allowing users to track their favorite stocks and get performance summaries using real-time data from 同花顺 (10jqka.com.cn).
+This skill provides comprehensive stock watchlist management capabilities, allowing users to track their favorite stocks and get performance summaries using real-time data from 新浪行情 (hq.sinajs.cn).
 
 ## 自选股行情查看
 
@@ -34,10 +34,11 @@ This skill provides comprehensive stock watchlist management capabilities, allow
 
 ## 数据来源
 
-主要使用**同花顺 (10jqka.com.cn)** 作为数据源：
-- **股票页面**: `https://stockpage.10jqka.com.cn/{stock_code}/`
-- 支持沪深A股及科创板市场
-- 提供实时行情、技术分析和资金流向数据
+主要使用**新浪实时行情 (hq.sinajs.cn)** 作为数据源（2026-10-11 起，替代同花顺静态页抓取，commit c98be34）：
+- **行情接口**: `https://hq.sinajs.cn/list={sh|sz|bj}{stock_code}`，需带请求头 `Referer: https://finance.sina.com.cn`
+- **市场前缀**: 6/8 开头→sh，0/3 开头→sz；其余（4/8 开头北交所）返回 bj 占位——hq.sinajs.cn 不支持北交所，宁可显式报错也不猜市场
+- 提供收盘价、涨跌幅、数据日期等实时行情字段
+- 输出头部统一标注 `(ok/N 只) 数据日期: … 来源: sina_hq hq.sinajs.cn`
 
 ## 自选股管理
 
@@ -59,7 +60,7 @@ This skill provides comprehensive stock watchlist management capabilities, allow
 ## 行情摘要特点
 
 - 直接显示关键行情指标，无冗余信息
-- 提供股票详情链接便于深入查看
+- 输出头部带数据日期与来源标注，便于核验
 - 自动处理网络错误和数据异常
 - 合理控制请求频率（每秒1次）
 
@@ -68,7 +69,7 @@ This skill provides comprehensive stock watchlist management capabilities, allow
 - **股票代码格式**: 使用6位数字代码（如 `600053`）
 - **数据延迟**: 行情可能有1-3分钟延迟
 - **网络依赖**: 需要网络连接获取实时数据
-- **市场范围**: 主要支持A股市场（沪市/深市/科创板）
+- **市场范围**: 沪市主板/科创板、深市主板/创业板（北交所 hq.sinajs.cn 不支持，会显式失败）
 
 ## 安装与卸载
 
