@@ -37,7 +37,9 @@ WORKSPACE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 FUND_BUY = 40      # 基本面参考分（不再一票否决，仅用于 reason 参考）
 SENT_BUY = 60      # 情绪参考分（不再一票否决，仅用于 reason 参考）
-BUY_LINE = 60      # 加权评分买入线
+# 加权评分买入线（2026-10-18 标定下调 60→55，见 check_buy docstring 第 2 条）
+GATE_BUY_LINE = float(os.getenv("GATE_BUY_LINE", "55"))
+BUY_LINE = GATE_BUY_LINE  # 兼容旧引用
 W_TECH, W_FUND, W_SENT = 0.45, 0.30, 0.25   # 三因素权重
 
 
@@ -65,7 +67,9 @@ class ResonanceGate:
             active = self._ff(kv.get("活跃度"))
             total = (up or 0) + (down or 0)
             if up is None or down is None or total <= 0:
-                self._sentiment = {"score": 50, "up_ratio": 0, "detail": "数据缺失"}
+                # 缺失 ≠ 中性（ERR-20261018-C03）：score=None 向判定层传播，
+                # 由 GATE_MISSING_POLICY 决定 fail-open/fail-closed，此处不得塞默认分。
+                self._sentiment = {"score": None, "up_ratio": 0, "detail": "数据缺失"}
             else:
                 up_ratio = up / total
                 active_norm = (active / 100.0) if active is not None else 0.5
@@ -76,8 +80,8 @@ class ResonanceGate:
                     "date": kv.get("统计日期", "")}
             self._sent_ts = now
         except Exception as e:
-            # 失败保守给 50（中性），不阻断
-            self._sentiment = {"score": 50, "up_ratio": 0, "detail": f"情绪获取失败:{str(e)[:40]}"}
+            # 取数失败：score=None 传播（缺失 ≠ 中性），策略由判定层决定
+            self._sentiment = {"score": None, "up_ratio": 0, "detail": f"情绪获取失败:{str(e)[:40]}"}
             self._sent_ts = now
         return self._sentiment
 
@@ -145,38 +149,78 @@ class ResonanceGate:
     def check_buy(self, symbol: str, tech_score: float = None) -> tuple:
         """返回 (是否通过BUY门控, 明细dict)。
 
-        纯加权评分制（2026-08-21 用户拍板）：
-          buy_score = 技术×{W_TECH} + 基本面×{W_FUND} + 情绪×{W_SENT}
-          BUY 条件：buy_score >= {BUY_LINE}
-        无任何一票否决：极端恐慌（情绪低）时，若技术+基本面足够强，仍可买入。
-        tech_score 为 None 时视为技术已由调用方确认（强买信号，按 90 计）。"""
+        2026-10-18 口径修订（用户拍板方案 A，ERR-20261018-C03）：
+          1. **缺失 ≠ 中性**：情绪/基本面取数失败时以 None 传播，绝不再按 50 计入。
+             原实现让「技术90 + 双缺」= 68 分恒过线，缺失惩罚方向反了。
+          2. **门槛下调 60 → GATE_BUY_LINE(55)**：标定研究
+             (analysis/research/*_gate_threshold_study.json, 1062 采样/615 日) 显示
+             代理分 65~70 档超额不优于 50~55 档（差 +0.12pp，CI95 [-2.36,+2.16] 含 0），
+             原 60 线无区分度 → 取下界（比全样本均值 +0.44% 高出 3.4pp 的历史拦截下限 52）。
+             调高门槛会让全池几乎全拦（实测 65 线拦截 1019/1062 = 96%），不可采纳。
+          3. **缺失项处置由 GATE_MISSING_POLICY 决定**（默认 fail_closed）：
+               fail_closed —— 任一维缺失即不放行（缺数据=不买，防假共振）
+               fail_open   —— 缺失维按 50 计（旧行为，仅紧急回退用）
+               ignore      —— 缺失维从加权中剔除，剩余权重重归一
+          3b. 技术分缺失（tech_score=None）仍按 90 计：调用方走到这里即代表
+              信号层已确认强买，此口径与生产历史一致，不改。
+        """
         sent = self.sentiment()
         fund = self.fundamental(symbol)
-        sent_score = sent.get("score", 0) or 0
-        fund_score = fund.get("score")  # 可能 None
+        sent_score = sent.get("score")            # 可能 None（缺失）
+        fund_score = fund.get("score")            # 可能 None（缺失）
         tech = tech_score if tech_score is not None else 90.0
-        # 基本面缺失时按 50(中性) 计，不因缺失而完全否决，但会拉低加权分
-        fund_eff = fund_score if fund_score is not None else 50.0
-        buy_score = round(tech * W_TECH + fund_eff * W_FUND + sent_score * W_SENT, 1)
-        ok = buy_score >= BUY_LINE
-        # 信息诊断
+
+        missing = []
+        if sent_score is None:
+            missing.append(f"情绪({sent.get('detail', '缺失')})")
+        if fund_score is None:
+            missing.append("基本面")
+
+        policy = (os.getenv("GATE_MISSING_POLICY", "fail_closed") or "fail_closed").lower()
         reasons = []
+        buy_score = None
+        if missing and policy == "fail_closed":
+            ok = False
+            reasons.append(f"数据缺失不买入[{'/'.join(missing)}]（fail_closed）")
+        else:
+            weights = {"tech": W_TECH, "fund": W_FUND, "sent": W_SENT}
+            parts = {"tech": tech}
+            if fund_score is not None:
+                parts["fund"] = fund_score
+            if sent_score is not None:
+                parts["sent"] = sent_score
+            if missing and policy == "fail_open":       # 旧行为回退
+                if fund_score is None:
+                    parts["fund"] = 50.0
+                if sent_score is None:
+                    parts["sent"] = 50.0
+            wsum = sum(weights[k] for k in parts)
+            if wsum <= 0:
+                ok = False
+                reasons.append("无可用因子")
+            else:
+                buy_score = round(sum(v * weights[k] for k, v in parts.items()) / wsum, 1)
+                ok = buy_score >= GATE_BUY_LINE
+                if missing:
+                    reasons.append(f"缺失维剔除({'/'.join(missing)})后重归一")
+
+        # 诊断信息
         if tech < 60:
             reasons.append(f"技术{tech:.0f}偏弱")
         if fund_score is not None and fund_score < FUND_BUY:
             reasons.append(f"基本面{fund_score:.0f}偏低(ROE{fund.get('roe')}/增速{fund.get('yoy_pni')})")
-        if fund_score is None:
-            reasons.append("基本面数据缺失(按50计)")
-        if sent_score < 30:
+        if sent_score is not None and sent_score < 30:
             reasons.append(f"情绪极低{sent_score:.0f}(极端恐慌)")
-        elif sent_score < SENT_BUY:
+        elif sent_score is not None and sent_score < SENT_BUY:
             reasons.append(f"情绪{sent_score:.0f}偏弱(全市场涨跌占比{sent.get('up_ratio',0):.0%})")
         reason = "三因素加权共振通过，可买入" if ok else (";".join(reasons) if reasons else "加权分未达买入线")
         info = {
-            "tech": tech, "fundamental": fund_score, "fund_eff": fund_eff,
-            "sentiment": sent_score, "buy_score": buy_score, "ok": ok,
-            "reason": (f"buy_score={buy_score}(技术{tech:.0f}×{W_TECH}+基本面{fund_eff:.0f}×{W_FUND}"
-                        f"+情绪{sent_score:.0f}×{W_SENT})：{reason}"),
+            "tech": tech, "fundamental": fund_score, "sentiment": sent_score,
+            "buy_score": buy_score, "ok": ok, "missing": missing, "policy": policy,
+            "line": GATE_BUY_LINE,
+            "reason": (f"buy_score={buy_score}(线{GATE_BUY_LINE}; 技术{tech:.0f},"
+                        f"基本面{fund_score if fund_score is not None else '缺失'},"
+                        f"情绪{sent_score if sent_score is not None else '缺失'})：{reason}"),
         }
         return ok, info
 

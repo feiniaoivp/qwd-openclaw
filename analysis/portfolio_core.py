@@ -401,6 +401,30 @@ def _force_liquidate_tier3(state: Dict, strategy_map: Dict):
             pos["_force_sell_tier3"] = True
 
 
+def _log_tier_suppression(signal: Dict, tier: str):
+    """把被 Tier 屏蔽的买入追加到 data/tier_suppressed_signals.jsonl（研究可读）。
+
+    设计: 只追加、不覆盖、单行 JSON；写失败仅告警不影响交易主流程。
+    """
+    try:
+        path = os.path.join(WORKSPACE, "data", "tier_suppressed_signals.jsonl")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        rec = {
+            "ts": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "symbol": str(signal.get("_symbol") or signal.get("symbol") or ""),
+            "name": signal.get("name", ""),
+            "tier": tier,
+            "from_action": signal.get("suppressed_from"),
+            "orig_reason": (signal.get("suppressed_reason") or "")[:200],
+            "price": signal.get("price"),
+        }
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    except Exception as e:
+        print(f"⚠️ Tier 屏蔽信号落盘失败({tier}): {e}")
+
+
 def _apply_tier_filter(signal: Dict, pos: Dict, bucket: str) -> Dict:
     """三层分层过滤：
     - Tier1 (tier1): 禁用择时卖出，仅基本面/止盈/风控卖出
@@ -409,19 +433,38 @@ def _apply_tier_filter(signal: Dict, pos: Dict, bucket: str) -> Dict:
     """
     action = signal.get("action", "持有")
     
+    # 2026-10-18: 被 Tier 吞掉的买入必须留可审计标记（用户拍板「配置 + 显式标注」）
+    # 原实现把买入静默改成持有，信号评估/事件研究看不到「被吞掉的 20.6% 究竟赚不赚钱」。
+    # 标记字段（只增不改信号语义，可被研究脚本直接统计）：
+    #   signal["suppressed_by"]   = "tier2" | "tier3"
+    #   signal["suppressed_from"] = 原 action（"买入"）
+    #   signal["suppressed_reason"] = 原 reason（保真留痕，便于归因）
+    def _mark_suppressed(sig: Dict, tier: str):
+        sig["suppressed_by"] = tier
+        sig["suppressed_from"] = sig.get("action")
+        sig["suppressed_reason"] = sig.get("reason", "")
+        _log_tier_suppression(sig, tier)
+
     if bucket == "tier3":
-        if pos.get("_force_sell_tier3") or pos.get("position"):
+        # 2026-10-18: 原条件 `pos.get("position")` 使**空仓 Tier3 标的的买入不被拦**
+        # （实测中信/中金空仓时 action 仍为「买入」）→ 与 docstring「Tier3 禁用买入」
+        # 自相矛盾。改为：只要存在 tier3 标记（_force_sell_tier3 或 _tier3_liquidated），
+        # 或当前有持仓，即进入拦截分支。空仓 tier3 票亦一律禁买（原 `or True` 式
+        # 恒真为刻意为之：docstring 口径优先于历史上的意外放行）。
+        if True:  # 分支保留以维持原有缩进结构
             if action == "买入":
+                _mark_suppressed(signal, "tier3")
                 signal["action"] = "持有"
-                signal["reason"] = f"🔴 Tier3禁止买入 | 原理由: {signal.get('reason', '')}"
+                signal["reason"] = f"🔴 Tier3禁止买入 | 原理由: {signal.get('suppressed_reason', '')}"
             elif action in ["持有", "卖出"]:
                 signal["action"] = "卖出"
                 signal["reason"] = f"🔴 Tier3强制清仓 | 原理由: {signal.get('reason', '')}"
             pos["_force_sell_tier3"] = False
     elif bucket == "tier2":
         if action == "买入":
+            _mark_suppressed(signal, "tier2")
             signal["action"] = "持有"
-            signal["reason"] = f"🟡 Tier2屏蔽买入 | 原理由: {signal.get('reason', '')}"
+            signal["reason"] = f"🟡 Tier2屏蔽买入 | 原理由: {signal.get('suppressed_reason', '')}"
     elif bucket == "tier1":
         if action == "卖出":
             reason = signal.get("reason", "")
@@ -829,13 +872,19 @@ def execute_trade(pos: Dict, signal: Dict, dt: str, strategy: str,
 
     if action == "买入" and not pos["position"]:
         # 三因素共振门控（可选）
+        #  2026-10-18: 原 `except Exception: pass` 是第二层 fail-open（门控崩=直接放行），
+        #  改为按 GATE_ERROR_POLICY 处置（默认 blocked：门控不可用时不买 + 显式留痕）。
         try:
             from analysis.three_factor_helper import ResonanceGate
             ok, info = ResonanceGate().check_buy(str(pos["_symbol"]))
             if not ok:
                 return "HOLD", f"⛔ **{pos['name']}({dt}) 买入被三因素门控拦截**\n{info.get('reason','')}\n技术信号: {signal['reason']}"
-        except Exception:
-            pass
+        except Exception as e:
+            if os.getenv("GATE_ERROR_POLICY", "blocked").lower() == "pass":
+                pass  # 紧急回退旧行为（放行）
+            else:
+                return "HOLD", (f"⛔ **{pos['name']}({dt}) 买入被门控异常拦截**"
+                                f"（GATE_ERROR_POLICY=blocked）：{str(e)[:120]}\n技术信号: {signal['reason']}")
 
         fee = available_cash * COMMISSION
         cash_after_fee = available_cash - fee
@@ -1193,6 +1242,9 @@ def run_portfolio_scan(
             continue
 
         # 三层分层过滤（核心逻辑）
+        # 注入标识供 Tier 吞信号留痕（_apply_tier_filter 需要 symbol/name）
+        signal.setdefault("_symbol", sym)
+        signal.setdefault("name", name)
         signal = _apply_tier_filter(signal, pos, bucket)
         
         # 030 风控覆盖

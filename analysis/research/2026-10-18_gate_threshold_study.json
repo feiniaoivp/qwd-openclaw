@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-18",
+  "hold_days": 5,
+  "n_signals": 1062,
+  "n_price_syms": 70,
+  "quick": false,
+  "caveat": "代理分用 tech×0.45+50×0.55（情绪/基本面历史实值不可回放），为保守下界；真实门控分只会更高，故本研究的拦截组被低估 → 结论偏保守。",
+  "overall_ex5_mean": 0.436,
+  "overall_ex5_median": -0.353,
+  "buckets": [
+    {
+      "lo": 50,
+      "n": 1012,
+      "mean": 0.482,
+      "median": -0.308
+    },
+    {
+      "lo": 60,
+      "n": 7,
+      "mean": -5.44,
+      "median": -5.446
+    },
+    {
+      "lo": 65,
+      "n": 43,
+      "mean": 0.323,
+      "median": -0.427
+    }
+  ],
+  "threshold_scan": [
+    {
+      "T": 60,
+      "blocked_n": 1012,
+      "blocked_mean": 0.482,
+      "passed_mean": -0.484,
+      "diff": 0.966,
+      "ci95": "[-1.36,+2.92]",
+      "significant": false
+    },
+    {
+      "T": 65,
+      "blocked_n": 1019,
+      "blocked_mean": 0.441,
+      "passed_mean": 0.323,
+      "diff": 0.118,
+      "ci95": "[-2.36,+2.16]",
+      "significant": false
+    }
+  ]
+}

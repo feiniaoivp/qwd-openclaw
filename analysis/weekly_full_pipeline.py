@@ -316,6 +316,24 @@ def main():
     if not r["success"]:
         print("⚠️ 方向分配上限契约被破坏（见上方），方向级资金上限可能再次静默失效（不阻断流水线）...")
 
+    # 步骤 0q: 三因素门控缺失语义契约门禁（2026-10-18 新增，纯离线桩）
+    # 背景：原实现「缺失→中性50」使技术90+双缺=68分恒放行；已改 None 传播 +
+    # GATE_MISSING_POLICY(fail_closed 默认)。本门禁锁缺失语义 + 门槛 + 回退路径。
+    print("\n🚦 步骤 0q/9: 门控缺失语义契约门禁 (gate_missing_policy_test.py)")
+    r = run_script("../scripts/gate_missing_policy_test.py", timeout=90)
+    results["gate_missing_policy"] = r
+    if not r["success"]:
+        print("⚠️ 三因素门控缺失语义契约被破坏（见上方），缺失可能又退化为中性分（不阻断流水线）...")
+
+    # 步骤 0r: Tier 屏蔽留痕契约门禁（2026-10-18 新增，纯离线 + 临时目录隔离）
+    # 背景：Tier2/3 静默吞掉 20.6% 买入信号，评估口径看不见 → 改「配置+显式标注」。
+    # 锁：Tier3 空仓买入必须拦（原漏拦）+ suppressed_* 字段 + jsonl 追加。
+    print("\n🚦 步骤 0r/9: Tier屏蔽留痕契约门禁 (tier_suppression_test.py)")
+    r = run_script("../scripts/tier_suppression_test.py", timeout=60)
+    results["tier_suppression"] = r
+    if not r["success"]:
+        print("⚠️ Tier 屏蔽留痕契约被破坏（见上方），被吞信号可能再次静默消失（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = _resume_skip("backtest", resume_record)
