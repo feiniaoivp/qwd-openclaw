@@ -106,6 +106,10 @@ moneyflow 三 host curl_cffi 全 curl(56) 的同一分钟里，裸 curl 曾独�
 
 ## [2026-10-18] 池标定规则套用到子群前必须验证子群内方向（对撞信号反例）
 
+- **Logged**: 2026-10-18
+- **Category**: best_practice
+- **Area**: research/gate
+
 **发现**: 门控 alpha 分解后建议「分歧对撞信号 tech 降档」（对撞放行组理想臂 −0.55%，看似弱）。
 反事实扫描发现方向完全反了：tech 90→75 时拦截组现实臂 +2.36%、放行组 −0.92%（LOSO 41/41）。
 
@@ -121,3 +125,13 @@ moneyflow 三 host curl_cffi 全 curl(56) 的同一分钟里，裸 curl 曾独�
    两口径可能方向相反，以现实臂为准。
 
 **产物**: analysis/research/2026-10-18_gate_clash_downgrade_counterfactual.{md,json}
+
+### Metadata (2026-10-19 维护补全)
+- Source: manual-session（对撞信号降档反事实）
+- Pattern-Key: research.subgroup-direction-reversal
+- Recurrence-Count: 1
+- First-Seen: 2026-10-18
+- Last-Seen: 2026-10-18
+- Status: resolved（反事实拦下错误变更，生产未动，commit 93ccbb4）
+- Disposition: retain — RC=1 < 3，与 `research.benchmark-basis-mismatch` / `research.proxy-score-dimensional-swap` 同属「实验口径类」家族；
+  三条约形成集群后再统一评估是否合并提升，避免逐条写规则造成 AGENTS.md 膨胀。

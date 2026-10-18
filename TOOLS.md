@@ -443,6 +443,27 @@ rg -n 'breakpoint\(|pdb\.set_trace|debugpy\.' --type py   # 人工快速版
 
 ---
 
+## 🔴 网络调用超时铁律（2026-10-19 由 err.dist-io-no-timeout 提升）
+
+> **为什么强制**：`analysis/net_guard.py` 全量接线（80 个文件）后仍复发——
+> 根因不是「没装护栏」，而是**护栏装不到的位置**：①第三方库内部建连早于
+> `install_default_timeout()`；②resolver/框架层自带无限等待。已 4 次实证
+> 表现为 `sock_recv/sock_read → internal_select` 永久挂死、CPU≈0、无产出。
+
+**规则（三条判据）**：
+1. **入口装 net_guard ≠ 全链路免疫**。被循环/回测反复调用的「刷新/取数」函数，
+   必须在函数体内自带 `with network_timeout_guard(<sec>)`，不能只靠进程级默认值。
+2. **超时必须有降级路径**：超时 → 用旧缓存/上一有效值 + **可见告警**（fail-safe），
+   禁止静默重试或无限等待。
+3. **诊断挂死用 `/usr/bin/sample <pid> 5`**（看真实栈，如 SSL 读阻塞），
+   不用反复 kill 重启试探。
+
+参考实现：`analysis/portfolio_core.py::RiskGuard.refresh()`（`network_timeout_guard(15)`，commit fc625ed）；
+排查清单：`analysis/net_guard.py`、`analysis/bs_session.py`（常驻会话旧连接可能先于护栏建立）。
+Source: .learnings/ERRORS.md#err.dist-io-no-timeout
+
+---
+
 ## 🔴 派生指标缓存铁律（2026-10-18 由 ERR-20261018-C05 提升）
 
 > **为什么强制**：chip 第 5 维复活当天实测"一切正常"（数据刚补过），但三个读写点

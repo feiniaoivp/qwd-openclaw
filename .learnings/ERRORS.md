@@ -417,21 +417,76 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - 修复: portfolio_core.RiskGuard.refresh() 刷新体包 network_timeout_guard(15)，超时降级旧缓存+可见告警（commit fc625ed）。
 -  lesson: 入口脚本装 net_guard ≠ 全链路免疫；**任何被回测/循环调用的风控刷新必须自带超时**。
 
+### Metadata
+- Source: cron/manual-session（cluster_window_ab 回测任务）
+- Reproducible: yes
+- Pattern-Key: err.dist-io-no-timeout（2026-10-19 维护定 key；此前无 key 导致跨任务复发不可计数）
+- Recurrence-Count: 4
+- First-Seen: 2026-09-17
+- Last-Seen: 2026-10-18
+- Status: promoted (2026-10-19 → TOOLS.md「🔴 网络调用超时铁律」)
+- Promoted: TOOLS.md「🔴 网络调用超时铁律」(2026-10-19, Source: .learnings/ERRORS.md#err.dist-io-no-timeout)
+- See Also: memory/dreaming/daily-report-2026-09-17.md（sock_recv 挂起 → net_guard 立项）；
+  memory/dreaming/daily-report-2026-09-30.md（baostock 常驻会话先于护栏建连，遗留未治）；
+  ERR-20261002-BSL（baostock 登录 ~60s 无负缓存，同类无超时放大因素）
+
+### Promotion (2026-10-19 每日维护)
+- 触发：同根因跨 ≥4 个任务（09-17 net_guard 立项 / 09-29 baostock 常驻会话 / 10-02 回测登录 / 10-18 RiskGuard），30 天窗口内，RC=4 ≥ 3，且此前无防治规则落在 TOOLS.md/AGENTS.md（护栏只有代码，没有行为规则）。
+- 验证：`analysis/portfolio_core.py:668-672` 修复在位；`grep -rl net_guard analysis scripts` = 80 文件已接线，但 09-30 遗留项（bs_session 旧连接先于护栏）仍未闭环 → 规则强调「函数体内自带超时」而非仅入口接线。
+- 写入：TOOLS.md「🔴 网络调用超时铁律」三条判据（函数体内护栏 / 超时必降级可见 / sample 诊断）。
+
 ## ERR-20261018-C02 三臂 A/B 结果逐字节相同 = 门禁不在执行路径的信号
 - cluster cap 三臂（prod/roll/off）回测权益/交易完全相同 → run_backtest 主循环不含簇拦截（只在 run_portfolio_scan）。
 - lesson: 做门禁 A/B 前先 grep 门禁代码是否真的在被打分的执行路径里（`grep -c cluster portfolio_executor.py` 一条命令即可提前发现，浪费了 ~15 分钟回测）。
 
+### Metadata (2026-10-19 维护补全)
+- Source: manual-session（cluster_window_ab 三臂 A/B）
+- Reproducible: yes
+- Pattern-Key: research.gate-not-in-exec-path
+- Recurrence-Count: 2
+- First-Seen: 2026-10-18
+- Last-Seen: 2026-10-18
+- Status: resolved（2026-10-18 当日定位 actuator 路径，非代码缺陷）
+- Disposition: retain — 可复用排查启发式，但 RC=2 < 3，暂不提升；若再遇到一次 A/B 空结果则复核提升。
+
 ## ERR-20261018-C01: 刷新脚本标志位反转导致 41 个基准池 CSV 被截断为 1 行（已自愈）
+
+> ⚠️ **ID 冲突（2026-10-19 维护）**：本条目与 ERR-20261018-C01（RiskGuard 挂死）同日同号。历史保留不改名，
+> 引用请用 Pattern-Key `data.rewrite-script-flag-inversion`；后续同一事件一律挂此 key。
 - **经过**: 写 scripts/refresh_stock_data.py 时，todo 元组第 5 位语义是「是否标准格式(std)」，循环里却当成「是否重建(rebuild)」用 → 标准文件走了全量重写分支，且 start=last 只拉到 1 行 → 41 个 CSV 被截成单行。
 - **发现**: 写后自检只跑了 compile/grep '***'，没做语义走查；首跑输出「✅ 41」当时未核对行数，直到第二批 11 个失败才回查。
 - **修复**: ①标志位改正；②桩文件自愈规则（<30 行全量重建）；③重写前 .bak_refresh 备份 + 行数防倒退检查（新行数 < 旧行数且旧≥30 → 拒绝写盘）。全部 41 文件已从 baostock 重建（2025-06-30 起，净效果：陈旧 10-08 → 新鲜 10-16）。
 - **教训**: ①「重写型」数据脚本必须有写前备份+行数防倒退检查，这是第三个必配防线（前两个: compile 检查、静默 except）；②首跑的「成功」必须抽样核对产物形态（行数/日期范围），不能只看退出码——本轮 41 个 ✅ 全是假成功；③元组多字段传参时用命名元组/dataclass，位置语义最易反转。
+
+### Metadata (2026-10-19 维护补全)
+- Source: simplify-and-harden（数据债治理任务）
+- Reproducible: yes
+- Pattern-Key: data.rewrite-script-flag-inversion
+- Recurrence-Count: 1
+- First-Seen: 2026-10-18
+- Last-Seen: 2026-10-18
+- Status: resolved（2026-10-18 自愈：标志位改正 + 桩自愈 + .bak_refresh + 行数防倒退，commit 24e7230）
+- Validation: verified — 2026-10-19 实测 `/Users/duguke/stock_data/*.csv` 53 个文件、**0 个 < 30 行**，最新 mtime 10-18 22:12（900925 为已知跳过项）。
+- Promoted: AGENTS.md「配套铁律 · 全量/快速双模式 quick 写独立文件 + 重写型脚本备份/行数防倒退」(2026-10-19)
+- 附注：教训①③属单次事件、样本 1，未单独提升；提升的是「首跑 ✅ 必须抽样核对产物形态」这一可复用门禁习惯。
 
 ## ERR-20261018-C03 三因素门控「缺数据→中性 50」把 fail-open 做成「缺数据必放行」，且 `except: pass` 再兜一层
 - **现象**：`three_factor_helper.ResonanceGate.check_buy` 在情绪/基本面取数失败时按 50 计；`W=(0.45,0.30,0.25)`、`BUY_LINE=60` → 技术=90（调用方强买信号）时 `90*.45+50*.30+50*.25=68` 已过线。情绪低到 20 分也仍 60.5 放行。更糟：`portfolio_core.execute_trade` 里 `try: ResonanceGate().check_buy(...) except Exception: pass` —— 门控自身抛错时**直接放行**，形成第二层 fail-open。
 - **根因**：把「数据缺失」映射成「中性分」参与加权，等价于给缺失项发及格分；阈值 60 又低于「三分之二中性」的组合分。**缺失 ≠ 中性**，是 `picks` 隐性 5.0 填充同款病（10-08 已立契约修复，门控这一路漏网）。
 - **规约**：①多因子门控里缺失维必须以 `None` 传播，由判定层显式选择 fail-open/fail-closed 并在 reason 留痕，禁止在取数层塞默认分；②门控调用处禁止 `except: pass`，异常必须降级为「不确定 → 记录 + 按配置策略」③改门控阈值前先做「缺数据分布」实测，否则永远测不出拦截率。
 - **状态**：已量化（矩阵实测见 `<会话日志>`），修复方案待用户拍板（情绪维度可能已退化，见同日观察）。
+
+### Metadata (2026-10-19 维护补全)
+- Source: manual-session（三因素门控审计）
+- Reproducible: yes
+- Pattern-Key: gate.fail-open-missing-as-neutral
+- Recurrence-Count: 1
+- First-Seen: 2026-10-18
+- Last-Seen: 2026-10-18
+- Status: promoted (2026-10-19 → AGENTS.md「配套铁律 · 缺失维 None 传播 / 门控禁 except:pass」)
+- Validation: verified — `analysis/three_factor_helper.py:50/69-72` 已改为 `score=None` 传播 + `GATE_MISSING_POLICY`（默认 fail_closed）；`analysis/portfolio_core.py:882-885` 已去 `except: pass`，改 `GATE_ERROR_POLICY`（默认 blocked），commit f470472。
+- 注：RC=1 但属「安全级 fail-open 缺陷」，按最小必要防治即时提升（与 10-18 安全类条目同口径）；
+  同日观察到的「情绪维度可能退化」为独立待验证假设，不并入本规则。
 
 ## ERR-20261018-C04 多臂对照各配"自然基准" → 基准口径差冒充实验效应，结论自动反转
 **日期**: 2026-10-18
@@ -447,6 +502,17 @@ B 臂用 `close(T)→open(T+1)` 全池等权。两条基准**持有期完全不�
 2. 加**恒等自检** `max|(exB−exA)−cost| ≈ 0`，超 0.005pp 直接 exit 3 拒绝出结论。
 **通用规则**: 多臂/多策略对照，**所有臂必须减同一个基准**。臂间差只能来自被控变量，
 不能来自基准定义。对照实验必须写一个恒等式自检，用数学关系锁死口径，而不是靠人工核对。
+
+### Metadata (2026-10-19 维护补全)
+- Source: manual-session（gap 成本重放）
+- Reproducible: yes
+- Pattern-Key: research.benchmark-basis-mismatch
+- Recurrence-Count: 1
+- First-Seen: 2026-10-18
+- Last-Seen: 2026-10-18
+- Status: promoted (2026-10-19 → AGENTS.md「配套铁律 · 多臂共用同一基准 + 恒等自检」)
+- Validation: verified — `scripts/gap_cost_replay.py:156/241` 同基准实现 + 恒等式自检（不过 exit 3）在位；报告 `analysis/research/2026-10-18_gap_cost_replay.md:28/84`。
+- 注：RC=1，属「结论方向会自动反转」的高危实验口径缺陷，按最小必要即时提升。
 
 ## ERR-20261018-C05 缓存文件"无条件命中 + 无刷新方"= 派生指标会带着新价格用旧状态静默失效
 
@@ -484,6 +550,11 @@ B 臂用 `close(T)→open(T+1)` 全池等权。两条基准**持有期完全不�
 **产物**: `analysis/chip_freshness.py`、`scripts/chip_freshness_test.py`（17 项）、
 周流水线 0s/0t、commit f940370
 
+### Maintenance (2026-10-19 每日维护)
+- 复核：防治规则 TOOLS.md「🔴 派生指标缓存铁律」四条在位；产物 `analysis/chip_freshness.py`、`scripts/chip_freshness_test.py` 均在位（10-18 更新）。
+- Pattern-Key 本文件仅此一处，无跨文件重复；RC 维持 2 不虚增（10-19 无新复发）。
+- Validation 维持 verified；终态保持 promoted。
+
 ## ERR-20261018-C06 门控阈值标定用「代理分」= 把变量的维度当常量、常量的维度当变量
 
 **现象**: GATE_BUY_LINE=55 的标定（10-18 f470472）用 `tech×0.45 + 50×0.55` 代理分，
@@ -509,6 +580,17 @@ B 臂用 `close(T)→open(T+1)` 全池等权。两条基准**持有期完全不�
 **产物**: scripts/gate_threshold_study_v2.py / scripts/fund_history_builder.py /
 data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_study_v2.{md,json}
 
+### Metadata (2026-10-19 维护补全)
+- Source: manual-session（门控阈值标定 v2）
+- Reproducible: yes
+- Pattern-Key: research.proxy-score-dimensional-swap
+- Recurrence-Count: 1
+- First-Seen: 2026-10-18
+- Last-Seen: 2026-10-18
+- Status: promoted (2026-10-19 → AGENTS.md「配套铁律 · 标定前确认因子是变量还是常量」)
+- Validation: verified — 真实口径重建脚本 `scripts/gate_threshold_study_v2.py` 与 `scripts/fund_history_builder.py` 在位；结论「55 线无统计支撑、唯一显著分界 50」已入库（commit 9db0cb8/21b3846）。
+- 注：RC=1，与 ERR-20261018-C03 同属「门控因子语义」类，合并为一条贯穿规则写入 AGENTS.md（一条规则覆盖两处根因，避免重复纠偏）。
+
 ## ERR-20261018-C07 --quick 冒烟测试覆盖全量数据产物（相同库内数据债）
 
 **现象**: `fund_history_builder.py --quick`（开发验算，只建 5 只）和全量（36 只）写同一个
@@ -526,3 +608,43 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 "用完就删"或"记得别跑 quick"这种约定——约定必然被违反（本次就是冒烟测试忘了）。
 
 **产物**: scripts/fund_history_builder.py / scripts/market_breadth_builder.py 的 QUICK 分支写独立文件
+
+### Metadata (2026-10-19 维护补全)
+- Source: manual-session（fund/tier 数据构建）
+- Reproducible: yes
+- Pattern-Key: data.quick-mode-overwrites-full
+- Recurrence-Count: 1
+- First-Seen: 2026-10-18
+- Last-Seen: 2026-10-18
+- Status: promoted (2026-10-19 → AGENTS.md「配套铁律 · quick 写独立文件名」)
+- Validation: verified — `scripts/fund_history_builder.py:50` / `scripts/market_breadth_builder.py:48` 均写 `*.quick.json`。
+- 注：RC=1，与同日 CSV 截断事故（`data.rewrite-script-flag-inversion`）同属「重写型数据脚本静默破坏产物」家族，合并为一条铁律提升。
+
+## ERR-20261019-C01 pre_response_guard 的 PE/PB 子串误报（技术报告被拦成市场数据违规）
+
+**现象**: 04:1x 用 `scripts/pre_response_guard.py --stdin` 自检 dreaming 日报，报 **16 条违规**，
+逐条看全是 `pe 数值:` 形式的空关键词命中（上下文是 `update` / `spec` / `type_percent` / `patch`），
+真实市场数据引用 **0 条**；同一文本里唯一真实的一条（国联先例「量比 0.52」）确实该拦且已补来源。
+修完 PE 误报后，该报告才正确 exit 0。
+
+**根因**: `MARKET_KEYWORDS` 里的 `r'PE'` / `r'PB'` 用 `re.IGNORECASE` + 无词边界子串匹配
+→ `up**pe**r` / `s**pe**c` / `ty**pe**` 全部命中，且 `NUMBER_PATTERN` 会把 80 字符内的任意数字抓来配对。
+2026-10-07 修过「单位组捕获」同类 bug，但没意识到短 ASCII 缩写本身会撞普通英文词。
+
+**修复** (scripts/pre_response_guard.py): PE/PB 从 `MARKET_KEYWORDS` 移出，单独用 `r'\bPE\b'` / `r'\bPB\b'`
++ **区分大小写**（flags=0）匹配；中文关键词保持 IGNORECASE。
+
+**通用规则**: 往「关键词正则列表」里加**短 ASCII 缩写**（PE/PB/AI/ROE 等）必须同时加词边界 + 区分大小写，
+否则在中文技术文档里会被普通英文单词大量误命中；**门禁误报比漏报更危险——它会训练人绕过门禁**。
+
+**验证**: 8 例自测全过（有来源放行 / `spec_update` 放行 / 裸成交额拦 / 裸 PE 拦 / 带来源 PE 放行 / 裸量比拦 / 无市场词放行）。
+
+### Metadata (2026-10-19 维护补全)
+- Source: manual-session（dreaming 日报自检）
+- Reproducible: yes
+- Pattern-Key: guard.short-ascii-substring-false-positive
+- Recurrence-Count: 1
+- First-Seen: 2026-10-19
+- Last-Seen: 2026-10-19
+- Status: resolved（2026-10-19 当日修复 + 8 例自测）
+- Disposition: retain — 可复用提示（门禁误报比漏报更危险），RC=1 < 3，暂不提升；若再出现「门禁刷屏式误报」则复核。

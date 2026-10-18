@@ -383,6 +383,26 @@ echo "✅ 已回滚到 $TAG"
     不要依赖 exec 生命周期捕获 stdout；SIGKILL 父进程不会级联杀子进程，重跑前先 `pgrep -f` 确认无孤儿实例。
     （实证：3 个新闻 cron 静默停摆 21 天；quant_push.py 10-09 stdout 丢失事故）
     Source: .learnings/LEARNINGS.md#cron.silent-noop-fake-ok / .learnings/ERRORS.md#ERR-20261009-QuantPushDetachedOutputLost
+*   **研究脚本 JSON 键统一 str + 主结果先落盘**。事件研究/统计表用 horizon 等数值键时
+    从建表起一律 `str(h)`（`json.dump` 后 int 键必变 str，混用 → 统计全 None 或 KeyError）；
+    大计算（>1min）的主结果 `json.dump` 必须放在打印/二次处理之前，避免崩溃白跑。
+    （实证：2026-10-17 rsi30_event_study 统计全 None + dual_signal_event_study 写盘前 KeyError）
+    Source: .learnings/ERRORS.md#ERR-20261017-C02
+*   **写「全量/快速」双模式构建脚本时，`quick` 必须写独立文件名**（如 `*.quick.json`），
+    永不复用全量产物路径；同理**任何「重写型」数据脚本必须有写前 `.bak` 备份 + 行数防倒退检查**，
+    且首跑 `✅` 之后要**抽样核对产物形态**（行数/日期范围/条目数），不能只看退出码。
+    （实证：2026-10-18 `--quick` 冒烟覆盖 36→5 只全量产物；标志位反转把 41 个 CSV 截成 1 行）
+    Source: .learnings/ERRORS.md#ERR-20261018-C07 / #ERR-20261018-C01
+*   **多臂/多策略对照必须减同一个基准**，臂间差只能来自被控变量；
+    并写**恒等式自检**（如 `max|(exB−exA)−cost|≈0`，超阈直接 exit 非 0 拒绝出结论）。
+    结论方向相反但各自 CI 显著 = 先查基准口径，不是先写报告。
+    （实证：gap 成本重放首版「成本为负但现实臂超额更高」，根因是两臂基准持有期差 0.918pp）
+    Source: .learnings/ERRORS.md#ERR-20261018-C04
+*   **标定阈值前先读生产源码确认每个因子是「变量」还是「常量」**；缺失维一律 `None` 传播，
+    由判定层显式选择 fail-open/fail-closed 并留痕——禁止在取数层塞默认分（缺数据 ≠ 中性 50），
+    门控调用处禁止 `except: pass`（那是第二层 fail-open）。
+    （实证：三因素门控缺数据按 50 计 → 技术 90 时恒过 60 线；代理分把常量当变量标定，结论反向）
+    Source: .learnings/ERRORS.md#ERR-20261018-C03 / #ERR-20261018-C06
 
 <!-- prismfy-search:start -->
 Prismfy Web Search is installed and available via `prismfy-search "<query>"`.
