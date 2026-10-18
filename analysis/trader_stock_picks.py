@@ -180,8 +180,19 @@ def get_technical_from_hist(symbol: str, name: str) -> Dict[str, Any]:
 CHIP_CACHE_DIR = os.path.join(_WORKSPACE, "data", "research_price_cache")
 
 
-def load_chip_metrics(symbol: str):
-    """读 chipmetrics 缓存，取最后一行的三指标。缺失返回 None（不填充默认值）。"""
+def load_chip_metrics(symbol: str, price_ref: str = None):
+    """读 chipmetrics 缓存，取最后一行的三指标。缺失/陈旧返回 None（不填充默认值）。
+
+    2026-10-18 新鲜度把关（契约见 scripts/chip_freshness_test.py）：
+    旧实现只取 `df.iloc[-1]`，完全不看这一行有多旧。缓存冻结时
+    `cost_bias = close(T)/avg_cost(T0) - 1` 会拿新价减旧成本 → 上行行情里该值被
+    系统性推高，−0.20 深度折价档永不触发（加分项静默失效）；下行则批量误报折价。
+    现按 analysis/chip_freshness 判定：滞后 > STALE_CRITICAL_DAYS(默认10) 交易日
+    → 返回 None（该维退出计分，走「缺失不填充」纪律），并输出可见告警。
+    滞后在 (MAX_LAG_DAYS, STALE_CRITICAL_DAYS] 之间仍可用但告警。
+
+    `price_ref` 可外部注入基准日（测试/批量场景可避免逐票重启读价格缓存）。
+    """
     try:
         path = os.path.join(CHIP_CACHE_DIR, f"chipmetrics_{symbol}.pkl")
         if not os.path.exists(path):
@@ -191,10 +202,27 @@ def load_chip_metrics(symbol: str):
         if df is None or len(df) == 0:
             return None
         r = df.iloc[-1]
-        return {"date": str(r.get("date", ""))[:10],
+        chip_date = str(r.get("date", ""))[:10]
+
+        # ── 新鲜度把关 ──
+        import logging
+        from analysis import chip_freshness as _cf
+        fresh = _cf.check(symbol, chip_date,
+                          ref_date=price_ref,
+                          cache_dir=(None if price_ref else CHIP_CACHE_DIR))
+        if not fresh["ok"]:
+            if not fresh["trustworthy"]:
+                logging.getLogger(__name__).warning(
+                    f"load_chip_metrics({symbol}) 筹码数据不可信 → 该维 None: {fresh['reason']}")
+                return None
+            logging.getLogger(__name__).warning(
+                f"load_chip_metrics({symbol}) 筹码数据陈旧但仍在容忍内: {fresh['reason']}")
+
+        return {"date": chip_date,
                 "winner_pct": float(r["winner_pct"]),
                 "cost_bias": float(r["cost_bias"]),
-                "conc90": float(r["conc90"])}
+                "conc90": float(r["conc90"]),
+                "lag": fresh["lag"]}
     except Exception as e:
         print(f"⚠️ 筹码指标读取失败 {symbol}: {e}")
         return None

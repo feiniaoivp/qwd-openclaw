@@ -51,41 +51,100 @@ def boot_ci(xs, n=3000):
     return [float(np.percentile(ms, 2.5)), float(np.percentile(ms, 97.5))]
 
 
-def fetch_chip_input(sym: str):
-    """baostock 拉 date,high,low,close,volume,turn（含磁盘缓存）。turn 为百分数。"""
+def fetch_chip_input(sym: str, ref_date: str = None):
+    """baostock 拉 date,high,low,close,volume,turn（含磁盘缓存）。turn 为百分数。
+
+    2026-10-18 修复：旧实现 `if exists: return` 无条件命中，缓存永不更新。
+    现策略：
+      * 缓存缺失 → 全量拉取（START 起）
+      * 缓存最后日期 >= 目标日期 → 直接用
+      * 否则 → **只拉增量尾巴**（最后日期+1 ~ 目标日期），拼接到旧缓存后写回
+    目标日期默认取价格缓存最新日（与该票行情对齐），拿不到才用今天。
+    """
     cache = os.path.join(CHIP_CACHE_DIR, f"chip_{sym}.pkl")
+    target = ref_date or _price_ref_date(sym) or pd.Timestamp.now().strftime("%Y-%m-%d")
+    cached = None
     if os.path.exists(cache):
-        return pd.read_pickle(cache)
+        try:
+            cached = pd.read_pickle(cache)
+        except Exception as e:
+            log.warning("%s chip 输入缓存损坏，将全量重建: %s", sym, e)
+            cached = None
+
+    last = None
+    if cached is not None and len(cached):
+        last = str(cached["date"].max())[:10]
+    if last and last >= target:
+        return cached
+
     import baostock as bs
     code = f"sh.{sym}" if sym.startswith(("6", "9")) else f"sz.{sym}"
+    start = START if not last else (
+        (pd.Timestamp(last) + pd.Timedelta(days=1)).strftime("%Y-%m-%d"))
     rs = bs.query_history_k_data_plus(
         code, "date,high,low,close,volume,turn",
-        start_date=START, end_date=pd.Timestamp.now().strftime("%Y-%m-%d"),
-        frequency="d", adjustflag="2",
+        start_date=start, end_date=target, frequency="d", adjustflag="2",
     )
     rows = []
     while rs.error_code == "0" and rs.next():
         rows.append(rs.get_row_data())
     if rs.error_code != "0":
         raise RuntimeError(f"{sym}: {rs.error_msg}")
-    df = pd.DataFrame(rows, columns=["date", "high", "low", "close", "volume", "turn"])
+    new = pd.DataFrame(rows, columns=["date", "high", "low", "close", "volume", "turn"])
     for c in ("high", "low", "close", "volume", "turn"):
-        df[c] = pd.to_numeric(df[c], errors="coerce")
-    df = df.dropna(subset=["close"]).reset_index(drop=True)
+        new[c] = pd.to_numeric(new[c], errors="coerce")
+    new = new.dropna(subset=["close"])
+
+    if cached is not None and len(cached):
+        if len(new) == 0:
+            return cached            # 无新行：不动盘（幂等）
+        df = pd.concat([cached, new], ignore_index=True)
+        df = df.drop_duplicates("date").sort_values("date").reset_index(drop=True)
+    else:
+        df = new.reset_index(drop=True)
+
     df.to_pickle(cache)
     return df
 
 
-def chip_metrics(df: pd.DataFrame) -> pd.DataFrame:
-    """逐日衰减法筹码分布 → 每日三指标（因果，只用 ≤T 数据）。"""
+def _price_ref_date(sym: str):
+    """价格缓存（data/research_price_cache/{sym}.pkl）最新日期；无则 None。"""
+    try:
+        from analysis import chip_freshness as _cf
+        return _cf.price_ref_date(sym)
+    except Exception:
+        return None
+
+
+def chip_metrics(df: pd.DataFrame, prev: pd.DataFrame = None, n_warmup: int = 60) -> pd.DataFrame:
+    """逐日衰减法筹码分布 → 每日三指标（因果，只用 ≤T 数据）。
+
+    2026-10-18 增量模式：传入 `prev`（已算好的历史指标）时，只重算尾部
+    `n_warmup` 行之后的部分。
+
+    ⚠️ 为什么只回退 n_warmup 行而不是完全增量：
+    筹码网格的下界/上界取的是**整个窗口**的 min_low/max_high（_ALL_ 口径）。
+    若只拿新行算网格，网格会随窗口滑动而变，新旧两段的 cost_bias 不同源。
+    折中：网格仍用全窗口（与旧结果口径一致），但状态（chips 分布）从
+    `len(df)-n_warmup` 处起步——筹码衰减是指数型的，60 个交易日后旧筹码
+    ×(1-turn)^60 残留极小（turn≈2% 时 ≈0.3%），足以消除截断误差。
+    """
     lo_all, hi_all = df["low"].min(), df["high"].max()
     if not np.isfinite(lo_all) or hi_all <= lo_all:
         return pd.DataFrame()
     grid = np.linspace(lo_all, hi_all, N_BINS)
     centers = (grid[:-1] + grid[1:]) / 2
+
+    warm = 0
+    keep = None
+    if prev is not None and len(prev):
+        warm = max(0, len(df) - n_warmup)
+        if warm > 0:
+            keep = prev[prev["date"].astype(str) < str(df["date"].iloc[warm])]
+
     chips = np.zeros(N_BINS - 1)
     out = []
-    for row in df.itertuples(index=False):
+    for j, row in enumerate(df.itertuples(index=False)):
         t = row.turn / 100.0 if pd.notna(row.turn) else 0.0  # baostock turn 为百分数
         t = min(max(t, 0.0), TURN_CAP)
         chips *= (1.0 - t)
@@ -99,6 +158,8 @@ def chip_metrics(df: pd.DataFrame) -> pd.DataFrame:
             w = np.clip(w, 0.0, None)
             if w.sum() > 0:
                 chips += vol * w / w.sum()
+        if j < warm:
+            continue                      # 暖机段：只推进筹码状态，不输出
         total = chips.sum()
         if total <= 0:
             continue
@@ -109,10 +170,127 @@ def chip_metrics(df: pd.DataFrame) -> pd.DataFrame:
         p90 = float(centers[np.searchsorted(cum, 0.90)])
         conc = (p90 - p10) / row.close if row.close > 0 else np.nan
         out.append((row.date, winner, row.close / avg_cost - 1 if avg_cost > 0 else np.nan, conc))
-    return pd.DataFrame(out, columns=["date", "winner_pct", "cost_bias", "conc90"])
+
+    tail = pd.DataFrame(out, columns=["date", "winner_pct", "cost_bias", "conc90"])
+    if keep is not None and len(keep):
+        tail = pd.concat([keep, tail], ignore_index=True)
+    return tail
+
+
+def refresh_metrics(force: bool = False) -> int:
+    """生产维护模式：把 chipmetrics 推到与价格缓存对齐的最新日期。
+
+    与 main() 的区别：main() 是**研究**入口（跑五分位、算 CI、写 study json）；
+    refresh 只做数据维护，不重算研究结论。周流水线挂这个。
+
+    对每只票：
+      1. chip 输入拉到目标日（fetch_chip_input 已改为增量尾巴）
+      2. chipmetrics 缺失 / 过期 / 输入有新增行 → 增量重算尾部
+      3. 仍然陈旧且无法重算 → 计入 failed（告警，不阻断）
+    幂等：数据已同步时全部 skip，不碰盘。
+    """
+    from analysis.fib_extension_scan import WATCHLIST
+    from analysis import chip_freshness as _cf
+
+    syms = sorted(WATCHLIST.keys())
+    idx = _cf.trading_index()
+    stats = {"total": len(syms), "refreshed": 0, "skipped": 0, "failed": 0}
+    failures = []
+
+    # 🔴 2026-10-18 截断测试揭出的真缺陷：
+    # 旧逻辑用「chip 输入最后日 >= 价格缓存最后日」判同步。当**两边同时**落后
+    # （主因：价格缓存本身未刷新，或两者一起被截断）时，该条件恒真 → 全 skip，
+    # 永远不会追。实测：把价格与 chip 都截到 10-09 → refresh 报 36/36 skipped。
+    # 修正：同步判据必须同时包含「不落后于全市场最新行情」。基准取价格缓存
+    # 跨票最新日（代表本体系最后一次成功拉到的行情日），而非 date.today()。
+    market_ref = None
+    for s in syms:
+        d = _cf.price_ref_date(s)
+        if d and (market_ref is None or d > market_ref):
+            market_ref = d
+    if market_ref:
+        log.info("行情基准日 = %s", market_ref)
+
+    need_bs = any(True for _ in syms)  # 惰性登录：只在真的要拉数据时
+    logged = False
+    try:
+        for i, sym in enumerate(syms, 1):
+            mpath = os.path.join(CHIP_CACHE_DIR, f"chipmetrics_{sym}.pkl")
+            ipath = os.path.join(CHIP_CACHE_DIR, f"chip_{sym}.pkl")
+            ref = _cf.price_ref_date(sym) or market_ref
+            m_last = None
+            if os.path.exists(mpath):
+                try:
+                    m_last = str(pd.read_pickle(mpath)["date"].max())[:10]
+                except Exception:
+                    m_last = None
+            i_last = None
+            if os.path.exists(ipath):
+                try:
+                    i_last = str(pd.read_pickle(ipath)["date"].max())[:10]
+                except Exception:
+                    i_last = None
+
+            # 同步 = 不落后于本票行情 且 不落后于全市场行情基准
+            targets = [t for t in (ref, market_ref) if t]
+            up_to_date = bool(m_last and i_last) and all(
+                m_last >= t and i_last >= t for t in targets)
+            if not force and up_to_date:
+                stats["skipped"] += 1
+                continue
+
+            try:
+                if not logged and need_bs:
+                    import baostock as bs
+                    lg = bs.login()
+                    if lg.error_code != "0":
+                        raise RuntimeError(f"baostock 登录失败: {lg.error_msg}")
+                    globals()["_bs"] = bs
+                    logged = True
+                bs = globals()["_bs"]
+                df = fetch_chip_input(sym, ref_date=ref)
+                if df is None or len(df) < 60:
+                    raise RuntimeError(f"输入不足 {0 if df is None else len(df)} 行")
+                prev = None
+                if os.path.exists(mpath):
+                    try:
+                        prev = pd.read_pickle(mpath)
+                    except Exception:
+                        prev = None
+                m = chip_metrics(df, prev=prev)
+                if m is None or m.empty:
+                    raise RuntimeError("指标重算为空")
+                m.to_pickle(mpath)
+                chk = _cf.check(sym, str(m["date"].max())[:10], ref_date=ref, index=idx)
+                if not chk["ok"] and not chk["trustworthy"]:
+                    raise RuntimeError(chk["reason"])
+                stats["refreshed"] += 1
+            except Exception as e:
+                stats["failed"] += 1
+                failures.append((sym, str(e)[:120]))
+                log.warning("chip 刷新失败 %s: %s", sym, e)
+            if i % 10 == 0:
+                log.info("刷新进度 %d/%d", i, len(syms))
+    finally:
+        if logged:
+            try:
+                globals()["_bs"].logout()
+            except Exception:
+                pass
+
+    print("=====CHIP_REFRESH=====")
+    print(f"total={stats['total']} refreshed={stats['refreshed']} "
+          f"skipped={stats['skipped']} failed={stats['failed']}")
+    for sym, err in failures:
+        print(f"  FAIL {sym}: {err}")
+    print("=====CHIP_REFRESH_END=====")
+    # 只要有失败就返 1（周流水线接「不阻断但告警」语义）
+    return 1 if stats["failed"] else 0
 
 
 def main():
+    if "--refresh" in sys.argv:
+        return refresh_metrics(force="--force" in sys.argv)
     t0 = time.time()
     with open(EVAL_JSON) as f:
         rows = json.load(f)

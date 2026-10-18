@@ -288,6 +288,26 @@ def main():
     if not r["success"]:
         print("⚠️ 基准池刷新有失败项（见上方），alpha_beta_attr 可能用过期基准（不阻断流水线）...")
 
+    # 步骤 0s: chip 缓存刷新（2026-10-18 新增，非门禁而是数据供应）
+    # 背景：chip 第 5 维复活后接进生产，但 chip_/chipmetrics_ 两处缓存均为无条件命中、
+    # cron 无任何刷新方 → 缓存会冻结，cost_bias 拿新价减旧成本 → −0.20 档静默失效。
+    # 本步骤幂等增量刷新（无新数据全部 skip，实测 1s；有新增才重算尾部）。
+    # 必须排在 0t 门禁之前，否则门禁被旧数据错误判红。
+    print("\n🔄 步骤 0s/9: chip 缓存增量刷新 (chip_distribution_study.py --refresh)")
+    r = run_script("../scripts/chip_distribution_study.py", args=["--refresh"], timeout=600)
+    results["chip_refresh"] = r
+    if not r["success"]:
+        print("⚠️ chip 刷新有失败项（见上方），chip 维可能陈旧（不阻断流水线）...")
+
+    # 步骤 0t: chip 缓存新鲜度契约门禁（2026-10-18 新增，纯逻辑 + 临时目录隔离）
+    # 锁：陈旧阈值分档 / 陈旧到不可信 → 该维 None（禁止用旧数据打分）/ 增量==全量 /
+    # refresh 同步判据含全市场基准（两边同时落后也必须追，截断测试曾在这里假绿）。
+    print("\n🚦 步骤 0t/9: chip 新鲜度契约门禁 (chip_freshness_test.py)")
+    r = run_script("../scripts/chip_freshness_test.py", timeout=60)
+    results["chip_freshness"] = r
+    if not r["success"]:
+        print("⚠️ chip 新鲜度契约被破坏（见上方），第 5 维可能拿旧筹码打分（不阻断流水线）...")
+
     # 步骤 0n: 单簇市值暴露上限契约门禁（2026-10-18 新增，纯逻辑合成输入秒级）
     # 背景：只数≤2 口径在组合评分卡(ef81ed2)中证明对收益/回撤均无保护 →
     # 升级为组合层单簇市值占比≤25%(持仓期持续生效)。本门禁锁 12 场景语义:
