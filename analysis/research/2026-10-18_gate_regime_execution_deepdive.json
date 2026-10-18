@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-18",
+  "n": 1059,
+  "n_low": 29,
+  "line": 55.0,
+  "gap_blocked_vs_passed": [
+    -0.455,
+    0.24
+  ],
+  "exR_intercept_diff": -2.098,
+  "exI_intercept_diff": -3.277
+}
