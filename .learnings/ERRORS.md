@@ -508,3 +508,21 @@ B 臂用 `close(T)→open(T+1)` 全池等权。两条基准**持有期完全不�
 
 **产物**: scripts/gate_threshold_study_v2.py / scripts/fund_history_builder.py /
 data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_study_v2.{md,json}
+
+## ERR-20261018-C07 --quick 冒烟测试覆盖全量数据产物（相同库内数据债）
+
+**现象**: `fund_history_builder.py --quick`（开发验算，只建 5 只）和全量（36 只）写同一个
+`data/research_fund_history.json`。冒烟测试跑 --quick 时**覆盖了刚跑完的 36 只全量产物**，
+导致提交到 git 的是 5 只的残缺版（+3100 行差异，下一 commit 才发现补回）。
+
+**为什么危险**: 这种"quick 覆盖全量"是**静默**的——文件存在、JSON 合法、键名正确，
+只是内容从 36 只缩到 5 只。下游 `gate_threshold_study_v2` 若此刻跑，31 只票 fund=None，
+会被「缺失不填充」纪律静默降级成 None 传播，标定结论偏移且无任何报错。
+
+**修复**: quick 模式改写独立文件 `*.quick.json`（`fund_history_builder` / `market_breadth_builder`
+两个都改了），全量产物永不被 quick 覆盖。
+
+**通用规则**: 任何「全量/快速」双模式的构建脚本，quick 必须写**不同文件名**，不能靠
+"用完就删"或"记得别跑 quick"这种约定——约定必然被违反（本次就是冒烟测试忘了）。
+
+**产物**: scripts/fund_history_builder.py / scripts/market_breadth_builder.py 的 QUICK 分支写独立文件
