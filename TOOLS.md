@@ -377,6 +377,19 @@ python3 scripts/verify_market_data.py --date 2026-09-27 --metric 成交额 --val
 
 ---
 
+## 🔴 cron job 创建/修改交付口径（2026-10-18 由 .learnings 提升）
+
+> **为什么强制**：`cron.mcp-add-delivery-override` 跨 2 个入口复发 3 次（10-06 `cron edit --command` 隐式改 announce；10-17 `cron add` 显式传 `delivery:{"mode":"none"}` 仍回写 announce）——只要 add/edit 后不复核，job 每次运行都会 announce 无目标 → 被误标 error。
+
+**`cron add` / `cron update` 后必须复核 `delivery.mode`：**
+1. add/edit 完成后立即 `cron get <jobId>`；
+2. 脚本自推、不面向聊天投递的 job 必须为 `mode: none`；
+3. 不符就用完整 UUID 再 `update` 一次，**response 复核为 none 才算建好**（不能假设传入参数原样落库）。
+
+Source: .learnings/ERRORS.md#ERR-20261017-C01
+
+---
+
 ## 🐞 Python 调试落实（python-debugpy 技能，2026-10-11）
 
 **三种调试器按场景选最小够用的：**
@@ -427,3 +440,28 @@ rg -n 'breakpoint\(|pdb\.set_trace|debugpy\.' --type py   # 人工快速版
 - api.telegram.org 直连会被 TLS 拦截（curl 60 证书域名不匹配 / SSL_ERROR_SYSCALL / curl_cffi 报 invalid library）。
 - 本机 `127.0.0.1:7890` 有 HTTP 代理可用：`HTTP_PROXY=http://127.0.0.1:7890 HTTPS_PROXY=... python3 ...` 即恢复。
 - cron 脚本（send_telegram.py）✅ 2026-10-16 起已内置代理兜底：直连失败 → 自动探测并走 `127.0.0.1:7890`，脚本层自愈（10-15 前的「不带代理静默失败」已修复）。Gateway announce 层仍无代理（fallbackUsed 只是目标解析回退，非传输层），TLS 潮汐窗内 gateway 直接投递仍会 delivered=false（best-effort job 降级 diagnostic，不误标 error）。补推方法：用落盘的 `data/intraday_alert_output.json` 里 `brief` 直接调 `send_message`，不要重跑扫描/不要重复发送。
+
+---
+
+## 🔴 派生指标缓存铁律（2026-10-18 由 ERR-20261018-C05 提升）
+
+> **为什么强制**：chip 第 5 维复活当天实测"一切正常"（数据刚补过），但三个读写点
+> 全是 `if os.path.exists(): return`、cron 里无任何刷新方。`cost_bias = close(T)/avg_cost(T0) - 1`
+> 是跨时间相减的量 —— 缓存冻结后上行行情里该值被系统性推高，`−0.20` 档永不触发，
+> **加分项静默失效**：不报错、分数合理、覆盖率仍 36/36。比"数据缺失"更难发现
+> （缺失会被 `valid_dims` 暴露，静默错误不会）。
+
+### 铁律
+
+1. **"派生缓存 + 无条件命中"必须同时回答两问**：谁刷新？怎么判过期？缺一 = 定时炸弹。
+2. **陈旧度基准用「同体系最后成功拉到的行情日」（如价格缓存最新日），禁止用 `date.today()`**
+   —— 否则节假日会误判陈旧。
+3. **同步判据不能只做两两比较**（A>=B），必须引入**绝对参照**（A>=市场基准）。
+   实测反例：chip 与价格一起被截到 10-09 时，`chip>=价格` 恒真 → 36/36 全 skip，永不追。
+4. **契约测试要构造正常路径永远走不到的场景**（如"两边同时落后"）。
+5. 滞后按**交易日**计，复用 `analysis/service` 交易日历 SSOT。
+
+### 参考实现
+
+`analysis/chip_freshness.py`（判定）+ `scripts/chip_distribution_study.py --refresh`（刷新）
++ `scripts/chip_freshness_test.py`（17 项契约，周流水线 0t）。新增派生缓存照此模式接入。
