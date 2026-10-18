@@ -57,6 +57,11 @@ INITIAL_CAPITAL = 100_000
 # 单簇市值占比上限（2026-10-18 用户拍板：同相关簇约束从「只数≤2」升级为组合层
 # 市值占比、持仓期持续生效；依据 analysis/research/2026-10-18_cluster_cap_scorecard.md）
 CLUSTER_EXPO_CAP = float(os.getenv("CLUSTER_EXPO_CAP", "0.25"))
+
+# 组合总仓位上限执法开关（2026-10-18 用户拍板）：030 的 total_limit_amount 此前
+# 无任何消费方（约束层盘点发现），本开关接入后 030 从「展示」变「执法」。
+# 紧急回退: 环境变量 TOTAL_LIMIT_ENFORCE=0 即恢复旧行为（不执法）。
+TOTAL_LIMIT_ENFORCE = os.getenv("TOTAL_LIMIT_ENFORCE", "1") == "1"
 ATR_STOP_MULT = 2.0
 
 # 单一事实来源：参考总本金（仓位计算/风控限额/收益率分母统一引用）
@@ -1041,6 +1046,64 @@ def _apply_cluster_cap(signal, pos, state, should_exec, sym, sym_to_cluster, nam
     return signal, should_exec
 
 
+def _apply_total_expo_cap(signal, pos, state, should_exec, sym, name,
+                          mv_map=None, position_plan=None):
+    """组合总仓位上限执法（2026-10-18 用户拍板接线）。
+
+    背景（约束层盘点）：030 PositionSizer 每日计算 total_limit_amount
+    （总资金×市场阶段/情绪/健康度乘数），但此前**无任何消费方**——哑铃
+    core80%+sat20%=100% 允许满仓，动态总仓上限形同虚设。
+
+    规则: 当前组合总持仓市值 + 本笔预估买入额 > total_limit_amount
+          → 降级持有并阻断买入。
+    市值口径与 _apply_cluster_cap 相同（mv_map 当日价优先 → _last_mv → 成本价）。
+    fail-open: plan 缺失/total_limit_amount<=0/任何异常 → 放行仅告警。
+    只限买入，不动卖出/止损；TOTAL_LIMIT_ENFORCE=0 全局回退。
+    """
+    try:
+        if not TOTAL_LIMIT_ENFORCE:
+            return signal, should_exec
+        if "买入" not in str(signal.get("action", "")):
+            return signal, should_exec
+        plan = position_plan or {}
+        limit_amount = float(plan.get("total_limit_amount", 0) or 0)
+        if limit_amount <= 0:
+            return signal, should_exec  # fail-open: 无有效上限不执法
+
+        def _mv_of(other_sym, other_pos):
+            if mv_map and other_sym in mv_map:
+                return mv_map[other_sym]
+            last = other_pos.get("_last_mv")
+            if last:
+                return float(last)
+            if other_pos.get("position"):
+                return float(other_pos.get("shares", 0)) * float(other_pos.get("entry_price", 0))
+            return 0.0
+
+        total_mv = 0.0
+        for other_sym, other in (state.get("positions") or {}).items():
+            if other_sym == sym or not other.get("position"):
+                continue
+            total_mv += _mv_of(other_sym, other)
+
+        # 预估买入额（与 execute_trade 同口径钳制）
+        bucket = pos.get("bucket", "satellite")
+        single_cap = INITIAL_CAPITAL * (0.15 if bucket == "core" else 0.05)
+        max_amount = plan.get("single_stock_max_amount", 100_000) * plan.get("buy_signal_multiplier", 1.0)
+        est_buy = max(0.0, min(float(pos.get("cash", 0) or 0), max_amount, single_cap))
+
+        if total_mv + est_buy > limit_amount:
+            signal["action"] = "持有"
+            signal["reason"] = (signal.get("reason", "") +
+                f" | [总仓上限]持仓¥{total_mv:,.0f}+本笔¥{est_buy:,.0f} > 030上限¥{limit_amount:,.0f}"
+                f"({plan.get('total_limit_pct', 0):.0%})，禁止开新仓").strip()
+            print(f"  ⚠️ {name}({sym}) 总仓上限拦截: 持仓¥{total_mv:,.0f} + 本笔¥{est_buy:,.0f} > ¥{limit_amount:,.0f}")
+            return signal, False
+    except Exception as e:
+        print(f"⚠️ 总仓上限检查异常({name}): {e}，fail-open 放行")
+    return signal, should_exec
+
+
 def run_portfolio_scan(
     stocks: List[Tuple[str, str]],
     fetch_data_func,  # 签名: fetch_data(symbol) -> DataFrame
@@ -1130,6 +1193,10 @@ def run_portfolio_scan(
         # 同相关簇市值占比上限（2026-10-18 由只数≤2升级；买入链尾部、去重之前拦截）
         signal, should_exec = _apply_cluster_cap(
             signal, pos, state, should_exec, sym, cluster_map, name,
+            mv_map=mv_map, position_plan=position_plan)
+        # 组合总仓位上限执法（2026-10-18 接线：030 total_limit_amount 首消费方）
+        signal, should_exec = _apply_total_expo_cap(
+            signal, pos, state, should_exec, sym, name,
             mv_map=mv_map, position_plan=position_plan)
         # 去重（统一用真实交易日 today_str；data_date 仅用于诊断/滞后检测）
         data_date = df["date"].iloc[-1].strftime("%Y-%m-%d")

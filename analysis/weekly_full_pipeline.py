@@ -298,6 +298,15 @@ def main():
     if not r["success"]:
         print("⚠️ 单簇暴露上限契约被破坏（见上方），同相关簇约束可能回潮为建仓瞬时口径（不阻断流水线）...")
 
+    # 步骤 0o: 组合总仓位上限契约门禁（2026-10-18 新增，纯逻辑合成输入秒级）
+    # 背景：约束层盘点发现 030 total_limit_amount 无消费方（哑铃 80%+20% 可满仓）→
+    # 接线 _apply_total_expo_cap 执法。本门禁锁执法/fail-open/开关回退语义。
+    print("\n🚦 步骤 0o/9: 总仓位上限契约门禁 (total_expo_cap_test.py)")
+    r = run_script("../scripts/total_expo_cap_test.py", timeout=60)
+    results["total_expo_cap"] = r
+    if not r["success"]:
+        print("⚠️ 总仓位上限契约被破坏（见上方），030 动态总仓上限可能再次静默失效（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = _resume_skip("backtest", resume_record)
