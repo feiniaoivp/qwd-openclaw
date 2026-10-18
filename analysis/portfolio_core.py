@@ -53,6 +53,10 @@ BACKTEST_MODE = False
 COMMISSION = 0.0003
 SLIPPAGE = 0.001
 INITIAL_CAPITAL = 100_000
+
+# 单簇市值占比上限（2026-10-18 用户拍板：同相关簇约束从「只数≤2」升级为组合层
+# 市值占比、持仓期持续生效；依据 analysis/research/2026-10-18_cluster_cap_scorecard.md）
+CLUSTER_EXPO_CAP = float(os.getenv("CLUSTER_EXPO_CAP", "0.25"))
 ATR_STOP_MULT = 2.0
 
 # 单一事实来源：参考总本金（仓位计算/风控限额/收益率分母统一引用）
@@ -967,12 +971,21 @@ def _load_corr_clusters():
         return {}
 
 
-def _apply_cluster_cap(signal, pos, state, should_exec, sym, sym_to_cluster, name):
-    """同相关簇持仓上限 ≤2（2026-10-17，相关性研究 91ff2af: 有效N 3.2/36）。
+def _apply_cluster_cap(signal, pos, state, should_exec, sym, sym_to_cluster, name,
+                       mv_map=None, position_plan=None):
+    """同相关簇**组合层市值占比**上限（2026-10-18 由「只数≤2」升级，用户拍板）。
 
-    规则: 候选买入票所属簇内已持仓(含本轮已建)≥2 → 降级为持有并阻断执行。
-    fail-open: 票未入簇/映射缺失 → 不拦截。只限买入，不动卖出/止损。
-    计数含本轮扫描中已建仓的票（execute_trade 即时置 position=True）。
+    根因（评分卡 ef81ed2/2026-10-18_cluster_cap_scorecard.md）：只数口径只在建仓
+    瞬间判定，持仓期同簇市值占比随价格漂移持续失控 → 三臂重放显示对收益/回撤
+    均无保护。改为市值占比后，簇内齐涨会把占比顶高、后续加仓被自动拦，
+    约束在整个持仓期每个扫描日都生效。
+
+    规则: (同簇持仓市值 + 本笔预估买入额) / 组合总资产(持仓市值+现金)
+          > CLUSTER_EXPO_CAP → 降级持有并阻断。
+    市值口径: mv_map 优先（本轮已处理票的当日价市值），未处理票退化为
+          pos["_last_mv"]（上次扫描落盘市值），再退化为 shares×entry_price。
+    fail-open: 票未入簇/映射缺失/总市值过小/任何异常 → 放行仅告警。
+    只限买入，不动卖出/止损（与旧口径一致）。
     """
     try:
         if "买入" not in str(signal.get("action", "")):
@@ -980,20 +993,51 @@ def _apply_cluster_cap(signal, pos, state, should_exec, sym, sym_to_cluster, nam
         cluster = sym_to_cluster.get(sym)
         if not cluster:
             return signal, should_exec
-        held = 0
+
+        def _mv_of(other_sym, other_pos):
+            # 本轮已处理票优先用当日价市值
+            if mv_map and other_sym in mv_map:
+                return mv_map[other_sym]
+            last = other_pos.get("_last_mv")
+            if last:
+                return float(last)
+            if other_pos.get("position"):
+                return float(other_pos.get("shares", 0)) * float(other_pos.get("entry_price", 0))
+            return 0.0
+
+        cluster_mv = 0.0
+        total_mv = 0.0
+        cash_total = 0.0
         for other_sym, other in (state.get("positions") or {}).items():
-            if other_sym == sym:
+            cash_total += float(other.get("cash", 0) or 0)
+            if other_sym == sym or not other.get("position"):
                 continue
-            if other.get("position") and sym_to_cluster.get(other_sym) == cluster:
-                held += 1
-        if held >= 2:
+            mv = _mv_of(other_sym, other)
+            total_mv += mv
+            if sym_to_cluster.get(other_sym) == cluster:
+                cluster_mv += mv
+
+        # 预估本笔买入额（与 execute_trade 限额口径一致）
+        plan = position_plan or {}
+        bucket = pos.get("bucket", "satellite")
+        single_cap = INITIAL_CAPITAL * (0.15 if bucket == "core" else 0.05)
+        max_amount = plan.get("single_stock_max_amount", 100_000) * plan.get("buy_signal_multiplier", 1.0)
+        est_buy = max(0.0, min(float(pos.get("cash", 0) or 0), max_amount, single_cap))
+
+        # 分母 = 组合总资产(持仓市值+现金)，与 portfolio.total_value 同口径；
+        # 用「市值/市值」口径会让空组合首笔必拦(100%)，语义错误（契约场景3）。
+        denom = total_mv + cash_total
+        if denom < 100_000:  # 组合过小/数据未就绪 → fail-open
+            return signal, should_exec
+        expo = (cluster_mv + est_buy) / denom
+        if expo > CLUSTER_EXPO_CAP:
             signal["action"] = "持有"
             signal["reason"] = (signal.get("reason", "") +
-                f" | [同簇上限≤2]{cluster}已持仓{held}只(相关性研究: 有效N 3.2/36)，禁止第{held+1}只").strip()
-            print(f"  ⚠️ {name}({sym}) 同簇上限拦截: {cluster}已持仓{held}只")
+                f" | [单簇暴露{expo:.0%}>{CLUSTER_EXPO_CAP:.0%}]{cluster}市值占比超限(同相关簇: 有效N 3.2/36)，禁止加仓").strip()
+            print(f"  ⚠️ {name}({sym}) 单簇暴露拦截: {cluster} 当前簇市值¥{cluster_mv:,.0f} + 本笔¥{est_buy:,.0f} → {expo:.1%} > {CLUSTER_EXPO_CAP:.0%}")
             return signal, False
     except Exception as e:
-        print(f"⚠️ 同簇上限检查异常({name}): {e}，fail-open 放行")
+        print(f"⚠️ 单簇暴露检查异常({name}): {e}，fail-open 放行")
     return signal, should_exec
 
 
@@ -1021,8 +1065,10 @@ def run_portfolio_scan(
     RiskGuard.refresh()
     fatal_risk = RiskGuard.get_fatal_risk()
     position_plan = RiskGuard.get_position_plan()
-    # 同相关簇映射（2026-10-17 同簇持仓上限≤2 数据源；fail-open）
+    # 同相关簇映射（2026-10-17 同簇约束数据源；fail-open）
     cluster_map = _load_corr_clusters()
+    # 本轮已处理票的当日市值缓存（供单簇暴露上限跨票累计；2026-10-18）
+    mv_map: Dict[str, float] = {}
 
     # 同步策略映射（含 bucket）
     sync_strategy_map(state, strategy_map, default_strategy)
@@ -1081,9 +1127,10 @@ def run_portfolio_scan(
         signal = RiskGuard.check_strategy_switch(signal, pos)
         # 重复 BUY 钝化
         signal, should_exec = RiskGuard.apply_buy_streak_dampening(signal, pos)
-        # 同相关簇持仓上限 ≤2（2026-10-17；只在买入链尾部、去重之前拦截）
+        # 同相关簇市值占比上限（2026-10-18 由只数≤2升级；买入链尾部、去重之前拦截）
         signal, should_exec = _apply_cluster_cap(
-            signal, pos, state, should_exec, sym, cluster_map, name)
+            signal, pos, state, should_exec, sym, cluster_map, name,
+            mv_map=mv_map, position_plan=position_plan)
         # 去重（统一用真实交易日 today_str；data_date 仅用于诊断/滞后检测）
         data_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
         if not RiskGuard.check_dedup(signal, pos, today_str):
@@ -1119,6 +1166,11 @@ def run_portfolio_scan(
         if bucket == "unknown":
             bucket, _, _ = classify_bucket(sym)
             pos["bucket"] = bucket
+
+        # 单簇暴露上限跨票缓存：仅持仓票记市值（现金不计入分母）
+        mv_now = (pos["shares"] * signal["price"]) if pos.get("position") else 0.0
+        mv_map[sym] = mv_now
+        pos["_last_mv"] = mv_now
 
         results.append({
             "symbol": sym, "name": name,

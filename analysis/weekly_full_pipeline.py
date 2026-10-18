@@ -288,6 +288,16 @@ def main():
     if not r["success"]:
         print("⚠️ 基准池刷新有失败项（见上方），alpha_beta_attr 可能用过期基准（不阻断流水线）...")
 
+    # 步骤 0n: 单簇市值暴露上限契约门禁（2026-10-18 新增，纯逻辑合成输入秒级）
+    # 背景：只数≤2 口径在组合评分卡(ef81ed2)中证明对收益/回撤均无保护 →
+    # 升级为组合层单簇市值占比≤25%(持仓期持续生效)。本门禁锁 12 场景语义:
+    # fail-open / 只管买入 / 空组合豁免 / 齐涨漂移拦截 / mv_map 当日市值优先。
+    print("\n🚦 步骤 0n/9: 单簇市值暴露契约门禁 (cluster_expo_cap_test.py)")
+    r = run_script("../scripts/cluster_expo_cap_test.py", timeout=60)
+    results["cluster_expo_cap"] = r
+    if not r["success"]:
+        print("⚠️ 单簇暴露上限契约被破坏（见上方），同相关簇约束可能回潮为建仓瞬时口径（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = _resume_skip("backtest", resume_record)
