@@ -279,6 +279,15 @@ def main():
     if not r["success"]:
         print("⚠️ 五维评分 None 契约被破坏（见上方），缺失数据可能再次伪装成中性/强势分（不阻断流水线）...")
 
+    # 步骤 0m: 基准池 CSV 增量刷新（2026-10-18 新增，非门禁而是数据供应）
+    # 背景：/Users/duguke/stock_data 是 alpha_beta_attr 等权基准池数据源，原为一次性脚本产物
+    # 无刷新方，10-18 实测 54/54 陈旧（最新 10-08）。本步骤每周增量刷新+格式迁移+桩自愈。
+    print("\n🔄 步骤 0m/9: 基准池 CSV 增量刷新 (refresh_stock_data.py)")
+    r = run_script("../scripts/refresh_stock_data.py", timeout=420)
+    results["refresh_stock_data"] = r
+    if not r["success"]:
+        print("⚠️ 基准池刷新有失败项（见上方），alpha_beta_attr 可能用过期基准（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = _resume_skip("backtest", resume_record)

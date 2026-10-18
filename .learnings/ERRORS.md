@@ -1,3 +1,5 @@
+> **[2026-10-18 维护 · RC>=3 终态确认]** 本 Pattern-Key 共享计数条目 = ERR-20261006-PM（RC=3 跨 3 任务：weekly 09-26 / premarket 10-06 / 本条；跨 30 天内），本条为早期实证不单独计数。防治规则 TOOLS.md「🔴 长跑 pipeline 卡死判定规则」2026-10-18 复核确认在位，无新复发，终态保持 promoted。
+
 ## [ERR-20260926-WBP] weekly_full_pipeline 长跑无输出
 
 **Logged**: 2026-09-26
@@ -25,6 +27,7 @@ Investigate `analysis/weekly_full_pipeline.py`; check for deadlocks/infinite loo
 > **[2026-10-10 维护去重]** 本条目与 ERR-20261006-PM 同 Pattern-Key `ops.silent-orchestrator-misjudged-as-hang`
 > （Recurrence-Count=3 共享计数，First-Seen 2026-09-26）。已合并为一条模式，保留两条作为
 > 不同任务的实证记录，不再重复计入。防治规则已落地 TOOLS.md 同名章节。
+> 2026-10-18 维护复核：TOOLS.md 规则在位于位（含 pgrep -P / 缓存 mtime / timeout 估算三判据），无新复发，终态保持 promoted。
 
 ## [ERR-20260927-87V] openclaw_session_sweep
 
@@ -238,6 +241,11 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 - Validation 维持 verified；RC 维持 2 不虚增。promote 触发条件不变：再复现（RC→3）才评估。
 - 全库终态：RC≥3 的 `ops.silent-orchestrator-misjudged-as-hang`（TOOLS.md）与 `cron.silent-noop-fake-ok`（AGENTS.md）均已 promoted，防治规则在各自目标文件中确认在位；本周无新模式达 promote 阈值（RC=2 的 datasource-failover / late-start / gate-path-window-mismatch 均维持观察）。ERRORS.md 无 pending 残留（10-16 sweep 条目已当日分诊 resolved）。
 
+### Maintenance (2026-10-18 每日维护) — 持续无复现（第 6 个交易日）
+- 顺延复核：`data/auction/2026-10-16_9_25.json` = 17,232 字节、`snapshot_time 09:25:00`、`count=27`（脚本实测读出），`decision_2026-10-16.json` 09:26 同步产出 → 连续第 5 个交易日正常（10-14/15/16 三份快照均 27/27 全量）。
+- 10-17 为周六非交易日，无快照属预期；因此本次可核对的最新交易日仍为 10-16，无新证据。
+- Validation 维持 verified；RC 维持 2 不虚增。promote 触发条件不变：再复现（RC→3）才评估。
+
 ## ERR-20261009-QuantPushDetachedOutputLost
 **Date**: 2026-10-09
 **Priority**: high
@@ -368,6 +376,14 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Source: manual-session
 - Reproducible: yes
 - Pattern-Key: cron.mcp-add-delivery-override
+- Recurrence-Count: 2（10-06/10-17 两处入口同根因；10-17 当日 add→复核失败为同一次事故的两面，不重复计入）
+- First-Seen: 2026-10-06
+- Last-Seen: 2026-10-17
+
+### Promotion (2026-10-18 每日维护)
+- 触发：同 Key 跨 2 个任务（10-06 edit 入口 / 10-17 add 入口）、30 天窗口内；RC=2 但同一根因连开两处入口，按「最小必要防治」提前提升（与 research.json-int-str-keys 同批），避免第三次入口才补。
+- **Status**: promoted → TOOLS.md「🔴 cron job 创建/修改交付口径」（2026-10-18）
+- Source: .learnings/ERRORS.md#ERR-20261017-C01
 
 ---
 
@@ -386,3 +402,27 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Source: manual-session
 - Reproducible: yes
 - Pattern-Key: research.json-int-str-keys
+- Recurrence-Count: 2（同日 rsi30_event_study 统计全 None + dual_signal_event_study KeyError 崩溃，两处独立脚本）
+- First-Seen: 2026-10-17
+- Last-Seen: 2026-10-17
+
+### Promotion (2026-10-18 每日维护)
+- 触发：同 Key 同日两发、30 天窗口内（RC=2，本轮按「同 Key 合并计数」批次纳入；未达 3 但已非一次性，按最小必要规则提升）。
+- **Status**: promoted → AGENTS.md「配套铁律 · 研究脚本 JSON 键统一 str + 主结果先落盘」（2026-10-18）
+- Source: .learnings/ERRORS.md#ERR-20261017-C02
+
+## ERR-20261018-C01 RiskGuard.refresh 裸网络无超时 → 回测进程永久 sock_read 挂死（第3次同类）
+- 现象: cluster_window_ab 两次于逐日循环中 CPU~0%、无产出；/usr/bin/sample 坐实 SSL sock_read。
+- 根因: FatalRiskDetector 的 akshare 涨停池/龙虎榜调用无 timeout；net_guard 虽被 import 但进程级默认值未在该链路安装前就已建连/或依赖库自带无限等待。
+- 修复: portfolio_core.RiskGuard.refresh() 刷新体包 network_timeout_guard(15)，超时降级旧缓存+可见告警（commit fc625ed）。
+-  lesson: 入口脚本装 net_guard ≠ 全链路免疫；**任何被回测/循环调用的风控刷新必须自带超时**。
+
+## ERR-20261018-C02 三臂 A/B 结果逐字节相同 = 门禁不在执行路径的信号
+- cluster cap 三臂（prod/roll/off）回测权益/交易完全相同 → run_backtest 主循环不含簇拦截（只在 run_portfolio_scan）。
+- lesson: 做门禁 A/B 前先 grep 门禁代码是否真的在被打分的执行路径里（`grep -c cluster portfolio_executor.py` 一条命令即可提前发现，浪费了 ~15 分钟回测）。
+
+## ERR-20261018-C01: 刷新脚本标志位反转导致 41 个基准池 CSV 被截断为 1 行（已自愈）
+- **经过**: 写 scripts/refresh_stock_data.py 时，todo 元组第 5 位语义是「是否标准格式(std)」，循环里却当成「是否重建(rebuild)」用 → 标准文件走了全量重写分支，且 start=last 只拉到 1 行 → 41 个 CSV 被截成单行。
+- **发现**: 写后自检只跑了 compile/grep '***'，没做语义走查；首跑输出「✅ 41」当时未核对行数，直到第二批 11 个失败才回查。
+- **修复**: ①标志位改正；②桩文件自愈规则（<30 行全量重建）；③重写前 .bak_refresh 备份 + 行数防倒退检查（新行数 < 旧行数且旧≥30 → 拒绝写盘）。全部 41 文件已从 baostock 重建（2025-06-30 起，净效果：陈旧 10-08 → 新鲜 10-16）。
+- **教训**: ①「重写型」数据脚本必须有写前备份+行数防倒退检查，这是第三个必配防线（前两个: compile 检查、静默 except）；②首跑的「成功」必须抽样核对产物形态（行数/日期范围），不能只看退出码——本轮 41 个 ✅ 全是假成功；③元组多字段传参时用命名元组/dataclass，位置语义最易反转。
