@@ -45,6 +45,9 @@ install_default_timeout(20)
 
 QUICK = "--quick" in sys.argv
 OUT = os.path.join(WORKSPACE, "data", "research_fund_history.json")
+if QUICK:
+    # quick 开发验算写独立文件，避免覆盖全量产物（2026-10-18 教训：--quick 曾覆盖 36 只全量）
+    OUT = os.path.join(WORKSPACE, "data", "research_fund_history.quick.json")
 START_YEAR = 2023   # 提前一年，覆盖 2024 跨年信号需要的前一年财报
 
 
