@@ -34,6 +34,9 @@ close_scan / 研究脚本写的那份），而不是 `date.today()`——非交�
 本模块只做判定，不做重算（重算需要 baostock，放在 chip_distribution_study 里）。
 """
 import os
+import logging
+
+log = logging.getLogger("chip_freshness")
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 
@@ -66,11 +69,13 @@ def frame_last_date(df):
             col = df["date"]
             try:
                 return _norm_date(max(col.dropna().astype(str)))
-            except Exception:
+            except Exception as e:
+                log.warning("frame_last_date 列聚合失败，退回尾行: %s", e)
                 return _norm_date(col.iloc[-1])
         if hasattr(df, "index") and len(df) > 0:
             return _norm_date(df.index[-1])
-    except Exception:
+    except Exception as e:
+        log.warning("frame_last_date 失败: %s", e)
         return None
     return None
 
@@ -84,7 +89,8 @@ def price_ref_date(symbol, cache_dir=None):
     try:
         import pandas as pd
         return frame_last_date(pd.read_pickle(path))
-    except Exception:
+    except Exception as e:
+        log.warning("price_ref_date(%s) 读取失败: %s", symbol, e)
         return None
 
 
@@ -102,7 +108,8 @@ def trading_index():
         # 只保留 2024 之后，够用且省内存
         days = [d for d in days if d >= "2024-01-01"]
         return {d: i for i, d in enumerate(days)}
-    except Exception:
+    except Exception as e:
+        log.warning("trading_index 交易日历获取失败，退化为自然日近似: %s", e)
         return None
 
 
@@ -119,7 +126,8 @@ def lag_trading_days(older, newer, index=None):
         d1 = date.fromisoformat(older)
         d2 = date.fromisoformat(newer)
         return int(round(max(0, (d2 - d1).days) * 5 / 7))
-    except Exception:
+    except Exception as e:
+        log.warning("lag_trading_days 日期解析失败: %s", e)
         return None
 
 
