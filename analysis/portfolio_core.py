@@ -631,13 +631,24 @@ class RiskGuard:
                 cls._fatal_risk = fatal_detector.check()
                 pos_context = load_position_context()
                 sizer = PositionSizer(total_capital=REFERENCE_TOTAL_CAPITAL)
+                # 方向分配必须在计算时拿到关注池，否则 _calc_direction_allocation
+                # 直接 return {} → _check_barbell_constraints 第 3 条方向上限永远失效
+                # （2026-10-18 约束层盘点发现：direction_allocation 恒空=死代码）。
+                # load_market_context() 不含 watchlist 字段，须回落到 WATCHLIST SSOT。
+                _watch = list(pos_context.get("watchlist") or [])
+                if not _watch:
+                    try:
+                        from analysis.fib_extension_scan import WATCHLIST as _WL
+                        _watch = [str(_k) for _k in _WL.keys()]
+                    except Exception as _e:
+                        print(f"⚠️ 方向分配: 关注池不可用({_e})，方向上限本轮不生效")
                 pos_plan_obj = sizer.calculate(
                     market_stage=pos_context["market_stage"],
                     emotion_cycle=pos_context["emotion_cycle"],
                     health_score=pos_context["health_score"],
                     fatal_risk=cls._fatal_risk,
                     held_positions=pos_context.get("held_positions"),
-                    watchlist=list(pos_context.get("watchlist", []))
+                    watchlist=_watch
                 )
                 cls._position_plan = {
                     "buy_signal_multiplier": pos_plan_obj.buy_signal_multiplier,

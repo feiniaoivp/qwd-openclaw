@@ -307,6 +307,15 @@ def main():
     if not r["success"]:
         print("⚠️ 总仓位上限契约被破坏（见上方），030 动态总仓上限可能再次静默失效（不阻断流水线）...")
 
+    # 步骤 0p: 方向分配上限契约门禁（2026-10-18 新增，纯逻辑+离线供给）
+    # 背景：direction_allocation 曾因 refresh 传空 watchlist 恒为 {} → 方向上限死代码。
+    # 本门禁同时锁「供给端非空」与「已满拦截/空 fail-open」两端语义。
+    print("\n🚦 步骤 0p/9: 方向分配上限契约门禁 (direction_cap_test.py)")
+    r = run_script("../scripts/direction_cap_test.py", timeout=90)
+    results["direction_cap"] = r
+    if not r["success"]:
+        print("⚠️ 方向分配上限契约被破坏（见上方），方向级资金上限可能再次静默失效（不阻断流水线）...")
+
     # 步骤 1: 单窗口回测
     print("\n📊 步骤 1/8: 单窗口回测 (backtest_strategies.py)")
     r = _resume_skip("backtest", resume_record)
