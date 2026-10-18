@@ -611,29 +611,35 @@ class RiskGuard:
         cls._last_refresh_key = cache_key
         if not HAS_030_MODULES:
             return
+        # 2026-10-18 修复: 030 刷新走网络（FatalRiskDetector/PositionSizer），
+        # 底层 socket 无超时 → 实测在回测中永久阻塞（sample 抓到 sock_read）。
+        # 用 net_guard 临时收紧到 15s，超时按「风控不可用」降级（fail-safe 保持
+        # 上次缓存值），绝不静默永久挂起调用方。
+        from analysis.net_guard import network_timeout_guard
         try:
-            fatal_detector = FatalRiskDetector()
-            cls._fatal_risk = fatal_detector.check()
-            pos_context = load_position_context()
-            sizer = PositionSizer(total_capital=REFERENCE_TOTAL_CAPITAL)
-            pos_plan_obj = sizer.calculate(
-                market_stage=pos_context["market_stage"],
-                emotion_cycle=pos_context["emotion_cycle"],
-                health_score=pos_context["health_score"],
-                fatal_risk=cls._fatal_risk,
-                held_positions=pos_context.get("held_positions"),
-                watchlist=list(pos_context.get("watchlist", []))
-            )
-            cls._position_plan = {
-                "buy_signal_multiplier": pos_plan_obj.buy_signal_multiplier,
-                "single_stock_max_pct": pos_plan_obj.single_stock_max_pct,
-                "single_stock_max_amount": pos_plan_obj.single_stock_max_amount,
-                "total_limit_pct": pos_plan_obj.total_limit_pct,
-                "total_limit_amount": pos_plan_obj.total_limit_amount,
-                "direction_allocation": pos_plan_obj.direction_allocation,
-                "risk_warnings": pos_plan_obj.risk_warnings,
-            }
-            cls._market_context = pos_context
+            with network_timeout_guard(15):
+                fatal_detector = FatalRiskDetector()
+                cls._fatal_risk = fatal_detector.check()
+                pos_context = load_position_context()
+                sizer = PositionSizer(total_capital=REFERENCE_TOTAL_CAPITAL)
+                pos_plan_obj = sizer.calculate(
+                    market_stage=pos_context["market_stage"],
+                    emotion_cycle=pos_context["emotion_cycle"],
+                    health_score=pos_context["health_score"],
+                    fatal_risk=cls._fatal_risk,
+                    held_positions=pos_context.get("held_positions"),
+                    watchlist=list(pos_context.get("watchlist", []))
+                )
+                cls._position_plan = {
+                    "buy_signal_multiplier": pos_plan_obj.buy_signal_multiplier,
+                    "single_stock_max_pct": pos_plan_obj.single_stock_max_pct,
+                    "single_stock_max_amount": pos_plan_obj.single_stock_max_amount,
+                    "total_limit_pct": pos_plan_obj.total_limit_pct,
+                    "total_limit_amount": pos_plan_obj.total_limit_amount,
+                    "direction_allocation": pos_plan_obj.direction_allocation,
+                    "risk_warnings": pos_plan_obj.risk_warnings,
+                }
+                cls._market_context = pos_context
         except Exception as e:
             print(f"⚠️ 030风控刷新失败: {e}")
 

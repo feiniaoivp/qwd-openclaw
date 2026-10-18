@@ -1,0 +1,429 @@
+{
+ "date": "2026-10-18",
+ "hold_days": 10,
+ "total_buys": 1068,
+ "arms": {
+  "both_pass": {
+   "n": 574,
+   "pct_of_buys": 53.75,
+   "fwd5_mean_pct": 1.177,
+   "fwd5_median_pct": 0.573,
+   "fwd10_mean_pct": 1.921,
+   "examples": [
+    {
+     "symbol": "000987",
+     "name": "越秀资本",
+     "date": "2024-04-19",
+     "fwd5": 0.04488,
+     "fwd10": 0.01975,
+     "held_prod": 0,
+     "held_roll": 0
+    },
+    {
+     "symbol": "300285",
+     "name": "国瓷材料",
+     "date": "2024-04-19",
+     "fwd5": 0.00053,
+     "fwd10": 0.04802,
+     "held_prod": 0,
+     "held_roll": 1
+    },
+    {
+     "symbol": "300285",
+     "name": "国瓷材料",
+     "date": "2024-04-23",
+     "fwd5": 0.01944,
+     "fwd10": 0.09143,
+     "held_prod": 0,
+     "held_roll": 1
+    },
+    {
+     "symbol": "000987",
+     "name": "越秀资本",
+     "date": "2024-04-26",
+     "fwd5": -0.02405,
+     "fwd10": -0.02577,
+     "held_prod": 1,
+     "held_roll": 1
+    },
+    {
+     "symbol": "300285",
+     "name": "国瓷材料",
+     "date": "2024-04-26",
+     "fwd5": 0.04747,
+     "fwd10": 0.07859,
+     "held_prod": 0,
+     "held_roll": 1
+    },
+    {
+     "symbol": "600660",
+     "name": "福耀玻璃",
+     "date": "2024-04-26",
+     "fwd5": 0.01381,
+     "fwd10": 0.02681,
+     "held_prod": 0,
+     "held_roll": 0
+    },
+    {
+     "symbol": "600160",
+     "name": "巨化股份",
+     "date": "2024-04-29",
+     "fwd5": 0.05088,
+     "fwd10": 0.06005,
+     "held_prod": 0,
+     "held_roll": 0
+    },
+    {
+     "symbol": "605566",
+     "name": "福莱蒽特",
+     "date": "2024-04-29",
+     "fwd5": 0.07609,
+     "fwd10": 0.02803,
+     "held_prod": 0,
+     "held_roll": 0
+    },
+    {
+     "symbol": "002318",
+     "name": "久立特材",
+     "date": "2024-04-30",
+     "fwd5": -0.002,
+     "fwd10": 0.01922,
+     "held_prod": 0,
+     "held_roll": 0
+    },
+    {
+     "symbol": "300199",
+     "name": "翰宇药业",
+     "date": "2024-04-30",
+     "fwd5": -0.01941,
+     "fwd10": -0.0528,
+     "held_prod": 0,
+     "held_roll": 0
+    }
+   ]
+  },
+  "both_block": {
+   "n": 127,
+   "pct_of_buys": 11.89,
+   "fwd5_mean_pct": 2.334,
+   "fwd5_median_pct": 0.343,
+   "fwd10_mean_pct": 3.497,
+   "examples": [
+    {
+     "symbol": "600030",
+     "name": "中信证券",
+     "date": "2024-04-23",
+     "fwd5": 0.0405,
+     "fwd10": 0.04324,
+     "held_prod": 2,
+     "held_roll": 2
+    },
+    {
+     "symbol": "601066",
+     "name": "中信建投",
+     "date": "2024-04-30",
+     "fwd5": 0.01881,
+     "fwd10": 0.00313,
+     "held_prod": 2,
+     "held_roll": 2
+    },
+    {
+     "symbol": "600406",
+     "name": "国电南瑞",
+     "date": "2024-05-13",
+     "fwd5": -0.05863,
+     "fwd10": -0.05037,
+     "held_prod": 2,
+     "held_roll": 2
+    },
+    {
+     "symbol": "600089",
+     "name": "特变电工",
+     "date": "2024-05-20",
+     "fwd5": 0.01705,
+     "fwd10": 0.00341,
+     "held_prod": 2,
+     "held_roll": 2
+    },
+    {
+     "symbol": "600089",
+     "name": "特变电工",
+     "date": "2024-05-22",
+     "fwd5": 0.01205,
+     "fwd10": -0.01807,
+     "held_prod": 2,
+     "held_roll": 2
+    },
+    {
+     "symbol": "600584",
+     "name": "长电科技",
+     "date": "2024-05-31",
+     "fwd5": 0.06854,
+     "fwd10": 0.20447,
+     "held_prod": 2,
+     "held_roll": 2
+    },
+    {
+     "symbol": "600584",
+     "name": "长电科技",
+     "date": "2024-06-03",
+     "fwd5": 0.06669,
+     "fwd10": 0.1699,
+     "held_prod": 2,
+     "held_roll": 2
+    },
+    {
+     "symbol": "600312",
+     "name": "平高电气",
+     "date": "2024-06-04",
+     "fwd5": 0.0102,
+     "fwd10": 0.14732,
+     "held_prod": 2,
+     "held_roll": 2
+    },
+    {
+     "symbol": "600406",
+     "name": "国电南瑞",
+     "date": "2024-06-04",
+     "fwd5": -0.01993,
+     "fwd10": 0.04157,
+     "held_prod": 2,
+     "held_roll": 2
+    },
+    {
+     "symbol": "600406",
+     "name": "国电南瑞",
+     "date": "2024-06-06",
+     "fwd5": 0.02075,
+     "fwd10": 0.04936,
+     "held_prod": 2,
+     "held_roll": 2
+    }
+   ]
+  },
+  "prod_only_block": {
+   "n": 11,
+   "pct_of_buys": 1.03,
+   "fwd5_mean_pct": 0.238,
+   "fwd5_median_pct": 1.0,
+   "fwd10_mean_pct": 5.303,
+   "examples": [
+    {
+     "symbol": "000400",
+     "name": "许继电气",
+     "date": "2024-09-02",
+     "fwd5": 0.02781,
+     "fwd10": 0.09715,
+     "held_prod": 2,
+     "held_roll": 1
+    },
+    {
+     "symbol": "000400",
+     "name": "许继电气",
+     "date": "2024-09-12",
+     "fwd5": 0.01,
+     "fwd10": 0.13929,
+     "held_prod": 2,
+     "held_roll": 0
+    },
+    {
+     "symbol": "000987",
+     "name": "越秀资本",
+     "date": "2024-09-12",
+     "fwd5": 0.04499,
+     "fwd10": 0.409,
+     "held_prod": 2,
+     "held_roll": 1
+    },
+    {
+     "symbol": "600089",
+     "name": "特变电工",
+     "date": "2025-03-13",
+     "fwd5": -0.00159,
+     "fwd10": -0.0119,
+     "held_prod": 2,
+     "held_roll": 1
+    },
+    {
+     "symbol": "600030",
+     "name": "中信证券",
+     "date": "2025-03-17",
+     "fwd5": -0.02405,
+     "fwd10": -0.0481,
+     "held_prod": 2,
+     "held_roll": 1
+    },
+    {
+     "symbol": "600406",
+     "name": "国电南瑞",
+     "date": "2025-08-21",
+     "fwd5": 0.00592,
+     "fwd10": -0.03005,
+     "held_prod": 2,
+     "held_roll": 0
+    },
+    {
+     "symbol": "600406",
+     "name": "国电南瑞",
+     "date": "2025-08-25",
+     "fwd5": -0.03052,
+     "fwd10": -0.00135,
+     "held_prod": 2,
+     "held_roll": 1
+    },
+    {
+     "symbol": "601179",
+     "name": "中国西电",
+     "date": "2026-03-17",
+     "fwd5": -0.06028,
+     "fwd10": -0.12687,
+     "held_prod": 2,
+     "held_roll": 1
+    },
+    {
+     "symbol": "601995",
+     "name": "中金公司",
+     "date": "2026-04-21",
+     "fwd5": 0.01179,
+     "fwd10": 0.0112,
+     "held_prod": 2,
+     "held_roll": 1
+    },
+    {
+     "symbol": "601995",
+     "name": "中金公司",
+     "date": "2026-06-16",
+     "fwd5": 0.02071,
+     "fwd10": 0.09422,
+     "held_prod": 2,
+     "held_roll": 1
+    }
+   ]
+  },
+  "roll_only_block": {
+   "n": 356,
+   "pct_of_buys": 33.33,
+   "fwd5_mean_pct": 1.587,
+   "fwd5_median_pct": -0.227,
+   "fwd10_mean_pct": 1.783,
+   "examples": [
+    {
+     "symbol": "601995",
+     "name": "中金公司",
+     "date": "2024-04-19",
+     "fwd5": 0.09317,
+     "fwd10": 0.06802,
+     "held_prod": 1,
+     "held_roll": 2
+    },
+    {
+     "symbol": "603308",
+     "name": "应流股份",
+     "date": "2024-04-22",
+     "fwd5": 0.15311,
+     "fwd10": 0.14432,
+     "held_prod": 0,
+     "held_roll": 2
+    },
+    {
+     "symbol": "603308",
+     "name": "应流股份",
+     "date": "2024-04-24",
+     "fwd5": 0.02804,
+     "fwd10": -0.03471,
+     "held_prod": 0,
+     "held_roll": 2
+    },
+    {
+     "symbol": "603308",
+     "name": "应流股份",
+     "date": "2024-04-25",
+     "fwd5": -0.01208,
+     "fwd10": -0.07438,
+     "held_prod": 0,
+     "held_roll": 2
+    },
+    {
+     "symbol": "002156",
+     "name": "通富微电",
+     "date": "2024-04-26",
+     "fwd5": -0.02983,
+     "fwd10": -0.00994,
+     "held_prod": 0,
+     "held_roll": 2
+    },
+    {
+     "symbol": "601179",
+     "name": "中国西电",
+     "date": "2024-04-26",
+     "fwd5": -0.02406,
+     "fwd10": -0.06417,
+     "held_prod": 0,
+     "held_roll": 2
+    },
+    {
+     "symbol": "600584",
+     "name": "长电科技",
+     "date": "2024-04-29",
+     "fwd5": 0.01794,
+     "fwd10": -0.01374,
+     "held_prod": 1,
+     "held_roll": 2
+    },
+    {
+     "symbol": "601995",
+     "name": "中金公司",
+     "date": "2024-04-30",
+     "fwd5": 0.02609,
+     "fwd10": 0.0057,
+     "held_prod": 1,
+     "held_roll": 2
+    },
+    {
+     "symbol": "300124",
+     "name": "汇川技术",
+     "date": "2024-05-06",
+     "fwd5": -0.01954,
+     "fwd10": -0.03018,
+     "held_prod": 0,
+     "held_roll": 2
+    },
+    {
+     "symbol": "601100",
+     "name": "恒立液压",
+     "date": "2024-05-06",
+     "fwd5": 0.02942,
+     "fwd10": 0.01245,
+     "held_prod": 0,
+     "held_roll": 2
+    }
+   ]
+  }
+ },
+ "bootstrap": {
+  "roll_blocked_fwd5_vs_prod_passed_fwd5": {
+   "mean_diff_pct": 0.428,
+   "ci95": [
+    -0.584,
+    1.479
+   ],
+   "p_gt0": 0.789
+  },
+  "roll_passed_fwd5_vs_prod_passed_fwd5": {
+   "mean_diff_pct": 0.176,
+   "ci95": [
+    -0.62,
+    0.937
+   ],
+   "p_gt0": 0.668
+  },
+  "prod_blocked_fwd5_vs_roll_passed_fwd5": {
+   "mean_diff_pct": 0.829,
+   "ci95": [
+    -0.573,
+    2.269
+   ],
+   "p_gt0": 0.871
+  }
+ }
+}
