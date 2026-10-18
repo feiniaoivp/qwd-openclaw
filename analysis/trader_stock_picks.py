@@ -165,12 +165,57 @@ def get_technical_from_hist(symbol: str, name: str) -> Dict[str, Any]:
         logging.getLogger(__name__).warning(f"get_technical_from_hist({symbol}) 失败: {e}")
         return {}
 
+# ── 筹码结构维（第5维复活，2026-10-18）────────────────────────────
+# 数据源: data/research_price_cache/chipmetrics_{sym}.pkl（经典筹码衰减法自算，
+# 由 scripts/chip_distribution_study.py 生成，全部本地可复现，无外部接口依赖）。
+# 标定依据（analysis/research/chip_distribution_study.json + 2026-10-18 绝对阈值复核）:
+#   * cost_bias(现价偏离平均成本) < -0.20 → 5日超额 +2.38% CI95[+1.48,+3.26]，n=309
+#     < -0.15 → +1.39% CI95[+0.95,+1.81]，n=1157；分年 2024/2025/2026 全部为正
+#     （+1.48%/+3.83%/+1.12%）→ 三年度稳健，非单年偶然。
+#   * winner_pct(获利盘) 与 conc90(成本集中度) 无单调关系（各档差异 ≤0.5pp 且不单调）
+#     → 不参与打分，仅作诊断字段输出。
+# 口径限制: 极端档(-0.20)只覆盖 1.5% 样本，故设为**加分项**（缺省 5.0 中性不加不减），
+#   不当淘汰条件；< -0.15 给 +2.5，< -0.20 给 +3.5。成本偏离 > +0.15（浮盈过大）
+#   依据不足，不扣分（避免引入未证伪的负向假设）。
+CHIP_CACHE_DIR = os.path.join(_WORKSPACE, "data", "research_price_cache")
+
+
+def load_chip_metrics(symbol: str):
+    """读 chipmetrics 缓存，取最后一行的三指标。缺失返回 None（不填充默认值）。"""
+    try:
+        path = os.path.join(CHIP_CACHE_DIR, f"chipmetrics_{symbol}.pkl")
+        if not os.path.exists(path):
+            return None
+        import pandas as pd
+        df = pd.read_pickle(path)
+        if df is None or len(df) == 0:
+            return None
+        r = df.iloc[-1]
+        return {"date": str(r.get("date", ""))[:10],
+                "winner_pct": float(r["winner_pct"]),
+                "cost_bias": float(r["cost_bias"]),
+                "conc90": float(r["conc90"])}
+    except Exception as e:
+        print(f"⚠️ 筹码指标读取失败 {symbol}: {e}")
+        return None
+
+
 def score_chip_structure(symbol: str) -> float:
-    """Chip structure score (0-10). Default medium."""
-    # In reality we would look at institutional holder %, top 10 changes, etc.
-    # 2026-10-09 改造（10-08 立项）：无数据源 → 返回 None，禁止隐性 5.0 填充。
-    # 当前无筹码数据源 → 该维对所有票一致为 None，不参与总分（对相对排序无信息量）。
-    return None
+    """Chip structure score (0-10)。
+
+    2026-10-09：无数据源 → None（禁止隐性 5.0 填充）。
+    2026-10-18：本地自算筹码分布复活该维，按 cost_bias 绝对阈值加分（见上方标定注释）。
+    缓存缺失/异常 → None（沿用 10-09「缺失不填充」纪律，不参与总分）。
+    """
+    m = load_chip_metrics(symbol)
+    if not m or not m["date"]:
+        return None
+    cb = m["cost_bias"]
+    if cb < -0.20:
+        return 8.5      # 5.0 + 3.5
+    if cb < -0.15:
+        return 7.5      # 5.0 + 2.5
+    return 5.0          # 中性：无证据支持加分或扣分
 
 def score_volume_price(symbol: str, name: str, spot_item: dict) -> float:
     """Volume-price score based on turnover rate and price change.
