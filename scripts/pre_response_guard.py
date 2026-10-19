@@ -29,7 +29,10 @@ MARKET_KEYWORDS = [
     r'主力资金', r'主力净流入', r'主力净流出',
     r'融资余额', r'融券余额', r'两融',
     r'换手率', r'量比',
-    r'市盈率', r'PE', r'PB', r'市净率',
+    # ⚠️ 2026-10-19 修正：PE/PB 原为大小写不敏感子串匹配 → 会命中 update/spec/type/percent
+    # 等普通词（实测 dreaming 日报 16 条命中全部是「up*pe*」误报，真实市场数据 0 条），
+    # 故改为词边界+区分大小写（见 ascii_kw 分支），避免把技术报告拦成违规。
+    r'市盈率', r'市净率',
 ]
 
 # 数字模式（含单位）
@@ -92,9 +95,12 @@ def find_market_data_violations(text: str) -> List[Dict]:
     violations = []
     
     # 组合正则：关键词 + 任意字符(≤80) + 数字
-    for kw in MARKET_KEYWORDS:
+    # PE/PB 这类短 ASCII 缩写单独处理：词边界 + 区分大小写（避免 up*pe* 误报）
+    keywords = [(kw, re.IGNORECASE) for kw in MARKET_KEYWORDS]
+    keywords += [(r'\bPE\b', 0), (r'\bPB\b', 0)]
+    for kw, flags in keywords:
         pattern = rf'({kw}).{{0,80}}?({NUMBER_PATTERN})'
-        for match in re.finditer(pattern, text, re.IGNORECASE):
+        for match in re.finditer(pattern, text, flags):
             kw_match = match.group(1)
             num_match = match.group(2)
             kw_start, kw_end = match.span(1)
