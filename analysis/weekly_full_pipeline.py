@@ -317,6 +317,20 @@ def main():
     if not r["success"]:
         print("⚠️ 对撞样本监测失败（评估明细缺失/损坏？见上方），不阻断流水线...")
 
+    # 步骤 0v: 评分器组件/维度证据审计刷新（2026-10-20 新增，research 刷新 warn-only）
+    # 背景：组件审计(v4 反证→反向落地) + LODO(fund 最弱环节) 证据需按周刷新，
+    # 追踪组件变更后的边际是否漂移；纯本地秒级~分钟级，失败不阻断。
+    print("\n📈 步骤 0v/9: 评分器组件证据审计 (score_component_audit.py)")
+    r = run_script("../scripts/score_component_audit.py", timeout=300)
+    results["score_component_audit"] = r
+    if not r["success"]:
+        print("⚠️ 组件审计刷新失败（不阻断；生产口径变更后应同步此脚本镜像）...")
+    print("\n📈 步骤 0v/9: 评分器留一维审计 (dim_leave_out_audit.py)")
+    r = run_script("../scripts/dim_leave_out_audit.py", timeout=300)
+    results["dim_leave_out_audit"] = r
+    if not r["success"]:
+        print("⚠️ LODO 审计刷新失败（不阻断）...")
+
     # 步骤 0n: 单簇市值暴露上限契约门禁（2026-10-18 新增，纯逻辑合成输入秒级）
     # 背景：只数≤2 口径在组合评分卡(ef81ed2)中证明对收益/回撤均无保护 →
     # 升级为组合层单簇市值占比≤25%(持仓期持续生效)。本门禁锁 12 场景语义:
