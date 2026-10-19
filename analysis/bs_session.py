@@ -24,9 +24,42 @@ import logging
 
 # 网络兜底：baostock 内部 socket 多数不传 timeout，默认永久等待
 # （2026-09-16 事故：拉取时阻塞在 sock_recv 导致进程永久挂起）
-from analysis.net_guard import install_default_timeout
+from analysis.net_guard import install_default_timeout, network_timeout_guard
 
 install_default_timeout()
+
+# ── 函数体内超时护栏常量（err.dist-io-no-timeout 铁律①：入口装 net_guard ≠ 全链路免疫）──
+_LOGIN_TIMEOUT = 15.0   # 登录握手（内部会新建 socket，guard 保证其继承超时）；10-02 事故失败登录要 ~60s，15s 硬顶可缩短负缓存周期
+_QUERY_TIMEOUT = 30.0   # 单次查询请求响应（新 socket 路径的兜底；常驻连接另有 _harden_socket 钉住）
+_SOCKET_TIMEOUT = float(_os.getenv("NET_TIMEOUT_SEC", "20"))  # 常驻连接 recv 上限，与 net_guard 默认一致
+
+
+def _harden_socket() -> None:
+    """
+    给 baostock 常驻连接（baostock.common.context.default_socket）显式钉住超时。
+
+    为什么必须（09-30 提出、10-19 随 err.dist-io-no-timeout 提升的遗留缺口）：
+      socket.setdefaulttimeout() 只影响**之后新建**的 socket；baostock 的
+      SocketUtil.connect() 不调 settimeout，常驻连接的超时在创建那一刻被冻结。
+      全部查询 I/O 都走这一条连接（sock.send_msg → context.default_socket），
+      若它建立早于护栏安装（外部直接 bs.login() 的旧路径 / 外部库把 default
+      改回 None 后 TTL 重登），recv 会永久挂起（09-16 / 09-29 事故形态）。
+      本函数在登录成功后与每次查询前自愈，且**不放宽**已有更严的超时。
+    """
+    try:
+        import baostock.common.context as _bs_ctx
+        sock_obj = getattr(_bs_ctx, "default_socket", None)
+        if sock_obj is None:
+            return
+        cur = sock_obj.gettimeout()
+        if cur is None or cur > _SOCKET_TIMEOUT:
+            sock_obj.settimeout(_SOCKET_TIMEOUT)
+            if cur is None:
+                log.warning(f"[BS] 常驻连接原超时=None（挂死风险），已修正为 {_SOCKET_TIMEOUT}s")
+            else:
+                log.info(f"[BS] 常驻连接超时 {cur}s → {_SOCKET_TIMEOUT}s")
+    except Exception as e:
+        log.warning(f"[BS] 常驻连接加固失败（不阻断）: {e}")
 
 log = logging.getLogger(__name__)
 
@@ -42,7 +75,10 @@ def _do_login() -> bool:
     """内部登录函数"""
     global _bs_logged_in, _last_login_time, _LAST_LOGIN_FAIL_TIME
     try:
-        lg = bs.login()
+        # 函数体内超时护栏（铁律①）：login 内部新建的 socket 在 guard 生效期间创建，
+        # 必然继承超时，不依赖进程级默认值的安装时序
+        with network_timeout_guard(_LOGIN_TIMEOUT):
+            lg = bs.login()
         if lg.error_code != "0":
             log.error(f"[BS] 登录失败: {lg.error_msg}")
             _LAST_LOGIN_FAIL_TIME = time.time()
@@ -50,6 +86,7 @@ def _do_login() -> bool:
         _bs_logged_in = True
         _last_login_time = time.time()
         _LAST_LOGIN_FAIL_TIME = 0.0
+        _harden_socket()  # 登录成功即钉住常驻连接超时（防旧连接先于护栏建立的挂死形态）
         log.info("[BS] 登录成功")
         return True
     except Exception as e:
@@ -97,7 +134,11 @@ def query_history_k_data_plus(*args, **kwargs):
     if not ensure_login():
         log.error("[BS] 登录失败，无法执行查询")
         return None
-    return bs.query_history_k_data_plus(*args, **kwargs)
+    _harden_socket()  # 查询前自愈：防外部代码换入无超时的常驻连接
+    # 函数体内超时护栏（铁律①）：兜住库内新建 socket 的路径；
+    # 常驻连接本身的 recv 上限由 _harden_socket 钉住，与 guard 互补
+    with network_timeout_guard(_QUERY_TIMEOUT):
+        return bs.query_history_k_data_plus(*args, **kwargs)
 
 
 def query_history_k_data_plus_retry(*args, max_retries: int = 3, wait_seconds: float = 2.0, **kwargs):
