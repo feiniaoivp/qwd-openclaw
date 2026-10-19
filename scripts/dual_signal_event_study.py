@@ -191,10 +191,13 @@ def main():
             out["classes"][cls][f"excess_{h}d"] = (
                 round(ev["mean"] - ba["mean"], 5) if ev and ba else None)
 
-    path = os.path.join(WORKSPACE, "analysis/research/2026-10-17_dual_signal_event_study.json")
+    # 产出文件名动态日期（2026-10-20：旧硬编码 2026-10-17_ 会在重放时静默覆写当日研究档）
+    from datetime import date as _date
+    path = os.path.join(WORKSPACE, f"analysis/research/{_date.today().isoformat()}_dual_signal_event_study.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
     # 事件明细单独落盘（供离线稳健性分析：分年/个股集中度/去重/bootstrap）
+    # 注：固定名 dual_signal_eval_days.json 是下游研究的 SSOT 面板（多脚本引用），不改名
     rows_path = os.path.join(WORKSPACE, "analysis/research/dual_signal_eval_days.json")
     with open(rows_path, "w", encoding="utf-8") as f:
         json.dump(rows, f, ensure_ascii=False)

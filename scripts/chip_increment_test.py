@@ -173,42 +173,29 @@ def score_vp_hist(close, turn):
     return s.clip(0, 10)
 
 
-def main():
-    prices = load_prices_full()
-    fund_hist = {s: sorted(v, key=lambda x: x["pub"])
-                 for s, v in json.load(open(FUND)).items()}
-    pepb = json.load(open(PEPB))
-    chipm = {}
-    for fn in os.listdir(CHIPMETRICS):
-        if fn.startswith("chipmetrics_") and fn.endswith(".pkl"):
-            sym = fn[len("chipmetrics_"):-4]
-            try:
-                df = pd.read_pickle(os.path.join(CHIPMETRICS, fn))
-                chipm[sym] = dict(zip(df["date"].astype(str).str[:10], df["cost_bias"]))
-            except Exception as e:
-                import logging
-                logging.getLogger(__name__).warning(f"chipmetrics 读取失败 {sym}: {e}")
-
-    # ── as-of 索引（bisect，防 21k 行 × 长列表线性扫描）──
+def build_fund_asof(fund_hist_raw, pepb_raw):
+    """生产基本面公式 as-of 查表工厂（bisect 防长列表线性扫描）。
+    返回 fund5_asof(sym, d)：缺任一字段 → None（缺失不填充）。供本脚本与组件审计复用。"""
+    from bisect import bisect_right as _br
+    fund_hist = {s: sorted(v, key=lambda x: x["pub"]) for s, v in fund_hist_raw.items()}
     fund_keys = {s: [r["pub"] for r in lst] for s, lst in fund_hist.items()}
     pepb_idx = {}
-    for s, lst in pepb.items():
+    for s, lst in pepb_raw.items():
         lst2 = sorted(lst, key=lambda x: x[0])
         pepb_idx[s] = ([x[0] for x in lst2], lst2)
 
     def fund5_asof(sym, d):
-        """生产基本面公式 as-of 版。缺任一字段 → None（缺失不填充）。"""
         fk = fund_keys.get(sym)
         fr = None
         if fk:
-            i = bisect_right(fk, d) - 1
+            i = _br(fk, d) - 1
             if i >= 0:
                 fr = fund_hist[sym][i]
         pe = pb = None
         e = pepb_idx.get(sym)
         if e:
             dts, lst2 = e
-            i = bisect_right(dts, d) - 1
+            i = _br(dts, d) - 1
             if i >= 0:
                 pe, pb = lst2[i][1], lst2[i][2]
         roe_pct = fr["roe"] * 25.0 if (fr and fr.get("roe") is not None) else None  # roeAvg×100
@@ -230,6 +217,25 @@ def main():
         elif roe_pct < 5:
             f -= 1.0
         return max(0.0, min(10.0, f))
+
+    return fund5_asof
+
+
+def main():
+    prices = load_prices_full()
+    fund5_asof = build_fund_asof(json.load(open(FUND)), json.load(open(PEPB)))
+    chipm = {}
+    for fn in os.listdir(CHIPMETRICS):
+        if fn.startswith("chipmetrics_") and fn.endswith(".pkl"):
+            sym = fn[len("chipmetrics_"):-4]
+            try:
+                df = pd.read_pickle(os.path.join(CHIPMETRICS, fn))
+                chipm[sym] = dict(zip(df["date"].astype(str).str[:10], df["cost_bias"]))
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning(f"chipmetrics 读取失败 {sym}: {e}")
+
+    # ── as-of 索引（bisect，防 21k 行 × 长列表线性扫描）──（已提升为模块级 build_fund_asof）
 
     rows = json.load(open(EVAL))
     sigs = [r for r in rows if any("买入" in str(a) for a in (r.get("actions") or []))]
