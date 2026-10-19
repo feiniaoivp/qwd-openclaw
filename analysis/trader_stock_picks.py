@@ -271,10 +271,14 @@ def score_volume_price(symbol: str, name: str, spot_item: dict) -> float:
     elif abs(change_pct) < 0.5:
         score -= 1
     # Turnover rate (if available)
+    # 2026-10-20 用户拍板 v4 反向（commit 7335982 审计 + v4_threshold_shift_sim）：
+    #   turn>10 原 +2 是唯一三年全负的稳健反证（分年 -0.33/-0.45/-0.93pp），
+    #   阈值平移模拟：BUY 名单零影响，SELL 侧反向新增 395 行前瞻 ex5 -1.12%（旗标边际变好）
+    #   → 改为 -2；v5/v6 两档无证据不改。
     turnover = spot_item.get("turnover_rate")
     if turnover is not None:
         if turnover > 10:
-            score += 2
+            score -= 2
         elif turnover > 5:
             score += 1
         elif turnover < 1:
