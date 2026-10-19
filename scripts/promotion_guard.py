@@ -96,6 +96,25 @@ def main() -> int:
     events = load_promotion_events(EVENTS_PATH)
     markers = load_memory_markers(MEMORY_PATH)
 
+    # 2026-10-20 用戶拍板关闭 deep 自动 promote（openclaw.json
+    # plugins.entries.memory-core.config.dreaming.phases.deep.enabled=false）
+    # → 不再产生新 promote 事件，棘轮的「连续零存活=通道断裂」语义不再适用，
+    # 检测到 deep-off 时跳过判定（避免自我误报），人工蒸馏由每日会话承担。
+    try:
+        _cfg = json.load(open("/Users/duguke/.openclaw/openclaw.json", encoding="utf-8"))
+        _deep_off = (
+            _cfg.get("plugins", {}).get("entries", {}).get("memory-core", {})
+            .get("config", {}).get("dreaming", {})
+            .get("phases", {}).get("deep", {}).get("enabled")
+        ) is False
+    except (OSError, json.JSONDecodeError):
+        _deep_off = False
+    if _deep_off:
+        print("ℹ️  deep 自动 promote 已关闭（10-20 用户拍板，纯人工蒸馏模式）→ 跳过棘轮判定")
+        if args.json:
+            print(json.dumps({"skipped": True, "reason": "deep_promotion_disabled"}, ensure_ascii=False))
+        return 0
+
     if not events:
         print("ℹ️  events.jsonl 无 memory.promotion.applied 事件，跳过判定")
         return 0
