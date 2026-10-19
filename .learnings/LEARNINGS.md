@@ -138,3 +138,19 @@ moneyflow 三 host curl_cffi 全 curl(56) 的同一分钟里，裸 curl 曾独�
 - Status: resolved（反事实拦下错误变更，生产未动，commit 93ccbb4）
 - Disposition: retain — RC=1 < 3，与 `research.benchmark-basis-mismatch` / `research.proxy-score-dimensional-swap` 同属「实验口径类」家族；
   三条约形成集群后再统一评估是否合并提升，避免逐条写规则造成 AGENTS.md 膨胀。
+
+## [2026-10-20] 每日 ⚠️ 告警被标为"存量噪声"40 天，实为结构性虚增（RC: ledger-warning-dismissed）
+- 现象：equity_guard/portfolio_core 每日打印「601066/000987 cash-本金 != total_pl」，10-19 前一直被记为"疑似口径清理前遗留"，未深查。
+- 真相：虚增额 == 该票全部买入成本 → 2026-08 期间 execute_trade 买入分支不扣 cash；019b40f(09-10) 修代码未回填存量。权益 +0.50% 实为 -0.52%（虚增 27,566.54）。
+- 泛化规则：**重复出现的固定金额告警 = 恒定污染源信号，禁止归为噪声**；"修了代码没回填数据"是迁移类修复的标配缺口——凡是修账本类 bug，必须附带「存量污染扫描 + 回填/冲正脚本」才算闭环。
+- 反证技巧：按「最后一次交易日 ≥ 修复时点的票 diff 应≈0」分桶，可精确圈定污染窗口。
+
+### Metadata (2026-10-20 每日维护补全)
+- Source: dreaming-session（equity_guard 告警深查）
+- Reproducible: yes
+- Pattern-Key: ledger.warning-dismissed-as-noise
+- Recurrence-Count: 1（告警本身连续重复 40 天属同一事件被忽视，非跨任务复发，不虚增）
+- First-Seen: 2026-10-19（深查日）；污染源 2026-08
+- Last-Seen: 2026-10-19
+- Status: resolved（代码 019b40f + 存量回填完成，权益修正 -0.52%）；规则 RC=1 < 3 暂不提升，若再现「固定金额告警归噪声」则 bump 复核
+- Disposition: retain — 「修账本类 bug 必须附带存量污染扫描+回填才算闭环」为高价值通用规则，等待第二次实证

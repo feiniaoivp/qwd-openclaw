@@ -25,6 +25,7 @@ Investigate `analysis/weekly_full_pipeline.py`; check for deadlocks/infinite loo
 - Promoted: TOOLS.md「🔴 长跑 pipeline 卡死判定规则」(2026-10-07 提升；2026-10-09 维护复核确认生效，Source: .learnings/ERRORS.md#ERR-20260926-WBP)
 
 > **[2026-10-19 每日维护 · 第2轮]** RC≥3 共享计数条目（跨 3 任务 30 天内）终态复核：TOOLS.md 规则在位（grep 确认「长跑 pipeline 卡死判定规则」章节存在），无新复发，RC 维持 3 不虚增，保持 promoted。
+> **[2026-10-20 每日维护]** 第三轮终态确认：TOOLS.md L367 规则仍在位，Last-Seen 维持 2026-10-06，无新复发，promoted 终态不变。
 
 > **[2026-10-10 维护去重]** 本条目与 ERR-20261006-PM 同 Pattern-Key `ops.silent-orchestrator-misjudged-as-hang`
 > （Recurrence-Count=3 共享计数，First-Seen 2026-09-26）。已合并为一条模式，保留两条作为
@@ -266,10 +267,17 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 2. Before relaunching, ALWAYS `pgrep -f quant_push.py` — SIGKILL on the parent does not necessarily kill the child backtest run.
 3. Consider adding stdout tee-to-log inside quant_push.py so the JSON block is always persisted.
 **Pattern-Key**: exec.timeout-orphan-child.cron-longrunning
-**Recurrence-Count**: 1
+**Recurrence-Count**: 2
 **First-Seen**: 2026-10-09
-**Last-Seen**: 2026-10-09
+**Last-Seen**: 2026-10-19
 **Promoted**: AGENTS.md「🧠 教训固化原则 · 配套铁律」(2026-10-10, Source: .learnings/ERRORS.md#ERR-20261009-QuantPushDetachedOutputLost)
+
+### Follow-up (2026-10-19) — 同模式复发，但落盘防御生效 ✅
+- 复发经过：同 cron 仍被以 `exec timeout:300` 短超时启动，wrapper `quant_push.py` 于 300s 被杀（lucky-zephyr failed 5m9s），子进程 `backtest_strategies.py` 再次成孤儿继续跑完（20:30→20:5x，~26min，36 票 x10 策略）。
+- 与 10-09 的关键区别：**10-09 落的盘防御奏效** —— quant_push.py 已把子进程 stdout 重定向到 `logs/backtest_run_YYYYMMDD.log`，JSON 摘要完整保留在磁盘；孤儿跑完后从日志提取 JSON 手动 `send_with_retry` 推送成功（message_id 3244），零数据损失。
+- 本次未违反规则 #2：cron 二次投递到达时先 `ps aux | grep` 确认无存活回测进程（孤儿已完成）才做恢复处理，**未产生重复实例/重复推送**。
+- 仍违反规则 #1：未用 `nohup ... > logs/... 2>&1 &` 直启。下次该 cron 触发必须按 AGENTS.md 铁律 nohup 直启、exec 不带 timeout。
+- Recurrence-Count 1 → 2；Last-Seen 2026-10-19。RC=2 < 3，规则已 promoted 维持终态，继续观察；若第三次复发（且落盘防御也失效导致推送丢失）则 bump 3 并复核提升。
 
 ### Maintenance
 - Claim: 长任务 cron/脚本产出必须落盘日志(`nohup ... > logs/xxx.log 2>&1 &`)，不依赖 exec stdio；重跑前 `pgrep -f` 防孤儿重复实例。
@@ -438,7 +446,7 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
   memory/dreaming/daily-report-2026-09-30.md（baostock 常驻会话先于护栏建连，遗留未治）；
   ERR-20261002-BSL（baostock 登录 ~60s 无负缓存，同类无超时放大因素）
 
-### Promotion (2026-10-19 每日维护)
+### Promotion (2026-10-19 每日维护；2026-10-20 维护复核 TOOLS.md L446 铁律在位，Last-Seen 维持 10-18，终态不变)
 - 触发：同根因跨 ≥4 个任务（09-17 net_guard 立项 / 09-29 baostock 常驻会话 / 10-02 回测登录 / 10-18 RiskGuard），30 天窗口内，RC=4 ≥ 3，且此前无防治规则落在 TOOLS.md/AGENTS.md（护栏只有代码，没有行为规则）。
 - 验证：`analysis/portfolio_core.py:668-672` 修复在位；`grep -rl net_guard analysis scripts` = 80 文件已接线，但 09-30 遗留项（bs_session 旧连接先于护栏）仍未闭环 → 规则强调「函数体内自带超时」而非仅入口接线。
 - 写入：TOOLS.md「🔴 网络调用超时铁律」三条判据（函数体内护栏 / 超时必降级可见 / sample 诊断）。
@@ -563,6 +571,15 @@ B 臂用 `close(T)→open(T+1)` 全池等权。两条基准**持有期完全不�
 - 复核：防治规则 TOOLS.md「🔴 派生指标缓存铁律」四条在位；产物 `analysis/chip_freshness.py`、`scripts/chip_freshness_test.py` 均在位（10-18 更新）。
 - Pattern-Key 本文件仅此一处，无跨文件重复；RC 维持 2 不虚增（10-19 无新复发）。
 - Validation 维持 verified；终态保持 promoted。
+
+### Metadata (2026-10-20 每日维护补全)
+- Source: manual-session（chip 第 5 维接线复核）
+- Reproducible: yes
+- Pattern-Key: data.derived-cache-unconditional-hit（2026-10-20 维护定 key，消除无 key 盲区）
+- Recurrence-Count: 2（10-18 发现 + 同日截断测试揭出第二层同步判据缺陷，两处独立读写点实证；10-19/10-20 无新复发不虚增）
+- First-Seen: 2026-10-18
+- Last-Seen: 2026-10-18
+- Status: promoted (2026-10-19 → TOOLS.md「🔴 派生指标缓存铁律」；2026-10-20 维护 grep 确认规则四条 + chip_freshness 三产物在位)
 
 ## ERR-20261018-C06 门控阈值标定用「代理分」= 把变量的维度当常量、常量的维度当变量
 
