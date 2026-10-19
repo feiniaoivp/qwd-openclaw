@@ -543,27 +543,50 @@ def describe_spot_fallback(f):
 
 
 # ── 规则 9: 重复模板化理由 —— 同一理由批量出现，缺乏个股差异化 ──
+# 2026-10-19 升级：旧版按「整串完全相同」计数，nodes.py 修复#8 给降级理由追加
+# 「｜个股: ...」事实快照后，字符串天然不同 → 旧规则会漏报「模板相同但快照也相同/缺失」
+# 的真模板化。新口径：按模板前缀（剥离「｜个股:」事实段）聚类；
+# 簇内 ≥5 且存在「无事实快照」成员才报，并只点名缺差异化的股票。
+_FACT_MARKER = "｜个股:"
+
+def _template_prefix(reason: str) -> str:
+    return str(reason).split(_FACT_MARKER)[0].strip()
+
 def check_template_reasons(state):
     findings = []
     try:
         advice_list = json.loads(state.get("final_advice", "[]"))
     except Exception:
         advice_list = []
-    reason_counts = {}
+    clusters = {}  # prefix -> {"all": [sym], "no_fact": [sym]}
     for a in advice_list:
         r = a.get("reason", "")
-        if r:
-            reason_counts[r] = reason_counts.get(r, 0) + 1
-    for reason, cnt in reason_counts.items():
-        if cnt >= 5:  # 同一理由出现≥5次
-            findings.append({
-                "type": "template_reason",
-                "reason": reason,
-                "count": cnt,
-                "symbols": [a["symbol"] for a in advice_list if a.get("reason") == reason],
-            })
+        if not r:
+            continue
+        key = _template_prefix(r)
+        c = clusters.setdefault(key, {"all": [], "no_fact": []})
+        c["all"].append(a["symbol"])
+        if _FACT_MARKER not in str(r):
+            c["no_fact"].append(a["symbol"])
+    for prefix, c in clusters.items():
+        if len(c["all"]) < 5:  # 同一模板出现≥5次
+            continue
+        if not c["no_fact"]:
+            continue  # 全员已带个股事实快照 → 非模板化，放过
+        findings.append({
+            "type": "template_reason",
+            "reason": prefix,
+            "count": len(c["all"]),
+            "symbols": c["all"],
+            "no_fact_symbols": c["no_fact"],
+        })
     return findings
 def describe_template(f):
+    nf = f.get("no_fact_symbols") or []
+    if nf:
+        return (f"{f['count']} 只股票共用模板「{f['reason']}」，其中 {len(nf)} 只"
+                f"({', '.join(nf[:8])}{'...' if len(nf) > 8 else ''}) 理由无「｜个股:」事实快照，"
+                f"缺乏个股差异化，是否模板化套用？")
     syms = ", ".join(f["symbols"][:8]) + ("..." if len(f["symbols"]) > 8 else "")
     return (f"为什么 {f['count']} 只股票({syms}) 共用同一理由：「{f['reason']}」？"
             f"缺乏个股差异化分析，是否模板化套用？")
