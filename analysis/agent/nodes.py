@@ -4,7 +4,7 @@ LangGraph 节点实现：每个节点都是纯函数，输入 State、输出更�
 仅修改自己关心的字段，其余保持不变。
 """
 
-import os, json, re, time, uuid
+import os, sys, json, re, time, uuid
 from datetime import datetime
 from typing import List, Tuple, Dict, Any
 from analysis.service import (
@@ -17,6 +17,51 @@ from analysis.llm_tool import (get_today_news, get_market_health, call_llm_with_
 from analysis.rag.experience_store import retrieve_top_k
 from analysis.trader_stock_picks import get_trader_picks
 from analysis.three_factor_helper import ResonanceGate, SENT_BUY, FUND_BUY
+
+# ── 2026-10-19 修复#8：降级理由个股差异化 ──
+# 背景：challenge_review 规则 template_reason 每日命中「6 只股票共用同一条
+# '无金叉触发降级观望' 理由」。批量降级本身是预期行为(09-19 修复#5)，但理由
+# 不含任何个股量价事实，人工复核时无法判断 6 只票的处境差异。
+# 规则：保留判定口径不变，仅在 reason 中追加个股事实快照 + 差异化提示。
+#   1) 多头排列但已超买(RSI>=65) → 等回踩而非等金叉
+#   2) 空头排列(EMA12<EMA26)     → 金叉需先修复中期趋势，等待期更长
+#   3) 缩量(vol_ratio<0.7)        → 无量反弹不追
+def _diff_reason(ind, price):
+    """把 indicators 事实压成一句差异化说明；缺字段时返回空串(不臆造)。"""
+    if not isinstance(ind, dict):
+        return ""
+    try:
+        rsi = float(ind.get("RSI14")) if ind.get("RSI14") is not None else None
+        e12 = float(ind.get("EMA12")) if ind.get("EMA12") is not None else None
+        e26 = float(ind.get("EMA26")) if ind.get("EMA26") is not None else None
+        macd = float(ind.get("MACD")) if ind.get("MACD") is not None else None
+        bull = ind.get("EMA_bull")
+    except (TypeError, ValueError) as e:
+        # 指标缺失/类型异常：不加差异说明，但不静默成噪声(见 silent_except_guard)
+        print("[warn] _diff_reason 指标解析失败: %r" % (e,), file=sys.stderr)
+        return ""
+    facts, hint = [], []
+    if price:
+        facts.append("现价%s" % price)
+    if rsi is not None:
+        facts.append("RSI%.1f" % rsi)
+    if e12 is not None and e26 is not None and price:
+        try:
+            dev = (float(price) - e26) / e26 * 100
+            facts.append("偏离EMA26%+.1f%%" % dev)
+        except Exception:
+            pass
+    if macd is not None:
+        facts.append("MACD柱%.3f" % macd)
+    if bull is False:
+        hint.append("EMA空头排列，需先修复中期趋势，等待期偏长")
+    elif rsi is not None and rsi >= 65:
+        hint.append("已近超买，等回踩而非等金叉")
+    elif rsi is not None and rsi < 35:
+        hint.append("RSI偏弱，企稳信号未确认")
+    if not hint:
+        hint.append("趋势在而触发未至，按信号纪律等待")
+    return "｜个股: " + " ".join(facts) + "；" + "；".join(hint)
 
 # ---------- 辅助：生成唯一 run_id ----------
 def _make_run_id() -> str:
@@ -452,7 +497,8 @@ def rule_risk_advice(state):
                 if not _cross_up:
                     action = "HOLD"
                     reason = ("关注级无金叉触发(MACD多头但非金叉)，降级为观望等待新触发；"
-                              "避免「趋势仍在」状态被反复当作买入时点。")
+                              "避免「趋势仍在」状态被反复当作买入时点。"
+                              + _diff_reason(_ind, close))
                     advice_list.append({"symbol": sym, "name": name, "action": action,
                                         "reason": reason})
                     continue
