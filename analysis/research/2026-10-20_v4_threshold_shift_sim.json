@@ -1,0 +1,72 @@
+{
+ "date": "2026-10-20",
+ "n_panel": 20893,
+ "winsor": 15.0,
+ "note": "4维近似口径；只动 turn>10 档；ex5 winsor±15%",
+ "variants": {
+  "R0_现行+2": {
+   "n_buy": 16,
+   "n_sell": 2207,
+   "buy_rate": 0.0008,
+   "sell_rate": 0.1056,
+   "buy_ex5_mean": 1.715,
+   "sell_ex5_mean": 0.1271
+  },
+  "R1_归零0": {
+   "n_buy": 16,
+   "n_sell": 2395,
+   "buy_rate": 0.0008,
+   "sell_rate": 0.1146,
+   "buy_ex5_mean": 1.715,
+   "sell_ex5_mean": 0.1175,
+   "buy_gained": {
+    "n": 0,
+    "ex5_mean": null,
+    "buy_lost": {
+     "n": 0,
+     "ex5_mean": null
+    },
+    "delta_gained_minus_lost": null,
+    "ci95": null
+   },
+   "sell_gained": {
+    "n": 188,
+    "ex5_mean": 0.0048,
+    "sell_lost": {
+     "n": 0,
+     "ex5_mean": null
+    },
+    "note": "新增 SELL 行 ex5 越负，旗标边际区分度越好（负值=正确识别弱势）",
+    "ci95": null
+   }
+  },
+  "R2_反向-2": {
+   "n_buy": 16,
+   "n_sell": 2602,
+   "buy_rate": 0.0008,
+   "sell_rate": 0.1245,
+   "buy_ex5_mean": 1.715,
+   "sell_ex5_mean": -0.0618,
+   "buy_gained": {
+    "n": 0,
+    "ex5_mean": null,
+    "buy_lost": {
+     "n": 0,
+     "ex5_mean": null
+    },
+    "delta_gained_minus_lost": null,
+    "ci95": null
+   },
+   "sell_gained": {
+    "n": 395,
+    "ex5_mean": -1.1171,
+    "sell_lost": {
+     "n": 0,
+     "ex5_mean": null
+    },
+    "note": "新增 SELL 行 ex5 越负，旗标边际区分度越好（负值=正确识别弱势）",
+    "ci95": null
+   }
+  }
+ }
+}
