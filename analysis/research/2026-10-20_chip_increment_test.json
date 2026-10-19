@@ -1,0 +1,139 @@
+{
+  "date": "2026-10-20",
+  "n_signals": 1062,
+  "n_panel_rows": 20893,
+  "n_panel_dates": 598,
+  "miss": {
+    "fund": 0,
+    "chip": 0
+  },
+  "note": "4维近似口径（fund_flow 无历史，缺席对两臂对称）；2026-10-20 加固：bootstrap CI + 分年 + SpearmanΔCI + rank级topK（含安慰剂对照：恒定5.0第4维，分离机械效应与chip真信号）",
+  "spearman": {
+    "3d": 0.0309,
+    "4d": 0.0373,
+    "delta_ci95": [
+      -0.0005,
+      0.0136
+    ],
+    "n_boot": 1000
+  },
+  "flip": {
+    "up_n": 53,
+    "down_n": 8,
+    "same_n": 1001,
+    "up_ex5_mean": 1.018,
+    "down_ex5_mean": -0.523,
+    "diff_ci95": [
+      -2.3951,
+      5.5435
+    ],
+    "by_year": {
+      "2024": {
+        "up": {
+          "n": 12,
+          "ex5_mean": 2.779
+        },
+        "down": {
+          "n": 1,
+          "ex5_mean": 6.257
+        }
+      },
+      "2025": {
+        "up": {
+          "n": 26,
+          "ex5_mean": 0.529
+        },
+        "down": {
+          "n": 4,
+          "ex5_mean": -3.312
+        }
+      },
+      "2026": {
+        "up": {
+          "n": 15,
+          "ex5_mean": 0.458
+        },
+        "down": {
+          "n": 3,
+          "ex5_mean": 0.936
+        }
+      }
+    }
+  },
+  "rank": {
+    "top5": {
+      "K": 5,
+      "dates_used": 598,
+      "set_changed_pct": 1.0,
+      "better_pct": 0.895,
+      "shipped_diff_pct": 0.1472,
+      "shipped_ci95": [
+        0.0534,
+        0.2492
+      ],
+      "signal_vs_placebo_pct": 0.1472,
+      "signal_ci95": [
+        0.0534,
+        0.2492
+      ],
+      "mechanical_vs_3d_pct": 0.0,
+      "mechanical_ci95": [
+        0.0,
+        0.0
+      ],
+      "by_year": {
+        "2024": {
+          "n": 172,
+          "mean_diff": 0.1498
+        },
+        "2025": {
+          "n": 243,
+          "mean_diff": 0.0651
+        },
+        "2026": {
+          "n": 183,
+          "mean_diff": 0.2536
+        }
+      }
+    },
+    "top10": {
+      "K": 10,
+      "dates_used": 598,
+      "set_changed_pct": 1.0,
+      "better_pct": 0.876,
+      "shipped_diff_pct": 0.0797,
+      "shipped_ci95": [
+        0.0288,
+        0.1338
+      ],
+      "signal_vs_placebo_pct": 0.0797,
+      "signal_ci95": [
+        0.0288,
+        0.1338
+      ],
+      "mechanical_vs_3d_pct": 0.0,
+      "mechanical_ci95": [
+        0.0,
+        0.0
+      ],
+      "by_year": {
+        "2024": {
+          "n": 172,
+          "mean_diff": 0.0256
+        },
+        "2025": {
+          "n": 243,
+          "mean_diff": 0.0516
+        },
+        "2026": {
+          "n": 183,
+          "mean_diff": 0.1677
+        }
+      }
+    }
+  },
+  "flip_up_n": 53,
+  "flip_down_n": 8,
+  "flip_up_ex5": 1.018,
+  "flip_down_ex5": -0.523
+}
