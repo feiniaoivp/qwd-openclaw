@@ -334,10 +334,6 @@ def main():
         print(f"\n✅ 已保存 -> {out}")
 
 
-if __name__ == "__main__":
-    main()
-
-
 def build_report_json(date, topn_macro=6, all_stock_newest=False):
     """返回结构化 JSON（供 pipeline 解析）"""
     report = build_report(date, topn_macro, all_stock_newest)
@@ -349,10 +345,10 @@ def build_report_json(date, topn_macro=6, all_stock_newest=False):
     }
 
 if __name__ == "__main__":
-    import sys
+    # 2026-10-19 修复：原文件末尾有两个 __main__ 块 —— --json 模式下第一个块的
+    # argparse 不识别 --json 会 exit(2)（--json 从未真正可用）；非 --json 模式下
+    # main() 会被执行两次（双打印/双落盘，幂等但浪费）。合并为单一入口。
     if "--json" in sys.argv:
-        # 解析参数
-        import argparse
         ap = argparse.ArgumentParser()
         ap.add_argument("--date", default=None)
         ap.add_argument("--topn-macro", type=int, default=6)
