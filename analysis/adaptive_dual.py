@@ -5,7 +5,7 @@
 基于 validation_*.json 的多窗口稳健评分，为每只股票找出
 **score 排名前二**的策略，分别跑出当日信号，输出对比。
 
-数据源: baostock(前复权) + 新浪实时补丁（当日数据）
+数据源: baostock(前复权) + 新浪实时补丁（当日数据）+ push2 跨族兜底（2026-10-19）
 """
 
 
@@ -395,11 +395,55 @@ def _expected_bar_date() -> str:
     return expected
 
 
+_PUSH2_UT = "b2884a393a59ad64002292a3e90d46a5"  # 与 moneyflow_em._UT 同源公共 token
+
+
+def _fetch_push2_today_bar(symbol: str, expected: str):
+    """push2 实时快照 → 当日 OHLCV bar（新浪族潮汐双失败时的跨族兜底，2026-10-19）。
+
+    背景：18:30 补录窗口内新浪 jsonp 日K 与 hq.sinajs spot 可能同窗全挂（TLS 潮汐，
+    2026-10-19 实测）；push2 基础行情路径不受 fflow 封锁影响（诊断
+    analysis/research/2026-10-19_push2_self_diagnosis：stock/get 三 host 200@0.03s）。
+    硬守卫：f86 快照时间戳日期 == expected（与 spot 补录同范式，绝不伪造日期）。
+    单位：push2 f47=手 ×100 → 股（对齐 baostock/新浪日K 口径，保 OBV 一致）。
+    """
+    try:
+        from curl_cffi import requests as _cffi
+        secid = ("1." if symbol.startswith(("6", "9")) else "0.") + symbol
+        url = (f"https://push2.eastmoney.com/api/qt/stock/get?secid={secid}"
+               f"&fields=f43,f44,f45,f46,f47,f86&fltt=2&invt=2&ut={_PUSH2_UT}")
+        headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                                 "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                   "Referer": "https://data.eastmoney.com/"}
+        resp = _cffi.get(url, headers=headers, impersonate="chrome", timeout=8)
+        data = (resp.json() or {}).get("data") or {}
+        f86 = data.get("f86")
+        if not f86:
+            return None
+        bar_date = datetime.fromtimestamp(int(f86)).strftime("%Y-%m-%d")
+        if bar_date != expected:
+            return None
+        vals = [data.get(k) for k in ("f46", "f44", "f45", "f43")]
+        if any(v in (None, "-", "") for v in vals):
+            return None
+        o, h, l, c = (float(v) for v in vals)
+        if c <= 0:
+            return None
+        raw_vol = data.get("f47")
+        vol = float(raw_vol) * 100.0 if raw_vol not in (None, "-", "") else 0.0
+        return {"date": pd.Timestamp(bar_date), "open": o, "high": h,
+                "low": l, "close": c, "volume": vol}
+    except Exception as e:  # noqa: BLE001 —— 兕底失败必须可见（下游 4) 滞后告警兜底）
+        print(f"  ⚠️ {symbol} push2 兕底异常: {e}")
+        return None
+
+
 def _backfill_stale_bars(symbol: str, df, latest: str, expected: str):
     """滞后补录（对齐 portfolio_sim._backfill_today 已验证范式，2026-10-11）：
 
     1) 新浪日K按真实 bar 日期合并（可跨多日、去重），不再是“伪造今日日期的 spot 行”；
     2) 仍缺今日 bar 时才用新浪 spot 补，且仅当快照日期(fields[30])确为今日（盘中/盘后）；
+    2b) 新浪族双失败时 push2 stock/get 跨族兜底（f86 日期守卫，2026-10-19）；
     3) 补完做与前收的跳变自检（>±10.5% 疑似除权/错位，可见告警）；
     4) 全部失败时可见告警，不静默。
     """
@@ -428,6 +472,15 @@ def _backfill_stale_bars(symbol: str, df, latest: str, expected: str):
             df = df.drop_duplicates(subset="date", keep="last").sort_values("date").reset_index(drop=True)
             latest = r["date"]
             print(f"  ✅ {symbol} spot 补今日 bar：{r['date']} 收盘 ¥{r['close']}")
+
+    # 2b) push2 跨族兜底（2026-10-19：新浪族 jsonp 日K + spot 同窗潮汐全挂时的第三源）
+    if latest < expected:
+        bar = _fetch_push2_today_bar(symbol, expected)
+        if bar is not None:
+            df = pd.concat([df, pd.DataFrame([bar])], ignore_index=True)
+            df = df.drop_duplicates(subset="date", keep="last").sort_values("date").reset_index(drop=True)
+            latest = bar["date"].strftime("%Y-%m-%d")
+            print(f"  ✅ {symbol} push2 补今日 bar：{latest} 收盘 ¥{bar['close']}")
 
     # 3) 跳变自检（补录 bar vs 前收）
     try:
