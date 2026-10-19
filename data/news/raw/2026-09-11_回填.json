@@ -1,0 +1,87 @@
+{
+  "macro": {
+    "news": []
+  },
+  "notices": {
+    "notices": [
+      {
+        "symbol": "300014",
+        "title": "亿纬锂能:关于控股股东部分股份解除质押及质押的公告",
+        "type": "股份质押、冻结",
+        "date": "2026-09-11",
+        "url": "https://data.eastmoney.com/notices/detail/300014/AN202609111829275761.html"
+      },
+      {
+        "symbol": "300014",
+        "title": "亿纬锂能:2026年半年度权益分派实施公告",
+        "type": "分配方案实施",
+        "date": "2026-09-11",
+        "url": "https://data.eastmoney.com/notices/detail/300014/AN202609111829275763.html"
+      },
+      {
+        "symbol": "600160",
+        "title": "巨化股份:2026年半年度业绩说明会投资者关系活动记录表",
+        "type": "调研活动",
+        "date": "2026-09-11",
+        "url": "https://data.eastmoney.com/notices/detail/600160/AN202609111829265889.html"
+      },
+      {
+        "symbol": "000157",
+        "title": "中联重科:关于持股5%以上股东及其一致行动人增持股份触及1%整数倍的公告",
+        "type": "股东/实际控制人股份增持",
+        "date": "2026-09-11",
+        "url": "https://data.eastmoney.com/notices/detail/000157/AN202609101829234564.html"
+      },
+      {
+        "symbol": "600584",
+        "title": "长电科技:江苏长电科技股份有限公司关于2025年股票期权激励计划授予结果的公告",
+        "type": "股权激励进展公告",
+        "date": "2026-09-11",
+        "url": "https://data.eastmoney.com/notices/detail/600584/AN202609101829232487.html"
+      },
+      {
+        "symbol": "300124",
+        "title": "汇川技术:关于第六期股权激励计划首次授予股票期权第四个行权期采用自主行权模式开始行权的提示性公告",
+        "type": "股权激励进展公告",
+        "date": "2026-09-11",
+        "url": "https://data.eastmoney.com/notices/detail/300124/AN202609101829232420.html"
+      },
+      {
+        "symbol": "300124",
+        "title": "汇川技术:关于第六期股权激励计划预留授予股票期权第三个行权期采用自主行权模式开始行权的提示性公告",
+        "type": "股权激励进展公告",
+        "date": "2026-09-11",
+        "url": "https://data.eastmoney.com/notices/detail/300124/AN202609101829232414.html"
+      },
+      {
+        "symbol": "000987",
+        "title": "越秀资本:关于公司部分股票期权完成注销暨股票期权激励计划终止的公告",
+        "type": "股权激励进展公告",
+        "date": "2026-09-11",
+        "url": "https://data.eastmoney.com/notices/detail/000987/AN202609101829226901.html"
+      },
+      {
+        "symbol": "603308",
+        "title": "应流股份:应流股份关于变更注册资本并完成工商变更登记的公告",
+        "type": "公司注册资本变更",
+        "date": "2026-09-11",
+        "url": "https://data.eastmoney.com/notices/detail/603308/AN202609101829219712.html"
+      }
+    ]
+  },
+  "stock_news": [],
+  "_backfill": {
+    "done_at": "2026-10-19 20:29:18",
+    "source": "ak.stock_notice_report 历史日期 + 既有真实 raw 合并",
+    "recoverable_dims": [
+      "notices"
+    ],
+    "unrecoverable_dims": [
+      "macro",
+      "stock_news"
+    ],
+    "dates_covered": [
+      "2026-09-11"
+    ]
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "macro": {
+    "news": []
+  },
+  "notices": {
+    "notices": [
+      {
+        "symbol": "605566",
+        "title": "福莱蒽特:杭州福莱蒽特股份有限公司关于为控股子公司提供担保的公告",
+        "type": "提供/对外担保公告",
+        "date": "2026-09-25",
+        "url": "https://data.eastmoney.com/notices/detail/605566/AN202609241829860665.html"
+      },
+      {
+        "symbol": "300748",
+        "title": "金力永磁:H股公告-调整可转换为公司H股的公司债券转换价格",
+        "type": "其他",
+        "date": "2026-09-28",
+        "url": "https://data.eastmoney.com/notices/detail/300748/AN202609281829963372.html"
+      },
+      {
+        "symbol": "300748",
+        "title": "金力永磁:H股公告-翌日披露报表",
+        "type": "其他",
+        "date": "2026-09-28",
+        "url": "https://data.eastmoney.com/notices/detail/300748/AN202609281829963359.html"
+      },
+      {
+        "symbol": "300748",
+        "title": "金力永磁:关于向全资子公司增资暨与专业机构共同投资的进展公告",
+        "type": "增资扩股",
+        "date": "2026-09-28",
+        "url": "https://data.eastmoney.com/notices/detail/300748/AN202609281829963360.html"
+      },
+      {
+        "symbol": "002335",
+        "title": "科华数据:关于2026年限制性股票激励计划预留授予登记完成的公告",
+        "type": "股本变动",
+        "date": "2026-09-28",
+        "url": "https://data.eastmoney.com/notices/detail/002335/AN202609271829937243.html"
+      },
+      {
+        "symbol": "002413",
+        "title": "雷科防务:关于为下属公司提供担保的进展公告",
+        "type": "提供/对外担保公告",
+        "date": "2026-09-28",
+        "url": "https://data.eastmoney.com/notices/detail/002413/AN202609271829937049.html"
+      }
+    ]
+  },
+  "stock_news": [],
+  "_backfill": {
+    "done_at": "2026-10-19 20:29:19",
+    "source": "ak.stock_notice_report 历史日期 + 既有真实 raw 合并",
+    "recoverable_dims": [
+      "notices"
+    ],
+    "unrecoverable_dims": [
+      "macro",
+      "stock_news"
+    ],
+    "dates_covered": [
+      "2026-09-25",
+      "2026-09-26",
+      "2026-09-27",
+      "2026-09-28"
+    ]
+  }
+}

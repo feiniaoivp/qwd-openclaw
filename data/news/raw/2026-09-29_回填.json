@@ -1,0 +1,101 @@
+{
+  "macro": {
+    "news": []
+  },
+  "notices": {
+    "notices": [
+      {
+        "symbol": "300014",
+        "title": "亿纬锂能:关于孙公司EBIL收到参股公司思摩尔国际现金分红的公告",
+        "type": "其他",
+        "date": "2026-09-29",
+        "url": "https://data.eastmoney.com/notices/detail/300014/AN202609291830000564.html"
+      },
+      {
+        "symbol": "300014",
+        "title": "亿纬锂能:关于子公司完成工商变更登记的公告",
+        "type": "公司关联方基本资料变更",
+        "date": "2026-09-29",
+        "url": "https://data.eastmoney.com/notices/detail/300014/AN202609291830000500.html"
+      },
+      {
+        "symbol": "300748",
+        "title": "金力永磁:2026年半年度A股权益分派实施公告",
+        "type": "分配方案实施",
+        "date": "2026-09-29",
+        "url": "https://data.eastmoney.com/notices/detail/300748/AN202609291829998088.html"
+      },
+      {
+        "symbol": "688981",
+        "title": "中芯国际:港股公告:翌日披露报表",
+        "type": "其他",
+        "date": "2026-09-29",
+        "url": "https://data.eastmoney.com/notices/detail/688981/AN202609281829964976.html"
+      },
+      {
+        "symbol": "000708",
+        "title": "中信特钢:关于选举职工董事的公告",
+        "type": "高管人员任职变动",
+        "date": "2026-09-29",
+        "url": "https://data.eastmoney.com/notices/detail/000708/AN202609281829962253.html"
+      },
+      {
+        "symbol": "000708",
+        "title": "中信特钢:2026年第四次临时股东会决议公告",
+        "type": "股东大会决议公告",
+        "date": "2026-09-29",
+        "url": "https://data.eastmoney.com/notices/detail/000708/AN202609281829962259.html"
+      },
+      {
+        "symbol": "000708",
+        "title": "中信特钢:关于中信泰富特钢集团股份有限公司2026年第四次临时股东会的法律意见书",
+        "type": "法律意见书",
+        "date": "2026-09-29",
+        "url": "https://data.eastmoney.com/notices/detail/000708/AN202609281829962152.html"
+      },
+      {
+        "symbol": "600030",
+        "title": "中信证券:中信证券股份有限公司第八届董事会第五十六次会议决议公告",
+        "type": "高管人员任职变动",
+        "date": "2026-09-29",
+        "url": "https://data.eastmoney.com/notices/detail/600030/AN202609281829960814.html"
+      },
+      {
+        "symbol": "600030",
+        "title": "中信证券:中信证券股份有限公司关于董事长、总经理离任及选举新任董事长并代为履行总经理职责的公告",
+        "type": "高管人员任职变动",
+        "date": "2026-09-29",
+        "url": "https://data.eastmoney.com/notices/detail/600030/AN202609281829960815.html"
+      },
+      {
+        "symbol": "601865",
+        "title": "福莱特:福莱特H股公告(变更于香港接收法律程序文件或通知之代理人)",
+        "type": "其他",
+        "date": "2026-09-29",
+        "url": "https://data.eastmoney.com/notices/detail/601865/AN202609281829959201.html"
+      },
+      {
+        "symbol": "000157",
+        "title": "中联重科:关于持股5%以上股东股份质押及解除质押的公告",
+        "type": "股份质押、冻结",
+        "date": "2026-09-29",
+        "url": "https://data.eastmoney.com/notices/detail/000157/AN202609281829958521.html"
+      }
+    ]
+  },
+  "stock_news": [],
+  "_backfill": {
+    "done_at": "2026-10-19 20:29:19",
+    "source": "ak.stock_notice_report 历史日期 + 既有真实 raw 合并",
+    "recoverable_dims": [
+      "notices"
+    ],
+    "unrecoverable_dims": [
+      "macro",
+      "stock_news"
+    ],
+    "dates_covered": [
+      "2026-09-29"
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-19",
+  "gap_window": [
+    "2026-09-09",
+    "2026-09-29"
+  ],
+  "notices": {
+    "probe": "ak.stock_notice_report(symbol='全部', date=历史日)",
+    "20260915": {
+      "date": "20260915",
+      "rows": 2258,
+      "date_span": {
+        "n": 0,
+        "earliest": null,
+        "latest": null
+      },
+      "ok": true,
+      "elapsed": 3.99
+    },
+    "20260922": {
+      "date": "20260922",
+      "rows": 1717,
+      "date_span": {
+        "n": 0,
+        "earliest": null,
+        "latest": null
+      },
+      "ok": true,
+      "elapsed": 2.8
+    }
+  },
+  "stock_news": {
+    "probe": "ak.stock_news_em('600030')",
+    "note": "返回最近~100条，看最早时间戳能否够到缺口",
+    "rows": 10,
+    "time_span": {
+      "n": 0,
+      "earliest": null,
+      "latest": null
+    },
+    "rows_in_gap": 0,
+    "ok": true,
+    "elapsed": 0.03
+  },
+  "global_news": {
+    "probe": "ak.stock_info_global_em()",
+    "note": "快讯流，看最早时间戳",
+    "rows": 200,
+    "time_span": {
+      "n": 0,
+      "earliest": null,
+      "latest": null
+    },
+    "ok": true,
+    "elapsed": 0.11
+  },
+  "verdict_draft": [
+    "公告: 历史日期可查 → 可回填",
+    "个股新闻: 最早仅到 None，够不到缺口 → 不可回填",
+    "宏观快讯: 只有最新流 → 不可回填"
+  ]
+}

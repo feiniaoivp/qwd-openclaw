@@ -1,0 +1,115 @@
+{
+  "macro": {
+    "news": []
+  },
+  "notices": {
+    "notices": [
+      {
+        "symbol": "300124",
+        "title": "汇川技术:关于第七期股权激励计划预留授予第一类限制性股票第一个限售期股份解除限售暨上市流通的公告",
+        "type": "限售股份上市流通",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/300124/AN202609231829801879.html"
+      },
+      {
+        "symbol": "601995",
+        "title": "中金公司:中金公司关于公司A股股票复牌的提示性公告",
+        "type": "复牌公告",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/601995/AN202609221829762559.html"
+      },
+      {
+        "symbol": "601995",
+        "title": "中金公司:中金公司关于公司换股吸收合并东兴证券股份有限公司、信达证券股份有限公司之A股异议股东收购请求权股份清算与交割的提示性公告",
+        "type": "吸收合并进展公告",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/601995/AN202609221829762558.html"
+      },
+      {
+        "symbol": "601995",
+        "title": "中金公司:中金公司关于公司换股吸收合并东兴证券股份有限公司、信达证券股份有限公司之A股异议股东收购请求权申报结果的公告",
+        "type": "吸收合并进展公告",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/601995/AN202609221829762557.html"
+      },
+      {
+        "symbol": "300719",
+        "title": "安达维尔:董事会秘书工作制度",
+        "type": "管理办法/制度",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/300719/AN202609221829761107.html"
+      },
+      {
+        "symbol": "300719",
+        "title": "安达维尔:第四届董事会第十二次会议决议公告",
+        "type": "高管人员任职变动",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/300719/AN202609221829761109.html"
+      },
+      {
+        "symbol": "300719",
+        "title": "安达维尔:关于独立董事任期即将届满暨补选独立董事、董事会专门委员会委员的公告",
+        "type": "高管人员任职变动",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/300719/AN202609221829761112.html"
+      },
+      {
+        "symbol": "300719",
+        "title": "安达维尔:独立董事提名人声明与承诺",
+        "type": "独立董事提名人声明",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/300719/AN202609221829761103.html"
+      },
+      {
+        "symbol": "300719",
+        "title": "安达维尔:独立董事候选人声明与承诺",
+        "type": "独立董事候选人声明",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/300719/AN202609221829761055.html"
+      },
+      {
+        "symbol": "300719",
+        "title": "安达维尔:北京安达维尔科技股份有限公司关于召开2026年第一次临时股东会的通知",
+        "type": "召开股东大会通知",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/300719/AN202609221829761058.html"
+      },
+      {
+        "symbol": "600570",
+        "title": "恒生电子:恒生电子股份有限公司关于股票期权限制行权期间的提示性公告",
+        "type": "股权激励进展公告",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/600570/AN202609221829760477.html"
+      },
+      {
+        "symbol": "002180",
+        "title": "奔图科技:关于公司为子公司提供对外担保的进展公告",
+        "type": "提供/对外担保公告",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/002180/AN202609221829758816.html"
+      },
+      {
+        "symbol": "600036",
+        "title": "招商银行:招商银行股份有限公司关于董事任职资格核准及董事会专门委员会成员调整的公告",
+        "type": "高管人员任职变动",
+        "date": "2026-09-23",
+        "url": "https://data.eastmoney.com/notices/detail/600036/AN202609221829763391.html"
+      }
+    ]
+  },
+  "stock_news": [],
+  "_backfill": {
+    "done_at": "2026-10-19 20:29:18",
+    "source": "ak.stock_notice_report 历史日期 + 既有真实 raw 合并",
+    "recoverable_dims": [
+      "notices"
+    ],
+    "unrecoverable_dims": [
+      "macro",
+      "stock_news"
+    ],
+    "dates_covered": [
+      "2026-09-23"
+    ]
+  }
+}

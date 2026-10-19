@@ -1,0 +1,101 @@
+{
+  "macro": {
+    "news": []
+  },
+  "notices": {
+    "notices": [
+      {
+        "symbol": "002335",
+        "title": "科华数据:2026年第一次临时股东会决议公告",
+        "type": "股东大会决议公告",
+        "date": "2026-09-16",
+        "url": "https://data.eastmoney.com/notices/detail/002335/AN202609151829424503.html"
+      },
+      {
+        "symbol": "300124",
+        "title": "汇川技术:关于第六期股权激励计划首次授予第一类限制性股票第四个限售期股份解除限售暨上市流通的公告",
+        "type": "限售股份上市流通",
+        "date": "2026-09-16",
+        "url": "https://data.eastmoney.com/notices/detail/300124/AN202609161829470212.html"
+      },
+      {
+        "symbol": "300847",
+        "title": "中船汉光:中船汉光科技股份有限公司投资者关系活动记录表（2026年9月16日）",
+        "type": "调研活动",
+        "date": "2026-09-16",
+        "url": "https://data.eastmoney.com/notices/detail/300847/AN202609161829466509.html"
+      },
+      {
+        "symbol": "002180",
+        "title": "奔图科技:002180奔图科技投资者关系管理信息20260916",
+        "type": "调研活动",
+        "date": "2026-09-16",
+        "url": "https://data.eastmoney.com/notices/detail/002180/AN202609161829444495.html"
+      },
+      {
+        "symbol": "002335",
+        "title": "科华数据:关于使用部分闲置募集资金进行现金管理的进展公告",
+        "type": "募集资金使用进展情况",
+        "date": "2026-09-16",
+        "url": "https://data.eastmoney.com/notices/detail/002335/AN202609151829424505.html"
+      },
+      {
+        "symbol": "002335",
+        "title": "科华数据:北京国枫律师事务所关于科华数据股份有限公司2026年第一次临时股东会的法律意见书",
+        "type": "法律意见书",
+        "date": "2026-09-16",
+        "url": "https://data.eastmoney.com/notices/detail/002335/AN202609151829424458.html"
+      },
+      {
+        "symbol": "600030",
+        "title": "中信证券:中信证券股份有限公司关于向专业投资者公开发行永续次级债券获得中国证监会注册批复的公告",
+        "type": "其他",
+        "date": "2026-09-16",
+        "url": "https://data.eastmoney.com/notices/detail/600030/AN202609151829415996.html"
+      },
+      {
+        "symbol": "600030",
+        "title": "中信证券:中信证券股份有限公司关于间接子公司发行中期票据并由全资子公司提供担保的公告",
+        "type": "提供/对外担保公告",
+        "date": "2026-09-16",
+        "url": "https://data.eastmoney.com/notices/detail/600030/AN202609151829415997.html"
+      },
+      {
+        "symbol": "605566",
+        "title": "福莱蒽特:杭州福莱蒽特股份有限公司关于使用部分闲置募集资金进行现金管理到期赎回并继续现金管理的公告",
+        "type": "投资理财",
+        "date": "2026-09-16",
+        "url": "https://data.eastmoney.com/notices/detail/605566/AN202609151829415374.html"
+      },
+      {
+        "symbol": "601995",
+        "title": "中金公司:中金公司关于公司换股吸收合并东兴证券股份有限公司、信达证券股份有限公司之A股异议股东收购请求权实施的第二次提示性公告",
+        "type": "吸收合并进展公告",
+        "date": "2026-09-16",
+        "url": "https://data.eastmoney.com/notices/detail/601995/AN202609151829413938.html"
+      },
+      {
+        "symbol": "000708",
+        "title": "中信特钢:关于子公司内部提供担保的公告",
+        "type": "提供/对外担保公告",
+        "date": "2026-09-16",
+        "url": "https://data.eastmoney.com/notices/detail/000708/AN202609151829411120.html"
+      }
+    ]
+  },
+  "stock_news": [],
+  "_backfill": {
+    "done_at": "2026-10-19 20:29:18",
+    "source": "ak.stock_notice_report 历史日期 + 既有真实 raw 合并",
+    "recoverable_dims": [
+      "notices"
+    ],
+    "unrecoverable_dims": [
+      "macro",
+      "stock_news"
+    ],
+    "dates_covered": [
+      "2026-09-16"
+    ]
+  }
+}

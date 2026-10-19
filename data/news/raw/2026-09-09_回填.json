@@ -1,0 +1,80 @@
+{
+  "macro": {
+    "news": []
+  },
+  "notices": {
+    "notices": [
+      {
+        "symbol": "300847",
+        "title": "中船汉光:关于参加2026年河北辖区上市公司投资者网上集体接待日暨2026年半年报业绩说明会的公告",
+        "type": "调研活动",
+        "date": "2026-09-09",
+        "url": "https://data.eastmoney.com/notices/detail/300847/AN202609091829171082.html"
+      },
+      {
+        "symbol": "600036",
+        "title": "招商银行:招商银行股份有限公司关于独立董事任职资格核准及董事会专门委员会成员调整的公告",
+        "type": "高管人员任职变动",
+        "date": "2026-09-09",
+        "url": "https://data.eastmoney.com/notices/detail/600036/AN202609081829136261.html"
+      },
+      {
+        "symbol": "601066",
+        "title": "中信建投:关于间接全资附属公司根据中期票据计划进行发行并由全资子公司提供担保的公告",
+        "type": "提供/对外担保公告",
+        "date": "2026-09-09",
+        "url": "https://data.eastmoney.com/notices/detail/601066/AN202609081829135286.html"
+      },
+      {
+        "symbol": "300748",
+        "title": "金力永磁:关于召开2026年第二次临时股东会的通知",
+        "type": "召开股东大会通知",
+        "date": "2026-09-09",
+        "url": "https://data.eastmoney.com/notices/detail/300748/AN202609081829134290.html"
+      },
+      {
+        "symbol": "600570",
+        "title": "恒生电子:恒生电子股份有限公司关于2024年股票期权激励计划第二个行权期自主行权实施的公告",
+        "type": "股权激励进展公告",
+        "date": "2026-09-09",
+        "url": "https://data.eastmoney.com/notices/detail/600570/AN202609081829133392.html"
+      },
+      {
+        "symbol": "600570",
+        "title": "恒生电子:恒生电子股份有限公司关于2025年股票期权激励计划第一个行权期自主行权实施的公告",
+        "type": "股权激励进展公告",
+        "date": "2026-09-09",
+        "url": "https://data.eastmoney.com/notices/detail/600570/AN202609081829133395.html"
+      },
+      {
+        "symbol": "600570",
+        "title": "恒生电子:恒生电子股份有限公司关于2023年股票期权激励计划第三个行权期自主行权实施的公告",
+        "type": "股权激励进展公告",
+        "date": "2026-09-09",
+        "url": "https://data.eastmoney.com/notices/detail/600570/AN202609081829133394.html"
+      },
+      {
+        "symbol": "605566",
+        "title": "福莱蒽特:杭州福莱蒽特股份有限公司关于2026年半年度业绩说明会召开情况的公告",
+        "type": "调研活动",
+        "date": "2026-09-09",
+        "url": "https://data.eastmoney.com/notices/detail/605566/AN202609081829131214.html"
+      }
+    ]
+  },
+  "stock_news": [],
+  "_backfill": {
+    "done_at": "2026-10-19 20:29:18",
+    "source": "ak.stock_notice_report 历史日期 + 既有真实 raw 合并",
+    "recoverable_dims": [
+      "notices"
+    ],
+    "unrecoverable_dims": [
+      "macro",
+      "stock_news"
+    ],
+    "dates_covered": [
+      "2026-09-09"
+    ]
+  }
+}
