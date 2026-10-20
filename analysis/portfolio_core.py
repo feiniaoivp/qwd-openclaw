@@ -336,7 +336,15 @@ def append_equity_snapshot(date: str, portfolio_summary: Dict, core_value: float
 
 
 def init_position(symbol: str, name: str, strategy: str, bucket: str = "tier1") -> Dict:
-    """初始化单只股票持仓结构"""
+    """初始化单只股票持仓结构
+
+    2026-10-20 A 方案字段分拆（修复 bucket=="core" 永假）：
+      - pos["tier"]   信号分层（tier1/2/3，喂 _apply_tier_filter），来源=策略映射/get_bucket
+      - pos["bucket"] 仓位分类（core/satellite，喂单股 15%/5% 与哑铃 80/20），
+        唯一来源 = classify_bucket(symbol)。旧版把 tier 值写进 bucket，
+        导致 15% 核心单股限额自 09-10 重构起从未生效（全池按卫星 5% 跑）。
+    参数 bucket 语义 = tier（兼容旧调用点：core L1219 / executor L304/L366）。
+    """
     return {
         "name": name,
         "strategy": strategy,
@@ -356,7 +364,8 @@ def init_position(symbol: str, name: str, strategy: str, bucket: str = "tier1") 
         "_old_strategy": None,
         "_new_strategy": None,
         "fib_targets": {},
-        "bucket": bucket,
+        "tier": bucket,
+        "bucket": classify_bucket(symbol)[0],
         "direction": STOCK_DIRECTION_MAP.get(symbol, "其他") if HAS_030_MODULES else "其他",
         "atr_params": {"stop_mult": ATR_STOP_MULT, "risk_per_trade": 0.01, "max_position_pct": 0.15},
     }
@@ -368,15 +377,18 @@ def sync_strategy_map(state: Dict, strategy_map: Dict, default_strategy: str = "
         info = strategy_map.get(sym, default_strategy)
         if isinstance(info, dict):
             new_strat = info.get("strategy", default_strategy)
-            new_bucket = info.get("bucket", "tier1")
+            new_tier = info.get("bucket", "tier1")
         else:
             new_strat = info
-            new_bucket = get_bucket(sym, strategy_map)
+            new_tier = get_bucket(sym, strategy_map)
         
         old_strat = pos.get("strategy", new_strat)
-        old_bucket = pos.get("bucket", "tier1")
+        old_tier = pos.get("tier", pos.get("bucket", "tier1"))
         pos["strategy"] = new_strat
-        pos["bucket"] = new_bucket
+        # 2026-10-20 A 方案：tier（信号分层）与 bucket（仓位分类）分字段；
+        # bucket 全量改由 classify_bucket 驱动，旧 state 的 tier 值在此自动迁移。
+        pos["tier"] = new_tier
+        pos["bucket"] = classify_bucket(sym)[0]
         
         if pos.get("position") and old_strat != new_strat:
             pos["_strategy_switch_pending"] = True
@@ -385,8 +397,8 @@ def sync_strategy_map(state: Dict, strategy_map: Dict, default_strategy: str = "
             print(f"⚠️ 策略切换检测: {sym} {old_strat} -> {new_strat}，持仓中，标记强制平仓")
         
         # 如果 bucket 变更，记录日志
-        if pos.get("position") and old_bucket != new_bucket:
-            print(f"ℹ️ 分层变更: {sym} {old_bucket} -> {new_bucket}")
+        if pos.get("position") and old_tier != new_tier:
+            print(f"ℹ️ 分层变更: {sym} {old_tier} -> {new_tier}")
 
 
 def _force_liquidate_tier3(state: Dict, strategy_map: Dict):
@@ -425,7 +437,7 @@ def _log_tier_suppression(signal: Dict, tier: str):
         print(f"⚠️ Tier 屏蔽信号落盘失败({tier}): {e}")
 
 
-def _apply_tier_filter(signal: Dict, pos: Dict, bucket: str) -> Dict:
+def _apply_tier_filter(signal: Dict, pos: Dict, tier: str) -> Dict:
     """三层分层过滤：
     - Tier1 (tier1): 禁用择时卖出，仅基本面/止盈/风控卖出
     - Tier2 (tier2): 禁用买入信号，仅保留卖出/止损
@@ -445,7 +457,7 @@ def _apply_tier_filter(signal: Dict, pos: Dict, bucket: str) -> Dict:
         sig["suppressed_reason"] = sig.get("reason", "")
         _log_tier_suppression(sig, tier)
 
-    if bucket == "tier3":
+    if tier == "tier3":
         # 2026-10-18: 原条件 `pos.get("position")` 使**空仓 Tier3 标的的买入不被拦**
         # （实测中信/中金空仓时 action 仍为「买入」）→ 与 docstring「Tier3 禁用买入」
         # 自相矛盾。改为：只要存在 tier3 标记（_force_sell_tier3 或 _tier3_liquidated），
@@ -460,12 +472,12 @@ def _apply_tier_filter(signal: Dict, pos: Dict, bucket: str) -> Dict:
                 signal["action"] = "卖出"
                 signal["reason"] = f"🔴 Tier3强制清仓 | 原理由: {signal.get('reason', '')}"
             pos["_force_sell_tier3"] = False
-    elif bucket == "tier2":
+    elif tier == "tier2":
         if action == "买入":
             _mark_suppressed(signal, "tier2")
             signal["action"] = "持有"
             signal["reason"] = f"🟡 Tier2屏蔽买入 | 原理由: {signal.get('suppressed_reason', '')}"
-    elif bucket == "tier1":
+    elif tier == "tier1":
         if action == "卖出":
             reason = signal.get("reason", "")
             allowed_sell_keywords = ["ATR止损", "止损", "☠️", "🟡", "🔄", "致命风险", "高风险", "策略切换", "基本面", "估值"]
@@ -859,6 +871,8 @@ def execute_trade(pos: Dict, signal: Dict, dt: str, strategy: str,
     """
     price = signal["price"]
     action = signal["action"]
+    # 2026-10-20 A 方案：bucket=core/satellite（classify_bucket 驱动），
+    # 核心 15% / 卫星 5% 与哑铃 80/20 首次真正生效（修复前恒为卫星 5%）
     bucket = pos.get("bucket", "satellite")
     max_single_pct = 0.15 if bucket == "core" else 0.05
     single_cap = INITIAL_CAPITAL * max_single_pct
@@ -1222,7 +1236,7 @@ def run_portfolio_scan(
         # 每日递减止损冷却期
         RiskGuard.decay_stop_cooldown(pos)
         strat = pos["strategy"]
-        bucket = pos.get("bucket", "tier1")
+        tier = pos.get("tier") or get_bucket(sym, strategy_map)
         slabel = STRATEGY_LABELS.get(strat, strat)
 
         df = fetch_data_func(sym)
@@ -1245,7 +1259,7 @@ def run_portfolio_scan(
         # 注入标识供 Tier 吞信号留痕（_apply_tier_filter 需要 symbol/name）
         signal.setdefault("_symbol", sym)
         signal.setdefault("name", name)
-        signal = _apply_tier_filter(signal, pos, bucket)
+        signal = _apply_tier_filter(signal, pos, tier)
         
         # 030 风控覆盖
         signal = RiskGuard.override_signal(signal, pos)

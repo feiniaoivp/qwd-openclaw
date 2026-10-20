@@ -1,0 +1,194 @@
+{
+ "date": "2026-10-20",
+ "plan_file": "position_plan_2026-09-08.json",
+ "hold_days": 10,
+ "total_buys": 1068,
+ "round_trip_cost": 0.0026,
+ "bucket_split": {
+  "core": 24,
+  "satellite": 11
+ },
+ "arms": {
+  "current": {
+   "n": 678,
+   "deployed": {
+    "core": 0.0,
+    "sat": 60000.0
+   },
+   "cap_hits": 0,
+   "pnl5_total": 44839.0,
+   "pnl5_winsor_total": 25102.0,
+   "pnl5_mean": 66.13,
+   "pnl5_median": -4.0,
+   "by_year": {
+    "2024": {
+     "n": 197,
+     "pnl5": 22218.0
+    },
+    "2025": {
+     "n": 304,
+     "pnl5": 21612.0
+    },
+    "2026": {
+     "n": 177,
+     "pnl5": 1008.0
+    }
+   },
+   "vs_current_boot": null,
+   "vs_other_boot": {},
+   "notional_total": 3390000.0,
+   "pnl5_per_yuan": 0.01323,
+   "pnl5w_per_yuan": 0.0074
+  },
+  "planA": {
+   "n": 678,
+   "deployed": {
+    "core": 135000.0,
+    "sat": 15000.0
+   },
+   "cap_hits": 0,
+   "pnl5_total": 125063.0,
+   "pnl5_winsor_total": 71229.0,
+   "pnl5_mean": 184.46,
+   "pnl5_median": -4.0,
+   "by_year": {
+    "2024": {
+     "n": 197,
+     "pnl5": 56788.0
+    },
+    "2025": {
+     "n": 304,
+     "pnl5": 63462.0
+    },
+    "2026": {
+     "n": 177,
+     "pnl5": 4813.0
+    }
+   },
+   "vs_current_boot": {
+    "n_pairs": 678,
+    "mean_diff": 118.32,
+    "ci95": [
+     63.83,
+     173.79
+    ],
+    "p_gt0": 1.0
+   },
+   "vs_other_boot": {},
+   "notional_total": 8010000.0,
+   "pnl5_per_yuan": 0.01561,
+   "pnl5w_per_yuan": 0.00889
+  },
+  "planA_poweronly": {
+   "n": 678,
+   "deployed": {
+    "core": 60000.0,
+    "sat": 40000.0
+   },
+   "cap_hits": 0,
+   "pnl5_total": 55632.0,
+   "pnl5_winsor_total": 32204.0,
+   "pnl5_mean": 82.05,
+   "pnl5_median": -4.0,
+   "by_year": {
+    "2024": {
+     "n": 197,
+     "pnl5": 21723.0
+    },
+    "2025": {
+     "n": 304,
+     "pnl5": 29820.0
+    },
+    "2026": {
+     "n": 177,
+     "pnl5": 4090.0
+    }
+   },
+   "vs_current_boot": {
+    "n_pairs": 678,
+    "mean_diff": 15.92,
+    "ci95": [
+     -7.48,
+     40.46
+    ],
+    "p_gt0": 0.912
+   },
+   "vs_other_boot": {
+    "vs_planA": {
+     "n_pairs": 678,
+     "mean_diff": -102.4,
+     "ci95": [
+      -152.99,
+      -53.92
+     ],
+     "p_gt0": 0.0
+    }
+   },
+   "notional_total": 5020000.0,
+   "pnl5_per_yuan": 0.01108,
+   "pnl5w_per_yuan": 0.00642
+  },
+  "all15k": {
+   "n": 678,
+   "deployed": {
+    "core": 0.0,
+    "sat": 180000.0
+   },
+   "cap_hits": 0,
+   "pnl5_total": 134516.0,
+   "pnl5_winsor_total": 75306.0,
+   "pnl5_mean": 198.4,
+   "pnl5_median": -12.0,
+   "by_year": {
+    "2024": {
+     "n": 197,
+     "pnl5": 66655.0
+    },
+    "2025": {
+     "n": 304,
+     "pnl5": 64835.0
+    },
+    "2026": {
+     "n": 177,
+     "pnl5": 3026.0
+    }
+   },
+   "vs_current_boot": {
+    "n_pairs": 678,
+    "mean_diff": 132.27,
+    "ci95": [
+     73.43,
+     199.12
+    ],
+    "p_gt0": 1.0
+   },
+   "vs_other_boot": {
+    "vs_planA": {
+     "n_pairs": 678,
+     "mean_diff": 13.94,
+     "ci95": [
+      -12.4,
+      43.12
+     ],
+     "p_gt0": 0.835
+    }
+   },
+   "notional_total": 10170000.0,
+   "pnl5_per_yuan": 0.01323,
+   "pnl5w_per_yuan": 0.0074
+  }
+ },
+ "planA_delta_from_core_buys": 80224.0,
+ "planA_core_buys_n": 462,
+ "core_vs_sat_fwd5": {
+  "core_n": 462,
+  "core_mean_pct": 1.996,
+  "sat_n": 216,
+  "sat_mean_pct": 0.698,
+  "diff_pct": 1.299,
+  "ci95_pct": [
+   0.162,
+   2.426
+  ]
+ }
+}
