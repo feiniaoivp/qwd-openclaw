@@ -251,5 +251,29 @@
     "pnl": -19.82052019999901,
     "pnl_pct": -0.46,
     "strategy": "macd"
+  },
+  {
+    "date": "2026-10-20",
+    "symbol": "600406",
+    "name": "国电南瑞",
+    "action": "BUY",
+    "price": 10.0,
+    "shares": 1400,
+    "pnl": 0,
+    "pnl_pct": 0.0,
+    "strategy": "macd",
+    "bucket": "core"
+  },
+  {
+    "date": "2026-10-20",
+    "symbol": "600036",
+    "name": "招商银行",
+    "action": "BUY",
+    "price": 10.0,
+    "shares": 400,
+    "pnl": 0,
+    "pnl_pct": 0.0,
+    "strategy": "macd",
+    "bucket": "satellite"
   }
 ]

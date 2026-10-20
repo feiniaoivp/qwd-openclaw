@@ -16,5 +16,41 @@
   "stat_date": "2026-10-16",
   "source": "akshare stock_market_activity_legu",
   "captured_at": "2026-10-19T07:26:31"
+ },
+ "2026-10-19": {
+  "up": 2202.0,
+  "limit_up": 50.0,
+  "real_limit_up": 41.0,
+  "st_limit_up": 3.0,
+  "down": 2861.0,
+  "limit_down": 27.0,
+  "real_limit_down": 25.0,
+  "st_limit_down": 3.0,
+  "flat": 150.0,
+  "halt": 11.0,
+  "active_pct": 42.15,
+  "up_ratio": 0.4349,
+  "prod_sentiment": 43.1,
+  "stat_date": "2026-10-19",
+  "source": "akshare stock_market_activity_legu",
+  "captured_at": "2026-10-19T15:10:01"
+ },
+ "2026-10-20": {
+  "up": 3433.0,
+  "limit_up": 55.0,
+  "real_limit_up": 48.0,
+  "st_limit_up": 3.0,
+  "down": 1662.0,
+  "limit_down": 7.0,
+  "real_limit_down": 6.0,
+  "st_limit_down": 1.0,
+  "flat": 122.0,
+  "halt": 7.0,
+  "active_pct": 65.72,
+  "up_ratio": 0.6738,
+  "prod_sentiment": 66.9,
+  "stat_date": "2026-10-20",
+  "source": "akshare stock_market_activity_legu",
+  "captured_at": "2026-10-20T15:10:00"
  }
 }

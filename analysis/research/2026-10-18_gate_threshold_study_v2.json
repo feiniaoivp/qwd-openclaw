@@ -1,16 +1,16 @@
 {
   "date": "2026-10-18",
   "hold_days": 5,
-  "n_signals": 300,
-  "quick": true,
-  "miss_fund": 259,
+  "n_signals": 1062,
+  "quick": false,
+  "miss_fund": 0,
   "miss_sent": 0,
-  "overall_ex5_mean": 0.49,
-  "overall_ex5_median": -0.23,
+  "overall_ex5_mean": 0.455,
+  "overall_ex5_median": -0.369,
   "score_dist": {
     "min": 45.2,
-    "median": 56.9,
-    "max": 89.5
+    "median": 72.8,
+    "max": 90.3
   },
   "caveat": [
     "tech 常量 90（生产三处 check_buy 均不传 tech_score，还原真实口径）",
@@ -20,110 +20,116 @@
   "buckets": [
     {
       "lo": 45,
-      "n": 38,
-      "mean": 0.875,
-      "median": 0.306
+      "n": 13,
+      "mean": -3.43,
+      "median": -2.082
     },
     {
       "lo": 50,
-      "n": 77,
-      "mean": 0.367,
-      "median": -0.422
+      "n": 19,
+      "mean": 0.75,
+      "median": 1.693
     },
     {
       "lo": 55,
-      "n": 117,
-      "mean": 0.687,
-      "median": 0.293
+      "n": 44,
+      "mean": -0.093,
+      "median": -0.371
     },
     {
       "lo": 60,
-      "n": 29,
-      "mean": 1.272,
-      "median": -1.519
+      "n": 102,
+      "mean": 0.429,
+      "median": -0.38
     },
     {
       "lo": 65,
-      "n": 7,
-      "mean": -0.69,
-      "median": -0.221
+      "n": 199,
+      "mean": 0.847,
+      "median": -0.239
     },
     {
       "lo": 70,
-      "n": 13,
-      "mean": -1.886,
-      "median": -0.948
+      "n": 271,
+      "mean": 0.777,
+      "median": -0.267
     },
     {
       "lo": 75,
-      "n": 14,
-      "mean": -0.547,
-      "median": -1.07
+      "n": 274,
+      "mean": 0.214,
+      "median": -0.574
     },
     {
       "lo": 80,
-      "n": 4,
-      "mean": 2.92,
-      "median": 1.304
+      "n": 113,
+      "mean": 0.611,
+      "median": -0.095
     },
     {
       "lo": 85,
+      "n": 26,
+      "mean": -1.277,
+      "median": -2.095
+    },
+    {
+      "lo": 90,
       "n": 1,
-      "mean": -6.478,
-      "median": -6.478
+      "mean": 0.103,
+      "median": 0.103
     }
   ],
   "threshold_scan": [
     {
       "T": 50,
-      "blocked_n": 38,
-      "blocked_mean": 0.875,
-      "passed_mean": 0.434,
-      "diff": 0.441,
-      "ci95": "[-1.85,+2.72]",
-      "significant": false
+      "blocked_n": 13,
+      "blocked_mean": -3.43,
+      "passed_mean": 0.503,
+      "diff": -3.933,
+      "ci95": "[-8.02,-0.73]",
+      "significant": true
     },
     {
       "T": 55,
-      "blocked_n": 115,
-      "blocked_mean": 0.535,
-      "passed_mean": 0.462,
-      "diff": 0.073,
-      "ci95": "[-1.38,+1.62]",
+      "blocked_n": 32,
+      "blocked_mean": -0.948,
+      "passed_mean": 0.498,
+      "diff": -1.446,
+      "ci95": "[-3.70,+0.67]",
       "significant": false
     },
     {
       "T": 60,
-      "blocked_n": 232,
-      "blocked_mean": 0.612,
-      "passed_mean": 0.075,
-      "diff": 0.537,
-      "ci95": "[-1.93,+2.61]",
+      "blocked_n": 76,
+      "blocked_mean": -0.453,
+      "passed_mean": 0.525,
+      "diff": -0.978,
+      "ci95": "[-2.15,+0.22]",
       "significant": false
     },
     {
       "T": 65,
-      "blocked_n": 261,
-      "blocked_mean": 0.685,
-      "passed_mean": -0.816,
-      "diff": 1.501,
-      "ci95": "[-0.09,+3.19]",
+      "blocked_n": 178,
+      "blocked_mean": 0.052,
+      "passed_mean": 0.536,
+      "diff": -0.483,
+      "ci95": "[-1.39,+0.53]",
       "significant": false
     },
     {
       "T": 70,
-      "blocked_n": 268,
-      "blocked_mean": 0.649,
-      "passed_mean": -0.843,
-      "diff": 1.492,
-      "ci95": "[-0.29,+3.40]",
+      "blocked_n": 377,
+      "blocked_mean": 0.472,
+      "passed_mean": 0.445,
+      "diff": 0.026,
+      "ci95": "[-0.71,+0.82]",
       "significant": false
     }
   ],
   "random_baseline": {
-    "real_diff": 0.073,
-    "null_lo": -1.42,
-    "null_hi": 1.358,
-    "real_percentile": 54.1
+    "real_diff": -1.446,
+    "null_lo": -2.031,
+    "null_hi": 2.271,
+    "real_percentile": 8.7
   }
 }

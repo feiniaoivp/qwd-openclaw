@@ -61,7 +61,7 @@ def build_report_text(state) -> str:
     hs = state.get("health_score")
     L.append(f"030 健康度: {hs if hs is not None else 'N/A'}/10")
     L.append(f"健康度解读: {state.get('health_comment') or '(无)'}")
-    L.append("今日热点新闻:")
+    L.append(f"关注池要闻 [{state.get('news_source') or '无快照'}]:")
     L.append(str(state.get("news_summary") or "(无)"))
     L.append(f"风险标记: {state.get('risk_flag') or '无'}")
     adv = state.get("final_advice")
@@ -136,6 +136,7 @@ def main():
             "health_score": final_state.get("health_score"),
             "health_comment": final_state.get("health_comment"),
             "news_summary": final_state.get("news_summary"),
+            "news_source": final_state.get("news_source"),
             "risk_flag": final_state.get("risk_flag"),
             "final_advice": final_state.get("final_advice"),
             "zhonglian": final_state.get("zhonglian"),

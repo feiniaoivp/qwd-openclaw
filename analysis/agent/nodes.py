@@ -201,10 +201,23 @@ def node_zhonglian(state: Dict[str, Any]) -> Dict[str, Any]:
 def node_fetch_external(state: Dict[str, Any]) -> Dict[str, Any]:
     state = state.copy()
     try:
-        # 1) 今日热点新闻（标题+简要摘要）
-        news_list = get_today_news(limit=5)   # 返回 [{title, url, snippet}]
-        news_summary = "\n".join([f"- {n['title']}: {n['snippet']}" for n in news_list])
-        state["news_summary"] = news_summary
+        # 1) 关注池要闻（2026-10-20 重写：改读新闻流水线快照；旧版东财单票搜索旧闻霸榜已废弃）
+        news = get_today_news(limit=5)   # 返回 {items, snapshot, window, raw_date}
+        items = news.get("items") or []
+        if items:
+            lines = []
+            for n in items:
+                ts = (n.get("time") or "")[:16]
+                stale = " [较旧]" if n.get("stale") else ""
+                sym = f"{n['sym']}｜" if n.get("sym") else ""
+                snip = f" — {n['snippet']}" if n.get("snippet") else ""
+                lines.append(f"- [{ts}]{stale}{sym}{n.get('kind', '')}｜{n['title']}{snip}")
+            state["news_summary"] = "\n".join(lines)
+        else:
+            state["news_summary"] = (f"（截至 {news.get('snapshot') or news.get('raw_date') or '无快照'}，"
+                                     f"近48小时无关注池相关新增新闻）")
+        state["news_source"] = (f"快照 {news.get('snapshot') or '无'}"
+                                f"（窗口 {news.get('window', '48h')}）")
     except Exception as e:
         state["news_summary"] = f"新闻获取失败: {e}"
         state["error_count"] = state.get("error_count", 0) + 1

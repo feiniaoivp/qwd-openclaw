@@ -1,0 +1,298 @@
+{
+  "date": "2026-10-20",
+  "purpose": "push2 家族本体诊断（真实生产路径，替代裸根 404 误导探针）",
+  "dns": [
+    {
+      "host": "push2.eastmoney.com",
+      "ips": [
+        "43.144.251.121"
+      ],
+      "ok": true
+    },
+    {
+      "host": "push2his.eastmoney.com",
+      "ips": [
+        "140.207.67.156"
+      ],
+      "ok": true
+    },
+    {
+      "host": "push2delay.eastmoney.com",
+      "ips": [
+        "140.207.64.217"
+      ],
+      "ok": true
+    },
+    {
+      "host": "datacenter-web.eastmoney.com",
+      "ips": [
+        "119.167.132.28",
+        "119.167.132.29",
+        "119.167.132.30",
+        "119.167.132.31",
+        "119.167.132.32",
+        "119.167.132.33",
+        "119.167.132.34",
+        "119.167.132.35",
+        "123.129.244.10",
+        "123.129.244.11",
+        "123.129.244.12",
+        "123.129.244.13",
+        "123.129.244.14",
+        "123.129.244.15",
+        "123.129.244.8",
+        "123.129.244.9"
+      ],
+      "ok": true
+    },
+    {
+      "host": "hq.sinajs.cn",
+      "ips": [
+        "120.83.145.204"
+      ],
+      "ok": true
+    }
+  ],
+  "probes": [
+    {
+      "host": "push2.eastmoney.com",
+      "path": "/",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "http_code": 404,
+      "elapsed": 0.11,
+      "ok": false,
+      "body_head": ""
+    },
+    {
+      "host": "push2.eastmoney.com",
+      "path": "/api/qt/stock/fflow/kline/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "ok": false,
+      "elapsed": 0.03,
+      "error": "ConnectionError: Failed to perform, curl: (56) Connection closed abruptly. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+    },
+    {
+      "host": "push2.eastmoney.com",
+      "path": "/api/qt/stock/fflow/daykline/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "ok": false,
+      "elapsed": 0.03,
+      "error": "ConnectionError: Failed to perform, curl: (56) Connection closed abruptly. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+    },
+    {
+      "host": "push2.eastmoney.com",
+      "path": "/api/qt/stock/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "http_code": 200,
+      "elapsed": 0.03,
+      "data_nonnull": true,
+      "ok": true,
+      "body_head": "{\"rc\":0,\"rt\":4,\"svr\":177617647,\"lt\":1,\"full\":1,\"dlmkts\":\"\",\"dsc\":\"0\",\"data\":{\"f43\":2614,\"f57\":\"600030\",\"f58\":\"中信证券\"}}"
+    },
+    {
+      "host": "push2.eastmoney.com",
+      "path": "/api/qt/ulist.np/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "http_code": 200,
+      "elapsed": 0.04,
+      "data_nonnull": true,
+      "ok": true,
+      "body_head": "{\"rc\":0,\"rt\":11,\"svr\":177617581,\"lt\":1,\"full\":1,\"dlmkts\":\"\",\"dsc\":\"0\",\"data\":{\"total\":1,\"diff\":[{\"f2\":26.14,\"f3\":0.08,\"f"
+    },
+    {
+      "host": "push2.eastmoney.com",
+      "path": "/api/qt/stock/fflow/kline/get",
+      "proxy": false,
+      "client": "curl_plain",
+      "http_code": "000",
+      "elapsed": 0.09,
+      "error": "curl: (52) Empty reply from server",
+      "ok": false
+    },
+    {
+      "host": "push2his.eastmoney.com",
+      "path": "/",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "http_code": 404,
+      "elapsed": 0.02,
+      "ok": false,
+      "body_head": ""
+    },
+    {
+      "host": "push2his.eastmoney.com",
+      "path": "/api/qt/stock/fflow/kline/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "ok": false,
+      "elapsed": 0.03,
+      "error": "ConnectionError: Failed to perform, curl: (56) Connection closed abruptly. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+    },
+    {
+      "host": "push2his.eastmoney.com",
+      "path": "/api/qt/stock/fflow/daykline/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "ok": false,
+      "elapsed": 0.03,
+      "error": "ConnectionError: Failed to perform, curl: (56) Connection closed abruptly. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+    },
+    {
+      "host": "push2his.eastmoney.com",
+      "path": "/api/qt/stock/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "http_code": 200,
+      "elapsed": 0.03,
+      "data_nonnull": true,
+      "ok": true,
+      "body_head": "{\"rc\":0,\"rt\":4,\"svr\":177617941,\"lt\":1,\"full\":1,\"dlmkts\":\"\",\"dsc\":\"0\",\"data\":{\"f43\":2614,\"f57\":\"600030\",\"f58\":\"中信证券\"}}"
+    },
+    {
+      "host": "push2his.eastmoney.com",
+      "path": "/api/qt/ulist.np/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "http_code": 200,
+      "elapsed": 0.03,
+      "data_nonnull": true,
+      "ok": true,
+      "body_head": "{\"rc\":0,\"rt\":11,\"svr\":177617938,\"lt\":1,\"full\":1,\"dlmkts\":\"\",\"dsc\":\"0\",\"data\":{\"total\":1,\"diff\":[{\"f2\":26.14,\"f3\":0.08,\"f"
+    },
+    {
+      "host": "push2his.eastmoney.com",
+      "path": "/api/qt/stock/fflow/kline/get",
+      "proxy": false,
+      "client": "curl_plain",
+      "http_code": "000",
+      "elapsed": 0.08,
+      "error": "curl: (52) Empty reply from server",
+      "ok": false
+    },
+    {
+      "host": "push2delay.eastmoney.com",
+      "path": "/",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "http_code": 404,
+      "elapsed": 0.03,
+      "ok": false,
+      "body_head": ""
+    },
+    {
+      "host": "push2delay.eastmoney.com",
+      "path": "/api/qt/stock/fflow/kline/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "ok": false,
+      "elapsed": 0.03,
+      "error": "ConnectionError: Failed to perform, curl: (56) Connection closed abruptly. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+    },
+    {
+      "host": "push2delay.eastmoney.com",
+      "path": "/api/qt/stock/fflow/daykline/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "ok": false,
+      "elapsed": 0.03,
+      "error": "ConnectionError: Failed to perform, curl: (56) Connection closed abruptly. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+    },
+    {
+      "host": "push2delay.eastmoney.com",
+      "path": "/api/qt/stock/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "http_code": 200,
+      "elapsed": 0.03,
+      "data_nonnull": true,
+      "ok": true,
+      "body_head": "{\"rc\":0,\"rt\":4,\"svr\":181670097,\"lt\":1,\"full\":1,\"dlmkts\":\"8,10,128\",\"dsc\":\"0\",\"data\":{\"f43\":2614,\"f57\":\"600030\",\"f58\":\"中信"
+    },
+    {
+      "host": "push2delay.eastmoney.com",
+      "path": "/api/qt/ulist.np/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "http_code": 200,
+      "elapsed": 0.03,
+      "data_nonnull": true,
+      "ok": true,
+      "body_head": "{\"rc\":0,\"rt\":11,\"svr\":181670098,\"lt\":1,\"full\":1,\"dlmkts\":\"8,10,128\",\"dsc\":\"0\",\"data\":{\"total\":1,\"diff\":[{\"f2\":26.14,\"f3\""
+    },
+    {
+      "host": "push2delay.eastmoney.com",
+      "path": "/api/qt/stock/fflow/kline/get",
+      "proxy": false,
+      "client": "curl_plain",
+      "http_code": "000",
+      "elapsed": 0.08,
+      "error": "curl: (52) Empty reply from server",
+      "ok": false
+    },
+    {
+      "host": "datacenter-web.eastmoney.com",
+      "path": "/api/data/v1/get",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "http_code": 200,
+      "elapsed": 0.16,
+      "data_nonnull": true,
+      "ok": true,
+      "body_head": "{\"version\":\"db99bfb74c5a8b77256fd01deee584bc\",\"result\":{\"pages\":5198,\"data\":[{\"SECURITY_INNER_CODE\":\"1000001536\",\"SECURI"
+    },
+    {
+      "host": "hq.sinajs.cn",
+      "path": "/list=sh600030",
+      "proxy": false,
+      "client": "curl_cffi_chrome",
+      "http_code": 403,
+      "elapsed": 5.11,
+      "ok": false,
+      "body_head": "Forbidden"
+    },
+    {
+      "host": "push2.eastmoney.com",
+      "path": "/api/qt/stock/fflow/kline/get",
+      "proxy": true,
+      "client": "curl_cffi_chrome",
+      "ok": false,
+      "elapsed": 0.02,
+      "error": "ConnectionError: Failed to perform, curl: (56) Connection closed abruptly. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+    },
+    {
+      "host": "push2his.eastmoney.com",
+      "path": "/api/qt/stock/fflow/daykline/get",
+      "proxy": true,
+      "client": "curl_cffi_chrome",
+      "ok": false,
+      "elapsed": 0.02,
+      "error": "ConnectionError: Failed to perform, curl: (56) Connection closed abruptly. See https://curl.se/libcurl/c/libcurl-errors.html first for more details."
+    }
+  ],
+  "official_akshare": {
+    "probe": "ak.stock_individual_fund_flow('600030','sh')",
+    "client": "official akshare 1.18.64",
+    "ok": false,
+    "error": "ProxyError: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/fflow/daykline/get?lmt=0&klt=101&secid=1.600030&fields1=f1%2Cf2%2Cf3%2Cf7&fields2=f51%2Cf52%2",
+    "elapsed": 0.55
+  },
+  "verdict": {
+    "push2_family_usable": false,
+    "fflow_ok_probes": [],
+    "quote_ok_probes": [
+      "push2.eastmoney.com/api/qt/stock/get(proxy=False)",
+      "push2his.eastmoney.com/api/qt/stock/get(proxy=False)",
+      "push2delay.eastmoney.com/api/qt/stock/get(proxy=False)"
+    ],
+    "official_akshare_ok": false,
+    "official_rows": null,
+    "failing_layer_guess": "TCP/TLS 层（连接被掐断）",
+    "bare_root_404_is_normal": true
+  },
+  "elapsed_sec": 6.6
+}

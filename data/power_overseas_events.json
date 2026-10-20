@@ -1584,5 +1584,19 @@
     "keywords_matched": [],
     "importance": 1,
     "extracted_at": "2026-10-16T08:00:02.192843"
+  },
+  {
+    "event_id": "ebe46ddc32685202",
+    "symbol": "002270",
+    "name": "华明装备",
+    "event_type": "OTHER",
+    "title": "华明装备:关于首次回购公司股份的公告",
+    "content": "",
+    "pub_date": "2026-10-19",
+    "source": "eastmoney",
+    "url": "https://data.eastmoney.com/notices/detail/002270/AN202610181830660027.html",
+    "keywords_matched": [],
+    "importance": 1,
+    "extracted_at": "2026-10-19T08:00:01.464288"
   }
 ]

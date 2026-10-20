@@ -56,31 +56,136 @@ HEADERS = {"Authorization": f"Bearer {OPENAI_API_KEY}",
            "Content-Type": "application/json"}
 
 # -------------------- 工具：获取今日新闻 --------------------
-def get_today_news(limit: int = 5) -> List[Dict[str, str]]:
+def get_today_news(limit: int = 5) -> Dict[str, Any]:
     """
- 调用 akshare 的 stock_news_em 或其他新闻接口，返回标题与简要摘要。
- 这里直接使用 akshare.stock_news_em（东财新闻）。
- 返回列表，每项包含 title、url、snippet（前200字）。
+    2026-10-20 重写（Plan A，用户批准）。
+    旧版根因：裸调 ak.stock_news_em() 无参 —— 本机 akshare 1.18.64 官方轮子默认
+    symbol='603777'（来伊份，池外股；dist-info RECORD 哈希已验为官方原样，非本机篡改），
+    东财搜索按相关度排序，前 5 条被 08-27~10-12 旧文长期霸榜，导致盘前报告连日复读
+    同一批来伊份旧闻。另有两个次生 bug：读列名 "正文"（实际列 "新闻内容"）→ 摘要恒空；
+    丢弃 "发布时间" 列 → 旧闻顶着 "今日" 标签无日期展示。
+
+    新版：改读新闻流水线权威快照 data/news/raw/{date}_{盘前|盘后|回填}.json
+    （analysis/news_monitor.py 产出，08:30 盘前 / 19:06 盘后 cron 落盘）。
+    两级时效窗：48h 主窗；不足 limit 扩到 96h 兜底（兜底条目标记 stale）；
+    两级皆无 → items=[]，由上层渲染显式占位。全部条目强制带发布时间。
+
+    返回: {"items": [{title, snippet, time, kind, sym, source, stale?}],
+           "snapshot": "…08:30:03", "window": "48h"|"96h", "raw_date": "YYYY-MM-DD"}
     """
-    try:
-        import akshare as ak
-        df = ak.stock_news_em()  # 最新的财经新闻
-        if df is None or df.empty:
-            return []
-        # 只取前 limit 条
-        df = df.head(limit)
-        news = []
-        for _, row in df.iterrows():
-            title = str(row.get("新闻标题", ""))
-            url = str(row.get("新闻链接", ""))
-            content = str(row.get("正文", ""))
-            # 摘要取前200字
-            snippet = content[:200].replace("\n", " ").strip()
-            news.append({"title": title, "url": url, "snippet": snippet})
-        return news
-    except Exception as e:
-        # 出错时返回空列表，上层会自行处理
-        return []
+    import glob as _glob
+    from datetime import datetime as _dt
+
+    raw_dir = _os.path.join(_WORKSPACE, "data", "news", "raw")
+    out: Dict[str, Any] = {"items": [], "snapshot": None, "window": "48h", "raw_date": None}
+    files = _glob.glob(_os.path.join(raw_dir, "*.json"))
+    if not files:
+        return out
+    by_date: Dict[str, list] = {}
+    for f in files:
+        base = _os.path.basename(f)[:-5]
+        if "_" not in base:
+            continue
+        d, _ = base.rsplit("_", 1)
+        by_date.setdefault(d, []).append(f)
+    if not by_date:
+        return out
+    latest = max(by_date)
+    out["raw_date"] = latest
+
+    items = []
+    snap_ts = None
+    for f in sorted(by_date[latest]):
+        try:
+            with open(f, encoding="utf-8") as _f:
+                snap = json.load(_f)
+        except Exception:
+            continue
+        ft = str(snap.get("fetch_time") or "")
+        if ft and (snap_ts is None or ft > snap_ts):
+            snap_ts = ft
+        # 1) 关注股公告（time 精确到日）
+        for n in snap.get("notices", {}).get("notices", []) or []:
+            t = str(n.get("title") or "")
+            if t:
+                items.append({"title": t, "snippet": "",
+                              "time": str(n.get("date") or ""),
+                              "kind": "公告", "sym": str(n.get("symbol") or ""),
+                              "source": "东财公告"})
+        # 2) 关注股个股新闻
+        for sn in snap.get("stock_news", []) or []:
+            sym = str(sn.get("symbol") or "")
+            name = str(sn.get("name") or "")
+            for n in sn.get("news", []) or []:
+                if not isinstance(n, dict):
+                    continue
+                t = str(n.get("title") or "")
+                if t:
+                    items.append({"title": t, "snippet": "",
+                                  "time": str(n.get("time") or ""),
+                                  "kind": "新闻",
+                                  "sym": (name + "(" + sym + ")") if name else sym,
+                                  "source": str(n.get("source") or "")})
+        # 3) 宏观/行业（带 summary）
+        for m in snap.get("macro", {}).get("news", []) or []:
+            t = str(m.get("title") or "")
+            if t:
+                items.append({"title": t, "snippet": str(m.get("summary") or "")[:100],
+                              "time": str(m.get("time") or ""),
+                              "kind": "宏观", "sym": "", "source": ""})
+    out["snapshot"] = snap_ts
+
+    # 标题去重（同日 盘前/盘后/回填 多快照会重复）
+    seen, uniq = set(), []
+    for it in items:
+        if it["title"] in seen:
+            continue
+        seen.add(it["title"])
+        uniq.append(it)
+
+    # 时效解析：兼容 "YYYY-MM-DD HH:MM:SS" / "YYYY-MM-DD HH:MM" / "YYYY-MM-DD"
+    def _parse(ts: str):
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
+            try:
+                return _dt.strptime(ts[:len(fmt) + 2].strip(), fmt)
+            except ValueError:
+                continue
+        return None
+
+    now = _dt.now()
+    for it in uniq:
+        t = _parse(it["time"])
+        it["age_h"] = ((now - t).total_seconds() / 3600.0) if t else None
+
+    pool = [it for it in uniq if it["age_h"] is not None and 0 <= it["age_h"] <= 48]
+    if len(pool) < limit:
+        # 96h 兜底窗（周一 06:00 用得上：最新快照是上周五盘后，条目约 59h）
+        have = {it["title"] for it in pool}
+        for it in uniq:
+            if it["title"] not in have and it["age_h"] is not None and 0 <= it["age_h"] <= 96:
+                it["stale"] = True
+                pool.append(it)
+        if any(it.get("stale") for it in pool):
+            out["window"] = "96h"
+
+    # 排序：公告 > 高显著新闻 > 宏观；同级时间倒序；兜底条目降权
+    kw_hi = ("回购", "增持", "减持", "举牌", "业绩预", "扭亏", "立案", "处罚",
+             "诉讼", "重大合同", "中标", "收购", "重组", "定增", "辞职",
+             "涨停", "跌停", "违约", "分红", "说明会")
+    def _score(it: Dict[str, Any]) -> int:
+        s = {"公告": 30, "新闻": 20, "宏观": 10}.get(it["kind"], 0)
+        if any(k in it["title"] for k in kw_hi):
+            s += 5
+        if it.get("stale"):
+            s -= 8
+        return s
+
+    pool.sort(key=lambda it: (_score(it), it["time"]), reverse=True)
+    out["items"] = pool[:limit]
+    for it in out["items"]:
+        it.pop("age_h", None)
+    return out
+
 
 # -------------------- 工具：获取 030 市场健康度 --------------------
 def get_market_health() -> Optional[int]:
