@@ -247,7 +247,10 @@ def render(report, show_notice=True):
     if macro:
         for m in macro:
             t = m.get("title", "")
-            L.append(f"  • {t}")
+            d0 = (m.get("time") or "")[:10]
+            # 2026-10-20 增：宏观行必须带发布日期——19:09 推送约束"无日期不采用"，
+            # 旧版不印日期导致宏观段被整段丢弃
+            L.append(f"  • [{d0}] {t}" if d0 else f"  • {t}")
     else:
         L.append("  (目标日期无宏观快照)")
 
@@ -261,7 +264,8 @@ def render(report, show_notice=True):
             # 标题常以 "股票名:" 开头（如 "国瓷材料:2026年半年度报告"），去掉避免重复
             if nm and title.startswith(nm):
                 title = title[len(nm):].lstrip(":： ")
-            L.append(f"  • [{n.get('type','')}] {nm}: {title}")
+            nd = (n.get("date") or "")[:10]
+            L.append(f"  • [{nd}] [{n.get('type','')}] {nm}: {title}" if nd else f"  • [{n.get('type','')}] {nm}: {title}")
 
     # 个股新闻 + 解读
     stocks = report["stocks"]
