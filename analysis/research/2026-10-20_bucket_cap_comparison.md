@@ -43,3 +43,14 @@
 - classify_bucket 用 2026-09-03 静态 factor_scores 快照套历史信号（look-ahead，不可量化）
 - plan 口径：live RiskGuard 返回无 single_stock_max_amount 键 → 默认 100k × mult 1.0；若 030 在某些市态把 max_amount 压到 <15k，两臂收敛
 - 今晚 15:40 portfolio-sim-daily 为首个生产验证点
+
+## 附：601066 total_pl 残差定量（2026-10-20 18:2x，不修复决定）
+
+交易日志：8/19 BUY 500@25.12 / 8/27 BUY 500@25.78（entry 被覆盖 quirk）/ 8/31 SELL@25.60（log shares=0）。
+三种重构互斥且证据不可恢复（8 月运行时代码未进 git）：
+- 全 1,000 股卖+真实成本（含滑点佣金）：≈ +90（正）
+- 仅 500 股卖+被覆盖成本 25.78：-115.7 ≈ 记录 -119.53（佣金差 ~4 元，最自洽）
+- 子代理假设：≈ -282
+决定：**不修 total_pl**，残差界 ≤±500 元（占 2.7M 账本 0.02%）。ledger_cash_repair 的
+cash := 100,000 + total_pl 锚定口径在其声明精度下不受影响。若未来 August 运行时代码
+（未进 git 的版本）被找回，可重开精算。
