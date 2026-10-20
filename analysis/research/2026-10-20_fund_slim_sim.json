@@ -1,0 +1,82 @@
+{
+ "date": "2026-10-20",
+ "n_panel": 20893,
+ "winsor": 15.0,
+ "note": "4维近似; R0=tech/vp/fund/chip, R1=移除fund; ex5 winsor±15%",
+ "variants": {
+  "R0_现行含fund": {
+   "n_buy": 16,
+   "buy_rate": 0.0008,
+   "n_sell": 2602,
+   "sell_rate": 0.1245,
+   "buy_ex5": 1.715,
+   "sell_ex5": -0.0618
+  },
+  "R1_移除fund": {
+   "n_buy": 21,
+   "buy_rate": 0.001,
+   "n_sell": 4762,
+   "sell_rate": 0.2279,
+   "buy_ex5": 4.0029,
+   "sell_ex5": -0.1672,
+   "buy_gained_lost": {
+    "gained_n": 17,
+    "gained_ex5": 4.2414,
+    "lost_n": 12,
+    "lost_ex5": 1.2903,
+    "ci95": null
+   },
+   "sell_gained_lost": {
+    "gained_n": 3279,
+    "gained_ex5": -0.2321,
+    "lost_n": 1119,
+    "lost_ex5": -0.1123,
+    "ci95": [
+     -0.5161,
+     0.2766
+    ]
+   }
+  }
+ },
+ "rank_level": {
+  "top5": {
+   "n_dates": 598,
+   "mean_delta": -0.0852,
+   "ci95": [
+    -0.2958,
+    0.1262
+   ]
+  },
+  "top10": {
+   "n_dates": 598,
+   "mean_delta": 0.0028,
+   "ci95": [
+    -0.13,
+    0.1399
+   ]
+  }
+ },
+ "signal_conditional": {
+  "HOLD→SELL": 43,
+  "SELL→HOLD": 34,
+  "HOLD→BUY": 1,
+  "BUY→HOLD": 1
+ },
+ "sell_threshold_ladder": {
+  "note": "R1(无fund) 3维网格的 SELL 率阶梯；R0(含fund) ≤20 = 12.38%",
+  "r0_sell_rate_le20": 0.1238,
+  "r1_ladder": {
+   "20.0": 0.2267,
+   "19.5": 0.0718,
+   "19.0": 0.0718,
+   "18.5": 0.0718,
+   "18.0": 0.0032
+  },
+  "atom_at_20": 0.1549,
+  "verdict": "20 分原子质量 15.5% → 3 维网格无中间档可匹配 12.4%，20 线失效；直接移除=阈值体系重构非瘦身"
+ },
+ "alternative_constant5": {
+  "note": "fund 置中性常数 5（保 4 维网格）：安慰剂实验证 rank 机械效应=0；绝对线按单调映射重校（全覆盖时 BUY35⟺s3≥38.33, SELL20⟺s3≤18.33）",
+  "production_caveat": "生产 5 维含 fund_flow(n 可变)，映射近似非解析"
+ }
+}
