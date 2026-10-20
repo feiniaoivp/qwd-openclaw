@@ -35,7 +35,8 @@ WATCHLIST_MD = os.path.join(WORKSPACE, "memory", "watchlist.md")
 MEMORY_MD = os.path.join(WORKSPACE, "MEMORY.md")
 
 # E. 声明「清单 == WATCHLIST」的消费端脚本（对齐后纳入此清单受守卫保护）
-WATCHLIST_CONSUMER_SCRIPTS = ["analysis/adaptive_dual.py", "analysis/backtest_strategies.py", "analysis/param_tune.py"]
+WATCHLIST_CONSUMER_SCRIPTS = ["analysis/adaptive_dual.py", "analysis/backtest_strategies.py", "analysis/param_tune.py",
+                               "analysis/news_monitor.py", "data/news/daily_news_reader.py"]
 
 
 def load_watchlist():
@@ -145,7 +146,7 @@ def _extract_stocks_block(src: str) -> str:
     out, in_block = [], False
     for l in lines:
         if not in_block:
-            if re.match(r"^STOCKS\s*=\s*\[", l):
+            if re.match(r"^(STOCKS|WATCHLIST)\s*=\s*\[", l):
                 out.append(l)
                 if l.split("#")[0].rstrip().endswith("]"):
                     break  # 单行块（如 WATCHLIST 推导式）已闭合
@@ -208,14 +209,19 @@ def check_consumer_scripts():
         with open(p, encoding="utf-8") as f:
             src = f.read()
         block = _extract_stocks_block(src)
-        if not block:
-            continue
-        # 去注释行后找硬编码票元组：(\'600030\' / ("600030",
-        code_lines = "\n".join(l.split("#")[0] for l in block.splitlines())
-        if re.search(r"\(\s*['\"]?\d{6}['\"]?\s*,", code_lines):
+        if block and re.search(r"\(\s*['\"]?\d{6}['\"]?\s*,", "\n".join(l.split("#")[0] for l in block.splitlines())):
             errs.append(
-                f"❌ [E] {rel} STOCKS 仍含硬编码 6 位代码清单——违反 SSOT 规则，"
+                f"❌ [E] {rel} 清单仍含硬编码 6 位代码——违反 SSOT 规则，"
                 f"应改为 `from analysis.fib_extension_scan import WATCHLIST` 派生")
+            continue
+        # E2（2026-10-20 增）：派生证据——fib 直引 / 已派生模块转引 / 显式豁免注释，三选一
+        evidence = (("from analysis.fib_extension_scan import WATCHLIST" in src)
+                    or ("backtest_strategies import" in src)   # 裸模块名/带包名两种写法都算（转引）
+                    or ("SSOT-EXEMPT:" in src))
+        if not evidence:
+            errs.append(f"❌ [E2] {rel} 无派生证据（需 fib_extension_scan.WATCHLIST 直引、"
+                        f"backtest_strategies 转引或 SSOT-EXEMPT: 注释三选一）")
+        continue
     return errs
 
 

@@ -195,6 +195,7 @@ Add whatever helps you do your job. This is your cheat sheet.
 | `MEMORY.md` | `Definitive - N stocks` == len(WATCHLIST) |
 | `analysis/adaptive_dual.py` STOCKS | 由 WATCHLIST 派生（禁止硬编码 6 位代码清单，2026-10-16 对齐） |
 | `analysis/backtest_strategies.py` STOCKS | 由 WATCHLIST 派生（调参池源头，2026-10-17 对齐；曾硬编码 35 只缺翰宇导致 tune/diff 三口径分叉） |
+| `analysis/news_monitor.py` STOCKS + `data/news/daily_news_reader.py` WATCHLIST | 由 WATCHLIST 派生（2026-10-20 对齐：曾硬编码 27/30 只，9 只池内股新闻从未抓取；已纳入 strategy_map_guard E/E2 检查） |
 
 > 注：`analysis/adaptive_trader.py` 的 STOCKS（27 只）为**有意的核心子集**（无幽灵票），不在此列；若其语义变更需另行评估。
 

@@ -111,7 +111,8 @@ def format_summary(data: dict, mode: str) -> str:
                 lines.append(f"  {name}({symbol}):")
                 for n in news[:2]:
                     title = n.get('title', '')
-                    lines.append(f"    - {title}")
+                    ts = str(n.get('time', ''))[5:16]   # MM-DD HH:MM（源头 72h 窗过滤后仍显示，便于读者判时效）
+                    lines.append(f"    - [{ts}] {title}" if ts.strip('- :') else f"    - {title}")
                 shown += 1
                 if shown >= 8:
                     lines.append("  ... 等")

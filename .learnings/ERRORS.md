@@ -674,3 +674,5 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - Last-Seen: 2026-10-19
 - Status: resolved（2026-10-19 当日修复 + 8 例自测）
 - Disposition: retain — 可复用提示（门禁误报比漏报更危险），RC=1 < 3，暂不提升；若再出现「门禁刷屏式误报」则复核。
+
+[2026-10-20] brief-push: 推送成功 message_id=3301，但全消息 782 字符超 700 上限（发送前未做字符数校验）。教训：推送前必须先 len()<=700 再 send，超则删对垒第3只票压缩。

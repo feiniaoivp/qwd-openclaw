@@ -3,12 +3,12 @@
 财经新闻/舆情抓取监控 (News Monitor)
 =========================================
 三类数据源（东财接口，国内网络已验证可用）：
-1. stock_news_em(symbol)     — 29只关注股个股新闻
+1. stock_news_em(symbol)     — 关注股个股新闻（fib_extension_scan.WATCHLIST 派生）
 2. stock_info_global_em()    — 宏观/行业政策快讯（200条）
 3. stock_notice_report()     — 全市场公告（业绩预告/减持/立案）
 
 增量抓取 + 归档到 data/news/：
-- raw/        原始JSON（每日一份）
+- raw/        原始JSON（每日一份；只归档发布时间 ≤72h 的新鲜条目，2026-10-20 起防旧文混入）
 - last_run.json  增量状态（记录已抓取标题，避免重复）
 - 输出 JSON 供 agent 解析，并生成可读摘要
 
@@ -29,19 +29,39 @@ RAW_DIR = os.path.join(NEWS_DIR, "raw")
 LAST_RUN_FILE = os.path.join(NEWS_DIR, "last_run.json")
 os.makedirs(RAW_DIR, exist_ok=True)
 
-# ── 27只关注股（2026-08-30 移除 300847/002180/601865）──
-STOCKS = [
-    ("002318","久立特材"),("300014","亿纬锂能"),("601066","中信建投"),
-    ("600030","中信证券"),("300124","汇川技术"),("601995","中金公司"),
-    ("600584","长电科技"),("002156","通富微电"),("002466","天齐锂业"),
-    ("600036","招商银行"),("600570","恒生电子"),("605566","福莱蒽特"),
-    ("000987","越秀资本"),("603308","应流股份"),("300285","国瓷材料"),
-    ("002413","雷科防务"),("688981","中芯国际"),
-    ("000157","中联重科"),("300719","安达维尔"),("601061","中信金属"),
-    ("600660","福耀玻璃"),("002335","科华数据"),("601100","恒立液压"),
-    ("600160","巨化股份"), ("600346","恒力石化"),
-    ("000708","中信特钢"), ("300748","金力永磁"),
-]
+# ── 关注股清单：fib_extension_scan.WATCHLIST 单一事实来源派生（2026-10-20 对齐）──
+# 旧版硬编码 27 只（2026-08-30 口径），落后于 WATCHLIST 36 只：
+# 特高压出海 8 只 + 翰宇药业的新闻从未被抓取。派生后随关注池自动同步。
+# 受 scripts/strategy_map_guard.py E 检查保护（禁止回退硬编码）。
+from analysis.fib_extension_scan import WATCHLIST as _WL
+STOCKS = sorted(_WL.items())   # [(code, name), ...] 与原格式兼容
+
+# ── 发布时间窗过滤（2026-10-20 增，用户批准的深究落实）──
+# 根因：东财"最近N条"搜索按相关度排序，同一快照实测混入 08-19/08-25/09-16 的
+# 陈年旧文（与当日新闻并存）。在抓取源头统一拦截，全链路受益：
+# 盘前/盘后快讯推送、晚间新闻解读推送、盘前报告要闻段、knowledge_base。
+# 72h 窗：工作日覆盖前 3 天；周一盘前可覆盖整个周末（周六 08:30 起）。
+FRESH_WINDOW_HOURS = 72
+
+def _parse_pub_time(ts):
+    """解析 'YYYY-MM-DD HH:MM:SS'/'YYYY-MM-DD HH:MM'/'YYYY-MM-DD'/'YYYYMMDD'；失败返回 None"""
+    ts = str(ts or "").strip()
+    if not ts:
+        return None
+    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d", "%Y%m%d"):
+        try:
+            return datetime.strptime(ts[:len(fmt) + 2].strip(), fmt)
+        except ValueError:
+            continue
+    return None
+
+def _is_fresh(ts):
+    """发布时间距 now ≤ FRESH_WINDOW_HOURS 且非未来时间；无/坏时间戳 → 拦截（宁缺勿旧）"""
+    t = _parse_pub_time(ts)
+    if t is None:
+        return False
+    age = (datetime.now() - t).total_seconds() / 3600.0
+    return 0 <= age <= FRESH_WINDOW_HOURS
 
 
 def load_last_run():
@@ -76,6 +96,9 @@ def fetch_stock_news(symbol, name, seen_titles):
             title = str(row.get("新闻标题", "")).strip()
             if not title:
                 continue
+            if not _is_fresh(row.get("发布时间", "")):
+                result["stale_skipped"] = result.get("stale_skipped", 0) + 1
+                continue
             is_new, h = is_new_title(title, seen_titles)
             entry = {
                 "title": title,
@@ -103,6 +126,9 @@ def fetch_macro_news(seen_titles):
         for _, row in df.iterrows():
             title = str(row.get("标题", "")).strip()
             if not title:
+                continue
+            if not _is_fresh(row.get("发布时间", "")):
+                result["stale_skipped"] = result.get("stale_skipped", 0) + 1
                 continue
             is_new, h = is_new_title(title, seen_titles)
             entry = {
@@ -139,6 +165,9 @@ def fetch_notices(seen_titles):
                 continue
             title = str(row.get("公告标题", "")).strip()
             if not title:
+                continue
+            if not _is_fresh(row.get("公告日期", "")):
+                result["stale_skipped"] = result.get("stale_skipped", 0) + 1
                 continue
             is_new, h = is_new_title(title, seen_titles)
             entry = {
