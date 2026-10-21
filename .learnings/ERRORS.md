@@ -707,3 +707,18 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - First-Seen: 2026-10-17
 - Last-Seen: 2026-10-21
 - Status: partially-resolved（机器层门禁已落地；结构性 cron 改造待 /approve）
+
+## ERR-20261021-DailyNoteSelfDestruct
+**Date**: 2026-10-21
+**Priority**: high
+**现象**: 19:46:48 一次性验证岗（04f400ef，会话 868398a8）向 memory/2026-10-21.md 补写记忆，写入本身成功；但同一 python 脚本的校验表达式 `print('memory updated ok, *** count:', open(p,'w') and open(p).read().count('***'))` 里 `open(p,'w')` 被求值 → **文件被截断成 0 字节**，`.read()` 读到空串、`count('***')=0`，脚本仍打印 "memory updated ok"。当日全文（dreaming 修复全程 + 傍晚链核对等 6 节）丢失，20:5x 由会话 d0700d43 从 transcript 碎片（18:47 全文快照 + 18:58 diff + 19:46:31 尾部 + 被毁前 append 块）逐字重建。波及：当晚 03:00 light 层当日原料。
+**修复**: 日记已重建；promotion_guard 同轮发现「冻结事件假活」语义失真已修（skip 条件扩展 minRecallCount≥999999 硬闸变体）。
+**规约**: **验证表达式严禁求值带副作用的写模式调用**。`'w'` 模式 open 只准出现在赋值/with 语句；写后校验必须只读（`len(open(p).read())` / `wc -c` 复核字节数）；「写→验」两步必须用两个独立语句/命令，禁止把校验塞进表达式链。与 10-09 脱敏坑同族：验证手段自身可以成为新的故障注入点（本条 = cron.silent-noop-fake-ok 第四变体：操作报 ok 但效果为毁）。
+### Metadata (2026-10-21 manual-session 登记)
+- Source: manual-session（webchat 深究轮；transcript 取证 868398a8 / d0700d43）
+- Reproducible: yes
+- Pattern-Key: ops.verify-expression-destructive-side-effect（同族 cron.silent-noop-fake-ok 第四变体）
+- Recurrence-Count: 1
+- First-Seen: 2026-10-21
+- Last-Seen: 2026-10-21
+- Status: resolved（当日重建 + 规约入 MEMORY.md；若再出现「验证/清理动作毁数据」升级三层防线）

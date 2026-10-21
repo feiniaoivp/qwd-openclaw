@@ -100,19 +100,32 @@ def main() -> int:
     # plugins.entries.memory-core.config.dreaming.phases.deep.enabled=false）
     # → 不再产生新 promote 事件，棘轮的「连续零存活=通道断裂」语义不再适用，
     # 检测到 deep-off 时跳过判定（避免自我误报），人工蒸馏由每日会话承担。
+    # 2026-10-21 修法变体：deep.enabled=true + minRecallCount=999999（sweep 保活 +
+    # promote 在 rank/apply 双层被硬过滤，同样永不产生新事件）。此时棘轮只能对冻结的
+    # 旧事件重复判定并报「✅ 完整落盘」，把「有意退役」误读成「通道健康」→ 一并跳过。
     try:
         _cfg = json.load(open("/Users/duguke/.openclaw/openclaw.json", encoding="utf-8"))
-        _deep_off = (
+        _deep = (
             _cfg.get("plugins", {}).get("entries", {}).get("memory-core", {})
             .get("config", {}).get("dreaming", {})
-            .get("phases", {}).get("deep", {}).get("enabled")
-        ) is False
+            .get("phases", {}).get("deep", {})
+        )
+        _deep_off = _deep.get("enabled") is False
+        _mrc = _deep.get("minRecallCount")
+        _hard_gate = isinstance(_mrc, (int, float)) and _mrc >= 999999
     except (OSError, json.JSONDecodeError):
         _deep_off = False
-    if _deep_off:
-        print("ℹ️  deep 自动 promote 已关闭（10-20 用户拍板，纯人工蒸馏模式）→ 跳过棘轮判定")
+        _hard_gate = False
+    if _deep_off or _hard_gate:
+        _reason = "deep_promotion_disabled" if _deep_off else "deep_min_recall_hard_gate"
+        _detail = (
+            "deep 自动 promote 已关闭（10-20 用户拍板，纯人工蒸馏模式）"
+            if _deep_off
+            else f"deep promote 硬闸模式（minRecallCount={_mrc}，10-21 拍板：sweep 保活 + promote 退役）"
+        )
+        print(f"ℹ️  {_detail} → 跳过棘轮判定")
         if args.json:
-            print(json.dumps({"skipped": True, "reason": "deep_promotion_disabled"}, ensure_ascii=False))
+            print(json.dumps({"skipped": True, "reason": _reason}, ensure_ascii=False))
         return 0
 
     if not events:
