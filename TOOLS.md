@@ -466,6 +466,77 @@ Source: .learnings/ERRORS.md#err.dist-io-no-timeout
 
 ---
 
+## 🔴 强制代码模板：直接调 `execute_trade` 的测试脚本必须隔离三个 FILE（2026-10-21）
+
+> **为什么强制**：2026-10-20 18:0x，e9fb539「bucket 拆分功能验证」的临时冒烟脚本
+> 直调 `portfolio_core.execute_trade()` 用占位价 `price=10.0` 跑真交易，
+> **未把 STATE_FILE / TRADES_FILE / EQUITY_FILE 重定向到 tempfile** →
+> 两笔假成交（国电南瑞 1400 股 core、招商银行 400 股 satellite）写进生产底账
+> `data/portfolio_sim_trades.json`，两个月后才靠算术闭合（1400/400 恰为
+> 15%/5%×100k 在 price=10 的整百股数）才定位。
+>
+> **`BACKTEST_MODE` 挡不住这件事**：它只守卫
+> `append_trade`/`save_state`/`append_equity_snapshot` 三个函数，
+> **不会自己变 True**；手动跑的临时脚本没有任何机制去设它。
+> 测试与生产共用同一套路径常量，直调即污染。
+
+### ✅ 每个直调副作用函数的测试/研究脚本，开头必须有：
+
+```python
+import os, sys, tempfile
+
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
+_TMPDIR = tempfile.mkdtemp(prefix="verify_")
+os.environ["BACKTEST_MODE"] = "1"      # 兜底第一道
+
+import analysis.portfolio_core as pc   # noqa: E402
+pc.STATE_FILE  = os.path.join(_TMPDIR, "state.json")    # 必须
+pc.TRADES_FILE = os.path.join(_TMPDIR, "trades.json")   # 必须
+pc.EQUITY_FILE = os.path.join(_TMPDIR, "equity.csv")    # 必须（最易漏）
+```
+
+参考实现：`analysis/research/2026-10-20_add_position_avgtp_verify.py`
+（该脚本最初就写对了 STATE/TRADES，但漏了 EQUITY；2026-10-21 门禁首次实扫才抓出来）。
+
+### ❌ 禁止写法
+
+```python
+# ❌ 只设 BACKTEST_MODE 就以为安全（它不会自己变 True）
+os.environ["BACKTEST_MODE"] = "1"
+pc.execute_trade(pos, {"price": 10.0}, ...)   # 仍会写生产 trades.json
+
+# ❌ 只重定向 1~2 个 FILE（漏的那个照样污染）
+pc.STATE_FILE = os.path.join(_TMPDIR, "state.json")
+pc.TRADES_FILE = os.path.join(_TMPDIR, "trades.json")
+pc.execute_trade(...)                          # EQUITY_FILE 仍是生产路径
+
+# ❌ 先调用再重定向（顺序错 = 等于没重定向）
+pc.execute_trade(...)
+pc.STATE_FILE = ...
+```
+
+### 门禁（自动校验）
+
+```bash
+python3 scripts/test_isolation_guard.py             # 命中 exit 1
+python3 scripts/test_isolation_guard.py --selftest  # 8 例对抗自测
+```
+
+判定：文件 import `portfolio_core` 且调用 `execute_trade`/`append_trade`/
+`append_equity_snapshot`/`save_state` 之一，但未把三个 FILE **全部**重定向到
+临时目录（或重定向写在调用之后）→ HIGH。
+生产入口白名单：`portfolio_core.py` / `portfolio_executor.py` / `portfolio_sim.py` /
+`agent/nodes.py`（LangGraph 生产节点，账本正规写入方）。
+人工豁免：文件内含 `ISOLATION_GUARD_OK` 注释并给出理由。
+
+**已接入**：每周六 `weekly_full_pipeline.py` 步骤 0x。
+
+---
+
 ## 🔴 派生指标缓存铁律（2026-10-18 由 ERR-20261018-C05 提升）
 
 > **为什么强制**：chip 第 5 维复活当天实测"一切正常"（数据刚补过），但三个读写点

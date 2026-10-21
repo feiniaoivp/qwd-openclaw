@@ -278,6 +278,14 @@ def main():
     if not r["success"]:
         print("⚠️ agent 降级链防护被破坏（见上方），盘前报告可能再次静默复用僵尸缓存（不阻断流水线）...")
 
+    # 步骤 0x: 测试隔离门禁（2026-10-21 新增，缘起 10-20 e9fb539 功能验证冒烟直调
+    # execute_trade 未重定向 STATE/TRADES/EQUITY 三个 FILE → 两笔假成交写进生产底账）
+    print("\n🚦 步骤 0x/9: 测试隔离门禁 (test_isolation_guard.py)")
+    r = run_script("../scripts/test_isolation_guard.py", timeout=90)
+    results["test_isolation"] = r
+    if not r["success"]:
+        print("⚠️ 有测试/研究脚本直调副作用函数未隔离生产文件（见上方），账本可能再次被污染（不阻断流水线）...")
+
     # 步骤 0k: 五维评分 None 契约门禁（2026-10-17 新增，纯逻辑合成输入秒级）
     # 背景：10-08 立项「隐性 5.0 填充」改造（98820ca + 3977840）。缺数据必须 None，
     # 禁止 or 0/or 50/5.0 托底；RSI<30 不加分口径一并锁定。防未来改码回潮。

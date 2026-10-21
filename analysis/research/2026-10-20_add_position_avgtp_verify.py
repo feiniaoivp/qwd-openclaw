@@ -31,6 +31,7 @@ import analysis.portfolio_core as pc  # noqa: E402
 
 pc.STATE_FILE = os.path.join(_TMPDIR, "state.json")
 pc.TRADES_FILE = os.path.join(_TMPDIR, "trades.json")
+pc.EQUITY_FILE = os.path.join(_TMPDIR, "equity.csv")
 
 COMMISSION = pc.COMMISSION
 SLIPPAGE = pc.SLIPPAGE
