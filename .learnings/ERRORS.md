@@ -145,6 +145,7 @@ skill 周期性复核发现遗留待办「zhonglian_monitor.py 接入降级链�
 - Last-Seen: 2026-10-05
 
 > **[2026-10-19 每日维护]** `data.datasource-failover` 两条目为同模式共享计数（RC=2 < 3，跨 2 任务，30 天窗口内），未达 promote 阈值；修复已全部在位（backtest_strategies 降级链 + bs_session 负缓存 + zhonglian_monitor 三源降级 commit 500dfda），维持 resolved + 观察。若第三次复发（任一主源失败且降级链被绕过）则 bump 至 3 并评估提升。
+> **[2026-10-21 每日维护]** 第四轮复核：Last-Seen 维持 2026-10-05，无新复发，RC 维持 2；修复三连（降级链/负缓存/三源降级）无绕过证据，终态不变。
 
 ---
 
@@ -254,6 +255,10 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 ### Maintenance (2026-10-19 每日维护) — 无新交易日证据
 - `data/auction/` 最新仍为 10-16（17,232 B / count=27，ls 实测）；10-17（六）/10-18（日）非交易日，无快照属预期。下一核对点：10-19（周一）09:25 快照非空则连续第 6 交易日。
 - Validation 维持 verified；RC 维持 2 不虚增；promote 触发条件不变（再复现 RC→3 才评估）。
+
+### Maintenance (2026-10-21 每日维护) — 持续无复现（连续第 7、8 个交易日）
+- 顺延复核：`data/auction/2026-10-19_9_25.json`（17,238 B）与 `2026-10-20_9_25.json`（17,225 B）均 `snapshot_time 09:25:00`、`count=27` 真实快照（python 实测读出）→ 晚启动兜底连续第 7、8 个交易日有效。
+- Validation 维持 verified；RC 维持 2 不虚增；promote 触发条件不变（再复现 RC→3 才评估）。每日顺延复核可止于本条目，除非再出现空快照。
 
 ## ERR-20261009-QuantPushDetachedOutputLost
 **Date**: 2026-10-09
@@ -675,4 +680,30 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - Status: resolved（2026-10-19 当日修复 + 8 例自测）
 - Disposition: retain — 可复用提示（门禁误报比漏报更危险），RC=1 < 3，暂不提升；若再出现「门禁刷屏式误报」则复核。
 
-[2026-10-20] brief-push: 推送成功 message_id=3301，但全消息 782 字符超 700 上限（发送前未做字符数校验）。教训：推送前必须先 len()<=700 再 send，超则删对垒第3只票压缩。
+## ERR-20261020-BP brief-push 消息 782 字符超 700 上限（发送前未做长度校验）
+- **现象**（2026-10-20 22:40 premarket-news-format 推送，成功 message_id=3301）：全消息 782 字符 > 700 上限，发送前未做字符数校验，靠超限硬发。
+- **规约**：推送前必须 `len(text) <= 700` 校验再 send；超限按优先级压缩（先删对垒第 3 只票，再裁背景段），禁止裸发超限消息。
+
+### Metadata (2026-10-21 每日维护登记)
+- Source: cron 运行备注（ERRORS.md 末尾游离记录，本次维护登记为正式条目）
+- Reproducible: yes
+- Pattern-Key: err.push-length-no-precheck
+- Recurrence-Count: 1
+- First-Seen: 2026-10-20
+- Last-Seen: 2026-10-20
+- Status: resolved（当日推送实际成功送达，属规范缺口非故障；RC=1 < 3 暂不提升，若再超限则复核）
+
+## ERR-20261021-PremarketAgentTurnNoop
+**Date**: 2026-10-21
+**Priority**: high
+**现象**: `daily-premarket-analysis-cmd`（agentTurn，model=nvidia/nemotron-3-ultra）10-21 06:00 run 记 **ok（23.2s）**，但当日 `2026-10-21_premarket_report.md` 与 `run_20261021_*.json` 双缺。transcript（5cae8518）坐实：模型 read 完 `premarket_pipeline.py` 后回复「需要我做什么？」即结束，**从未执行命令**。回溯：10-17（周五交易日）同样双缺 → 近 4 个交易日 2 次静默缺失。当日 06:40 一次性验证 job 虽正确诊断缺失，但自身 model-call 超时（600s、finalStatus=error、assistantTexts 空）且 `deleteAfterRun` 自删，结论未送达——验证网自身也是脆弱 agentTurn，且失败后无痕消失。
+**修复**: ① `scripts/cron_health_check.py` 新增产物存在性检查 `missing_products()`（交易日 06:45 后须有当日 premarket_report、19:00 后须有当日 dual；should_alert 冷却去重；selftest 15 例全过）——接入既有 4h 一次的 cron-health-check 自然运行（三层防线第 2/3 层）；② 结构性修法（agentTurn→command 模式 `--command` 直跑）已备改前快照 `backups/cron/87c6b7f9-premarket-agentTurn.bak-20261021.json`，待用户批准执行。
+**规约**: **status=ok ≠ 产物存在**。命令型 cron 的唯一可靠健康判据是产物在盘，不是 run 状态、不是时长（23s 说废话与 20min 实干都「合理」）。确定性命令优先 `--command` 直跑（LLM-in-the-loop 仅用于真正需要智能的环节）。一次性验证 job（deleteAfterRun）不得作为生产产物的唯一防线：超时即静默且自删无痕。
+### Metadata (2026-10-21 manual-session 登记)
+- Source: manual-session（webchat 深究轮；transcript 取证 5cae8518 / a50ba956）
+- Reproducible: yes
+- Pattern-Key: cron.agentturn-noop-product-missing（同族 cron.silent-noop-fake-ok 第三变体）
+- Recurrence-Count: 2（10-17 / 10-21）
+- First-Seen: 2026-10-17
+- Last-Seen: 2026-10-21
+- Status: partially-resolved（机器层门禁已落地；结构性 cron 改造待 /approve）
