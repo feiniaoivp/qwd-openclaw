@@ -262,6 +262,14 @@ def main():
     if not r["success"]:
         print("⚠️ 发现阻断式调试残留（见上方），交互调试完成后必须移除（不阻断流水线）...")
 
+    # 步骤 0w: 记忆耐久性门禁（2026-10-21 新增，缘起日记 0 字节事故·假 ok 第 4 变体
+    # 「验证表达式自毁被验对象」：open(p,'w') 出现在 and/三元/print 实参中，求值即截断）
+    print("\n🚦 步骤 0w/9: 记忆耐久性门禁 (memory_note_durability_guard.py)")
+    r = run_script("../scripts/memory_note_durability_guard.py", ["--quiet"], timeout=60)
+    results["memory_durability"] = r
+    if not r["success"]:
+        print("⚠️ 发现写模式 open 处于表达式上下文（求值即写入/截断），见上方（不阻断流水线）...")
+
     # 步骤 0j: agent 降级链门禁（2026-10-14 新增，缘起 last_success.json 僵尸缓存连日静默
     # 输出 24 天前旧闻事故：盘前 agent 段降级必须优先最新 run 档案 + 必须带缓存日期标注）
     print("\n🚦 步骤 0j/9: agent 降级链门禁 (agent_fallback_guard.py)")
