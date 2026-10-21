@@ -1,0 +1,50 @@
+{
+ "id": "c57f99fb-b3bc-4957-8c4b-c123dcec3ab3",
+ "displayName": "盘中策略实时预警(30分钟轮询)",
+ "owner": {
+  "agentId": "main",
+  "sessionKey": "agent:main:telegram:direct:626141741"
+ },
+ "name": "intraday-alert-watch",
+ "description": "[2026-09-13 改造] 盘中预警(上午场)。脚本已自含TG推送, 改为command直跑, 绕开LLM。",
+ "enabled": true,
+ "createdAtMs": 1787605802334,
+ "updatedAtMs": 1792553427826,
+ "agentId": "main",
+ "schedule": {
+  "kind": "cron",
+  "expr": "0,30 9-11 * * 1-5",
+  "tz": "Asia/Shanghai"
+ },
+ "sessionTarget": "isolated",
+ "wakeMode": "now",
+ "payload": {
+  "kind": "agentTurn",
+  "message": "Run: cd /Users/duguke/.openclaw/workspace && python3 scripts/push_intraday_alerts.py\nThe script self-pushes to Telegram. Do not send any additional message.",
+  "timeoutSeconds": 600,
+  "toolsAllow": [
+   "read",
+   "exec",
+   "process"
+  ]
+ },
+ "delivery": {
+  "mode": "none"
+ },
+ "state": {
+  "nextRunAtMs": 1792630800000,
+  "lastRunAtMs": 1792553400039,
+  "lastRunStatus": "ok",
+  "lastStatus": "ok",
+  "lastDurationMs": 27787,
+  "lastDeliveryStatus": "not-requested",
+  "lastFailureNotificationDeliveryStatus": "not-requested",
+  "consecutiveErrors": 0,
+  "consecutiveSkipped": 0
+ },
+ "nextRunAtMs": 1792630800000,
+ "lastRunAtMs": 1792553400039,
+ "lastRunStatus": "ok",
+ "lastDeliveryStatus": "not-requested",
+ "lastFailureNotificationDeliveryStatus": "not-requested"
+}

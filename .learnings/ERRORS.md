@@ -706,7 +706,7 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - Recurrence-Count: 1（确证 10-21；zhonglian-morning 4 次短时长可疑未计入）
 - First-Seen: 2026-10-21
 - Last-Seen: 2026-10-21
-- Status: resolved-pending-validation（结构改造已执行 21:29；待明晨 06:00 自然 run 确认后本条终态）
+- Status: resolved-pending-validation（结构改造已执行 21:29；Tier A 9 job 批量改造 22:3x 完成 9/9 复核——command/argv/cwd/timeout 保留/delivery=none/schedule 不变；待明晨 06:00–09:35 自然链全窗口验收后本条终态）
 
 ## ERR-20261021-DailyNoteSelfDestruct
 **Date**: 2026-10-21

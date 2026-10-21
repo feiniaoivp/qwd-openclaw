@@ -1,0 +1,71 @@
+{
+ "id": "bd9843f1-2a6f-44e6-8bf2-8f3aa5b9bca3",
+ "displayName": "每日量化回测",
+ "owner": {
+  "agentId": "main",
+  "sessionKey": "agent:main:dashboard:fd71684b-3dda-4983-a11d-be2f451f4919"
+ },
+ "name": "quant-backtest-daily",
+ "description": "每日20:30量化回测并推送",
+ "enabled": true,
+ "createdAtMs": 1785514585765,
+ "updatedAtMs": 1792587061401,
+ "agentId": "main",
+ "schedule": {
+  "kind": "cron",
+  "expr": "30 20 * * 1-5",
+  "tz": "Asia/Shanghai"
+ },
+ "sessionTarget": "isolated",
+ "wakeMode": "now",
+ "payload": {
+  "kind": "agentTurn",
+  "message": "cd /Users/duguke/.openclaw/workspace && python3 analysis/quant_push.py",
+  "model": "amd-radeon/Qwen3.8-Flash-Next",
+  "timeoutSeconds": 3600,
+  "toolsAllow": [
+   "read",
+   "edit",
+   "write",
+   "apply_patch",
+   "exec",
+   "process",
+   "cron",
+   "memory_search",
+   "memory_get",
+   "filesystem__create_directory",
+   "filesystem__directory_tree",
+   "filesystem__edit_file",
+   "filesystem__list_allowed_directories",
+   "filesystem__list_directory",
+   "filesystem__list_directory_with_sizes",
+   "filesystem__move_file",
+   "filesystem__read_file",
+   "filesystem__read_media_file",
+   "filesystem__read_multiple_files",
+   "filesystem__read_text_file",
+   "filesystem__search_files",
+   "filesystem__write_file"
+  ]
+ },
+ "delivery": {
+  "mode": "none",
+  "bestEffort": false
+ },
+ "state": {
+  "nextRunAtMs": 1792672200000,
+  "lastRunAtMs": 1792585800038,
+  "lastRunStatus": "ok",
+  "lastStatus": "ok",
+  "lastDurationMs": 1261363,
+  "lastDeliveryStatus": "not-requested",
+  "lastFailureNotificationDeliveryStatus": "not-requested",
+  "consecutiveErrors": 0,
+  "consecutiveSkipped": 0
+ },
+ "nextRunAtMs": 1792672200000,
+ "lastRunAtMs": 1792585800038,
+ "lastRunStatus": "ok",
+ "lastDeliveryStatus": "not-requested",
+ "lastFailureNotificationDeliveryStatus": "not-requested"
+}

@@ -52,5 +52,23 @@
   "stat_date": "2026-10-20",
   "source": "akshare stock_market_activity_legu",
   "captured_at": "2026-10-20T15:10:00"
+ },
+ "2026-10-21": {
+  "up": 1941.0,
+  "limit_up": 50.0,
+  "real_limit_up": 43.0,
+  "st_limit_up": 0.0,
+  "down": 3055.0,
+  "limit_down": 5.0,
+  "real_limit_down": 5.0,
+  "st_limit_down": 0.0,
+  "flat": 220.0,
+  "halt": 8.0,
+  "active_pct": 37.16,
+  "up_ratio": 0.3885,
+  "prod_sentiment": 38.3,
+  "stat_date": "2026-10-21",
+  "source": "akshare stock_market_activity_legu",
+  "captured_at": "2026-10-21T15:10:02"
  }
 }

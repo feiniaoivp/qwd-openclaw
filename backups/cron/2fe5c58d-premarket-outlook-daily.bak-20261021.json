@@ -1,0 +1,51 @@
+{
+ "id": "2fe5c58d-adaa-4a3e-b262-e1ae37e51b69",
+ "displayName": "盘前大盘展望(命令直推)",
+ "owner": {
+  "agentId": "main",
+  "sessionKey": "agent:main:telegram:direct:626141741"
+ },
+ "name": "premarket-outlook-daily",
+ "description": "[2026-09-13 新建] 每交易日08:30直跑 premarket_outlook.py，输出指数/关键位/030风控/持仓/资讯，纯文本推送TG，绕开LLM。",
+ "enabled": true,
+ "createdAtMs": 1789301119693,
+ "updatedAtMs": 1792542620367,
+ "agentId": "main",
+ "sessionKey": "agent:main:telegram:direct:626141741",
+ "schedule": {
+  "kind": "cron",
+  "expr": "30 8 * * 1-5",
+  "tz": "Asia/Shanghai"
+ },
+ "sessionTarget": "isolated",
+ "wakeMode": "now",
+ "payload": {
+  "kind": "agentTurn",
+  "message": "Run: cd /Users/duguke/.openclaw/workspace && python3 scripts/premarket_outlook.py\nThe script self-pushes to Telegram. Do not send any additional message.",
+  "timeoutSeconds": 180,
+  "toolsAllow": [
+   "read",
+   "exec",
+   "process"
+  ]
+ },
+ "delivery": {
+  "mode": "none"
+ },
+ "state": {
+  "nextRunAtMs": 1792629000000,
+  "lastRunAtMs": 1792542600043,
+  "lastRunStatus": "ok",
+  "lastStatus": "ok",
+  "lastDurationMs": 20324,
+  "lastDeliveryStatus": "not-requested",
+  "lastFailureNotificationDeliveryStatus": "not-requested",
+  "consecutiveErrors": 0,
+  "consecutiveSkipped": 0
+ },
+ "nextRunAtMs": 1792629000000,
+ "lastRunAtMs": 1792542600043,
+ "lastRunStatus": "ok",
+ "lastDeliveryStatus": "not-requested",
+ "lastFailureNotificationDeliveryStatus": "not-requested"
+}

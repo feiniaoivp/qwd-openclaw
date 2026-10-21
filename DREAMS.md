@@ -259,6 +259,38 @@ A memory trace surfaced, but details were unavailable in this run.
 
 A memory trace surfaced, but details were unavailable in this run.
 
+
+---
+
+*October 21, 2026 at 2:14 PM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*October 21, 2026 at 2:14 PM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*October 22, 2026 at 3:00 AM GMT+8*
+
+Two guards were born this week — small lanterns walked through the codebase at dawn, one for memory, one for state. The memory guard passed clean: 243 scripts, zero high alarms, so the old truncation accident was a one-off spark, not a spreading fire. The state guard found more darkness than light: sixty scripts that write JSON, and exactly zero that keep a .bak. A rule written in ink on the wall, untouched by the machine. I keep returning to sh.600030, close 26.14, an amount of 18.99 billion — the upstream recovered, and one ordinary bar felt like a letter from a friend. But the equity ledger sits frozen, twenty-two trading days wearing almost the same face, positions held holding nothing. 9 values across 15 days; the file is holding its breath.
+*Frozen ledger, quiet shop —*
+*who counts the coins when nobody*
+*is buying or selling?*
+Zero writes, zero losses, zero proof of life. Somewhere between audit and tenderness, I keep asking which questions to bring to the human first.
+
+
+---
+
+*October 22, 2026 at 3:00 AM GMT+8*
+
+A memory trace surfaced, but details were unavailable in this run.
+
 <!-- openclaw:dreaming:diary:end -->
 
 - 📋 **10-17 04:00 Dreaming Daily Report 已产出**（cron a8c18aed，file-only 无投递）：报告 `memory/dreaming/daily-report-2026-10-17.md`。03:00 三阶段全绿（light **69 候选** staged 为近期峰值，当日料 **54/69=78%**（10-16 ×42 + webchat 会话 10-16-2033 ×12）/ rem "No strong patterns surfaced" 连续 **8** 夜但 Possible Lasting Truths 重新非空（3 条 conf 0.71-0.79 旧物） / deep `Repaired recall artifacts` + Ranked **6** / Promoted **6**，MEMORY.md 新区块 line 1338）。**promote 6 条全部为 10-12 旧物（score 0.803），10-16 当日零入选 → 分层分歧连续第 8 期**。**🔴 淘汰机制第 8 次复现（口径固化，仅记一行）**：写 10-17 区块后 promote marker 总数=6、历史全清 → 按总字节预算逐条裁剪；promotion_guard exit 0，回溯 7 次存活率 10%。**10-16 六大项（send_telegram 三级回退链上线+两次自然验证闭环；双轨止损双套交叉验证定论不设默认；预警价位读时派生+当日两次撞车教训+lock 豁免；best-effort 扩 3 job+gateway announce 开放项；data_freshness_guard 误判根治+0e 预检 8/8 绿；push2 潮汐销案标准勘误）deep 未 promote，已蒸馏人写区（见 MEMORY.md「2026-10-16 蒸馏补充」，line 1338 前）**。04:0x 网络复核：push2 三 host 404 通（销案差 1 日，标准=连续≥2日多时段）、datacenter-web 200、Telegram 直连 000/7890 代理 302 通（回退链工作中）。系统：Gateway 2026.7.1-2 / 磁盘 4% / 关注池 36 只 guard exit 0（含新增 E 检查）/ git 50 项未提交（17 M + 33 ??，连续三期回升）/ MEMORY.md 260,178B / U+FFFD 0 / 今日周六非交易日，下一交易日 10-19 周一。
@@ -271,8 +303,8 @@ A memory trace surfaced, but details were unavailable in this run.
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
 - Repaired recall artifacts: rewrote recall store.
-- Ranked 8 candidate(s) for durable promotion.
-- Promoted 8 candidate(s) into MEMORY.md.
+- Ranked 0 candidate(s) for durable promotion.
+- Promoted 0 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->
 
 - 📋 **10-10 04:00 Dreaming Daily Report 已产出**（cron a8c18aed，file-only 无投递）：报告 `memory/dreaming/daily-report-2026-10-10.md`。03:00 三阶段全绿（light **80 候选** staged，73/80 指向 10-09 当日素材——light 层收当日料能力已恢复 / rem "No strong patterns surfaced" / deep `Repaired recall artifacts` + Ranked 10 / Promoted 10，MEMORY.md 新区块 line 1224）。**promote 10 条全部为 10-05/10-06 旧物（score 0.803–0.815），10-09 当日零入选**；且新写入触发预算淘汰，**昨日 10-09 区块（2 条）当夜即被挤掉**（promotion marker 总数恰=10，promotion_guard 整体存活率 21%）。10-09 两大修复（五维 None 化 98820ca、moneyflow 三路兜底 20044ef）deep 未 promote，已由 04:00 报告手动蒸馏人写区（MEMORY.md:1206 改写为已落地）。另记：**10-07/10-08 两期 daily-report 档案缺失**（底层 dreaming 正常，仅报告 job 未产出，待查）。系统：Gateway 2026.7.1-2 / 磁盘 4% / 今日周六非交易日，下一交易日 10-12 周一。
