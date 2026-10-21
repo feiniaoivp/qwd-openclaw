@@ -77,9 +77,6 @@ backups/config/
 !backups/openclaw-config/
 # 但保留人工整理的”小体积单文件备份”（已在库中的继续跟踪）
 
-# ── 自动生成脚本 ──
-scripts/cron_health_check.py
-
 # ── Wiki 归档（可选，体积大时忽略）──
 wiki/sources/investment-philosophy-*.md
 
