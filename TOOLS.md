@@ -273,6 +273,19 @@ if not is_trading_day(): ...
 def is_trading_day(): ...
 ```
 
+> **日历序列消费方**（需要整个交易日列表而非单日判定）：一律用
+> `from analysis.service import get_trading_days`（2026-10-22 第五轮新增，
+> 返回 YYYY-MM-DD 字符串列表；此前 chip_freshness 自调 sina 日历属第二份获取路径，已收敛）。
+
+### 门禁（自动校验，2026-10-22 落地）
+
+```bash
+python3 scripts/trading_day_ssot_guard.py            # 违规 exit 1（H1 重复实现 / H2 绕过 SSOT 直调 sina 日历）
+python3 scripts/trading_day_ssot_guard.py --selftest # 对抗自测（含 SSOT 本体豁免 + 薄包装 + 注释不误报）
+# 已接入：每周六 weekly_full_pipeline.py 步骤 0z（失败仅告警不阻断）
+# 豁免：scripts/data_freshness_guard.py（静态 HOLIDAYS，有意离线设计）
+```
+
 ---
 
 ## 🔴 交互态市场数据引用红线（2026-09-28 新增，零容忍）
