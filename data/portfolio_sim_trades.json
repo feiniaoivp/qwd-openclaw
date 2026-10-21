@@ -262,7 +262,8 @@
     "pnl": 0,
     "pnl_pct": 0.0,
     "strategy": "macd",
-    "bucket": "core"
+    "bucket": "core",
+    "note": "⚠️测试污染：10-20 18:0x e9fb539「功能验证 core 15k/sat 5k」冒烟用占位价10.0直调 execute_trade，未重定向 TRADES_FILE 写入生产底账（state 已在 pre_bucket_split 备份中回滚，仅 trades 残留；shares=1400/400 恰为 15%/5%×100k 在 price=10 下的整百股数；详见 memory/2026-10-20.md:81，标注先例见 778a516）"
   },
   {
     "date": "2026-10-20",
@@ -274,6 +275,7 @@
     "pnl": 0,
     "pnl_pct": 0.0,
     "strategy": "macd",
-    "bucket": "satellite"
+    "bucket": "satellite",
+    "note": "⚠️测试污染：10-20 18:0x e9fb539「功能验证 core 15k/sat 5k」冒烟用占位价10.0直调 execute_trade，未重定向 TRADES_FILE 写入生产底账（state 已在 pre_bucket_split 备份中回滚，仅 trades 残留；shares=1400/400 恰为 15%/5%×100k 在 price=10 下的整百股数；详见 memory/2026-10-20.md:81，标注先例见 778a516）"
   }
 ]

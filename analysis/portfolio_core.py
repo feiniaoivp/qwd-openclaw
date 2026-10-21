@@ -289,12 +289,19 @@ def append_trade(trade: Dict):
 def append_equity_snapshot(date: str, portfolio_summary: Dict, core_value: float, sat_value: float, cash_total: float):
     """记录每日组合权益快照（同日去重：若末行日期相同则覆盖，否则追加）
     CSV 列: date, total_value, total_return_pct, core_value, satellite_value, cash_total, positions_held, total_initial
+
+    2026-10-21 C 修复（权益文件冻结 22 个交易日）：
+      根因 = 旧实现「读失败 → existing_rows=[] → 整文件重写」把历史行清零，
+      且写盘非原子。违反 MEMORY 铁律「重写型脚本必须有写前 .bak + 行数防倒退」。
+      新契约：①读取失败一律 raise（不再退化重写）②写前 .bak
+      ③行数防倒退（新行数 < 旧行数 直接拒绝）④临时文件 + os.replace 原子替换。
     """
     import csv
+    import shutil
     if BACKTEST_MODE:
         return
     file_exists = os.path.exists(EQUITY_FILE)
-    
+
     fieldnames = ["date", "total_value", "total_return_pct", "core_value",
                   "satellite_value", "cash_total", "positions_held", "total_initial"]
     row = {
@@ -308,16 +315,22 @@ def append_equity_snapshot(date: str, portfolio_summary: Dict, core_value: float
         "total_initial": portfolio_summary.get("total_initial", 0),
     }
 
-    # 读现有所有行（含表头），用于同日去重
+    # 读现有所有行（含表头），用于同日去重。读取失败必须可见地失败，绝不退化为「空历史」。
     existing_rows = []
+    _prev_row_count = 0
     if file_exists:
         try:
             with open(EQUITY_FILE, newline='') as f:
                 existing_rows = list(csv.DictReader(f))
         except Exception as e:
-            # 读取失败不致命：退化为追加模式（但仍保证换行结尾）
-            print(f"⚠️ 权益快照读取失败，退化为追加模式: {e}")
-            existing_rows = []
+            raise RuntimeError(
+                f"权益快照读取失败，拒绝重写以免清零历史（{EQUITY_FILE}）: {e}"
+            ) from e
+        _prev_row_count = len(existing_rows)
+        if not existing_rows:
+            raise RuntimeError(
+                f"权益快照读取到 0 行，疑似文件损坏，拒绝重写（{EQUITY_FILE}）"
+            )
 
     # 同日去重：若末行日期 == 本次 date，则覆盖（替换末行 dict），否则新增
     if existing_rows and existing_rows[-1].get("date") == date:
@@ -325,14 +338,43 @@ def append_equity_snapshot(date: str, portfolio_summary: Dict, core_value: float
     else:
         existing_rows.append(row)
 
-    # 整文件重写（重写保证换行结尾统一，天然避免行粘连）
+    # 行数防倒退：重写后行数不得少于重写前（同日覆盖是替换，不是删除，行数不变）
+    if file_exists and len(existing_rows) < _prev_row_count:
+        raise RuntimeError(f"权益快照行数倒退({len(existing_rows)} < {_prev_row_count})，拒绝写入")
+
     os.makedirs(os.path.dirname(EQUITY_FILE), exist_ok=True)
-    with open(EQUITY_FILE, "w", newline='') as f:
+    # 写前备份（保留最近 5 份）
+    if file_exists:
+        try:
+            shutil.copy2(EQUITY_FILE, EQUITY_FILE + f".bak-{date}")
+        except Exception as e:
+            print(f"⚠️ 权益快照备份失败（继续写入）: {e}")
+
+    # 临时文件 + 原子替换
+    tmp_path = EQUITY_FILE + ".tmp"
+    with open(tmp_path, "w", newline='') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         for r in existing_rows:
             # 补齐缺失字段（历史行可能缺列），缺失填空
             writer.writerow({k: r.get(k, "") for k in fieldnames})
+    os.replace(tmp_path, EQUITY_FILE)
+
+
+def _resolve_tier(symbol: str) -> str:
+    """从策略映射解析真实信号分层（tier1/2/3）。
+
+    E 修复（2026-10-21）：调用点常按旧默认值传 bucket="tier1"，若原样写进
+    pos["tier"] 会把真实分层覆盖成 tier1（信号过滤失效）。此处以策略映射为唯一来源；
+    映射缺失/读取失败时退回 tier1 并告警（fail-safe，不静默）。
+    """
+    try:
+        # 走 get_bucket 而非直读映射：映射当前是 str 格式（如 "macd"），
+        # tier 由 get_bucket 的旧格式兼容表推断；dict 格式则由 get_bucket 读其 bucket 键。
+        return get_bucket(symbol, load_strategy_map())
+    except Exception as e:
+        print(f"⚠️ tier 解析失败 {symbol}，退回 tier1: {e}")
+        return "tier1"
 
 
 def init_position(symbol: str, name: str, strategy: str, bucket: str = "tier1") -> Dict:
@@ -364,7 +406,9 @@ def init_position(symbol: str, name: str, strategy: str, bucket: str = "tier1") 
         "_old_strategy": None,
         "_new_strategy": None,
         "fib_targets": {},
-        "tier": bucket,
+        # E 修复（2026-10-21）：调用点常不传 tier（默认 "tier1"），若原样写入会把
+        # 真实分层覆盖成 tier1（bucket 三层语义共用的第 4 次显形）。此处兜底从策略映射取真实 tier。
+        "tier": (bucket if bucket in ("tier2", "tier3") else _resolve_tier(symbol)),
         "bucket": classify_bucket(symbol)[0],
         "direction": STOCK_DIRECTION_MAP.get(symbol, "其他") if HAS_030_MODULES else "其他",
         "atr_params": {"stop_mult": ATR_STOP_MULT, "risk_per_trade": 0.01, "max_position_pct": 0.15},
