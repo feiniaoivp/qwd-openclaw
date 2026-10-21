@@ -23,6 +23,17 @@ except ImportError:  # 直接以脚本方式运行时的兜底
     _mod = _ilu.module_from_spec(_spec)  # type: ignore[arg-type]
     _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
     _sanitize = _mod.sanitize
+
+# 网络超时护栏（2026-10-22 第五轮）：SSOT 本体的取数调用必须自带超时降级路径。
+# 参见 TOOLS.md「网络调用超时铁律」与 analysis/net_guard.py。
+try:
+    from net_guard import network_timeout_guard
+except ImportError:  # 兜底：极端环境下无 net_guard 时退化为不包装（行为同旧版）
+    import contextlib as _ctxlib
+
+    @_ctxlib.contextmanager
+    def network_timeout_guard(_t):
+        yield
     _validate_level = _mod.validate_level
 
 # 防御性兜底：外部数据接口有时会间歇性 TLS/IP 挂起，绕过硬编码的 per-call timeout
@@ -56,28 +67,58 @@ WATCHLIST = [
 ]
 
 # -------------------- 交易日判定 --------------------
+def _fetch_trade_calendar():
+    """拉取新浪交易日历原始 DataFrame；失败返回 None。统一入口供下方两个接口复用。
+
+    注意：trade_date 列元素是 datetime.date 对象（非字符串），消费侧必须 astype(str)
+    统一后再匹配（2026-10-01 教训：字符串 vs date 对象错配 → 节假日误放行）。
+    """
+    try:
+        # 网络超时铁律：函数体内自带超时 + 降级路径（异常 → 可见告警 → 调用方退化）
+        with network_timeout_guard(15):
+            return ak.tool_trade_date_hist_sina()
+    except Exception as e:
+        logging.getLogger(__name__).warning(f"交易日历接口异常: {e}")
+        return None
+
+
 def is_trading_day(check_date=None) -> bool:
     """判断指定日期是否为交易日。check_date 为 None 时判断当天。"""
     if check_date is None:
         check_date = datetime.now()
     elif isinstance(check_date, str):
         check_date = datetime.strptime(check_date, "%Y-%m-%d")
-    
+
     if check_date.weekday() >= 5:
         return False
-    try:
-        cal = ak.tool_trade_date_hist_sina()
-        # 注意：trade_date 列是 datetime.date 对象（非字符串），必须统一转字符串后匹配，
-        # 否则永远匹配不上 -> 误放行节假日（2026-10-01 修复）
+    cal = _fetch_trade_calendar()
+    if cal is not None:
         date_str = check_date.strftime("%Y-%m-%d")
         cal_dates = set(cal["trade_date"].astype(str))
         if date_str in cal_dates:
             return True  # 在交易日历中 = 开市
         return False
-    except Exception as e:
-        # 异常必须可见（silent_except 铁律）：交易日判定失效会让节假日拦截全废
-        logging.getLogger(__name__).warning(f"交易日历接口异常: {e}，默认放行")
+    # 日历不可得：默认放行（节假日拦截失效的代价 < 误杀交易日的代价），但已在上层可见告警
     return True
+
+
+def get_trading_days(min_date="2024-01-01"):
+    """返回排序后的交易日字符串列表（YYYY-MM-DD，≥min_date）；日历不可得时返回 None。
+
+    2026-10-22 第五轮新增：chip_freshness 等需要「日历序列」的消费方此前各自直调
+    ak.tool_trade_date_hist_sina()，属 SSOT 之外的第二份数据获取路径；本接口补齐
+    序列形态，消费方一律改走此处（交易日 SSOT 门禁 scripts/trading_day_ssot_guard.py 强制）。
+    """
+    cal = _fetch_trade_calendar()
+    if cal is None:
+        return None
+    try:
+        import pandas as _pd
+        days = sorted(str(d)[:10] for d in _pd.Series(cal["trade_date"]).astype(str))
+        return [d for d in days if d >= min_date]
+    except Exception as e:
+        logging.getLogger(__name__).warning(f"交易日历序列化失败: {e}")
+        return None
 
 # -------------------- 新浪 hq 实时行情 --------------------
 def fetch_hq_dict(codes: list[str]) -> dict:

@@ -104,18 +104,18 @@ def price_ref_date(symbol, cache_dir=None):
 
 
 def trading_index():
-    """交易日序号映射（依赖 analysis.service SSOT 的交易日历）。
+    """交易日序号映射（2026-10-22 第五轮起改走 service.get_trading_days SSOT 序列接口）。
 
-    返回 dict{date_str: int} 或 None（日历不可得时由调用方退化为自然日近似）。
+    此前本函数自调 ak.tool_trade_date_hist_sina()，属 SSOT 之外的第二份数据获取路径
+    （被 trading_day_ssot_guard 门禁命中后收敛）。返回 dict{date_str: int} 或 None
+    （日历不可得时由调用方退化为自然日近似）。
     """
     try:
-        from analysis.service import is_trading_day  # noqa: F401  (确保 SSOT 可导入)
-        import akshare as ak
-        import pandas as pd
-        cal = ak.tool_trade_date_hist_sina()
-        days = sorted(str(d)[:10] for d in pd.Series(cal["trade_date"]).astype(str))
-        # 只保留 2024 之后，够用且省内存
-        days = [d for d in days if d >= "2024-01-01"]
+        from analysis.service import get_trading_days
+        days = get_trading_days(min_date="2024-01-01")
+        if not days:
+            log.warning("trading_index 交易日历获取失败，退化为自然日近似")
+            return None
         return {d: i for i, d in enumerate(days)}
     except Exception as e:
         log.warning("trading_index 交易日历获取失败，退化为自然日近似: %s", e)

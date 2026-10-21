@@ -985,6 +985,12 @@ def execute_trade(pos: Dict, signal: Dict, dt: str, strategy: str,
         pos["total_pl"] += pnl
         pos["shares"] = 0
         pos["position"] = False
+        # 平仓即清空软状态（2026-10-22 第五轮，缘起 10-21 深究发现 E）：
+        # entry_* 只描述「当前持仓」，空仓后残留旧值属软状态污染；
+        # 平仓明细已存入 _last_sell_entry/_last_sell_shares（上行），
+        # 单笔盈亏统计不受影响；买侧路径会重新赋值，新建仓无影响。
+        pos["entry_price"] = 0.0
+        pos["entry_date"] = None
         pos["trade_count"] += 1
         pos["_buy_streak"] = 0
         pos["_last_action"] = action

@@ -286,6 +286,23 @@ def main():
     if not r["success"]:
         print("⚠️ 有测试/研究脚本直调副作用函数未隔离生产文件（见上方），账本可能再次被污染（不阻断流水线）...")
 
+    # 步骤 0y: 状态文件耐久性门禁（2026-10-21 立项、2026-10-22 第五轮升级后接入；
+    # 缘起 portfolio_equity.csv 冻结 22 交易日——重写型脚本必须有先读后写 + .bak + 防倒退。
+    # 第五轮加路径指纹判别后消除 2 例假阳性，具备流水线资格）
+    print("\n🚦 步骤 0y/9: 状态文件耐久性门禁 (state_durability_guard.py)")
+    r = run_script("../scripts/state_durability_guard.py", timeout=120)
+    results["state_durability"] = r
+    if not r["success"]:
+        print("⚠️ 发现清空式重写高危（同目标先写后读），历史数据可能在异常路径下静默归零（不阻断流水线）...")
+
+    # 步骤 0z: 交易日判定 SSOT 门禁（2026-10-22 第五轮新增；缘起 10-01 一天 3 文件踩
+    # date vs str 坑，根因三份实现互不复用；本轮同步收敛 chip_freshness 直调 sina 日历）
+    print("\n🚦 步骤 0z/9: 交易日 SSOT 门禁 (trading_day_ssot_guard.py)")
+    r = run_script("../scripts/trading_day_ssot_guard.py", timeout=60)
+    results["trading_day_ssot"] = r
+    if not r["success"]:
+        print("⚠️ 发现交易日判定/日历获取绕过 SSOT（见上方），节假日误判可能复发（不阻断流水线）...")
+
     # 步骤 0k: 五维评分 None 契约门禁（2026-10-17 新增，纯逻辑合成输入秒级）
     # 背景：10-08 立项「隐性 5.0 填充」改造（98820ca + 3977840）。缺数据必须 None，
     # 禁止 or 0/or 50/5.0 托底；RSI<30 不加分口径一并锁定。防未来改码回潮。
