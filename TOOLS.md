@@ -460,7 +460,8 @@ rg -n 'breakpoint\(|pdb\.set_trace|debugpy\.' --type py   # 人工快速版
    不用反复 kill 重启试探。
 
 参考实现：`analysis/portfolio_core.py::RiskGuard.refresh()`（`network_timeout_guard(15)`，commit fc625ed）；
-排查清单：`analysis/net_guard.py`、`analysis/bs_session.py`（常驻会话旧连接可能先于护栏建立）。
+排查清单：`analysis/net_guard.py`、`analysis/bs_session.py`
+   （常驻连接缺口已于 91d005e 闭环：socket 超时显式钉住 + 登录/查询函数体内 `network_timeout_guard`）。
 Source: .learnings/ERRORS.md#err.dist-io-no-timeout
 
 ---
