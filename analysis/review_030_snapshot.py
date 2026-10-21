@@ -45,17 +45,23 @@ def market_breadth(spot):
     df["最新价"] = pd.to_numeric(df["最新价"], errors="coerce")
     df["成交额"] = pd.to_numeric(df["成交额"], errors="coerce").fillna(0)
 
+    # 行数哨兵: 新浪全量残缺时(如 2026-10-20 只回 80 行)显式失败, 禁止静默产出错误宽度
+    if len(df) < 3000:
+        raise RuntimeError(
+            f"market_breadth: 新浪全量 spot 行数异常 len={len(df)} (<3000), 疑似接口残缺, 拒绝计算"
+        )
+
     # 涨停阈值: 主板/沪深300成分 10%, 创业板(30)/科创(68) 20%
     def is_limit_up(row):
         code = row["代码"][2:]
         if code.startswith(("30","68")):
-            return row["涨跌幅"] >= 19.8
-        return row["涨跌幅"] >= 9.9
+            return bool(row["涨跌幅"] >= 19.8)
+        return bool(row["涨跌幅"] >= 9.9)
     def is_limit_down(row):
         code = row["代码"][2:]
         if code.startswith(("30","68")):
-            return row["涨跌幅"] <= -19.8
-        return row["涨跌幅"] <= -9.9
+            return bool(row["涨跌幅"] <= -19.8)
+        return bool(row["涨跌幅"] <= -9.9)
     limit_up = int(df.apply(is_limit_up, axis=1).sum())
     limit_down = int(df.apply(is_limit_down, axis=1).sum())
     big_up = int((df["涨跌幅"] >= 19.8).sum())      # 20cm涨停(创业板/科创)
