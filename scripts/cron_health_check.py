@@ -59,21 +59,35 @@ DELIVERY_ALERT_MIN_CONSEC = 2
 # 产物存在性检查（2026-10-21 新增）
 # 背景：status=ok ≠ 产物存在。agentTurn 型 cron 的第三种「假 ok」变体：
 #   模型收到命令型 prompt 后不执行、反而回问用户，run 照记 ok（23s），产物为零。
-#   实证：2026-10-17 / 2026-10-21 两个交易日盘前报告静默缺失（10-21 transcript 坐实：
-#   模型 read 完 premarket_pipeline.py 后回复「需要我做什么？」即结束）。
+#   实证：2026-10-21 盘前报告静默缺失（transcript 坐实：模型 read 完
+#   premarket_pipeline.py 后回复「需要我做什么？」即结束；同款 nemotron 的
+#   zhonglian-morning 另有 4 次短时长可疑未确证）。
 #   既有 cron_noop_guard 只能抓「毫秒级空转」，抓不住「LLM 花几十秒说废话」——
 #   唯一可靠判据是产物本身。交易日 + 门时之后，产物必须在盘。
 PRODUCT_ARTIFACT_CHECKS = [
-    # (显示名, 相对 WORKSPACE 路径模板, 生效门时 HH:MM)
+    # (显示名, 相对 WORKSPACE 路径模板, 生效门时 HH:MM) — 路径带 {today} 日期戳
     ("盘前深度分析报告", "analysis/daily/{today}_premarket_report.md", "06:45"),
     ("收盘双策略日报", "analysis/daily/{today}_dual.md", "19:00"),
+    ("竞价快照", "data/auction/{today}_9_25.json", "09:30"),
+    ("竞价裁决", "data/auction/decision_{today}.json", "09:35"),
+    ("量化日报", "analysis/backtest/{today}.md", "21:30"),
+]
+
+# 无日期戳的滚动覆盖型产物：按「当日 mtime >= fresh_after」判新鲜（2026-10-21 补）。
+# gate = 何时开始检查；fresh_after = 当日 mtime 下限（略早于 job 预期写入时刻）。
+PRODUCT_MTIME_CHECKS = [
+    # (显示名, 相对 WORKSPACE 路径, 生效门时 HH:MM, 当日新鲜下限 HH:MM)
+    ("盘前展望", "data/premarket_outlook_output.json", "08:45", "08:00"),
+    ("中联盯盘(早)", "data/zhonglian_state.json", "09:20", "08:50"),
+    ("中联盯盘(收盘)", "data/zhonglian_state.json", "19:00", "18:00"),
 ]
 
 
-def missing_products(now: datetime = None, trading_day: bool = None, exists_fn=None) -> List[Dict[str, str]]:
+def missing_products(now: datetime = None, trading_day: bool = None,
+                     exists_fn=None, mtime_fn=None) -> List[Dict[str, str]]:
     """纯函数：返回当前时刻「应存在却缺失」的交易日产物列表。
 
-    now/trading_day/exists_fn 均可注入（selftest 不触网、不读真实盘面）。
+    now/trading_day/exists_fn/mtime_fn 均可注入（selftest 不触网、不读真实盘面）。
     trading_day 缺省时用 analysis.service.is_trading_day（SSOT，异常可见 + fail-open）。
     """
     now = now or datetime.now()
@@ -87,6 +101,7 @@ def missing_products(now: datetime = None, trading_day: bool = None, exists_fn=N
     if not trading_day:
         return []
     exists_fn = exists_fn or os.path.exists
+    mtime_fn = mtime_fn or os.path.getmtime
     missing = []
     today = now.strftime("%Y-%m-%d")
     for name, pattern, gate in PRODUCT_ARTIFACT_CHECKS:
@@ -95,7 +110,23 @@ def missing_products(now: datetime = None, trading_day: bool = None, exists_fn=N
             continue
         path = os.path.join(WORKSPACE, pattern.format(today=today))
         if not exists_fn(path):
-            missing.append({"product": name, "expected": path, "gate": gate})
+            missing.append({"product": name, "expected": path, "gate": gate, "type": "exists"})
+    for name, pattern, gate, fresh_after in PRODUCT_MTIME_CHECKS:
+        gate_h, gate_m = int(gate[:2]), int(gate[3:5])
+        if (now.hour, now.minute) < (gate_h, gate_m):
+            continue
+        path = os.path.join(WORKSPACE, pattern)
+        fresh_h, fresh_m = int(fresh_after[:2]), int(fresh_after[3:5])
+        fresh_dt = now.replace(hour=fresh_h, minute=fresh_m, second=0, microsecond=0)
+        try:
+            m = mtime_fn(path)
+        except OSError:
+            missing.append({"product": name, "expected": path, "gate": gate,
+                            "type": "mtime", "reason": "文件不存在"})
+            continue
+        if m < fresh_dt.timestamp():
+            missing.append({"product": name, "expected": path, "gate": gate,
+                            "type": "mtime", "reason": f"当日 mtime 早于 {fresh_after}"})
     return missing
 
 # ══════════════════════════════════════
@@ -576,21 +607,30 @@ if __name__ == "__main__":
             print(f"{'OK ' if ok else 'NG '} {name}: got={got} 期望=({exp_f},{exp_c})")
             failed += 0 if ok else 1
 
-        # missing_products 纯函数自测（2026-10-21 新增；不触网：显式注入 now/trading_day/exists_fn）
+        # missing_products 纯函数自测（2026-10-21 新增；不触网：显式注入 now/trading_day/exists_fn/mtime_fn）
         from datetime import datetime as _dt
         _no = lambda p: False   # 模拟全部缺失
         _yes = lambda p: True   # 模拟全部存在
+        def _mtime_missing(p):
+            raise OSError(p)
+        def _mtime_fresh(p):
+            # 按产物分派「当日新鲜」mtime（均晚于各自 fresh_after）
+            return _dt(2026, 10, 21, 8, 31).timestamp() if "outlook" in p else _dt(2026, 10, 21, 9, 1).timestamp()
+        def _mtime_stale(p):
+            return _dt(2026, 10, 20, 18, 30).timestamp()  # 昨日 mtime -> 陈旧
         cases2 = [
-            ("非交易日 -> 永不告警", _dt(2026, 10, 17, 8, 0), False, _no, 0),
-            ("交易日门时前(05:00) -> 跳过", _dt(2026, 10, 21, 5, 0), True, _no, 0),
-            ("交易日 08:00 全缺 -> 1 项（仅盘前门已过）", _dt(2026, 10, 21, 8, 0), True, _no, 1),
-            ("交易日 08:00 全在 -> 0 项", _dt(2026, 10, 21, 8, 0), True, _yes, 0),
-            ("交易日 18:00 仅盘前门已过 -> 只查盘前", _dt(2026, 10, 21, 18, 0), True, _no, 1),
-            ("交易日 20:00 全缺 -> 2 项（双门全过）", _dt(2026, 10, 21, 20, 0), True, _no, 2),
+            ("非交易日 -> 永不告警", _dt(2026, 10, 17, 8, 0), False, _no, _mtime_fresh, 0),
+            ("交易日门时前(05:00) -> 跳过", _dt(2026, 10, 21, 5, 0), True, _no, _mtime_missing, 0),
+            ("交易日 08:00 全缺 -> 1 项（仅盘前门已过）", _dt(2026, 10, 21, 8, 0), True, _no, _mtime_missing, 1),
+            ("交易日 08:00 全在 -> 0 项", _dt(2026, 10, 21, 8, 0), True, _yes, _mtime_fresh, 0),
+            ("交易日 12:00 全缺 -> 5 项", _dt(2026, 10, 21, 12, 0), True, _no, _mtime_missing, 5),
+            ("交易日 12:00 全在 -> 0 项", _dt(2026, 10, 21, 12, 0), True, _yes, _mtime_fresh, 0),
+            ("交易日 12:00 mtime 陈旧 -> 2 项（mtime 类）", _dt(2026, 10, 21, 12, 0), True, _yes, _mtime_stale, 2),
+            ("交易日 20:00 全缺 -> 7 项", _dt(2026, 10, 21, 20, 0), True, _no, _mtime_missing, 7),
         ]
         failed2 = 0
-        for name, now_arg, td_arg, ex_fn, exp in cases2:
-            got = missing_products(now=now_arg, trading_day=td_arg, exists_fn=ex_fn)
+        for name, now_arg, td_arg, ex_fn, mt_fn, exp in cases2:
+            got = missing_products(now=now_arg, trading_day=td_arg, exists_fn=ex_fn, mtime_fn=mt_fn)
             ok = len(got) == exp
             print(f"{'OK ' if ok else 'NG '} {name}: got={len(got)} 期望={exp}")
             failed2 += 0 if ok else 1

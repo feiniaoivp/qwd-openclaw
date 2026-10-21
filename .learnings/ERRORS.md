@@ -696,15 +696,15 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 ## ERR-20261021-PremarketAgentTurnNoop
 **Date**: 2026-10-21
 **Priority**: high
-**现象**: `daily-premarket-analysis-cmd`（agentTurn，model=nvidia/nemotron-3-ultra）10-21 06:00 run 记 **ok（23.2s）**，但当日 `2026-10-21_premarket_report.md` 与 `run_20261021_*.json` 双缺。transcript（5cae8518）坐实：模型 read 完 `premarket_pipeline.py` 后回复「需要我做什么？」即结束，**从未执行命令**。回溯：10-17（周五交易日）同样双缺 → 近 4 个交易日 2 次静默缺失。当日 06:40 一次性验证 job 虽正确诊断缺失，但自身 model-call 超时（600s、finalStatus=error、assistantTexts 空）且 `deleteAfterRun` 自删，结论未送达——验证网自身也是脆弱 agentTurn，且失败后无痕消失。
+**现象**: `daily-premarket-analysis-cmd`（agentTurn，model=nvidia/nemotron-3-ultra）10-21 06:00 run 记 **ok（23.2s）**，但当日 `2026-10-21_premarket_report.md` 与 `run_20261021_*.json` 双缺。transcript（5cae8518）坐实：模型 read 完 `premarket_pipeline.py` 后回复「需要我做什么？」即结束，**从未执行命令**。**【10-21 21:4x 纠错（证据重核）】** 初稿曾称「10-17（周五交易日）同样双缺」——错误：10-17 为**周六非交易日**（job schedule `0 6 * * 1-5` 周末不跑；weekly-backtest 周六 job 同日 06:00 正常运行可互证），不构成空转证据。确证空转 = **10-21 一次**（RC=1）。随附观察：`zhonglian-monitor-morning-cmd`（同款 nemotron）本地流水 49 次中 4 次「ok 且时长 <35% 中位」（12.6~18.2s vs 中位 55.7s）疑似空转但无法回溯确证；周六 weekly-backtest-pipeline 6.2min 短时长经产物核对（validation 06:04 + adaptive_params 06:01 + backtest 报告 06:01 全在）为健康，销案。当日 06:40 一次性验证 job 虽正确诊断缺失，但自身 model-call 超时（600s、finalStatus=error、assistantTexts 空）且 `deleteAfterRun` 自删，结论未送达——验证网自身也是脆弱 agentTurn，且失败后无痕消失。
 **修复**: ① `scripts/cron_health_check.py` 新增产物存在性检查 `missing_products()`（交易日 06:45 后须有当日 premarket_report、19:00 后须有当日 dual；should_alert 冷却去重；selftest 15 例全过）——接入既有 4h 一次的 cron-health-check 自然运行（三层防线第 2/3 层）；② 结构性修法（agentTurn→command 模式）已执行（10-21 21:29 用户批准）：`openclaw cron edit 87c6b7f9... --command "cd /Users/duguke/.openclaw/workspace && python3 analysis/premarket_pipeline.py" --no-deliver --timeout 1800000`，edit response 复核 payload.kind=command / delivery.mode=none（未被隐式改写）/ timeoutSeconds=1800（ms 自动换算，与原 agentTurn 对齐）/ schedule+enabled 零副作用；pipeline 无 argparse 旗标故无 dry-run，明晨 06:00 首个自然 run 为收口验证点（missing_products 06:45 兑底）。
 **规约**: **status=ok ≠ 产物存在**。命令型 cron 的唯一可靠健康判据是产物在盘，不是 run 状态、不是时长（23s 说废话与 20min 实干都「合理」）。确定性命令优先 `--command` 直跑（LLM-in-the-loop 仅用于真正需要智能的环节）。一次性验证 job（deleteAfterRun）不得作为生产产物的唯一防线：超时即静默且自删无痕。
 ### Metadata (2026-10-21 manual-session 登记)
 - Source: manual-session（webchat 深究轮；transcript 取证 5cae8518 / a50ba956）
 - Reproducible: yes
 - Pattern-Key: cron.agentturn-noop-product-missing（同族 cron.silent-noop-fake-ok 第三变体）
-- Recurrence-Count: 2（10-17 / 10-21）
-- First-Seen: 2026-10-17
+- Recurrence-Count: 1（确证 10-21；zhonglian-morning 4 次短时长可疑未计入）
+- First-Seen: 2026-10-21
 - Last-Seen: 2026-10-21
 - Status: resolved-pending-validation（结构改造已执行 21:29；待明晨 06:00 自然 run 确认后本条终态）
 
