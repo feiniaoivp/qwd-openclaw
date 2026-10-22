@@ -5,6 +5,14 @@
 """
 
 import os, sys, json, time, logging, urllib.request, re, socket
+
+# sys.path 强制样板（TOOLS.md 模板；2026-10-22 第六轮补齐：此前仅作包模块使用无此样板，
+# 10-22 另一会话把 WATCHLIST 收敛为 SSOT 模块级 import 后 script_path_guard R1 拦下）
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
 from datetime import datetime, date
 import pandas as pd
 import akshare as ak
@@ -23,6 +31,7 @@ except ImportError:  # 直接以脚本方式运行时的兜底
     _mod = _ilu.module_from_spec(_spec)  # type: ignore[arg-type]
     _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
     _sanitize = _mod.sanitize
+    _validate_level = _mod.validate_level
 
 # 网络超时护栏（2026-10-22 第五轮）：SSOT 本体的取数调用必须自带超时降级路径。
 # 参见 TOOLS.md「网络调用超时铁律」与 analysis/net_guard.py。
@@ -34,7 +43,6 @@ except ImportError:  # 兜底：极端环境下无 net_guard 时退化为不包�
     @_ctxlib.contextmanager
     def network_timeout_guard(_t):
         yield
-    _validate_level = _mod.validate_level
 
 # 防御性兜底：外部数据接口有时会间歇性 TLS/IP 挂起，绕过硬编码的 per-call timeout
 # 并在 poll 上无限阻塞（实测 quotes.sina.cn 多次触发，最终导致上层 cron SIGKILL）。
@@ -43,28 +51,18 @@ socket.setdefaulttimeout(15)
 
 log = logging.getLogger(__name__)
 
-WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 STATE_FILE = os.path.join(WORKSPACE, "data", "zhonglian_state.json")
 CAPITAL = 100_000
 COMMISSION = 0.0003
 SLIPPAGE = 0.001
 
-# 监控股票列表（与之前脚本保持一致）
-WATCHLIST = [
-    ("600030","中信证券"),("601066","中信建投"),("600036","招商银行"),
-    ("601995","中金公司"),("000987","越秀资本"),
-    ("600584","长电科技"),("688981","中芯国际"),("002156","通富微电"),
-    ("002413","雷科防务"),
-    ("300014","亿纬锂能"),("002466","天齐锂业"),("601865","福莱特"),
-    ("300285","国瓷材料"),("603308","应流股份"),("300124","汇川技术"),
-    ("601100","恒立液压"),("002318","久立特材"),("300719","安达维尔"),
-    ("002335","科华数据"),
-    ("600660","福耀玻璃"),("600570","恒生电子"),("605566","福莱蒽特"),
-    ("000157","中联重科"),("601061","中信金属"),
-    ("600160","巨化股份"),
-    ("600346","恒力石化"),("000708","中信特钢"),("300748","金力永磁"),
-    ("002180","奔图科技"),("300847","中船汉光"),
-]
+# 监控股票列表 —— 单一事实来源 (SSOT): analysis/fib_extension_scan.WATCHLIST
+# [2026-10-22 收敛] 此前硬编码 30 只过时清单(含已移出的福莱特/奔图科技/中船汉光、
+# 缺电网装备+翰宇等 10 只), 导致 get_spot_scan 消费方(llm_tool/agent nodes/
+# trader_stock_picks)长期使用旧池。照 close_scan_v2 模式改为 SSOT 派生。
+from analysis.fib_extension_scan import WATCHLIST as _SSOT_WATCHLIST  # noqa: E402
+
+WATCHLIST = list(_SSOT_WATCHLIST.items())
 
 # -------------------- 交易日判定 --------------------
 def _fetch_trade_calendar():
