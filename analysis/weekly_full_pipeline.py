@@ -336,6 +336,26 @@ def main():
     if not r["success"]:
         print("⚠️ 网络调用缺 timeout（见上方），存在永久挂死风险（不阻断流水线）...")
 
+    # 步骤 0aa/0ab/0ac: 情报库三审计（2026-10-23 接线；10-22 会话产出但一直未接线，
+    # 实测三脚本秒级、exit 0；warn-only，产物 data/news/backfill_priority.json）
+    print("\n🚦 步骤 0aa/9: 情报库空心化审计 (intel_gap_audit.py)")
+    r = run_script("../scripts/intel_gap_audit.py", timeout=120)
+    results["intel_gap_audit"] = r
+    if not r["success"]:
+        print("⚠️ 情报库缺失正文比例异常（见上方），建议安排回填（不阻断流水线）...")
+
+    print("\n🚦 步骤 0ab/9: 情报优先级扫描 (intel_priority_scan.py)")
+    r = run_script("../scripts/intel_priority_scan.py", timeout=120)
+    results["intel_priority_scan"] = r
+    if not r["success"]:
+        print("⚠️ 优先级回填清单刷新失败（不阻断流水线）...")
+
+    print("\n🚦 步骤 0ac/9: 知识库正文抽样审计 (kb_content_audit.py)")
+    r = run_script("../scripts/kb_content_audit.py", timeout=120)
+    results["kb_content_audit"] = r
+    if not r["success"]:
+        print("⚠️ 知识库正文抽样异常（见上方），关注 [EMPTY] 条目比例（不阻断流水线）...")
+
     # 步骤 0k: 五维评分 None 契约门禁（2026-10-17 新增，纯逻辑合成输入秒级）
     # 背景：10-08 立项「隐性 5.0 填充」改造（98820ca + 3977840）。缺数据必须 None，
     # 禁止 or 0/or 50/5.0 托底；RSI<30 不加分口径一并锁定。防未来改码回潮。
