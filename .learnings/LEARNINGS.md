@@ -70,6 +70,9 @@ Corrections, insights, and knowledge gaps captured during development.
 ### Maintenance (2026-10-19 每日维护) — 终态维持
 - 复核：AGENTS.md「cron 真健康 = lastStatus==ok 且 lastDurationMs 合理」（grep L379-381 确认在位）；RC=3 跨任务共享计数为终态，无新复发，保持 promoted。
 
+### Maintenance (2026-10-23 每日维护) — 终态维持
+- RC≥3 且 Last-Seen 10-06 在 30 天窗口内；grep 复核 AGENTS.md「cron 真健康」铁律在位。同族第五变体 ERR-20261022-HeartbeatFinalTurnIdleTimeout（裸 HEARTBEAT_OK 假 ok）已单独 resolved，家族计数维持 RC=3 不虚增。无新确证空转事件，保持 promoted。
+
 ### Maintenance
 - Claim: cron 真健康 = `lastStatus==ok` AND `lastDurationMs` 合理；需跑脚本的 cron 用 isolated+agentTurn，长任务产出落盘日志。
 - Scope: 本 workspace 全部 cron 任务与长跑脚本；不适用于短交互式命令。

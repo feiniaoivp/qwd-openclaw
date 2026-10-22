@@ -27,6 +27,7 @@ Investigate `analysis/weekly_full_pipeline.py`; check for deadlocks/infinite loo
 > **[2026-10-19 每日维护 · 第2轮]** RC≥3 共享计数条目（跨 3 任务 30 天内）终态复核：TOOLS.md 规则在位（grep 确认「长跑 pipeline 卡死判定规则」章节存在），无新复发，RC 维持 3 不虚增，保持 promoted。
 > **[2026-10-20 每日维护]** 第三轮终态确认：TOOLS.md L367 规则仍在位，Last-Seen 维持 2026-10-06，无新复发，promoted 终态不变。
 > **[2026-10-22 每日维护]** 第四轮终态确认：TOOLS.md「长跑 pipeline 卡死判定规则」在位，RC 维持 3（跨 3 任务），Last-Seen 维持 2026-10-06，无新复发，promoted 终态不变。
+> **[2026-10-23 每日维护]** 第五轮终态确认：RC≥3 且 30 天内（Last-Seen 10-06），grep 复核 TOOLS.md 规则在位；无新复发，RC 不虚增，promoted 终态不变。
 
 > **[2026-10-10 维护去重]** 本条目与 ERR-20261006-PM 同 Pattern-Key `ops.silent-orchestrator-misjudged-as-hang`
 > （Recurrence-Count=3 共享计数，First-Seen 2026-09-26）。已合并为一条模式，保留两条作为
@@ -452,6 +453,7 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Last-Seen: 2026-10-18
 - Status: promoted (2026-10-19 → TOOLS.md「🔴 网络调用超时铁律」)
 - Promoted: TOOLS.md「🔴 网络调用超时铁律」(2026-10-19, Source: .learnings/ERRORS.md#err.dist-io-no-timeout)
+- Maintenance (2026-10-23 每日维护): RC=4 ≥3、Last-Seen 10-18 在 30 天窗口内；grep 复核 TOOLS.md「网络调用超时铁律」在位，无新复发，promoted 终态不变。
 - See Also: memory/dreaming/daily-report-2026-09-17.md（sock_recv 挂起 → net_guard 立项）；
   memory/dreaming/daily-report-2026-09-30.md（baostock 常驻会话先于护栏建连，遗留未治）；
   ERR-20261002-BSL（baostock 登录 ~60s 无负缓存，同类无超时放大因素）
@@ -742,3 +744,4 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - First-Seen: 2026-10-22
 - Last-Seen: 2026-10-22
 - Status: resolved（state-bookkeeping 前置落地；21:5x 首个自然 tick 为验证点）
+- Maintenance (2026-10-23 每日维护): 验证点通过 ✅ —— `memory/heartbeat-state.json` mtime 2026-10-23 05:54（修复后多个自然 tick 持续回写），state-bookkeeping 前置任务实测生效，本条终态。
