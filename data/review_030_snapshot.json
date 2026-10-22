@@ -1,46 +1,46 @@
 {
   "breadth": {
-    "up": 1941,
-    "down": 3054,
-    "flat": 228,
-    "total": 5223,
-    "limit_up": 49,
-    "limit_down": 5,
-    "big_up": 6,
-    "avg_chg": -0.17,
-    "med_chg": -0.37,
-    "total_amount_yi": 14289.0,
-    "up_ratio": 0.3716,
-    "width_score": 4,
-    "neg_score": 4,
+    "up": 448,
+    "down": 4738,
+    "flat": 38,
+    "total": 5224,
+    "limit_up": 34,
+    "limit_down": 63,
+    "big_up": 4,
+    "avg_chg": -2.73,
+    "med_chg": -2.62,
+    "total_amount_yi": 15277.0,
+    "up_ratio": 0.0858,
+    "width_score": 1,
+    "neg_score": 1,
     "data_time": null
   },
   "index": {
     "上证指数": {
-      "price": 3713.0277,
-      "change_pct": -0.6,
-      "amount_yi": 6428.0
+      "price": 3658.0256,
+      "change_pct": -1.48,
+      "amount_yi": 7061.0
     },
     "创业板指": {
-      "price": 2694.71,
-      "change_pct": -1.62,
-      "amount_yi": 1730.0
+      "price": 2576.9,
+      "change_pct": -4.37,
+      "amount_yi": 1739.0
     },
     "科创50": {
-      "price": 1343.2818,
-      "change_pct": 0.06,
-      "amount_yi": 626.0
+      "price": 1305.8731,
+      "change_pct": -2.78,
+      "amount_yi": 728.0
     }
   },
   "stocks": {
     "600030": {
       "name": "中信证券",
-      "price": 25.01,
-      "change_pct": -2.3,
-      "pre_close": 25.6,
-      "amount": 3123255598.0,
+      "price": 25.28,
+      "change_pct": 1.08,
+      "pre_close": 25.01,
+      "amount": 3722371983.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -48,12 +48,12 @@
     },
     "601066": {
       "name": "中信建投",
-      "price": 22.65,
-      "change_pct": 0.04,
-      "pre_close": 22.64,
-      "amount": 228821958.0,
+      "price": 22.45,
+      "change_pct": -0.88,
+      "pre_close": 22.65,
+      "amount": 283685613.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -61,12 +61,12 @@
     },
     "600036": {
       "name": "招商银行",
-      "price": 42.28,
-      "change_pct": -0.56,
-      "pre_close": 42.52,
-      "amount": 3157692775.0,
+      "price": 41.82,
+      "change_pct": -1.09,
+      "pre_close": 42.28,
+      "amount": 4140322738.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -74,12 +74,12 @@
     },
     "601995": {
       "name": "中金公司",
-      "price": 31.6,
-      "change_pct": -0.47,
-      "pre_close": 31.75,
-      "amount": 376498363.0,
+      "price": 31.22,
+      "change_pct": -1.2,
+      "pre_close": 31.6,
+      "amount": 535768156.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -87,12 +87,12 @@
     },
     "000987": {
       "name": "越秀资本",
-      "price": 7.06,
-      "change_pct": -0.28,
-      "pre_close": 7.08,
-      "amount": 78301077.01,
+      "price": 6.93,
+      "change_pct": -1.84,
+      "pre_close": 7.06,
+      "amount": 141109000.65,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -100,12 +100,12 @@
     },
     "600584": {
       "name": "长电科技",
-      "price": 57.23,
-      "change_pct": -0.03,
-      "pre_close": 57.25,
-      "amount": 2134052207.0,
+      "price": 59.0,
+      "change_pct": 3.09,
+      "pre_close": 57.23,
+      "amount": 5665892846.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -113,12 +113,12 @@
     },
     "688981": {
       "name": "中芯国际",
-      "price": 100.24,
-      "change_pct": -1.71,
-      "pre_close": 101.98,
-      "amount": 2418957142.0,
+      "price": 100.09,
+      "change_pct": -0.15,
+      "pre_close": 100.24,
+      "amount": 3577411258.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -126,12 +126,12 @@
     },
     "002156": {
       "name": "通富微电",
-      "price": 47.67,
-      "change_pct": -0.91,
-      "pre_close": 48.11,
-      "amount": 2060408342.87,
+      "price": 47.8,
+      "change_pct": 0.27,
+      "pre_close": 47.67,
+      "amount": 4033294699.81,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -139,12 +139,12 @@
     },
     "002413": {
       "name": "雷科防务",
-      "price": 7.77,
-      "change_pct": 1.04,
-      "pre_close": 7.69,
-      "amount": 693556188.67,
+      "price": 7.41,
+      "change_pct": -4.63,
+      "pre_close": 7.77,
+      "amount": 581957653.8,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -152,12 +152,12 @@
     },
     "300014": {
       "name": "亿纬锂能",
-      "price": 41.72,
-      "change_pct": -5.27,
-      "pre_close": 44.04,
-      "amount": 2151329693.47,
+      "price": 41.79,
+      "change_pct": 0.17,
+      "pre_close": 41.72,
+      "amount": 1519775256.4,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -165,12 +165,12 @@
     },
     "002466": {
       "name": "天齐锂业",
-      "price": 36.15,
-      "change_pct": -0.96,
-      "pre_close": 36.5,
-      "amount": 1086379937.89,
+      "price": 34.91,
+      "change_pct": -3.43,
+      "pre_close": 36.15,
+      "amount": 955248980.08,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -178,12 +178,12 @@
     },
     "300285": {
       "name": "国瓷材料",
-      "price": 46.93,
-      "change_pct": 1.51,
-      "pre_close": 46.23,
-      "amount": 2140616853.1,
+      "price": 45.07,
+      "change_pct": -3.96,
+      "pre_close": 46.93,
+      "amount": 2279972795.37,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -191,12 +191,12 @@
     },
     "603308": {
       "name": "应流股份",
-      "price": 33.68,
-      "change_pct": 2.81,
-      "pre_close": 32.76,
-      "amount": 663055017.0,
+      "price": 32.48,
+      "change_pct": -3.56,
+      "pre_close": 33.68,
+      "amount": 534260169.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -204,12 +204,12 @@
     },
     "300124": {
       "name": "汇川技术",
-      "price": 49.9,
-      "change_pct": -1.77,
-      "pre_close": 50.8,
-      "amount": 1461234440.61,
+      "price": 49.91,
+      "change_pct": 0.02,
+      "pre_close": 49.9,
+      "amount": 1526497769.79,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -217,12 +217,12 @@
     },
     "601100": {
       "name": "恒立液压",
-      "price": 84.3,
-      "change_pct": 0.62,
-      "pre_close": 83.78,
-      "amount": 619267948.0,
+      "price": 83.85,
+      "change_pct": -0.53,
+      "pre_close": 84.3,
+      "amount": 524916686.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -230,12 +230,12 @@
     },
     "002318": {
       "name": "久立特材",
-      "price": 17.33,
-      "change_pct": -4.88,
-      "pre_close": 18.22,
-      "amount": 189906671.94,
+      "price": 17.35,
+      "change_pct": 0.12,
+      "pre_close": 17.33,
+      "amount": 140416966.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -243,12 +243,12 @@
     },
     "300719": {
       "name": "安达维尔",
-      "price": 12.05,
-      "change_pct": -0.33,
-      "pre_close": 12.09,
-      "amount": 87198863.0,
+      "price": 11.6,
+      "change_pct": -3.73,
+      "pre_close": 12.05,
+      "amount": 83008586.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -256,12 +256,12 @@
     },
     "002335": {
       "name": "科华数据",
-      "price": 26.41,
-      "change_pct": 1.07,
-      "pre_close": 26.13,
-      "amount": 354759926.56,
+      "price": 25.91,
+      "change_pct": -1.89,
+      "pre_close": 26.41,
+      "amount": 364925550.94,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -269,12 +269,12 @@
     },
     "300748": {
       "name": "金力永磁",
-      "price": 24.55,
-      "change_pct": 1.7,
-      "pre_close": 24.14,
-      "amount": 417764047.13,
+      "price": 24.82,
+      "change_pct": 1.1,
+      "pre_close": 24.55,
+      "amount": 664966598.35,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -282,12 +282,12 @@
     },
     "600160": {
       "name": "巨化股份",
-      "price": 29.72,
-      "change_pct": 0.64,
-      "pre_close": 29.53,
-      "amount": 622836702.0,
+      "price": 28.31,
+      "change_pct": -4.74,
+      "pre_close": 29.72,
+      "amount": 894058536.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -295,12 +295,12 @@
     },
     "600346": {
       "name": "恒力石化",
-      "price": 15.43,
-      "change_pct": -0.45,
-      "pre_close": 15.5,
-      "amount": 201523398.0,
+      "price": 15.22,
+      "change_pct": -1.36,
+      "pre_close": 15.43,
+      "amount": 338302998.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -308,12 +308,12 @@
     },
     "000708": {
       "name": "中信特钢",
-      "price": 13.01,
-      "change_pct": -1.51,
-      "pre_close": 13.21,
-      "amount": 131650176.86,
+      "price": 12.65,
+      "change_pct": -2.77,
+      "pre_close": 13.01,
+      "amount": 168011275.92,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -321,25 +321,25 @@
     },
     "600660": {
       "name": "福耀玻璃",
-      "price": 51.28,
-      "change_pct": -7.19,
-      "pre_close": 55.25,
-      "amount": 1448459851.0,
+      "price": 51.95,
+      "change_pct": 1.31,
+      "pre_close": 51.28,
+      "amount": 948558145.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
       }
     },
     "600570": {
-      "name": "恒生电子",
-      "price": 20.13,
-      "change_pct": 0.85,
-      "pre_close": 19.96,
-      "amount": 464111646.0,
+      "name": "XD恒生电",
+      "price": 19.7,
+      "change_pct": -1.89,
+      "pre_close": 20.08,
+      "amount": 336778596.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -347,12 +347,12 @@
     },
     "605566": {
       "name": "福莱蒽特",
-      "price": 27.41,
-      "change_pct": -2.56,
-      "pre_close": 28.13,
-      "amount": 56926702.0,
+      "price": 26.4,
+      "change_pct": -3.68,
+      "pre_close": 27.41,
+      "amount": 54026385.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -360,12 +360,12 @@
     },
     "000157": {
       "name": "中联重科",
-      "price": 5.86,
-      "change_pct": -1.68,
-      "pre_close": 5.96,
-      "amount": 220224514.64,
+      "price": 5.84,
+      "change_pct": -0.34,
+      "pre_close": 5.86,
+      "amount": 195767305.16,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -373,12 +373,12 @@
     },
     "601061": {
       "name": "中信金属",
-      "price": 10.11,
-      "change_pct": -0.3,
-      "pre_close": 10.14,
-      "amount": 83645014.0,
+      "price": 9.92,
+      "change_pct": -1.88,
+      "pre_close": 10.11,
+      "amount": 94515111.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -386,12 +386,12 @@
     },
     "600089": {
       "name": "特变电工",
-      "price": 17.25,
-      "change_pct": -0.06,
-      "pre_close": 17.26,
-      "amount": 499716199.0,
+      "price": 17.38,
+      "change_pct": 0.75,
+      "pre_close": 17.25,
+      "amount": 808445420.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -399,12 +399,12 @@
     },
     "600406": {
       "name": "国电南瑞",
-      "price": 22.74,
-      "change_pct": -1.13,
-      "pre_close": 23.0,
-      "amount": 968993418.0,
+      "price": 23.28,
+      "change_pct": 2.37,
+      "pre_close": 22.74,
+      "amount": 1817842796.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -412,12 +412,12 @@
     },
     "000400": {
       "name": "许继电气",
-      "price": 22.17,
-      "change_pct": -0.4,
-      "pre_close": 22.26,
-      "amount": 357442592.72,
+      "price": 22.8,
+      "change_pct": 2.84,
+      "pre_close": 22.17,
+      "amount": 656943088.46,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -426,11 +426,11 @@
     "601179": {
       "name": "中国西电",
       "price": 11.19,
-      "change_pct": 0.81,
-      "pre_close": 11.1,
-      "amount": 472884863.0,
+      "change_pct": 0.0,
+      "pre_close": 11.19,
+      "amount": 739730441.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -438,12 +438,12 @@
     },
     "002028": {
       "name": "思源电气",
-      "price": 110.81,
-      "change_pct": -1.58,
-      "pre_close": 112.59,
-      "amount": 2077224612.12,
+      "price": 107.9,
+      "change_pct": -2.63,
+      "pre_close": 110.81,
+      "amount": 1360212936.18,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -451,12 +451,12 @@
     },
     "002270": {
       "name": "华明装备",
-      "price": 18.73,
-      "change_pct": -1.42,
-      "pre_close": 19.0,
-      "amount": 135616328.0,
+      "price": 18.81,
+      "change_pct": 0.43,
+      "pre_close": 18.73,
+      "amount": 229093598.52,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -464,12 +464,12 @@
     },
     "002130": {
       "name": "沃尔核材",
-      "price": 14.72,
-      "change_pct": -0.47,
-      "pre_close": 14.79,
-      "amount": 201538599.73,
+      "price": 14.43,
+      "change_pct": -1.97,
+      "pre_close": 14.72,
+      "amount": 178412896.57,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -477,12 +477,12 @@
     },
     "600312": {
       "name": "平高电气",
-      "price": 20.67,
-      "change_pct": 0.05,
-      "pre_close": 20.66,
-      "amount": 417252378.0,
+      "price": 21.33,
+      "change_pct": 3.19,
+      "pre_close": 20.67,
+      "amount": 1006401051.0,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
@@ -490,17 +490,17 @@
     },
     "300199": {
       "name": "翰宇药业",
-      "price": 26.71,
-      "change_pct": 0.79,
-      "pre_close": 26.5,
-      "amount": 1897214094.31,
+      "price": 24.64,
+      "change_pct": -7.75,
+      "pre_close": 26.71,
+      "amount": 1688553196.25,
       "source": "hq",
-      "data_date": "2026-10-21",
+      "data_date": "2026-10-22",
       "signal": {
         "level": "⚪ hq快速",
         "note": "baostock不可用, 仅涨跌幅"
       }
     }
   },
-  "generated_at": "2026-10-21 15:35"
+  "generated_at": "2026-10-22 15:35"
 }

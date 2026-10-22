@@ -572,3 +572,37 @@ python3 scripts/test_isolation_guard.py --selftest  # 8 例对抗自测
 
 `analysis/chip_freshness.py`（判定）+ `scripts/chip_distribution_study.py --refresh`（刷新）
 + `scripts/chip_freshness_test.py`（17 项契约，周流水线 0t）。新增派生缓存照此模式接入。
+
+---
+
+## 🔴 Dreaming 硬闸配置语义标注（2026-10-22）
+
+> **背景**：10-21 修复 dreaming 停摆时，采用 `phases.deep.minRecallCount=999999` 而非 `phases.deep.limit=0`。
+> 两者目的相同（保 sweep、停 promote），但机制与风险截然不同。
+
+### 当前配置含义
+
+```json
+"dreaming": {
+  "enabled": true,
+  "phases": { "deep": { "enabled": true, "minRecallCount": 999999 } }
+}
+```
+
+- `minRecallCount: 999999` = **硬闸**：sweep 照跑、light/REM 照产出，但 promote 候选恒为 0 条。
+- deep 报告连续固定 "Ranked 0 / Promoted 0"。
+- `promotion_guard` 已识别该模式并打印：`deep promote 硬闸模式（minRecallCount=999999，10-21 拍板：sweep 保活 + promote 退役）→ 跳过棘轮判定` exit 0 ✅
+
+### 与 `limit: 0` 的关键差异
+
+| 维度 | `minRecallCount=999999`（现状） | `limit: 0`（曾推荐） |
+|---|---|---|
+| 语义清晰度 | 借用检索计数阈值伪装成"无合格候选" | 明确表达"不要晋升" |
+| 若未来放开 | 门槛一下调，**已积累候选一次性批量涌入**（洪水风险） | 改一个数即可，平滑 |
+| 对 MEMORY.md 风险 | 中（误改阈值 → 洪水式 promote） | 无 |
+
+### 操作规约
+
+1. **现状工作正常、无需抢救**。plugin-managed job 不会回魂（cron 列表仅有人工 job `a07898c0`，`managedBy: null`）。
+2. **若未来决定恢复 promote**：必须**先小步放量**（如 `minRecallCount` 降至实际分布 P90 ≈ 50~100），**严禁直接归零**。
+3. 本条目即为"显式标注"，后续维护者见此即知语义与风险。

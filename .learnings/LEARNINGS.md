@@ -7,6 +7,12 @@ Corrections, insights, and knowledge gaps captured during development.
 ---
 
 ## [LRN-20260916-IMP] Python 脚本「定义顺序」与「重复实现」两类静默缺陷
+> **Metadata (2026-10-22 维护补全，此前无 key 属可计数盲区)**
+> - Pattern-Key: code.undefined-name-module-level
+> - Recurrence-Count: 1
+> - First-Seen: 2026-09-16 / Last-Seen: 2026-09-16
+> - Status: resolved（当日 4 处全修）
+> - Disposition: retain — 已在 TOOLS.md「sys.path 样板强制模板」+ `scripts/script_path_guard.py` 门禁覆盖其子集；RC=1 < 3，再复现则并入 `code.static-audit` 家族一并提升。
 
 **Logged**: 2026-09-16
 **Category**: best_practice
@@ -162,5 +168,37 @@ moneyflow 三 host curl_cffi 全 curl(56) 的同一分钟里，裸 curl 曾独�
 - 规则：①凡涉及历史数据的 bug，先把「涉事函数在事故窗口内的每个版本」捞出来看，别用现行代码推断历史；②数值指纹（反解股数/单价）只能**验证**假设，不能**生成**假设；③连续两次推翻自己的假设时，把推翻过程也写进注释，防止后人重走。
 
 ## 2026-10-20 | 盘前报告旧闻复读：修复只治了缓存层，漏了内容层
+> - Pattern-Key: research.fix-layer-mismatch（表象复发 = 修错层）
+> - Recurrence-Count: 1（10-14 号称“根治”后续发一次，计 1 次独立复发）
+> - First-Seen: 2026-10-20（表象）/ 根因层 10-14 修复失败
+> - Status: resolved（改 get_today_news 不再裸调 akshare 默认 symbol + 新闻必须带时间戳）
+> - Disposition: retain — 与 `research.subgroup-direction-reversal` / `ledger.warning-dismissed-as-noise` 同属「归因过早」家族，RC=1 < 3 暂不提升。
 - 发生了什么：用户指出同一批来伊份旧闻反复出现且"以前处理过"。10-14 修复定位为僵尸缓存并宣布"根治"，但真凶是 get_today_news() 裸调 ak.stock_news_em()（akshare 1.18.64 官方默认 symbol='603777'）→ 相关度排序旧文霸榜。修缓存层无效，因为每天会"新鲜地"重拉同一批旧闻。
 - 下次怎么做：①表象复发时逐层排查（投递层/缓存层/内容层/源头层），修复后必须验证"内容真的变了"而不只是"容器刷新了"；②裸调任何第三方函数先 inspect.signature 查默认参数；③新闻类输出必须带发布时间戳，无时间戳的新闻段一律视为可疑。
+
+## 2026-10-22 | 模型目录静默漂移：查模型可用性先 GET /models 对照配置
+> - Pattern-Key: model.catalog-silent-drift
+> - Recurrence-Count: 1
+> - First-Seen: 2026-10-22 / Last-Seen: 2026-10-22
+> - Status: resolved（已对照端点目录，新增模型保守占位待 agent 级实测）
+> - Disposition: retain — RC=1 < 3；若再现“只测配置内模型即宣布可用性结论”则提升。
+- 发现：amd-radeon 端点目录已从 7 个扩到 16 个（新增 V4.1/Gemma-4/MiniCPM-V-4.7 等），配置目录 20+ 天未刷新；「检查可用性」若只测配置内模型，会漏掉整批新能力，也会把 GLM-5.3-Flash 这类已恢复模型一直当坏的。
+- 下次怎么做：①模型故障排查第一步 `GET {baseUrl}/models` 对照 openclaw.json 配置目录，两侧差异都要处置；②端点 400 报错信息会直接说该模型属于哪个专用端点（systemone/ocr/audio/speech），据此判定"非 chat 模型"而非"模型坏了"；③新模型入库用保守 contextWindow/maxTokens 占位，入链前必须 agent 级实测（裸 API 快 ≠ agent 循环稳，Vision-Exp 先例）。
+
+## [2026-10-22] cron「status=ok + 时长 + agent 口吻 summary」三者都可能滞后于真实执行
+- **现象**：10-22 06:00 首轮验收 `daily-premarket-analysis-cmd`，该 job 已于 10-21 21:29 从 agentTurn 改为 `--command` 直跑 pipeline，产物 06:01:24 已落盘；但 `cron get` 的 `state` 仍显示 `lastStatus=ok / lastDurationMs=23197`，`cron runs` 首条 summary 更是昨日 agentTurn 的口吻（"需要我：1. 检查运行结果…"）。`durationMs` 一字未变 → 状态/审计字段滞后于真实执行。
+- **规约**：①**命令型 cron 的健康判定只看产物 mtime/内容**（`analysis/daily/<今日>_*.md`、`data/agent_runs/run_<今日>_*.json`），不采信 `lastStatus`/`lastDurationMs`/`summary`；②改造后首轮验收必须**双侧核对**（产物侧 + 调度侧），调度侧滞后时记录为观察项、不据此判定失败；③`summary` 是 LLM 生成的叙述文本，不是执行证据。
+- **Pattern-Key**: cron.status-field-lag-vs-artifact（cron.silent-noop-fake-ok 反向变体：这次是字段**滞后**而非**虚报**）
+- Recurrence-Count: 1
+- First-Seen: 2026-10-22 / Last-Seen: 2026-10-22
+- Status: resolved（产物验收通过，本条作为判据补充，不新增门禁——`missing_products()` 已是产物侧门禁）
+- Disposition: retain — RC=1；若出现「因状态滞后而误判 cron 故障并重跑/重复推送」则立即提升到 TOOLS.md。
+
+## 2026-10-22 | 情报采集链路鲁棒化：禁止信赖 RSS/中间跳转页 (RC: intel-pipeline-fragile)
+- 事故：blogwatcher 抓取的 Google News 链接直接调用 `urllib` 仅获得 HTML 壳（canonical 重定向页），导致情报提取失败。
+- 认知：外部情报源 $\rightarrow$ 代理 $\rightarrow$ 正文 的链路中，中间页是常态而非异常。
+- SOP (Intelligence Robustness):
+    1. **穿透 (Penetrate)**: 发现重定向/中间页 $\rightarrow$ 提取 `canonical` 或 `finalUrl` $\rightarrow$ 使用 `web_fetch` (Readability) 重新抓取。
+    2. **固化 (Persist)**: 关键情报严禁仅在对话中汇报 $\rightarrow$ 必须落盘 `data/intel/{topic}.md` $\rightarrow$ 形成单一事实来源 (SSOT)。
+    3. **同步 (Sync)**: 关键事实 $\rightarrow$ 同步至 `memory/YYYY-MM-DD.md` $\rightarrow$ 确保跨会话可见。
+- 结论：$\text{Scan} \rightarrow \text{Penetrate} \rightarrow \text{Persist} \rightarrow \text{Sync}$ 是情报处理的唯一正确链路。

@@ -193,6 +193,18 @@ def main():
     # 步骤 0c: 关注池口径一致性门禁（2026-09-27 新增）
     # 背景：曾出现「代码已是35只、文档还写27只」的静默不一致，人工按旧清单误判。
     # 仅在写回映射前校验，失败仅告警不阻断（防误伤主流程）。
+    # 步骤 0b: 命令型 Cron 真实性审计 (cron_truth_guard.py)
+    # 缘起：2026-09-29/10-06/10-22 发现 lastStatus=ok 的 Fake OK 假成功
+    # 逻辑：调度 OK 必须对应产物 (mtime/非空) 存在，否则报红 (不阻断流水线)
+    print("\n🚦 步骤 0b/9: Cron 真实性审计 (cron_truth_guard.py)")
+    r = run_script("../scripts/cron_truth_guard.py", timeout=120)
+    results["cron_truth"] = r
+    if not r["success"]:
+        print("⚠️ 发现 Cron 任务静默失效 (Fake OK)，调度 OK 但无真实产物更新 (不阻断流水线)...")
+
+    # 步骤 0c: 关注池口径一致性门禁（2026-09-27 新增）
+    # 背景：曾出现「代码已是35只、文档还写27只」的静默不一致，人工按旧清单误判。
+    # 仅在写回映射前校验，失败仅告警不阻断（防误伤主流程）。
     print("\n🚦 步骤 0c/9: 关注池口径一致性门禁 (strategy_map_guard.py)")
     r = run_script("../scripts/strategy_map_guard.py", ["--quiet"], timeout=120)
     results["map_guard"] = r

@@ -408,7 +408,7 @@ This file serves as your curated long-term memory, storing significant events, d
 ### 2026-08-09 技能库真实变更（skill-version-watcher 捕获）
 *   **self-improving v1.2.16 → self-improving-agent v4.0.2**（升级+改名, 08-08 21:27 更新）; **hf-mem v1.0.10** 新增(08-08 21:20 安装)。baseline memory/skill-versions.json 已更新。
 
-## 投资理念归纳（每日同步，最新 2026-10-21）
+## 投资理念归纳（每日同步，最新 2026-10-22）
 > 完整可检索历史见 `wiki/sources/investment-philosophy-YYYY-MM-DD.md`；本区块为蒸馏要点。
 > 注：09-01~04 无增量空跑；09-07(周一)24h 0 篇但补录 09-05/06 周末 4 篇方法论(见 09-07 节)；**09-08(周二)24h 新增 9 篇、打破连续 6 日空跑；09-09(周三)新增 2 篇(1 投资+RVI方法论 + 1 爬虫教程非投资)、RSI 主线续作；09-10(周四)新增 1 篇「涡流+布林带」突破系统；**09-11(周五)新增 3 篇方法论(MACD进阶/RSI压缩剥头皮/斐波那契时间预测)、连续第 4 日真实增量**(见 09-11 节)。；09-12~09-15 连续 no-op（投资层 0 篇）；**09-16 投资类语料静默 18 天后恢复**——新增 1 篇半导体设备行业深度（投资相关，应用型素材非方法论），体系 head 不变、「卖铲人范式」证据 +1（见 09-16 节）。
 > 注：**09-17 严格 24h no-op**（09-16 19:30→09-17 19:30 命中 0 篇 .md），投资层无增量，体系 head 与量化参数均不变（见 09-17 节）。
@@ -428,6 +428,17 @@ This file serves as your curated long-term memory, storing significant events, d
 > 注：**10-17/10-18 报告缺失，10-19 以 72h 扩展窗口（10-16 19:30→10-19 19:30）代偿补录 → 全 Vault 命中 0 篇 .md → 投资层 no-op**。无积压未归档笔记（主源 71 篇最新 mtime 仍为 10-16 17:52《ANTHROPIC》非投资类已归档；副源 AI文字稿 0 篇）。投资类语料自 10-06 后**连续 13 日静默**（见 10-19 节）。
 > 注：**10-20 严格 24h no-op**（10-19 19:30→10-20 19:30 全 Vault 命中 0 篇 .md；主源最新 mtime 仍为 10-16 17:52《ANTHROPIC》非投资类已归档；副源 AI文字稿 0 篇）。投资层无增量，体系 head 与量化参数均不变。投资类语料自 10-06 后**连续 14 日静默**（见 10-20 节）。
 > 注：**10-21 严格 24h no-op**（10-20 19:30→10-21 19:30 全 Vault 命中 0 篇 .md；主源最新 mtime 仍为 10-16 17:52《ANTHROPIC》非投资类已归档；副源 AI文字稿 0 篇；10-19/10-20 报告连续，无积压）。投资层无增量，体系 head 与量化参数均不变。投资类语料自 10-06 后**连续 15 日静默**（见 10-21 节）。
+> 注：**10-22 非投资类命中 1 篇 → 投资层 no-op**（10-21 19:30→10-22 19:30 全 Vault 命中 1 篇《长期Agent怎么记住关键事？…完整工程方案》10-22 16:50，AI Agent 记忆工程方法论非投资类，不提取规则；副源 AI文字稿 0 篇；积压无遗漏）。投资层无增量，体系 head 与量化参数均不变。投资类语料自 10-06 后**连续 16 日静默**（见 10-22 节）。
+
+### 2026-10-22 要点（24h 命中 1 篇 · 非投资类 → 投资层 no-op · 体系 head 不变）
+> **窗口判定**：10-21 19:30→10-22 19:30；主源 Vault（72 篇）命中 **1 篇** .md、副源 AI文字稿 0 篇。
+> 《长期Agent怎么记住关键事？记住事实、模糊召回与动态更新的完整工程方案》（10-22 16:50）→ AI Agent 记忆工程方法论（三层记忆/动态组装/影子Agent/遗忘机制），**非投资类**，无买卖标准/风控/选股/心法可提取 → **投资层 no-op**。积压补录检查：10-21 报告存在、窗口连续无遗漏。
+- **新增规则 0 / 修正 0 / 冲突 0**；投资类语料自 10-06 后连续 16 日静默（Vault 文件级触碰 10-16 后于 10-22 恢复，仍非投资类）。
+- **体系 head（不变）**：纯MACD优选 / CCI聚簇退潮 / 030裁决分级 / 三因素共振门控(ResonanceGate) / 斐波那契扩展止盈 / 波动率仓位(ATR/1%风险) / 选择性入场纪律(1:2盈亏比+40%胜率) / 结构点止损+S/R Flip / 产业链卡位·卖铲人范式。
+- **量化参数（不变）**：`adaptive_dual.py`（09-28）/ `auction_analyze.py`（09-17）/ `fib_extension_scan.py`（09-17）/ `data/adaptive_params.json`（10-03）。
+- **复核台账**：候选⑯及②~⑬⑮ 原状；观察项 O1~O4 仅记不动作。
+- **观察项（非投资理念，仅记）**：新笔记「三层记忆（短期窗口/实体画像KV/情景向量）+ 遗忘机制」与 MEMORY.md 分层 + dreaming 淘汰机制架构可比性高，若用户有意可另行评估引入（非本职责范围）。
+- 完整归档：`wiki/sources/investment-philosophy-2026-10-22.md`。
 
 ### 2026-10-21 要点（严格 24h · 0 篇新笔记 · 体系 head 不变）
 > **窗口判定**：10-20 19:30→10-21 19:30；主源 Vault + 副源 AI文字稿 命中 **0 篇** .md，积压补录无遗漏 → **投资层 no-op**。
@@ -1445,6 +1456,18 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **🟡 唯一 cron error：`96ce82c1` market-context-generate（15:35）** `review_030_snapshot.py:59 int(df.apply(...).sum())` → `TypeError: not 'Series'`。根因大概率是新浪全量接口本次只返回 **80 行**残缺数据（10-19 是 5574 行，且当时已刷 40+ 行 `日期格式不正确` + `timed out` 埋雷），列结构缺失使 `apply` 走 broadcast。建议两行修：`is_limit_up` 内强制 `return bool(...)` + 行数哨兵 `if len(df) < 3000: raise`（量级差必须显式失败，符合"空产出显式失败"原则）。
 *   **🟡 `AGENTS.md` 21,917 chars > 20,000 上限，每轮会话被截断**（本期 bootstrap 警告已显式出现）→ 顶部策略持续性丢失，建议瘦身或拆分。
 *   **promote 淘汰 saga 正式终结**：自本期起 dreaming 报告不再有 promote 审计章节（"分层分歧""预算淘汰"连续 11 期的记录到此为止）。`promotion_guard` 已正确识别 deep-off 并跳过棘轮判定；MEMORY.md 停在 303,499 B。**建议同步把 `promotion_guard.py` 的语义在 deep-off 长期化后改为"deep 已关闭"的静默通过，避免未来误报。**
+
+## 2026-10-22 蒸馏补充（memory-maintenance-thursday 06:00）—— 夜间修复三连 + cron Tier A 改造
+
+> 源自 `memory/2026-10-21.md`（20:5x 重建后全文）与 `memory/dreaming/daily-report-2026-10-22.md`。前序 dreaming 04:00 轮已蒸馏「关 deep 连带关 light/REM」根因，本区补其后续闭环与 10-21 夜间~10-22 晨间全部未覆盖事实。
+
+*   **🔴 dreaming 修复终态：硬闸变体（非原推荐的 limit=0）**：10-21 14:00 用户批准方案 A 后源码级证伪 `limit=0`——它是 `runShortTermDreamingPromotionIfTriggered` 的**全局早退**（dreaming-Cth0w6SG.js:241，位于 sweep 调用 :270 之前），照做 light/REM 照样不跑。实际落地 `phases.deep.enabled=true` + **`phases.deep.minRecallCount=999999`**（rank/apply 双层硬过滤，recall 恒不达标 → Ranked 0）；`deep.recovery` 实测全 dist 零消费点=死配置。重建独立 job `a07898c0`（`0 3 * * *`，managedBy=null），**10-22 03:00 自然调度首验全绿**（light 35,306B / rem 2,928B / deep 154B，status=ok，87.6s）；plugin unified job 不会回魂（enabled=true 也不会重复创建）。**语义标注待办**：minRecallCount=999999 是硬闸，未来恢复 promote 须小步放量（降至实际分布 P90）而非直接归零，否则候选洪水式涌入 MEMORY.md。上游 issue openclaw/openclaw#179304（limit=0 全局早退 + recovery 死配置）。 [来源: memory/dreaming/daily-report-2026-10-22.md §1]
+*   **cron fleet Tier A 批量改造 9/9 落地（用户 22:16 批准）**：premarket-outlook / intraday×2 / zhonglian 早收盘 / auction-feed / quant-backtest / weekly-review / weekly-backtest 全部 agentTurn「命令伪装」→ command 模式（argv/cwd/timeout 保留、delivery=none、model 清空、schedule+enabled 零副作用、改前快照 9 份存 backups/cron/）。终态 fleet 52 job = command 31 / agentTurn 17（真 LLM 任务）/ systemEvent 1。**插曲教训**：批处理首跑全挂「stdout 空」时未打 stderr 就当瞬态加重试，二跑才定位 = `cli()` 内部已拼 `cron` 前缀、调用处重复传参 → `openclaw cron cron get`——复用「同一份代码两种结果先注入诊断」铁律本可省一轮重试；两次失败均挂首个 get，job 配置零误改。 [来源: memory/2026-10-21.md 22:1x]
+*   **D 案闭环：两笔脏成交根坐实为「测试写进生产底账」**：`portfolio_sim_trades.json` 10-20 两笔 price=10.0（国电南瑞 1400 股 core / 招商银行 400 股 satellite）由 e9fb539 bucket 拆分功能验证的 `execute_trade(price=10.0)` 直调产生——`int(15000/(10×1.001)/100)×100=1400`、`int(5000/…)=400` 算术闭合，迁移前备份中 600406 根本不存在为决定性证据（10-20 是周日无行情，占位价唯一来源=测试夹具）。处置沿用 778a516 先例**只标注不改数**（commit + .bak-20261021-d-annot，24 条不变）。**防线三层**：①TOOLS.md 强制模板「直调 execute_trade 的测试脚本必须隔离 STATE/TRADES/**EQUITY** 三个 FILE + BACKTEST_MODE 兜底」（BACKTEST_MODE 不会自己变 True 是认知盲区）；②新门禁 `scripts/test_isolation_guard.py`（AST，selftest 8 例，首扫 246 脚本抓出 2 处 HIGH——**连范式参考实现都漏了 EQUITY_FILE**，机器查不可替代；agent/nodes.py 生产链路白名单）；③接入 weekly_full_pipeline 步骤 0x。 [来源: memory/2026-10-21.md 22:0x~22:4x]
+*   **C+E 案修复：权益快照耐久化 + `init_position` 第 4 层共用字段**：①`append_equity_snapshot` 新契约 = 读失败/0 行 raise（不再退化清空重写）+ 写前 `.bak-{date}` + 行数防倒退 + `os.replace` 原子替换；4 项冒烟全过，实跑第 16 行 `core_value=15000, satellite_value=4000` 真实写入（修复前恒 0）；历史 14 行 0 值属历史事实不回填。②`init_position(sym,name,strat,bucket)` 默认值 `"tier1"` 而 L1277/executor 三调用点均按旧签名只传 3 参 → 真实 tier 被默认值覆盖；新增 `_resolve_tier(symbol)` 先试映射 dict 的 bucket 键、落空走 `get_bucket`（**坑**：映射当前是 str 格式如 `"macd"` 无 bucket 键，首版直读 `.get("bucket")` 9/9 全错返 tier1）。**注意**：dreaming 04:00 报告称 10-21 15:41 权益仍重复 10-20 值 → 修复是否覆盖 portfolio_sim 写入分支**待 10-22 15:40 复验**（当日唯一「报了没修好」项）。 [来源: memory/2026-10-21.md 22:0x~22:4x / daily-report-2026-10-22.md §3.3]
+*   **门禁与产物耐久性扩容（4 新门禁 + missing_products 扩容）**：①`memory_note_durability_guard.py`（A 类=写模式 open 出现在 BoolOp/三元/assert/print 实参，求值即截断；实扫 243 脚本 HIGH=0 → 事故写法未蔓延，agent 临时命令是主风险面）→ 步骤 0w；②`state_durability_guard.py`（清空式重写/无 .bak/非原子，实扫 HIGH=2 均人工复核为误报→**条件触发型假阳性不适合阻断门禁，降级人工巡检工具**，接入前需加「写目标≠后读目标」AST 判别）；③`cron_health_check.missing_products` 新增竞价快照/裁决、量化日报（日期型）+ 盘前展望/中联早收盘（mtime 新鲜型）共 8 项，selftest 17/17；④`promotion_guard` skip 条件扩展硬闸变体（minRecallCount≥999999 → 跳过并注明模式），语义与 14:00 修法对齐。**方法论**：三层防线体检（发现 A/B 两条铁律只有文档层）——假阳性率高的门禁宁可降级巡检也不硬接流水线。 [来源: memory/2026-10-21.md 21:2x~22:4x]
+*   **10-22 晨间增量**：①**SSOT 违规修复**：`analysis/service.py:53` 硬编码 30 只过时清单（含已移出 3 只、缺 10 只）被 LangGraph 交易 agent 全链（llm_tool/nodes/state/trader_stock_picks get_spot_scan）消费 → 改 `from analysis.fib_extension_scan import WATCHLIST` 派生，36 只 ✓ / strategy_map_guard exit 0 ✓；**待办：strategy_map_guard 尚未纳入 service.py 防回潮**。②**策略候审 3 条经用户批准应用**（commit `a848187`，registry v20261022_051409）：688981 ema_cross→kdj_cci / 600089 bollinger→ema_cross / 002028 bollinger→ema_cross（证据最弱，验证夏普 0.118 低于 0.25 护栏，DSR 均不显著→按约定信号降权）。③**盘中异动扫描上线**：`analysis/market_breadth_scan.py` + cron `market-breadth-open-scan`（ed92007e，工作日 09:35，command 直跑 delivery=none 已复核）——低开缺口三档 + 量价异动，昨日量取本地 CSV 零网络。④**AMD 模型目录漂移修复**：端点 16 模型 vs 配置 7 → 实测后 `config patch` 补 4 个可用 chat（DeepSeek-V4.1-Flash 0.7s 全榜最快列链上候选暂不入链），11 个可见；新模型 context/maxTokens 为保守占位需入链前实测。⑤Prismfy 中文财经查询连续第 3 天全空，web_search(tavily) 兜底正常。 [来源: memory/2026-10-22.md]
+*   **今日验收点（周四交易日）**：06:00 premarket command 改造自然验证 → 08:45 missing_products 8 项 → 09:15/25 竞价 → 09:35 market-breadth 首跑 → **15:40 portfolio-sim 权益是否仍重复（复验 4fb91a6/22:0x 修复）** → 15:35 market-context 修复 2b4695c 后第 2 交易日 → 18:30/19:35 收盘链 → 03:00 dreaming 第 2 个自然日。待人工：git 积压（10-22 晨已减至 9 项，知识资产已入 e0e6ed7）；3 个 10-09 残留 at job 建议删除使 error 计数归零；minRecallCount 硬闸语义标注 TOOLS.md；19:35 prompt 补 (-5,0) 双卖前置跌幅标注定义。 [来源: memory/dreaming/daily-report-2026-10-22.md §5/§6]
 
 ## Promoted From Short-Term Memory (2026-10-20)
 

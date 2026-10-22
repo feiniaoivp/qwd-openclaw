@@ -1,1 +1,28 @@
-{}
+{
+ "2026-10-22|600406": {
+  "symbol": "600406",
+  "name": "国电南瑞",
+  "signal_date": "2026-10-22",
+  "cls": "分歧买",
+  "actions": [
+   "持有",
+   "🟢买入"
+  ],
+  "strategies": [
+   "ema_obv",
+   "bollinger"
+  ],
+  "close_t": 23.28,
+  "er20": 0.281,
+  "regime_er": "trend",
+  "chop_idx": 61.8,
+  "ema_gap_atr": 0.26,
+  "p1_chop": false,
+  "p1_zone": true,
+  "created_at": "2026-10-22 18:45:03",
+  "gap": null,
+  "tier": null,
+  "oc1": null,
+  "fwd5_oc": null
+ }
+}

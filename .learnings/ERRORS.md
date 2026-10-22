@@ -26,6 +26,7 @@ Investigate `analysis/weekly_full_pipeline.py`; check for deadlocks/infinite loo
 
 > **[2026-10-19 每日维护 · 第2轮]** RC≥3 共享计数条目（跨 3 任务 30 天内）终态复核：TOOLS.md 规则在位（grep 确认「长跑 pipeline 卡死判定规则」章节存在），无新复发，RC 维持 3 不虚增，保持 promoted。
 > **[2026-10-20 每日维护]** 第三轮终态确认：TOOLS.md L367 规则仍在位，Last-Seen 维持 2026-10-06，无新复发，promoted 终态不变。
+> **[2026-10-22 每日维护]** 第四轮终态确认：TOOLS.md「长跑 pipeline 卡死判定规则」在位，RC 维持 3（跨 3 任务），Last-Seen 维持 2026-10-06，无新复发，promoted 终态不变。
 
 > **[2026-10-10 维护去重]** 本条目与 ERR-20261006-PM 同 Pattern-Key `ops.silent-orchestrator-misjudged-as-hang`
 > （Recurrence-Count=3 共享计数，First-Seen 2026-09-26）。已合并为一条模式，保留两条作为
@@ -33,6 +34,7 @@ Investigate `analysis/weekly_full_pipeline.py`; check for deadlocks/infinite loo
 > 2026-10-18 维护复核：TOOLS.md 规则在位于位（含 pgrep -P / 缓存 mtime / timeout 估算三判据），无新复发，终态保持 promoted。
 
 ## [ERR-20260927-87V] openclaw_session_sweep
+> **[2026-10-22 维护 · 防误报红线核对]** 本条属历史 `Cron: … failed` 类事件，已按红线跑 `openclaw cron list` 核对：`openclaw_session_sweep` **不在现存 48 个 job 列表中** → 判定为历史误报名，**不转发、不计入失败统计、不新增条目**（2026-10-18 auction-analysis-0926 教训）。
 
 **Logged**: 2026-09-27T12:00:56.623Z
 **Priority**: medium
@@ -336,6 +338,7 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 - **Notes**: glob 取最新 dual + today 兜底；两轮误报根因同一（运行日与产物日错配），Recurrence-Count 记 2。
 
 ## [ERR-20261016-C02] openclaw_session_sweep
+> **[2026-10-22 维护 · 防误报红线核对]** 同上：`openclaw_session_sweep` job 名不存在于现存 cron 列表 → 历史误报，仅告警不转写。
 
 **Logged**: 2026-10-16T12:33:47.429Z
 **Priority**: medium
@@ -432,7 +435,9 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - **Status**: promoted → AGENTS.md「配套铁律 · 研究脚本 JSON 键统一 str + 主结果先落盘」（2026-10-18）
 - Source: .learnings/ERRORS.md#ERR-20261017-C02
 
-## ERR-20261018-C01 RiskGuard.refresh 裸网络无超时 → 回测进程永久 sock_read 挂死（第3次同类）
+## ERR-20261018-C01a RiskGuard.refresh 裸网络无超时 → 回测进程永久 sock_read 挂死（第3次同类）
+> ⚠️ **ID 消歧（2026-10-22 维护）**：本条目原 ID `ERR-20261018-C01` 与同日 `ERR-20261018-C01（刷新脚本标志位反转）` 撞号。
+> 本条目为**网络超时类**，现加后缀 `a` 号；旧引用 `#ERR-20261018-C01` 在 AGENTS.md 指代标志位反转条（C01b），歧义已解除。历史正文不改。
 - 现象: cluster_window_ab 两次于逐日循环中 CPU~0%、无产出；/usr/bin/sample 坐实 SSL sock_read。
 - 根因: FatalRiskDetector 的 akshare 涨停池/龙虎榜调用无 timeout；net_guard 虽被 import 但进程级默认值未在该链路安装前就已建连/或依赖库自带无限等待。
 - 修复: portfolio_core.RiskGuard.refresh() 刷新体包 network_timeout_guard(15)，超时降级旧缓存+可见告警（commit fc625ed）。
@@ -471,7 +476,7 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Status: resolved（2026-10-18 当日定位 actuator 路径，非代码缺陷）
 - Disposition: retain — 可复用排查启发式，但 RC=2 < 3，暂不提升；若再遇到一次 A/B 空结果则复核提升。
 
-## ERR-20261018-C01: 刷新脚本标志位反转导致 41 个基准池 CSV 被截断为 1 行（已自愈）
+## ERR-20261018-C01b: 刷新脚本标志位反转导致 41 个基准池 CSV 被截断为 1 行（已自愈）
 
 > ⚠️ **ID 冲突（2026-10-19 维护）**：本条目与 ERR-20261018-C01（RiskGuard 挂死）同日同号。历史保留不改名，
 > 引用请用 Pattern-Key `data.rewrite-script-flag-inversion`；后续同一事件一律挂此 key。
@@ -706,7 +711,7 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - Recurrence-Count: 1（确证 10-21；zhonglian-morning 4 次短时长可疑未计入）
 - First-Seen: 2026-10-21
 - Last-Seen: 2026-10-21
-- Status: resolved-pending-validation（结构改造已执行 21:29；Tier A 9 job 批量改造 22:3x 完成 9/9 复核——command/argv/cwd/timeout 保留/delivery=none/schedule 不变；待明晨 06:00–09:35 自然链全窗口验收后本条终态）
+- Status: resolved（2026-10-22 06:0x 验收通过 ✅）：①`premarket_pipeline.py` 06:00:00 触发、06:01:24 产出 `analysis/daily/2026-10-22_premarket_report.md`（12KB）+ `data/agent_runs/run_20261022_060123.json` + pipeline_cache 四产物（scan/dual/audit/agent），即「产物在盘」判据满足；②首轮实测 `cron get` 的 state 一度残留昨日 agentTurn 的 `ok/23197ms` + agent 口吻 summary（agent 25s 说废话 vs command 1.4min 实干，`lastDurationMs` 一字未变 → 状态字段滞后于真实执行，**再次印证「状态不可信、只有产物可信」**）；③durationMs 在长跑命令模式下存在滞后显示，健康判定一律以产物 mtime 为准。本条终态。
 
 ## ERR-20261021-DailyNoteSelfDestruct
 **Date**: 2026-10-21
