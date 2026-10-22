@@ -303,6 +303,22 @@ def main():
     if not r["success"]:
         print("⚠️ 发现交易日判定/日历获取绕过 SSOT（见上方），节假日误判可能复发（不阻断流水线）...")
 
+    # 步骤 0l: 外部数据 astype(float) 裸转棘轮门禁（2026-10-22 第六轮新增；缘起 10-08
+    # 外部源空串 '' 非裸转 ValueError 崩批；68 处存量冻结，新增拦截，修复自动降基线）
+    print("\n🚦 步骤 0l/9: astype 裸转棘轮门禁 (astype_ratchet_guard.py)")
+    r = run_script("../scripts/astype_ratchet_guard.py", timeout=120)
+    results["astype_ratchet"] = r
+    if not r["success"]:
+        print("⚠️ 新增 astype(float) 裸转（见上方），外部数据空串可能崩掉整批扫描（不阻断流水线）...")
+
+    # 步骤 0a: 网络调用缺 timeout 门禁（2026-10-22 第六轮新增；缘起 err.dist-io-no-timeout；
+    # 零存量直接 HIGH 型，防回潮）
+    print("\n🚦 步骤 0a/9: 网络超时门禁 (net_timeout_guard.py)")
+    r = run_script("../scripts/net_timeout_guard.py", timeout=120)
+    results["net_timeout"] = r
+    if not r["success"]:
+        print("⚠️ 网络调用缺 timeout（见上方），存在永久挂死风险（不阻断流水线）...")
+
     # 步骤 0k: 五维评分 None 契约门禁（2026-10-17 新增，纯逻辑合成输入秒级）
     # 背景：10-08 立项「隐性 5.0 填充」改造（98820ca + 3977840）。缺数据必须 None，
     # 禁止 or 0/or 50/5.0 托底；RSI<30 不加分口径一并锁定。防未来改码回潮。
