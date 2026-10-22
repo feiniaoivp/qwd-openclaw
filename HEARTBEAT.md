@@ -7,6 +7,9 @@
      prompt 必须单行（parser 只读该行）；间隔单位支持 m/h/d（默认 m）。 -->
 
 tasks:
+- name: state-bookkeeping
+  interval: 60m
+  prompt: "本 run 第一动作，立即执行（勿留到最后）：`python3 -c` 读 workspace/memory/heartbeat-state.json，把 lastChecks.heartbeat 更新为当前 unix 秒，保留其它键，写回临时文件后 os.replace 原子替换。完成后继续其它任务。"
 - name: cron-health-scan
   interval: 60m
   prompt: "跑 `openclaw cron list --json`，报告：lastRunStatus=error 或 consecutiveErrors>0 的 job；nextRunAtMs 已过期超过 2 个间隔的 job。干净则无输出继续。禁止 kill 任何进程。"
@@ -19,7 +22,8 @@ tasks:
 
 # Standing rules（追加到每次心跳 prompt 的常驻指令）
 
-- 每次实际执行的 run 完成后：更新 `memory/heartbeat-state.json` 的 `lastChecks.heartbeat` 为当前 unix 秒。
+- state 回写由 `state-bookkeeping` 任务承担（run 开始即写，不等回复）；若该任务缺席（直接 poll 场景），在首个工具调用前补写。
+- 🔴 20:52 run 实证：回复前补写会被最终轮 LLM 失败连带丢掉（idle timeout 120s → fallback 裸 HEARTBEAT_OK），禁止再依赖回复前时机。
 - 疑似卡死的长跑 pipeline：先用 pgrep 子进程 + 产出缓存 mtime + 阶段 timeout 估算三招确认，禁止凭 stdout 空就直接 kill。
 - 静默时段 23:00-08:00（Asia/Shanghai）：除非 urgent，不产生任何对外消息。
 - 全部到期任务干净跑完 → 回复 HEARTBEAT_OK；有任何需要关注的事项 → 只返回告警文本（不要带 HEARTBEAT_OK 字样）。
