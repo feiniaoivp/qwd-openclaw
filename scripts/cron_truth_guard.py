@@ -22,7 +22,7 @@ import json
 import os
 import sys
 import subprocess
-from datetime import datetime, timezone
+from datetime import datetime
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 
@@ -82,7 +82,8 @@ def verify_truth(job):
         return None
 
     # 解析日期
-    dt = datetime.fromtimestamp(last_run_at / 1000, tz=timezone.utc)
+    # 本地时区取日期：本地 08:00 前运行的 job 若用 UTC，{{date}} 会解析到前一天
+    dt = datetime.fromtimestamp(last_run_at / 1000)
     date_str = dt.strftime("%Y-%m-%d")
     
     if mode == "file":
@@ -100,8 +101,11 @@ def verify_truth(job):
     # 容差升级：
     # 对于某些脚本，产物可能是由前序步骤生成，或在调度记录 run_time 之前已落盘
     # 只要 mtime 在 run_time 的合理窗口内（例如 ±10分钟），即视为有效。
-    if not (run_time - 600 <= mtime <= run_time + 3600):
-        return f"🔴 [Fake OK] 产物时间戳 {datetime.fromtimestamp(mtime)} 与运行时间 {dt} 不匹配 (run_time: {run_time})"
+    # 只设下限：判 fake 只看「产物是否早于运行」（真信号）。
+    # 不设上限——静态共享/追加型产物（knowledge_base.md、premarket 两阶段终稿）
+    # 会被后续 job 合法地 touch，mtime 晚于运行是活性证据，不是假成功。
+    if mtime < run_time - 600:
+        return f"🔴 [Fake OK] 产物时间戳 {datetime.fromtimestamp(mtime)} 早于运行时间 {dt:%Y-%m-%d %H:%M} 超过 10 分钟"
     
     if os.path.getsize(actual_path) == 0:
         return f"🔴 [Fake OK] 产物文件为空: {actual_path}"
