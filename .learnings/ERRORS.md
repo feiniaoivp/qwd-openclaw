@@ -727,3 +727,18 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - First-Seen: 2026-10-21
 - Last-Seen: 2026-10-21
 - Status: resolved（当日重建 + 规约入 MEMORY.md；若再出现「验证/清理动作毁数据」升级三层防线）
+
+## ERR-20261022-HeartbeatFinalTurnIdleTimeout
+**Date**: 2026-10-22
+**Priority**: high
+**现象**: 20:52:05-20:57:38 心跳 run（cdee04a4，isolatedSession+lightContext 首跑）把 3 个任务检查全部执行，且首个工具调用即为 state 回写做准备（`cat memory/heartbeat-state.json; date +%s`），但**最终回复轮 LLM idle timeout (120s)**（amd-radeon/Qwen3.8-Flash-Next，output 2708 tokens 含 1943 reasoning 全部丢弃，`aborted:true idleTimedOut:true`）→ fallback 链 DeepSeek-V4-Flash→MiMo-V2.6-Flash→deepseek-chat 返回裸 `HEARTBEAT_OK`（5 tokens）→ 计划中的 state 回写从未执行。且 taskState 按 `startedAt=20:52:02` 标记完成（源码坐实：marking 在回复路径完成时写 startedAt 值）→ **失败 run 消耗了整个任务周期**。
+**修复**: HEARTBEAT.md 新增 `state-bookkeeping` 首位任务（60m，"本 run 第一动作立即执行" + os.replace 原子写），standing rules 记录「回复前补写会被最终轮 LLM 失败连带丢掉」教训；git 159ff62 → fix commit。
+**规约**: ①**「回复前补写」类收尾动作必须提前到 run 早期**——最终轮是 LLM 失败高发区（idle timeout/fallback 降级），晚期写入与最终轮共命运；②fallback 链的裸 HEARTBEAT_OK = **假 ok 家族第五变体**（run 半途而废但回复路径「正常完成」，表面全绿）；③一次性验证 cron 的 grep 证据会被**自身命令回显与分析引用污染**（本次 'Run the following periodic tasks' ×5/×9 命中全为自回显/分析引用，非真实注入证据）——验证证据必须先排除自身 transcript 污染再下结论。
+### Metadata (2026-10-22 manual-session 登记)
+- Source: manual-session（webchat 深究轮；transcript 取证 cdee04a4 / 9e1fb0b1 / e7d1befd）
+- Reproducible: yes
+- Pattern-Key: llm.final-turn-idle-timeout-loses-deferred-writes + cron.verification-evidence-self-echo（同族 cron.silent-noop-fake-ok 第五变体）
+- Recurrence-Count: 1
+- First-Seen: 2026-10-22
+- Last-Seen: 2026-10-22
+- Status: resolved（state-bookkeeping 前置落地；21:5x 首个自然 tick 为验证点）
