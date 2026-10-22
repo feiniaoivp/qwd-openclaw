@@ -49,7 +49,8 @@ def get_cron_jobs():
         print(f"❌ 无法获取 cron 列表: {e}")
         sys.exit(1)
 
-def verify_truth(job):
+def verify_truth(job, workspace=None):
+    ws = workspace or WORKSPACE
     jid = job.get("id")
     name = (job.get("name") or job.get("displayName") or "unknown").lower()
     
@@ -87,9 +88,9 @@ def verify_truth(job):
     date_str = dt.strftime("%Y-%m-%d")
     
     if mode == "file":
-        actual_path = os.path.join(WORKSPACE, template.replace("{{date}}", date_str))
+        actual_path = os.path.join(ws, template.replace("{{date}}", date_str))
     else: # static
-        actual_path = os.path.join(WORKSPACE, template)
+        actual_path = os.path.join(ws, template)
     
     # 物理校验
     if not os.path.exists(actual_path):
@@ -113,16 +114,88 @@ def verify_truth(job):
     return None
 
 def selftest():
+    """对抗自测（2026-10-23 补齐，dreaming 报告建议③）。
+
+    直接构造临时文件 + job dict 驱动 verify_truth，不依赖真实舰队：
+      C1 时区陷阱：本地 00:30 运行（UTC 已是前一天），产物按本地日期落盘 → 放行
+      C2 追加型产物：mtime 晚于运行 3h（后续 job 合法 touch）→ 放行（防上限窗口回潮）
+      C3 陈旧产物：mtime 早于运行 1h（超 -10min 容差）→ Fake OK
+      C4 产物缺失 → Fake OK
+      C5 产物为空 → Fake OK
+      C6 lastStatus != ok → 不审计
+      C7 从未运行（无 lastRunAtMs）→ 不审计
+    """
     import tempfile
+    from datetime import timezone
+
     with tempfile.TemporaryDirectory() as td:
-        # 模拟一个 Fake OK 的 scenario
-        test_file = os.path.join(td, "test_output.md")
-        # 1. 文件不存在的情况 (Fake OK)
-        # 2. 文件为空的情况 (Fake OK)
-        # 3. 文件时间戳太旧的情况 (Fake OK)
-        pass
-    print("✅ selftest logic verified (conceptual)")
-    return 0
+        run_dt = datetime(2026, 1, 15, 0, 30, 0)  # 本地 CST；UTC=01-14 16:30，日期必不同
+        run_ms = int(run_dt.timestamp() * 1000)
+        # 自测前提：本机必须是 UTC+8，否则 C1 的时区陷阱不再成立（测试会失去对抗性）
+        utc_date = datetime.fromtimestamp(run_ms / 1000, tz=timezone.utc).strftime("%Y-%m-%d")
+        if utc_date != "2026-01-14":
+            print(f"❌ selftest 前提失效：本机时区非 UTC+8 (UTC date={utc_date})，C1 陷阱不成立")
+            return 1
+
+        def mkfile(rel, mtime_ms, content="report-body"):
+            path = os.path.join(td, rel)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w") as f:
+                f.write(content)
+            os.utime(path, (mtime_ms / 1000, mtime_ms / 1000))
+            return path
+
+        def job(name, status="ok", run_at=run_ms):
+            return {
+                "id": "selftest-0000",
+                "name": name,
+                "sessionTarget": "isolated",
+                "state": {"lastRunStatus": status, "lastRunAtMs": run_at},
+            }
+
+        # C1 时区陷阱：{{date}} 必须解析为本地日期 2026-01-15（UTC 解析会落到 01-14 → 缺文件误报）
+        mkfile("analysis/daily/2026-01-15_dual.md", run_ms)
+        r = verify_truth(job("close_scan"), workspace=td)
+        c1 = ("C1 时区陷阱(本地00:30→{{date}}须取本地日期)→放行", False, r)
+
+        # C2 追加型：mtime 晚 3h 是活性证据，不是 Fake OK（防 +3600s 上限窗口回潮）
+        mkfile("data/news/knowledge_base.md", run_ms + 3 * 3600 * 1000)
+        r = verify_truth(job("news-monitor-morning"), workspace=td)
+        c2 = ("C2 追加型产物晚于运行3h→放行(防上限回潮)", False, r)
+
+        # C3 陈旧产物：早 1h（超出 -10min 容差）→ 必须报 Fake OK
+        mkfile("data/auction/2026-01-15_9_25.json", run_ms - 3600 * 1000, "{}")
+        r = verify_truth(job("auction-feed"), workspace=td)
+        c3 = ("C3 产物早于运行1h→Fake OK", True, r)
+
+        # C4 产物缺失 → Fake OK（该 job 的静态产物尚未创建）
+        r = verify_truth(job("market-breadth-open-scan"), workspace=td)
+        c4 = ("C4 产物缺失→Fake OK", True, r)
+
+        # C5 产物为空 → Fake OK
+        mkfile("data/market_breadth_output.json", run_ms, content="")
+        r = verify_truth(job("market-breadth-open-scan"), workspace=td)
+        c5 = ("C5 产物为空→Fake OK", True, r)
+
+        # C6/C7：非 ok 状态 / 从未运行 → 不在 Fake OK 审计范围
+        r = verify_truth(job("close_scan", status="error"), workspace=td)
+        c6 = ("C6 lastStatus=error→不审计", False, r)
+        r = verify_truth(job("close_scan", run_at=None), workspace=td)
+        c7 = ("C7 无 lastRunAtMs→不审计", False, r)
+
+        cases = [c1, c2, c3, c4, c5, c6, c7]
+        failed = []
+        for desc, expect_violation, r in cases:
+            got = bool(r)
+            ok = (got == expect_violation)
+            print(f"  {'✅' if ok else '❌'} {desc} -> {'violation' if got else 'pass'}")
+            if not ok:
+                failed.append((desc, r))
+        if failed:
+            print("\n❌ cron_truth_guard selftest 失败")
+            return 1
+        print("\n✅ cron_truth_guard selftest 7/7 通过")
+        return 0
 
 def main():
     ap = argparse.ArgumentParser()

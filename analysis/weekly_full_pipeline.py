@@ -196,7 +196,12 @@ def main():
     # 步骤 0b: 命令型 Cron 真实性审计 (cron_truth_guard.py)
     # 缘起：2026-09-29/10-06/10-22 发现 lastStatus=ok 的 Fake OK 假成功
     # 逻辑：调度 OK 必须对应产物 (mtime/非空) 存在，否则报红 (不阻断流水线)
+    # 先跑门禁自身对抗自测（2026-10-23 补）：自测不过则本次审计结果不可信
     print("\n🚦 步骤 0b/9: Cron 真实性审计 (cron_truth_guard.py)")
+    r = run_script("../scripts/cron_truth_guard.py", ["--selftest"], timeout=60)
+    results["cron_truth_selftest"] = r
+    if not r["success"]:
+        print("⚠️ cron_truth_guard 自测失败，本次审计结果不可信，需人工核查（不阻断流水线）...")
     r = run_script("../scripts/cron_truth_guard.py", timeout=120)
     results["cron_truth"] = r
     if not r["success"]:
