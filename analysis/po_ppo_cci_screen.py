@@ -24,10 +24,30 @@ def ema(s, n):
     return s.ewm(span=n, adjust=False).mean()
 
 
-def last_completed_trading_day():
-    """盘前跑=上一交易日。严格取今天之前的最后一个交易日：
-    盘前今日 bar 尚不存在；本工具定位为盘前扫描（收盘后另有 close_scan_v2）。
+def detect_data_day():
+    """数据驱动探测数据日：以 sh.600030 最新已收盘 bar 为准。
+    盘前→昨日；收盘后→当日；探测失败回退交易日历(d<today)，失败可见告警。
     """
+    import socket
+    socket.setdefaulttimeout(30)
+    try:
+        import baostock as bs
+        lg = bs.login()
+        if lg.error_code == "0":
+            rs = bs.query_history_k_data_plus(
+                "sh.600030", "date,close",
+                start_date=(date.today() - timedelta(days=15)).isoformat(),
+                end_date=date.today().isoformat(),
+                frequency="d", adjustflag="2")
+            rows = []
+            while rs.error_code == "0" and rs.next():
+                rows.append(rs.get_row_data())
+            bs.logout()
+            if rows:
+                return str(rows[-1][0])[:10]
+        print(f"probe 降级: login={lg.error_code} {lg.error_msg}", file=sys.stderr)
+    except Exception as e:
+        print(f"probe 降级(异常可见): {e}", file=sys.stderr)
     today = date.today().isoformat()
     days = [d for d in get_trading_days() if d < today]
     return days[-1] if days else None
@@ -108,7 +128,7 @@ def compute(g, end_day):
 
 
 def main():
-    end_day = last_completed_trading_day()
+    end_day = detect_data_day()
     if not end_day:
         print("交易日历为空，无法确定数据日", file=sys.stderr)
         sys.exit(1)
