@@ -1,5 +1,9 @@
 # Issue draft — airbing11/memory-lancedb-dreaming
 
+> **更正评论已提交（2026-10-23 20:3x）**：https://github.com/airbing11/memory-lancedb-dreaming/issues/4#issuecomment-6364978142
+> 更正要点：无 60s message 振荡（实为日报 job id 每 60s 删+建漂移）；深梦境 cron 会经"夺取日报 job"产生；
+> 新发现 churn 与用户 job 无关（插件自建两 job 互殴，启用即坏）；互斥修复建议不变且可同时消掉夺取与 churn。
+
 > 状态：**已提交 → https://github.com/airbing11/memory-lancedb-dreaming/issues/4**（#4，2026-10-23 19:5x，用户「/approve 提 issue」授权；gh Go TLS 被指纹拦截，改用 curl + `gh auth token` 临时 header 提交）。
 > 版本基线：v0.3.14（clawhub npm-pack tgz，sha512 NRs/ziOT…）
 
