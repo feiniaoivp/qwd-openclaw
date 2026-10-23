@@ -82,8 +82,8 @@ def main() -> int:
     hits = []
     for r in auction["rows"]:
         code = r.get("code", "")
-        sig = signals.get(code)
-        sig_obj = (sig or {}).get("signal") or {}
+        sig = signals.get(code) or {}
+        sig_obj = sig.get("signal") or {}
         level = sig_obj.get("level", "")
         ochg = r.get("open_chg_pct")
         if ochg is None:
