@@ -814,6 +814,32 @@ def fetch_data(symbol, name, start=START_DATE, end=END_DATE, max_retry=3):
     print(f"  ❌ {name}({symbol}) 所有数据源均失败")
     return None
 
+def _data_caliber_summary(symbols, start_date=START_DATE, adjust="qfq"):
+    """汇总各股最近一次实际取数的复权口径（读 DataRouter provenance 落盘态）。
+
+    为什么必须有：降级链（baostock→akshare→新浪不复权）的逐股 WARNING 只进 stderr，
+    报告/JSON/TG推送完全无感 —— 2026-10-23 晚 36/36 全量回退不复权，推送照发、
+    数字与历史前复权报告不可比却无任何标注。此函数把口径真实状态带进产物。
+    """
+    fallback, unknown = [], []
+    try:
+        router = get_router()
+    except Exception as e:
+        print(f"  ⚠️ provenance 读取失败（口径按未知处理）: {e}")
+        return {"fallback": [], "unknown": list(symbols), "total": len(symbols)}
+    for sym in symbols:
+        try:
+            p = router.get_provenance(sym, start_date=start_date, adjust=adjust)
+        except Exception as e:
+            print(f"  ⚠️ {sym} provenance 查询失败（按未知处理）: {e}")
+            p = None
+        if p is None:
+            unknown.append(sym)
+        elif p.get("fallback"):
+            fallback.append(sym)
+    return {"fallback": fallback, "unknown": unknown, "total": len(symbols)}
+
+
 def main():
     today = datetime.now().strftime("%Y-%m-%d")
 
@@ -865,6 +891,13 @@ def main():
     lines = []
     lines.append(f"# 五策略全量回测对比报告 {today}\n")
     lines.append(f"数据范围: {START_DATE} ~ {END_DATE} | 初始资金: ¥{INITIAL_CAPITAL:,}\n")
+
+    # ---------- 口径降级戳（2026-10-23 新增：降级 WARNING 只进 stderr，产物必须自带标注）----------
+    caliber = _data_caliber_summary([r["symbol"] for r in results if "error" not in r])
+    if caliber["fallback"] or caliber["unknown"]:
+        lines.append(f"> 🔴 **口径降级告警**: {len(caliber['fallback'])}/{caliber['total']} 只为不复权数据(新浪日K兜底)"
+                     f"，{len(caliber['unknown'])} 只口径未知 —— 本报告数字不得与历史前复权报告跨日比较"
+                     f"，跨标的比较仅限本批内。降级明细见当日 logs/backtest_run_*.log.err。\n")
 
     # ---------- 八个策略性能汇总 (含2个基准) ----------
     lines.append("## 整体概况\n")
@@ -1093,6 +1126,11 @@ def main():
         "composite_scores": {s: scores[s]["总分"] for s in scores},
         "winner": winner,
         "winner_avg_return": round(winner_ret, 2),
+        "data_caliber": {
+            "fallback_count": len(caliber["fallback"]),
+            "fallback_symbols": caliber["fallback"],
+            "unknown_count": len(caliber["unknown"]),
+        },
     }, ensure_ascii=False, indent=2))
     print("=====BACKTEST_END=====")
 

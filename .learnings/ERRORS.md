@@ -810,3 +810,18 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - First-Seen: 2026-10-23
 - Last-Seen: 2026-10-23
 - Status: resolved（更正评论已发 #4#issuecomment-6364978142，2026-10-23 20:3x）
+
+## ERR-20261023-BacktestCaliberDegradedSilentPush
+**Date**: 2026-10-23
+**Priority**: high
+**现象**: quant-backtest-daily（20:30）运行窗口内 baostock 登录全败（"网络接收错误"）+ akshare 走 7890 代理被拒（ProxyError RemoteDisconnected），36/36 全部回退新浪【不复权】；逐股 WARNING 只进 stderr，backtest 报告/JSON 摘要/TG 推送对口径降级零标注，"EMA12/26金叉 +46.48%" 照发——与历史前复权报告不可比却无任何提示。18:30 close_scan 时 baostock 尚完全正常（fail_count=0）、21:0x 代理实测存活（200/1.8s），属瞬态上游+代理窗口。
+**修复**: backtest_strategies.py 新增 `_data_caliber_summary()`（读 DataRouter provenance 落盘态）→ 报告头口径降级戳 + JSON `data_caliber` 字段；quant_push.format_summary 有降级即追加"勿跨日比较"行。活测：今晚真实 provenance 36/36 fallback 全部命中。当晚报告已会话补注（显式标注非脚本生成）。
+**规约**: ①产物必须自带口径标注——降级信息只进 stderr = 推送层失明（同族：daily_push slim 剥 error 字段、except 静默）；②"内部一致但与历史不可比"的降级（全池统一回退）比混合降级更隐蔽，因无跨标的矛盾可察觉；③数据源状态是时变的——"上游正常"结论必须绑定验证时刻。
+### Metadata (2026-10-23 manual-session 登记)
+- Source: manual-session（webchat 复验轮；logs/backtest_run_20261023.log.err 全量归因 + provenance 活测）
+- Reproducible: yes（_data_caliber_summary(syms) → fallback=36）
+- Pattern-Key: data.caliber-degradation-invisible-downstream（同族 data.none-valued-key-attr-crash 的"无痕降级"面）
+- Recurrence-Count: 1
+- First-Seen: 2026-10-23
+- Last-Seen: 2026-10-23
+- Status: resolved（脚本自动盖戳已落地；下轮 20:30 自然验证）

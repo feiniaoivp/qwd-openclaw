@@ -79,6 +79,9 @@ def format_summary(data: dict, full_output: str) -> str:
     
     lines.append(f"📊 每日量化回测 {date}")
     lines.append(f"覆盖: {stock_count} 只股票 x {data.get('strategy_count', 0)} 个策略")
+    cal = data.get('data_caliber') or {}
+    if cal.get('fallback_count') or cal.get('unknown_count'):
+        lines.append(f"⚠️ 口径降级: {cal.get('fallback_count', 0)} 只不复权 / {cal.get('unknown_count', 0)} 只口径未知 —— 勿与历史前复权报告跨日比较")
     lines.append("")
     
     # 综合评分表
