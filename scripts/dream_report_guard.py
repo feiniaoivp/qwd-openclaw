@@ -43,6 +43,11 @@ WEEKDAY_CN = {"一": "monday", "二": "tuesday", "三": "wednesday", "四": "thu
 WEEKDAY_EN = {"mon": "monday", "tue": "tuesday", "wed": "wednesday", "thu": "thursday",
               "fri": "friday", "sat": "saturday", "sun": "sunday"}
 
+# memory-lancedb-dreaming 重启用冲突检测（2026-10-23 源码坐实）
+TAG_DREAM = "[managed-by=memory-lancedb-dreaming]"
+TAG_DAILY = "[managed-by=memory-lancedb-dreaming] daily-report"
+TOKEN_DAILY = "__openclaw_memory_lancedb_dreaming_daily_report__"
+
 
 def load_jobs(cron_json: str = None):
     if cron_json:
@@ -170,6 +175,36 @@ def check_time(time_str: str, jobs):
     return firing
 
 
+def _payload_text(job):
+    p = job.get("payload") or {}
+    return str(p.get("text") or p.get("message") or "").strip()
+
+
+def check_reenable_risk(jobs, plugin_enabled: bool):
+    """重启用冲突检测：reconcile 每 60s 按 description tag 认领并重置 payload
+    （源码坐实：buildManagedDailyReportPatch 比对 payloadText≠token 即重置；
+    RUNTIME_CRON_RECONCILE_INTERVAL_MS=60_000）。返回 (issues, softs)。"""
+    issues, softs = [], []
+    tagged_daily = [j for j in jobs if TAG_DAILY in str(j.get("description") or "")]
+    if plugin_enabled:
+        for j in tagged_daily:
+            if _payload_text(j) != TOKEN_DAILY:
+                issues.append(
+                    f"重启用冲突：job「{j.get('name')}」仍带 managed tag 且 message 已自定义，"
+                    f"reconcile 将在 60s 内冲回裸 token（runbook 见 memory/2026-10-23.md）")
+        if not tagged_daily:
+            softs.append("插件已启用且无 tag 认领 job：插件将自建 zero-LLM token job，"
+                         "与 LLM 日报产线并存——确认拍板与 04:00 错峰（runbook memory/2026-10-23.md）")
+        elif any(_payload_text(j) == TOKEN_DAILY for j in tagged_daily):
+            softs.append("插件已启用且 token job 在位：日报走插件确定性摘要（无 §5-§8 富分析）")
+    else:
+        for j in tagged_daily:
+            if _payload_text(j) != TOKEN_DAILY:
+                softs.append(f"休眠风险：job「{j.get('name')}」仍带 managed tag 且 message 已自定义，"
+                             f"未来重启用将被 60s 冲回——建议剥 tag")
+    return issues, softs
+
+
 def run_check(report_text: str, jobs):
     rows = extract_validation_rows(report_text)
     results = []
@@ -221,7 +256,20 @@ def selftest() -> int:
     for t, task, matched, issues, soft in results:
         if task in ("INDEX_LEVELS 修复首个自然验证点", "portfolio-sim-daily", "close_scan + 中联盯盘") and issues:
             print(f"❌ selftest: 合法行被误报: {task} -> {issues}"); ok = False
-    print(f"selftest: {'PASS (18 例断言中 5 关键例全过)' if ok else 'FAIL'} | 抓到 {n_issue} 个问题")
+    # 重启用冲突检测（3 例）
+    tagged_custom = {"name": "Dreaming Daily Report",
+                     "description": TAG_DAILY + " Daily report",
+                     "payload": {"kind": "agentTurn", "message": "接地prompt"}}
+    i1, s1 = check_reenable_risk([dict(tagged_custom)], True)
+    if not any("60s" in x for x in i1):
+        print("❌ selftest: 重启用冲突未报"); ok = False
+    i2, s2 = check_reenable_risk([], True)
+    if i2 or not s2:
+        print("❌ selftest: 插件启用无 tag 认领时应只 soft"); ok = False
+    i3, s3 = check_reenable_risk([dict(tagged_custom)], False)
+    if i3 or not s3:
+        print("❌ selftest: 插件停用时休眠风险应只 soft"); ok = False
+    print(f"selftest: {'PASS' if ok else 'FAIL'} | §7 对账抓 {n_issue} 个 + 重启用检测 3 例")
     return 0 if ok else 1
 
 
@@ -245,13 +293,30 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001
         print(f"⚠️ 无法核实（基础设施失败）: {e}")
         return 2
+    # 重启用漂移检测（与 §7 对账独立，永远执行）
+    plugin_enabled = False
+    try:
+        cfg_path = os.path.join(os.path.dirname(WORKSPACE), "openclaw.json")
+        with open(cfg_path, encoding="utf-8") as f:
+            cfg = json.load(f)
+        ent = (cfg.get("plugins") or {}).get("entries") or {}
+        plugin_enabled = bool((ent.get("memory-lancedb-dreaming") or {}).get("enabled"))
+    except Exception:
+        plugin_enabled = False
+    re_issues, re_softs = check_reenable_risk(jobs, plugin_enabled)
+    for s in re_softs:
+        print(f"⚠️ [re-enable] {s}")
     with open(report, encoding="utf-8") as f:
         text = f.read()
     rows = extract_validation_rows(text)
     if not rows:
         print(f"ℹ️ {os.path.basename(report)} 无「今日验证点」表，跳过")
-        return 0
+        print(f"结论: {'exit 1（存在重启用冲突）' if re_issues else 'exit 0'}")
+        return 1 if re_issues else 0
     results, n_issue = run_check(text, jobs)
+    n_issue += len(re_issues)
+    for it in re_issues:
+        print(f"  ❌ [re-enable] {it}")
     print(f"dream 日报对账: {os.path.basename(report)} | 验证点 {len(rows)} 行")
     for time_str, task, matched, issues, soft in results:
         mark = "❌" if issues else "✅"
