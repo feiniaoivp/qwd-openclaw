@@ -809,4 +809,4 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - Recurrence-Count: 1
 - First-Seen: 2026-10-23
 - Last-Seen: 2026-10-23
-- Status: open（待上游 issue 更正评论发出后 resolved）
+- Status: resolved（更正评论已发 #4#issuecomment-6364978142，2026-10-23 20:3x）
