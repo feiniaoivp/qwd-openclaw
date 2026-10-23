@@ -23,11 +23,13 @@ Investigate `analysis/weekly_full_pipeline.py`; check for deadlocks/infinite loo
 - Last-Seen: 2026-10-06
 - See Also: ERR-20261006-PM (same pattern), LEARNINGS cron.silent-noop-fake-ok (同主题：表面状态不可信)
 - Promoted: TOOLS.md「🔴 长跑 pipeline 卡死判定规则」(2026-10-07 提升；2026-10-09 维护复核确认生效，Source: .learnings/ERRORS.md#ERR-20260926-WBP)
+> **[2026-10-24 每周维护]** 共享计数主条目（本条 + ERR-20260926-WBP，RC=3 跨 3 任务）周度终态确认：TOOLS.md 规则在位，Last-Seen 维持 2026-10-06，无新复发，promoted 终态不变。
 
 > **[2026-10-19 每日维护 · 第2轮]** RC≥3 共享计数条目（跨 3 任务 30 天内）终态复核：TOOLS.md 规则在位（grep 确认「长跑 pipeline 卡死判定规则」章节存在），无新复发，RC 维持 3 不虚增，保持 promoted。
 > **[2026-10-20 每日维护]** 第三轮终态确认：TOOLS.md L367 规则仍在位，Last-Seen 维持 2026-10-06，无新复发，promoted 终态不变。
 > **[2026-10-22 每日维护]** 第四轮终态确认：TOOLS.md「长跑 pipeline 卡死判定规则」在位，RC 维持 3（跨 3 任务），Last-Seen 维持 2026-10-06，无新复发，promoted 终态不变。
 > **[2026-10-23 每日维护]** 第五轮终态确认：RC≥3 且 30 天内（Last-Seen 10-06），grep 复核 TOOLS.md 规则在位；无新复发，RC 不虚增，promoted 终态不变。
+> **[2026-10-24 每周维护]** 第六轮终态确认：RC 维持 3，TOOLS.md 规则 grep 在位，无新复发；每日重复终态确认收敛为每周一次。
 
 > **[2026-10-10 维护去重]** 本条目与 ERR-20261006-PM 同 Pattern-Key `ops.silent-orchestrator-misjudged-as-hang`
 > （Recurrence-Count=3 共享计数，First-Seen 2026-09-26）。已合并为一条模式，保留两条作为
@@ -454,6 +456,7 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Status: promoted (2026-10-19 → TOOLS.md「🔴 网络调用超时铁律」)
 - Promoted: TOOLS.md「🔴 网络调用超时铁律」(2026-10-19, Source: .learnings/ERRORS.md#err.dist-io-no-timeout)
 - Maintenance (2026-10-23 每日维护): RC=4 ≥3、Last-Seen 10-18 在 30 天窗口内；grep 复核 TOOLS.md「网络调用超时铁律」在位，无新复发，promoted 终态不变。
+- Maintenance (2026-10-24 每周维护): RC 维持 4，Last-Seen 维持 2026-10-18，TOOLS.md 铁律 grep 在位，无新复发，promoted 终态不变。注意：10-23 quant-backtest 窗口内 baostock/akshare 瞬态失败属已降级故障（ERR-20261023-BacktestCaliberDegradedSilentPush，已盖戳修复），非无超时挂死，不计入本 RC。
 - See Also: memory/dreaming/daily-report-2026-09-17.md（sock_recv 挂起 → net_guard 立项）；
   memory/dreaming/daily-report-2026-09-30.md（baostock 常驻会话先于护栏建连，遗留未治）；
   ERR-20261002-BSL（baostock 登录 ~60s 无负缓存，同类无超时放大因素）
@@ -761,6 +764,7 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - First-Seen: 2026-10-23
 - Last-Seen: 2026-10-23
 - Status: resolved（两层修复已入库；复核点 2026-10-26 周一 09:27）
+- Maintenance (2026-10-24 每周维护): 旁证 ✅ —— `data/auction/2026-10-23_9_25.json` = 17,222 B 真实快照（10-23 交易日）；cron 列表 `auction-signal-push`(cc1e9a93) 显示的 error 为 10-23 09:27 修复前 run 的残留状态，非新事故。终验等 10-26（周一）09:27 自然 run。
 
 ---
 ## ERR-20261023-CloseScanPocBinFloat
@@ -778,6 +782,7 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - First-Seen: 2026-10-22
 - Last-Seen: 2026-10-23
 - Status: resolved（0c86f99；验证点=今晚 18:30 全池扫描自然运行）
+- Maintenance (2026-10-24 每周维护): 验证点通过 ✅ —— 10-23 18:30 自然运行产物在盘（`analysis/daily/2026-10-23_dual.md` 18:46 生成，000987 行正常「⚪双持有」非 error；`pipeline_cache/close_scan_2026-10-23.json` 全池 0 个 error/None-signal 行），0c86f99 边界修复自然场景生效，本条终态。RC 维持 2 不虚增。
 
 ---
 ## ERR-20261023-GhTlsFingerprintBlocked
