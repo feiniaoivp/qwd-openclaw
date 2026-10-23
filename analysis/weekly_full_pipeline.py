@@ -356,6 +356,15 @@ def main():
     if not r["success"]:
         print("⚠️ 知识库正文抽样异常（见上方），关注 [EMPTY] 条目比例（不阻断流水线）...")
 
+    # 步骤 0ad: dreaming 日报 §7 job 名对账（2026-10-23 新增，warn-only）
+    # 背景：dreaming §7 虚构「记忆维护-周五」（thursday 系列外推）；daily-report 由插件
+    # magic-token 生成、cron message 不可改 → 事后门禁对账 job 名 vs cron list 实名。
+    print("\n🚦 步骤 0ad/9: dreaming 日报验证点 job 名对账 (dream_report_guard.py)")
+    r = run_script("../scripts/dream_report_guard.py", timeout=180)
+    results["dream_report_guard"] = r
+    if not r["success"]:
+        print("⚠️ dreaming 日报验证点表含虚构/未知 job 名（见上方），下轮 dreaming 应修正（不阻断流水线）...")
+
     # 步骤 0k: 五维评分 None 契约门禁（2026-10-17 新增，纯逻辑合成输入秒级）
     # 背景：10-08 立项「隐性 5.0 填充」改造（98820ca + 3977840）。缺数据必须 None，
     # 禁止 or 0/or 50/5.0 托底；RSI<30 不加分口径一并锁定。防未来改码回潮。
