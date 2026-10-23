@@ -794,3 +794,19 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - First-Seen: 2026-10-23
 - Last-Seen: 2026-10-23
 - Status: resolved（curl+token 兜底可用；TOOLS.md 已固化）
+
+---
+## ERR-20261023-StaticInferenceFiledAsFact
+**Date**: 2026-10-23
+**Priority**: medium
+**现象**: 对 memory-lancedb-dreaming tag 前缀冲突做了三段式静态推演（收养→深梦境哑火→60s message 振荡）并写进已提交的上游 issue #4；随后用插件真实导出函数 + mock cron 跑 5 tick 实测，两条被推翻：真实机制 = 日报 job id 每 60s 删+建漂移（插件自残，与用户 job 无关），深梦境 job 通过夺取日报 job 正常产生，无 message 振荡。
+**修复**: 5-tick mock 实测取证（recon_5tick.mjs）；issue #4 更正评论起草待批；daily-note 已勘误。
+**规约**: 对外提交（issue/报告/文档）的行为结论必须先用**真实导出函数 + 最小 mock** 跑过再落笔——静态推演只能产出「待验证假设」标注，不能写成结论（同族：「没有新版接口」需实测、「会话自报闭环」需 grep 核实）。
+### Metadata (2026-10-23 manual-session 登记)
+- Source: manual-session（webchat 深究轮；node import dist/cron.js 直跑）
+- Reproducible: yes（/tmp/recon_5tick.mjs）
+- Pattern-Key: analysis.static-inference-not-executed（同族 cron.verification-evidence-self-echo）
+- Recurrence-Count: 1
+- First-Seen: 2026-10-23
+- Last-Seen: 2026-10-23
+- Status: open（待上游 issue 更正评论发出后 resolved）
