@@ -98,6 +98,7 @@ def persist_artifacts(data: dict, summary_text: str) -> list:
                 "price": r.get("price"),
                 "change_pct": r.get("change_pct"),
                 "signal": r.get("signal"),
+                "scan_error": r.get("error"),
                 "trend": (r.get("indicators") or {}).get("ema_trend", {}).get("trend"),
                 "stop_long": (r.get("indicators") or {}).get("atr", {}).get("stop_long"),
                 "support": (r.get("indicators") or {}).get("support_resistance", {}).get("support_recent"),

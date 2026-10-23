@@ -263,10 +263,15 @@ def calc_support_resistance(df: pd.DataFrame, lookback: int = 60) -> dict:
     price_range = high - low
     if price_range > 0:
         bin_edges = [low + i * price_range / bins for i in range(bins + 1)]
-        vol_profile = pd.cut(recent["close"], bins=bin_edges, labels=False)
+        # 2026-10-23 修复：pd.cut 默认左开区间 (low, ...]，当窗口内 min(close)==min(low)
+        # （收盘恰在最低价边界）时该值被判 NaN → vol_profile 变 float64 →
+        # idxmax() 返回 np.float64 → bin_edges[float] TypeError 崩溃
+        # （越秀资本 10-22 晚/10-23 晨两次实证，error 行致下游 signal=null）。
+        # include_lowest 让边界值归入 bin0（同时修止 poc 统计丢样本）；int() 兕底防御。
+        vol_profile = pd.cut(recent["close"], bins=bin_edges, labels=False, include_lowest=True)
         vol_by_bin = recent.groupby(vol_profile)["volume"].sum()
         if not vol_by_bin.empty:
-            poc_bin = vol_by_bin.idxmax()
+            poc_bin = int(vol_by_bin.idxmax())
             poc_price = (bin_edges[poc_bin] + bin_edges[poc_bin + 1]) / 2
         else:
             poc_price = (high + low) / 2
