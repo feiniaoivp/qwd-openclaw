@@ -83,7 +83,8 @@ def main() -> int:
     for r in auction["rows"]:
         code = r.get("code", "")
         sig = signals.get(code)
-        level = (sig or {}).get("signal", {}).get("level", "")
+        sig_obj = (sig or {}).get("signal") or {}
+        level = sig_obj.get("level", "")
         ochg = r.get("open_chg_pct")
         if ochg is None:
             continue
@@ -102,7 +103,7 @@ def main() -> int:
             hits.append({
                 "code": code, "name": r.get("name", ""), "tag": tag,
                 "open_chg_pct": ochg, "signal_level": level,
-                "signal_score": (sig or {}).get("signal", {}).get("score"),
+                "signal_score": sig_obj.get("score"),
                 "signal_date": scan_date,
                 "support": (sig or {}).get("support"), "resistance": (sig or {}).get("resistance"),
             })
