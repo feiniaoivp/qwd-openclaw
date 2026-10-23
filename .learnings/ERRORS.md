@@ -778,3 +778,19 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - First-Seen: 2026-10-22
 - Last-Seen: 2026-10-23
 - Status: resolved（0c86f99；验证点=今晚 18:30 全池扫描自然运行）
+
+---
+## ERR-20261023-GhTlsFingerprintBlocked
+**Date**: 2026-10-23
+**Priority**: low
+**现象**: `gh repo view / issue create` 全部报 `net/http: TLS handshake timeout`（直连与 7890 代理同败），同刻 curl 直连/代理均亚秒响应——gh 的 Go crypto/tls 指纹被网络侧针对 api.github.com 的 TLS 拦截甄别掉（与东财 curl_cffi 指纹拦截同族）。
+**修复**: curl + `gh auth token`（keyring 取 token 写 600 临时 header 文件，用后即删）直接 POST API，issue 成功创建（airbing11/memory-lancedb-dreaming#4）。
+**规约**: gh 遇 TLS handshake timeout 不要反复重试/换代理——先用 curl 同 URL 诊断（能通=指纹问题），走「token 临时文件 + curl」兜底；token 严禁进 stdout/日志/命令历史。
+### Metadata (2026-10-23 manual-session 登记)
+- Source: manual-session（webchat；用户 /approve 提 issue 执行时发现）
+- Reproducible: yes
+- Pattern-Key: net.gh-go-tls-fingerprint-blocked（同族 net.tls-fingerprint-interception）
+- Recurrence-Count: 1
+- First-Seen: 2026-10-23
+- Last-Seen: 2026-10-23
+- Status: resolved（curl+token 兜底可用；TOOLS.md 已固化）

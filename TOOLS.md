@@ -606,3 +606,9 @@ python3 scripts/test_isolation_guard.py --selftest  # 8 例对抗自测
 1. **现状工作正常、无需抢救**。plugin-managed job 不会回魂（cron 列表仅有人工 job `a07898c0`，`managedBy: null`）。
 2. **若未来决定恢复 promote**：必须**先小步放量**（如 `minRecallCount` 降至实际分布 P90 ≈ 50~100），**严禁直接归零**。
 3. 本条目即为"显式标注"，后续维护者见此即知语义与风险。
+
+## 🐙 gh CLI 被指纹拦截的兜底（2026-10-23 实证）
+
+- 症状：`gh` 任何 API 调用报 `Post "https://api.github.com/graphql": net/http: TLS handshake timeout`，直连与 `HTTPS_PROXY=127.0.0.1:7890` 皆然；同刻 curl 直连/代理均秒回（403/200）。
+- 根因：本网络对 api.github.com 按 **TLS 指纹**放行/拦截——curl(LibreSSL) 过、gh(Go crypto/tls) 被拦（与东财 curl_cffi 指纹同族）。
+- 兜底（外部动作仍须 /approve）：`token=$(gh auth token)`（keyring，勿 echo）→ 写 600 临时 header 文件 → `curl -sS -H @/tmp/gh_header.txt -H "Accept: application/vnd.github+json" -d @payload.json https://api.github.com/...` → 用完立即 `rm` header 文件，token 永不进 stdout/日志/历史。
