@@ -83,7 +83,7 @@ def main() -> int:
     for r in auction["rows"]:
         code = r.get("code", "")
         sig = signals.get(code) or {}
-        sig_obj = sig.get("signal") or {}
+        sig_obj = (sig.get("signal") or {}) if isinstance(sig, dict) else {}
         level = sig_obj.get("level", "")
         ochg = r.get("open_chg_pct")
         if ochg is None:
