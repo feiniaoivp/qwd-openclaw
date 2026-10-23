@@ -745,3 +745,36 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - Last-Seen: 2026-10-22
 - Status: resolved（state-bookkeeping 前置落地；21:5x 首个自然 tick 为验证点）
 - Maintenance (2026-10-23 每日维护): 验证点通过 ✅ —— `memory/heartbeat-state.json` mtime 2026-10-23 05:54（修复后多个自然 tick 持续回写），state-bookkeeping 前置任务实测生效，本条终态。
+
+---
+## ERR-20261023-AuctionSigNullCrash
+**Date**: 2026-10-23
+**Priority**: medium
+**现象**: 09:27 auction-signal-push 调度 run exit 1：`AttributeError: 'NoneType' object has no attribute 'get'`——竞价池个股（000708 中信特钢）在 close_scan 信号档案中 `signal` 值为 null，旧码 `(sig or {}).get("signal", {}).get("level", "")` 两段兜底都挡不住「键存在但值为 None」；当日命中告警（🔴信号+低开共振，开盘 -5.06%）未送达 TG（09:44 重跑后推送又遇 TG TLS 潮汐，两段式故障）。
+**修复**: fe36ddf（`(sig.get("signal") or {})` 兜底 + 09:44 重跑产物落盘）→ 291f1e2（`signals.get(code) or {}` + isinstance 二层，个股无档场景）→ aef3b95 入账。同日 10:30 intraday-alert-watch 同为 curl 35 TG TLS（11:00 自愈）。
+**规约**: 外部数据取嵌套字段统一 `(x.get(k) or {})` 写法——`dict.get(k, {})` 的默认值只在**键不存在**时生效，键存在且值为 None 时返回 None，链式 `.get` 必崩（与 2026-10-08「数据源返回 `''` 而非 NaN」同族：外部数据形态不容错）。
+### Metadata (2026-10-23 manual-session 登记)
+- Source: manual-session（webchat 验收终态轮；cron runs traceback + git log 实证）
+- Reproducible: yes
+- Pattern-Key: data.none-valued-key-attr-crash（同族 data.source-type-intolerance）
+- Recurrence-Count: 1
+- First-Seen: 2026-10-23
+- Last-Seen: 2026-10-23
+- Status: resolved（两层修复已入库；复核点 2026-10-26 周一 09:27）
+
+---
+## ERR-20261023-CloseScanPocBinFloat
+**Date**: 2026-10-23
+**Priority**: high
+**现象**: 越秀资本(000987) 在 10-22 18:31 与 10-23 06:00 两次 close_scan 指标计算抛 `TypeError: list indices must be integers or slices, not numpy.float64`（close_scan_v2.py calc_support_resistance:270）→ 股票变 error 行；daily_push slim 变换层 `r.get("signal")` 把 error 行写成 signal=null 并剥掉 error 字段（无痕降级）；下游 auction_signal_push 09:27 对 null signal 链式 .get 崩溃（fe36ddf 误归因 000708，实为 000987）。
+**根因**: 窗口内 min(close)==min(low)（收盘恰在 60 日最低价边界）时，pd.cut 默认左开区间 (low,…] 把边界值判 NaN → vol_profile 变 float64 → groupby 键 float64 → idxmax() 返回 np.float64 → python list 以 float 索引崩溃。数据形态触发，非代码变更引入（close_scan_v2 自 10-20 零改动）。
+**修复**: 0c86f99——include_lowest=True（边界值归入 bin0，同时修复 poc 一直丢边界样本）+ int(vol_by_bin.idxmax()) 兜底；daily_push slim 增 scan_error 字段保住 error 血统。回归：崩溃态重放 OK + 全池 36 只 0 崩溃。
+**规约**: ①pd.cut 用数值边界时一律 include_lowest=True，且 idxmax()/index 取值进 list 前必须 int() 强转（与「键存在但值 None」同族：统计对象/外部数据形态不容错）；②变换层（raw→slim）必须透传 error 字段——剥掉 error = 无痕降级 = 下游拿 null 当数据（假 ok 家族：错误被清洗层吞掉）。
+### Metadata (2026-10-23 manual-session 登记)
+- Source: manual-session（webchat 深究轮；/tmp 复现脚本真栈 + scan_last.json 实录 + 档案逐日扫描）
+- Reproducible: yes（df 终点=10-22 稳定复现；修复后重放通过）
+- Pattern-Key: pandas.pd-cut-boundary-nan-float-index（同族 data.none-valued-key-attr-crash；ERR-20261023-AuctionSigNullCrash 为其下游）
+- Recurrence-Count: 2（10-22 18:31、10-23 06:00 两次运行）
+- First-Seen: 2026-10-22
+- Last-Seen: 2026-10-23
+- Status: resolved（0c86f99；验证点=今晚 18:30 全池扫描自然运行）
