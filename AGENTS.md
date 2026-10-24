@@ -168,7 +168,14 @@ Starting point — add your own conventions as you learn what works.
 *   **数据源返回类型必须容错**。外部源（baostock/akshare/新浪）停牌或缺失日可能返回
     **空字符串 `''`** 而非 NaN，`astype(float)` 会直接 ValueError 崩掉整批扫描。
     统一用 `pd.to_numeric(errors='coerce')` + `dropna()`；**禁止**先用 ``== ''`` 简单判断。
-    （实证：2026-10-08 关注池 35 只全量扫描在第 4 只票崩，修复后 35/35 全成）
+    同族扩展（RC=3，2026-10-25 升格）：**「键存在但值为 None」同样必须容错**——嵌套 dict
+    取值统一 `(x.get(k) or {})`（`dict.get(k, {})` 的默认值只在**键不存在**时生效，值为
+    None 时仍返回 None，链式 `.get` 必崩）；pd.cut 数值边界一律 `include_lowest=True`，
+    `idxmax()` 等统计取值进 list 前必须 `int()` 强转；变换层（raw→slim）**禁止剥掉 error
+    字段**（无痕降级 = 下游拿 null 当数据）。
+    （实证：2026-10-08 空字符串崩扫描 / 2026-10-23 auction_push None-signal 崩溃 fe36ddf /
+    2026-10-23 close_scan pd.cut 边界 NaN→float 索引崩溃 0c86f99，跨 3 任务）
+    Source: .learnings/ERRORS.md#data.none-valued-key-attr-crash
 *   **免费快速模型不许跑长任务**。长任务（全量扫描、多阶段分析）禁用免费快速小模型：
     已两次实证退化——26s 超时、visible reply 整段乱码。长任务一律用稳定主模型，
     或拆分为可重试的短步骤。（实证：GLM-5.3-Flash 2026-10-08 乱码事故）

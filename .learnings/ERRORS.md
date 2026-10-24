@@ -759,11 +759,15 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 ### Metadata (2026-10-23 manual-session 登记)
 - Source: manual-session（webchat 验收终态轮；cron runs traceback + git log 实证）
 - Reproducible: yes
-- Pattern-Key: data.none-valued-key-attr-crash（同族 data.source-type-intolerance）
-- Recurrence-Count: 1
-- First-Seen: 2026-10-23
+- Pattern-Key: data.none-valued-key-attr-crash（同族 data.source-type-intolerance；共享计数含 ERR-20261023-CloseScanPocBinFloat、
+  与 2026-10-08 ERR-20261008-ModelGarbledOutput 的 data.empty-string-float 同属「外部数据形态不容错」家族）
+- Recurrence-Count: 3（共享计数：10-08 空字符串崩扫描 / 10-23 本条 None-signal 崩溃 / 10-23 CloseScanPocBinFloat pd.cut 边界；
+  跨 close_scan、auction_signal_push、daily_push 三任务，30 天窗口内；2026-10-25 维护升格 bump）
+- First-Seen: 2026-10-08
 - Last-Seen: 2026-10-23
-- Status: resolved（两层修复已入库；复核点 2026-10-26 周一 09:27）
+- Status: promoted (2026-10-25 → AGENTS.md「配套铁律 · 数据源返回类型必须容错」同族扩展段：(x.get(k) or {}) / include_lowest=True / int() 强转 / 禁剥 error 字段)
+- Promoted: AGENTS.md 配套铁律（2026-10-25, Source: .learnings/ERRORS.md#data.none-valued-key-attr-crash）
+- Status (原 2026-10-23 登记): resolved（两层修复已入库；复核点 2026-10-26 周一 09:27）
 - Maintenance (2026-10-24 每周维护): 旁证 ✅ —— `data/auction/2026-10-23_9_25.json` = 17,222 B 真实快照（10-23 交易日）；cron 列表 `auction-signal-push`(cc1e9a93) 显示的 error 为 10-23 09:27 修复前 run 的残留状态，非新事故。终验等 10-26（周一）09:27 自然 run。
 
 ---
@@ -830,3 +834,7 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - First-Seen: 2026-10-23
 - Last-Seen: 2026-10-23
 - Status: resolved（脚本自动盖戳已落地；下轮 20:30 自然验证）
+
+> **[2026-10-25 每日维护]** cron failed 红线核对：本条 Source 为 manual-session 非 cron-failed 事件，不受误报红线约束；
+> rc=1 < 3 维持观察，验证点 = 下个工作日 20:30 自然运行报告头部口径戳。另：`auction-signal-push`（cc1e9a93）在现存 52 jobs
+> 列表内属实（非误报名），其 status=error 残留经 `cron runs` 坐实为 10-23 09:27 修复前末次 run，非新失败，终验等 10-26 周一自然 run。
