@@ -27,18 +27,21 @@ def audit():
     for line in lines:
         stripped = line.strip()
         if not stripped: continue
-        
-        # 匹配 bullet point (标题行)
-        if stripped.startswith(("•", "-")):
+
+        # 优先判定是否为正文引导行 (处理 "- Details: ..." 模式)
+        # 2026-10-26 修复: Data/Insight/Related 同属正文子行，不再误判为新条目
+        is_detail_line = any(k in stripped for k in ["Details:", "内容:", "详情:", "Data:", "Insight:", "Related:"])
+
+        if stripped.startswith(("•", "-")) and not is_detail_line:
             if current_entry:
                 entries.append(current_entry)
-            
-            # 提取标题内容
             title = stripped.lstrip("•- ").strip()
             current_entry = {"title": title, "content": []}
         elif current_entry:
-            # 认为缩进的内容是正文
-            current_entry["content"].append(stripped)
+            # 无论是缩进行还是 Detail 引导行，都归为正文
+            # 剔除引导词以保证长度统计纯净
+            clean_text = re.sub(r'^.*(?:Details|内容|详情):\s*', '', stripped)
+            current_entry["content"].append(clean_text)
 
     if current_entry:
         entries.append(current_entry)
@@ -51,12 +54,17 @@ def audit():
     # 统计正文分布
     has_content = 0
     content_lengths = []
-    
+    grade_dist = Counter()
+
     for e in entries:
         full_text = " ".join(e["content"])
-        if len(full_text) > 20: # 认为超过 20 字才算有实质内容
+        length = len(full_text)
+        if length > 5:  # 基础门槛
             has_content += 1
-            content_lengths.append(len(full_text))
+            content_lengths.append(length)
+            # 分级：Stub (<30), Summary (30-100), Detailed (>100)
+            grade = "Detailed" if length > 100 else ("Summary" if length > 30 else "Stub")
+            grade_dist[grade] += 1
 
     print("="*50)
     print("📊 knowledge_base.md 含金量审计报告")
@@ -64,6 +72,8 @@ def audit():
     print(f"解析总条目数:   {total}")
     print(f"含正文条目数:   {has_content}")
     print(f"正文覆盖率:     {(has_content/total*100):.2f}%")
+    
+    print(f"含金量分布:     {dict(grade_dist)}")
     
     if content_lengths:
         print(f"正文平均长度:   {sum(content_lengths)//len(content_lengths)} 字")
