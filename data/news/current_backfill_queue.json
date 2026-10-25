@@ -1,21 +1,5 @@
 [
   {
-    "title": "",
-    "score": 358.0,
-    "recall_freq": 358,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "**Related**: [[长电科技(600584)]], [[通富微电(002156)]]",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
     "title": "恒力石化600346.SH)：完成发行10亿元短期融资券",
     "score": 2.0,
     "recall_freq": 0,
@@ -40,95 +24,7 @@
     "length": 0
   },
   {
-    "title": "长电科技600584.SH)2026年中报净利润为8.45亿元、较去年同期上涨79.41%",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中信金属601061.SH)2026年中报净利润为26.73亿元、较去年同期上涨84.55%",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "机构风向标 | 久立特材0023182026年二季度已披露持股减少机构超10家",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "恒生电子600570.SH)：2026年中报净利润为2.61亿元",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
     "title": "002466 上半年净利润超42亿元 同比增长超4900%",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中金公司601995.SH)：2026年中报净利润为81.99亿元、同比较去年同期上涨89.35%",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "机构风向标 | 通富微电0021562026年二季度已披露持股减少机构超10家",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "应流股份603308.SH)：2026年中报净利润为2.21亿元",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "越秀资本000987.SZ)：2026年中报净利润为28.10亿元、同比较去年同期上涨80.35%",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "**科华数据** 科华数据:002335科华数据投资者关系管理信息20260904 [调研活动]",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "恒立液压601100.SH)：2026年中报净利润为14.36亿元",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中联重科000157.SZ)：2026年中报净利润为21.02亿元、同比较去年同期下降23.97%",
     "score": 2.0,
     "recall_freq": 0,
     "entity": true,
@@ -152,11 +48,115 @@
     "length": 0
   },
   {
-    "title": "科华数据002335.SZ)：2026年中报净利润为3.96亿元",
+    "title": "中信特钢000708.SZ)：全资子公司泰富科创完成15.1亿元收购富景特100%股权交割",
     "score": 2.0,
     "recall_freq": 0,
     "entity": true,
     "grade": "Empty",
     "length": 0
+  },
+  {
+    "title": "9.19亿元！605566，签下“服务”大单",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "雷科防务002413龙虎榜数据10-12",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "电网龙头002028，跌停！",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "002466，业绩大增超27倍",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 福耀玻璃6006602026年三季度已披露持仓机构仅6家",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "中芯国际（688981.SH）脱水研报",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "利好来了！002466、601869、603629、603256等多只热门股业绩大幅预增 最高预增49倍！",
+    "score": 1.8,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Stub",
+    "length": 17
+  },
+  {
+    "title": "机构风向标 | 雷科防务0024132026年二季度已披露持仓机构仅5家",
+    "score": 1.8,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Stub",
+    "length": 17
+  },
+  {
+    "title": "通富微电002156龙虎榜数据08-03)",
+    "score": 1.8,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Stub",
+    "length": 17
+  },
+  {
+    "title": "机构风向标 | 国瓷材料3002852026年二季度已披露持股减少机构超10家",
+    "score": 1.8,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Stub",
+    "length": 17
+  },
+  {
+    "title": "600346，预计上半年业绩大增超130%！",
+    "score": 1.8,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Stub",
+    "length": 17
+  },
+  {
+    "title": "中信证券600030.SH)：2026年中报净利润为233.43亿元、同比较去年同期上涨69.60%",
+    "score": 1.8,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Stub",
+    "length": 17
+  },
+  {
+    "title": "通富微电002156.SZ)：2026年中报净利润为17.17亿元",
+    "score": 1.8,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Stub",
+    "length": 17
   }
 ]
