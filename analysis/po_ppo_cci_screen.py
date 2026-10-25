@@ -5,6 +5,7 @@
 数据日期动态推导（2026-10-23 升级：去除 10-13 硬编码），经 analysis.service 交易日历 SSOT。
 输出: 每只股票 PPO/Signal/Histogram、CCI(20)、金叉/死叉、超买超卖分层、振幅、量比(5日均量)。
 """
+import json
 import os
 import sys
 from datetime import date, timedelta
@@ -127,7 +128,43 @@ def compute(g, end_day):
     }
 
 
+def tags_for(r):
+    """标签判定（表格/JSON 单一来源，避免双处口径漂移）"""
+    tags = []
+    if r["cci"] > 100: tags.append("超买⚠回调")
+    elif r["cci"] > 50: tags.append("偏强")
+    if r["cci"] < -100: tags.append("超卖(观察反弹)")
+    elif r["cci"] < -50: tags.append("偏弱")
+    if r["cross"] == "金叉": tags.append("PPO金叉✓")
+    if r["cross"] == "死叉": tags.append("PPO死叉✗")
+    if r["hist_d"] > 0: tags.append("柱增")
+    else: tags.append("柱缩")
+    if r["vr"] > 2 and r["ampl"] > 5: tags.append("🔴量价异动")
+    return tags
+
+
+def emit_json(end_day, ok, bad):
+    """管线模式：标记包裹 JSON（premarket_pipeline 阶段约定），行内带 tags 免二次推导"""
+    rows = [{
+        "name": r["name"], "sym": r["sym"], "date": r["date"],
+        "close": r["close"], "cci": r["cci"], "ppo": r["ppo"],
+        "hist": r["hist"], "hist_d": r["hist_d"],
+        "ampl": r["ampl"], "vr": r["vr"], "cross": r["cross"],
+        "tags": tags_for(r),
+    } for r in ok]
+    payload = {
+        "data_day": end_day,
+        "coverage": {"ok": len(ok), "total": len(WATCHLIST)},
+        "rows": rows,
+        "bad": [{"name": r["name"], "sym": r["sym"], "date": r.get("date", "NODATA")} for r in bad],
+    }
+    print("=====PPO_CCI_RESULT=====")
+    print(json.dumps(payload, ensure_ascii=False))
+    print("=====PPO_CCI_END=====")
+
+
 def main():
+    emit_json_mode = "--json" in sys.argv[1:]
     end_day = detect_data_day()
     if not end_day:
         print("交易日历为空，无法确定数据日", file=sys.stderr)
@@ -146,19 +183,13 @@ def main():
     ok = [r for r in results if not r["stale"]]
     bad = [r for r in results if r["stale"]]
     ok.sort(key=lambda x: -x["cci"])
+    if emit_json_mode:
+        emit_json(end_day, ok, bad)
+        return
     print(f"=== PPO/CCI 筛选 | 数据日 {end_day} | 覆盖 {len(ok)}/{len(WATCHLIST)} ===\n")
     print(f"{'股票':<10}{'收盘':>8}{'CCI20':>8}{'PPO':>8}{'柱':>8}{'柱动':>7}{'振幅%':>7}{'量比':>6}{'叉':>5}  标签")
     for r in ok:
-        tags = []
-        if r["cci"] > 100: tags.append("超买⚠回调")
-        elif r["cci"] > 50: tags.append("偏强")
-        if r["cci"] < -100: tags.append("超卖(观察反弹)")
-        elif r["cci"] < -50: tags.append("偏弱")
-        if r["cross"] == "金叉": tags.append("PPO金叉✓")
-        if r["cross"] == "死叉": tags.append("PPO死叉✗")
-        if r["hist_d"] > 0: tags.append("柱增")
-        else: tags.append("柱缩")
-        if r["vr"] > 2 and r["ampl"] > 5: tags.append("🔴量价异动")
+        tags = tags_for(r)
         print(f"{r['name']:<10}{r['close']:>8}{r['cci']:>8}{r['ppo']:>8}{r['hist']:>8}{r['hist_d']:>7}{r['ampl']:>7}{r['vr']:>6}{r['cross']:>5}  {' '.join(tags)}")
     if bad:
         print(f"\n⚠️ 无数据/滞后({len(bad)}): " + ", ".join(f"{r['name']}({r['date']})" for r in bad))

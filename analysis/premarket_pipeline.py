@@ -108,6 +108,21 @@ STAGES = [
         "marker_end": "=====SIGNAL_AUDIT_END=====",
         "fallback_file": None,
     },
+    {
+        # 2026-10-26 新增：关注池 PPO/CCI 量化预筛（a-share-analyst Workflow C）
+        # 数据日自动探测（盘前=上一交易日收盘），非关键阶段，失败不阻断主链。
+        # fallback_file 仅文档口径（非 required 阶段不走降级分支），成功产出由
+        # save_success_output 自动落 data/pipeline_cache/ppo_cci_last.json。
+        "name": "ppo_cci",
+        "script": "analysis/po_ppo_cci_screen.py",
+        "args_tmpl": ["--json"],
+        "timeout": 480,
+        "max_retry": 1,
+        "required": False,
+        "marker_start": "=====PPO_CCI_RESULT=====",
+        "marker_end": "=====PPO_CCI_END=====",
+        "fallback_file": "data/pipeline_cache/ppo_cci_last.json",
+    },
 ]
 
 # 成功产出缓存目录
@@ -473,6 +488,29 @@ def build_report(date: str, results: dict) -> str:
             content = content[:2000] + "\n... (完整版见 daily_新闻文件)"
         return f"📰 **当日新闻摘要 ({date_str})**\n\n{content}"
 
+    def fmt_ppo_cci(data, skipped=False):
+        if skipped:
+            return "ℹ️ 非交易日，PPO/CCI 预筛跳过（数据日同上一交易日，无增量）"
+        if not data:
+            return "❌ 无数据（ppo_cci 阶段失败，详见 pipeline 日志 stderr）"
+        lines = []
+        cov = data.get("coverage", {})
+        lines.append(f"📈 **PPO/CCI 量化预筛** (数据日 {data.get('data_day', '?')} | 覆盖 {cov.get('ok', '?')}/{cov.get('total', '?')})")
+        rows = data.get("rows", [])
+
+        def _pick(tag, limit=5):
+            got = [r for r in rows if tag in (r.get("tags") or [])]
+            return "、".join(f"{r['name']}({r['cci']})" for r in got[:limit]) if got else "无"
+
+        lines.append(f"🔴 超买(防回调): {_pick('超买⚠回调')}")
+        lines.append(f"✅ PPO金叉: {_pick('PPO金叉✓')}")
+        lines.append(f"🟢 超卖(观察反弹): {_pick('超卖(观察反弹)')}")
+        lines.append(f"⚡ 量价异动: {_pick('🔴量价异动')}")
+        bad = data.get("bad") or []
+        if bad:
+            lines.append("⚠️ 无数据/滞后: " + "、".join(f"{b['name']}({b.get('date', '?')})" for b in bad[:5]))
+        return "\n".join(lines)
+
     # === 组装最终报告 ===
     md_parts = []
     md_parts.append(f"# 📊 A股每日盘前深度分析报告 | {date}")
@@ -505,6 +543,13 @@ def build_report(date: str, results: dict) -> str:
 
     md_parts.append("## 🔍 信号交叉审计")
     md_parts.append(fmt_signal_audit(audit_data))
+    md_parts.append("")
+
+    md_parts.append("## 📈 PPO/CCI 量化预筛")
+    md_parts.append(fmt_ppo_cci(
+        _unwrap_cached_data(results.get("ppo_cci", {}).get("data")),
+        skipped=results.get("ppo_cci", {}).get("skipped_non_trading", False),
+    ))
     md_parts.append("")
 
     md_parts.append("## 📰 盘前关键资讯")
@@ -545,6 +590,12 @@ def main():
                 print(f"  ⏭️ {name}: 非交易日，使用降级数据 | {fb_note}")
             else:
                 results[name] = {"ok": False, "data": None, "error": "非交易日且无降级数据"}
+            continue
+
+        # 非交易日跳过 ppo_cci 预筛（数据日与上一交易日相同，重跑无增量；2026-10-26 新增）
+        if not is_trade_day and name == "ppo_cci":
+            results[name] = {"ok": True, "data": None, "skipped_non_trading": True, "error": None}
+            print(f"  ⏭️ {name}: 非交易日，跳过 PPO/CCI 预筛")
             continue
         
         # 2026-10-11(#1): scan 阶段优先消费昨夜 18:30 收盘扫描全量档案
