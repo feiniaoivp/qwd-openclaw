@@ -48,6 +48,7 @@ def apply_detailed_updates(synthesized_file):
     updated_count = 0
     appended_count = 0
     skipped_count = 0
+    skipped_richer = 0
     
     for entry in updates:
         title = entry.get("title")
@@ -75,7 +76,15 @@ def apply_detailed_updates(synthesized_file):
         
         replacement = f"• {title}\n      - Details: {conclusion}\n      - Data: {data}\n      - Insight: {impact}"
         
-        if re.search(pattern, kb_content, re.MULTILINE):
+        m_exist = re.search(pattern, kb_content, re.MULTILINE)
+        if m_exist:
+            # 2026-10-26 降级保护：现有内容更富时跳过更新（多次运行单调收敛到最富版本）
+            existing_block = m_exist.group(0)
+            existing_len = sum(len(v) for v in re.findall(rf"[ \t]*-[ \t]*{SUB_KINDS}[ \t]*:([^\n]*)", existing_block))
+            if existing_len > len(detailed) * 1.1:
+                skipped_richer += 1
+                print(f"⏭️  Skip (现有内容更富 {existing_len}>{len(detailed)}，防降级): {title}")
+                continue
             # Mode: Update（整块替换，含旧子行）
             kb_content = re.sub(pattern, replacement + "\n", kb_content, count=1, flags=re.MULTILINE)
             updated_count += 1
@@ -113,7 +122,7 @@ def apply_detailed_updates(synthesized_file):
         with open(BACKFILL_LOG, "w", encoding="utf-8") as f:
             json.dump(progress, f, ensure_ascii=False, indent=2)
     
-    print(f"✅ Finished {os.path.basename(synthesized_file)}: Updated {updated_count}, Appended {appended_count}, Skipped-dup {skipped_count}.")
+    print(f"✅ Finished {os.path.basename(synthesized_file)}: Updated {updated_count}, Appended {appended_count}, Skipped-dup {skipped_count}, Skipped-richer {skipped_richer}.")
     return updated_count + appended_count
 
 def run_pipeline():
