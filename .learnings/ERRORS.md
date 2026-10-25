@@ -769,6 +769,7 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - Promoted: AGENTS.md 配套铁律（2026-10-25, Source: .learnings/ERRORS.md#data.none-valued-key-attr-crash）
 - Status (原 2026-10-23 登记): resolved（两层修复已入库；复核点 2026-10-26 周一 09:27）
 - Maintenance (2026-10-24 每周维护): 旁证 ✅ —— `data/auction/2026-10-23_9_25.json` = 17,222 B 真实快照（10-23 交易日）；cron 列表 `auction-signal-push`(cc1e9a93) 显示的 error 为 10-23 09:27 修复前 run 的残留状态，非新事故。终验等 10-26（周一）09:27 自然 run。
+- Maintenance (2026-10-26 每日维护): 终验点=今日 09:27 自然 run（维护时 06:15 尚未发生，末次 run 为 10-25 下午、status ok）。run 后核对 `data/auction/2026-10-26_9_25.json` 产物 + cron runs 无 traceback 即可终态销账；若再次 None 崩溃则 bump 共享计数并复核 (x.get(k) or {}) 兜底覆盖面（291f1e2 二层）。
 
 ---
 ## ERR-20261023-CloseScanPocBinFloat
@@ -838,3 +839,73 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 > **[2026-10-25 每日维护]** cron failed 红线核对：本条 Source 为 manual-session 非 cron-failed 事件，不受误报红线约束；
 > rc=1 < 3 维持观察，验证点 = 下个工作日 20:30 自然运行报告头部口径戳。另：`auction-signal-push`（cc1e9a93）在现存 52 jobs
 > 列表内属实（非误报名），其 status=error 残留经 `cron runs` 坐实为 10-23 09:27 修复前末次 run，非新失败，终验等 10-26 周一自然 run。
+
+## ERR-20261025-EditHeaderSwallowOnAppend
+**Date**: 2026-10-25
+**Priority**: medium
+**现象**: 用 edit 工具向 memory 日志 append 新章节时，两次把「下一章的标题行」当 oldText 且 newText 未保留原文 → 下一章标题被吞、正文悬挂无归属。同日两次（线 C 标题、深究②标题），均靠事后 `grep -n "^## \|^### "` 结构检查发现并修复。
+**规约**: ①append 新章节时 oldText 取「前一章末尾的最后一行」而非「下一章的标题行」；若必须以标题为锚点，newText 必须原样保留该标题；②多章节重排优先用 python 脚本按行剪切（本次实测安全），不用 edit 标题替换法；③编辑 memory/*.md 后必跑 `grep -n "^## \|^### "` 验证章节结构完整再收尾。
+**防线**: ①本条目（文档层）②编辑后章节结构 grep 自检（流程层，与「写完必验语法」同族）。
+### Metadata (2026-10-25 manual-session 登记)
+- Source: manual-session（webchat D/E/F 落地轮）
+- Pattern-Key: ops.edit-header-swallow-on-append（同族 err.write-tool-mangle 10-09 脱敏坑——验证/写入手段自身是故障注入点家族）
+- Recurrence-Count: 2（同日两次，同工具同模式）
+- First-Seen: 2026-10-25
+- Last-Seen: 2026-10-25
+- Status: resolved（两处标题已当日修复；规约固化至本条目）
+
+## ERR-20261025-SessionsCorpusDoomedCatchupSync
+**Date**: 2026-10-25
+**Priority**: medium
+**现象**: memory_search corpus=sessions 本机 4 次调用全部 `unavailable + "timed out after 15s"`（16:47/16:53/17:05/17:23）。实测定性：①`memory_index_meta.sources=["memory"]`、memory_index_sources 零条 sessions 行——sessions 语料从未被索引；②每次调用挂死在嵌入之前（实测窗口零 HTTP POST、零 WAL 增长），疑似 10,211 个会话文件（2.4GB）的脏检查/枚举超出 15s 工具预算；③16:47-17:01 出现 memory-reindex-cc6bc16a 临时库（WAL 41MB）后自行消失且 meta/sources 未变（补索引未持久化即被清理）；④gateway 日志全程零记录。docs 口径：默认 sources=["memory"]，需显式加 "sessions" 才启用。
+**修复**: 本地规避（TOOLS.md 标注勿用 corpus=sessions；查会话历史用 sessions_history/文件直读）。上游已立项：[#183499](https://github.com/openclaw/openclaw/issues/183499)（搜索时无界 catch-up 同步 × 15s 工具超时 + 误导性 provider-error 诊断 + 零日志可观测性缺口，附 5 条修复建议）。
+**规约**: ①工具描述宣称的 corpus ≠ 可用——首次使用新 corpus 前先小成本验证（maxResults=1）；②「搜索时补索引」类设计在大库上必然超时，调用方无法从错误信息区分"挂死"与"在补索引"；③memory_search 各 corpus 是独立健康面——heartbeat 守卫只测 memory corpus，覆盖不了 sessions/wiki 面。
+### Metadata (2026-10-25 manual-session 登记)
+- Source: manual-session（webchat 复检+深究④轮）
+- Pattern-Key: memory.sessions-corpus-unbounded-catchup-timeout
+- Recurrence-Count: 1
+- First-Seen: 2026-10-25
+- Last-Seen: 2026-10-25
+- Status: resolved（本地规避落地 + 上游 #183499 跟踪；本机 corpus=sessions 可用性待上游修复后复评）
+
+## [ERR-20261025-GZY] openclaw_session_sweep
+
+**Logged**: 2026-10-25T12:23:57.548Z
+**Priority**: medium
+**Status**: resolved (2026-10-25 20:4x heartbeat triage)
+**Area**: config
+
+### Summary
+Session-end sweep detected 4 possible errors in the previous OpenClaw session.
+
+### Error
+```
+[assistant turn failed before producing content]
+"content": "#!/usr/bin/env python3\n# -*- coding: utf-8 -*-\n\"\"\"\n斐波那契扩展位止盈参考扫描 (fib_extension_scan.py)\n==================================================\n对关注池/持仓股票计算\"上升波段的斐波那契扩展位\"(1.0/1.272/1.…
+SyntaxError: unexpected character after line continuation character
+**Method note:** 4 次 web_search 首轮 fetch failed，已全部重试成功；每条结论均附具体来源（USITC新闻稿、巨潮公告PDF、财联社、中指CREIS等）与日期。
+```
+
+### Context
+- Detected by the self-improvement hook on `/new` (OpenClaw has no per-tool-call hook, so errors are swept from the session transcript at session end)
+- Session key: agent:main:dashboard:13366f89-5df4-4c3b-89bb-3acce3bd152f
+- Session transcript: /Users/duguke/.openclaw/agents/main/sessions/0d86903c-853e-46da-81d3-e3ba9deaf06f.jsonl
+- Excerpts are truncated and redacted; check the transcript for full context
+
+### Suggested Fix
+Triage this entry: if the error was real and non-obvious, keep it and fill in the fix; otherwise mark it resolved or delete it. Before keeping it, grep for its Pattern-Key(s) and fold recurrences into the existing entry (bump Recurrence-Count) instead of duplicating.
+
+### Metadata
+- Source: openclaw-error-sweep
+- Reproducible: unknown
+- Pattern-Key: runtime.failure
+- Pattern-Key: runtime.exception
+- Pattern-Key: runtime.syntax-error
+
+### Triage Outcome (2026-10-25 20:4x heartbeat 维护)
+- ①SyntaxError ×4 均为 dashboard 会话（0d86903c）内临时命令迭代（exit 1 即抛）；`analysis/fib_extension_scan.py` 落盘版最后修改 10-12、本次 py_compile 通过 → 写作/迭代过程瞬时失败，非代码缺陷，无数据损失。
+- ②"assistant turn failed before producing content" 为模型侧瞬时故障，与 ERR-20260927-87V 分诊同类，无需行动。
+- ③method note（web_search 重试全成功）为过程记述，非错误。
+- 一次性 transient（RC=1），不立 Pattern，本条关闭。
+
+---
