@@ -31,6 +31,13 @@ def get_kb_entries():
     # 噪声黑名单：过滤掉统计行、报头、以及非知识条目的汇总行
     black_list = ["条", "条目", "简报", "抓取到", "宏观/政策", "关注股公告", "个股新闻"]
     
+    def _is_junk(title: str) -> bool:
+        if not title or len(title) < 6:
+            return True
+        if "**Related**" in title or title.startswith("**"):
+            return True
+        return False
+    
     for line in lines:
         stripped = line.strip()
         if not stripped: continue
@@ -42,6 +49,9 @@ def get_kb_entries():
                 continue
             
             current_title = stripped.lstrip("•- ").strip()
+            if _is_junk(current_title):
+                current_title = None
+                continue
             entries[current_title] = {"content_len": 0, "grade": "Empty"}
         elif current_title:
             # 记录正文长度

@@ -1,62 +1,6 @@
 [
   {
-    "title": "600036，市值重回万亿元",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "雷科防务002413.SZ)2026年中报净利润为-1812.04万元，亏损同比减少",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "官宣涨价！300285，“20cm”涨停",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "国瓷材料300285.SZ)：2026年中报净利润为3.63亿元",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "300285，迎超150家机构扎堆调研！MLCC概念热度再燃",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
     "title": "恒力石化600346.SH)：完成发行10亿元短期融资券",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中信建投601066.SH)2026年中报净利润为76.39亿元、较去年同期上涨69.44%",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "亿纬锂能300014.SZ)：2026年中报净利润为33.01亿元",
     "score": 2.0,
     "recall_freq": 0,
     "entity": true,
@@ -145,14 +89,6 @@
   },
   {
     "title": "越秀资本000987.SZ)：2026年中报净利润为28.10亿元、同比较去年同期上涨80.35%",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "**科华数据** 科华数据:002335科华数据投资者关系管理信息20260904 [调研活动]",
     "score": 2.0,
     "recall_freq": 0,
     "entity": true,
@@ -296,14 +232,6 @@
     "length": 17
   },
   {
-    "title": "**亿纬锂能** 300014亿纬锂能投资者关系管理信息20260819 [调研活动]",
-    "score": 1.8,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Stub",
-    "length": 13
-  },
-  {
     "title": "中信证券600030.SH)：2026年中报净利润为233.43亿元、同比较去年同期上涨69.60%",
     "score": 1.8,
     "recall_freq": 0,
@@ -326,14 +254,6 @@
     "entity": true,
     "grade": "Stub",
     "length": 17
-  },
-  {
-    "title": "**中联重科** 000157中联重科投资者关系管理信息20260901 [调研活动]",
-    "score": 1.8,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Stub",
-    "length": 13
   },
   {
     "title": "中信特钢000708.SZ)2026年中报净利润为29.90亿元、较去年同期上涨6.85%",
@@ -398,5 +318,85 @@
     "entity": true,
     "grade": "Summary",
     "length": 89
+  },
+  {
+    "title": "久立特材002318.SZ)2026年中报净利润为3.93亿元、较去年同期下降52.55%",
+    "score": 1.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Summary",
+    "length": 68
+  },
+  {
+    "title": "机构风向标 | 恒生电子6005702026年二季度已披露持股减少机构超10家",
+    "score": 1.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Summary",
+    "length": 89
+  },
+  {
+    "title": "天齐锂业002466.SZ)：2026年中报净利润为42.42亿元",
+    "score": 1.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Summary",
+    "length": 34
+  },
+  {
+    "title": "招商银行600036.SH)：2026年中报净利润为764.45亿元、同比较去年同期上涨2.02%",
+    "score": 1.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Summary",
+    "length": 34
+  },
+  {
+    "title": "福莱蒽特605566.SH)：2026年中报净利润为4010.92万元",
+    "score": 1.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Summary",
+    "length": 73
+  },
+  {
+    "title": "机构风向标 | 应流股份6033082026年二季度已披露前十大机构累计持仓占比48.13%",
+    "score": 1.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Summary",
+    "length": 76
+  },
+  {
+    "title": "机构风向标 | 恒立液压6011002026年二季度已披露持股减少机构超40家",
+    "score": 1.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Summary",
+    "length": 84
+  },
+  {
+    "title": "机构风向标 | 科华数据0023352026年二季度已披露前十大机构持股比例合计下跌1.01个百分点",
+    "score": 1.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Summary",
+    "length": 34
+  },
+  {
+    "title": "金力永磁300748.SZ)：2026年中报净利润为4.62亿元",
+    "score": 1.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Summary",
+    "length": 73
+  },
+  {
+    "title": "精准激光龙头来了！2万元顶格打新",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Empty",
+    "length": 0
   }
 ]
