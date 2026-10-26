@@ -98,6 +98,13 @@ def fetch_stock_news(symbol, name, seen_titles):
                 continue
             if not _is_fresh(row.get("发布时间", "")):
                 result["stale_skipped"] = result.get("stale_skipped", 0) + 1
+                # 留痕：被拦旧文记标题+时间（每路 10 条封顶）。2026-10-26 根因排查：
+                # 仅计数无内容时无法区分「真无新鲜新闻」与「时间戳解析误拦」。
+                if len(result.setdefault("stale_articles", [])) < 10:
+                    result["stale_articles"].append({
+                        "title": title,
+                        "time": str(row.get("发布时间", "")),
+                    })
                 continue
             is_new, h = is_new_title(title, seen_titles)
             entry = {
@@ -129,6 +136,11 @@ def fetch_macro_news(seen_titles):
                 continue
             if not _is_fresh(row.get("发布时间", "")):
                 result["stale_skipped"] = result.get("stale_skipped", 0) + 1
+                if len(result.setdefault("stale_articles", [])) < 10:
+                    result["stale_articles"].append({
+                        "title": title,
+                        "time": str(row.get("发布时间", "")),
+                    })
                 continue
             is_new, h = is_new_title(title, seen_titles)
             entry = {
@@ -168,6 +180,11 @@ def fetch_notices(seen_titles):
                 continue
             if not _is_fresh(row.get("公告日期", "")):
                 result["stale_skipped"] = result.get("stale_skipped", 0) + 1
+                if len(result.setdefault("stale_articles", [])) < 10:
+                    result["stale_articles"].append({
+                        "title": title,
+                        "time": str(row.get("公告日期", "")),
+                    })
                 continue
             is_new, h = is_new_title(title, seen_titles)
             entry = {
@@ -206,8 +223,9 @@ def main():
     print("  [2/3] 抓取全市场公告(过滤关注股)...")
     notices = fetch_notices(seen_titles)
 
-    # ── 3. 29只个股新闻 ──
-    print("  [3/3] 抓取29只关注股个股新闻...")
+    # ── 3. 关注股个股新闻（数量动态：36 只派生，勿硬编码 —— 2026-10-26 复验：旧文案「29只」
+    # 曾被审计 agent 误读为代码事实，衍生假报告）──
+    print(f"  [3/3] 抓取{len(STOCKS)}只关注股个股新闻...")
     stock_news = []
     for symbol, name in STOCKS:
         r = fetch_stock_news(symbol, name, seen_titles)
