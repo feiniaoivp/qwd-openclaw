@@ -191,8 +191,11 @@ def main():
         json.dump(out, f, ensure_ascii=False, indent=1, default=str)
 
     # 降簇映射落盘（同簇持仓上限的据源；月度重跑本脚本即刷新）
+    # 🔴 排序一次、两处共用：此前 clusters 用 sorted 而 sym_to_cluster 用未排序 groups，
+    # C 编号错位导致 39 处 clusters↔map 不一致（2026-10-26 修复）。
+    sgroups = sorted(groups, key=len, reverse=True)
     sym_to_cluster = {}
-    for gi, g in enumerate(groups):
+    for gi, g in enumerate(sgroups):
         for s in g:
             sym_to_cluster[s] = f"C{gi+1:02d}"
     clu_path = os.path.join(WORKSPACE, "data/corr_clusters.json")
@@ -200,7 +203,7 @@ def main():
         json.dump({
             "date": today, "window": START_DATE,
             "method": "pearson_daily_threshold_0.55_union_find",
-            "threshold": 0.55, "clusters": {f"C{i+1:02d}": g for i, g in enumerate(sorted(groups, key=len, reverse=True))},
+            "threshold": 0.55, "clusters": {f"C{i+1:02d}": g for i, g in enumerate(sgroups)},
             "symbol_to_cluster": sym_to_cluster,
         }, f, ensure_ascii=False, indent=1)
     print(f"[corr] 簇映射已写 {clu_path} ({len(sym_to_cluster)} 票入簇)")
