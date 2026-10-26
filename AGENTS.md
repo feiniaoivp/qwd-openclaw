@@ -184,7 +184,9 @@ Starting point — add your own conventions as you learn what works.
     注入的 systemEvent 不执行，runner 投递即认为 ok，`lastDurationMs` 仅几毫秒 = 空转假成功。
     **凡长任务类 cron/脚本，产出必须落盘到日志文件（`nohup ... > logs/xxx.log 2>&1 &`）**，
     不要依赖 exec 生命周期捕获 stdout；SIGKILL 父进程不会级联杀子进程，重跑前先 `pgrep -f` 确认无孤儿实例。
-    （实证：3 个新闻 cron 静默停摆 21 天；quant_push.py 10-09 stdout 丢失事故）
+    **exec 短 timeout 只留给确定秒级返回的调用**：预估 >2min 或耗时受外部源健康度影响的任务（含降级链，
+    按「最坏腿 × 票数」估，不按 happy path）一律 nohup detached + 轮询日志，禁止放 exec 前台。
+    （实证：3 个新闻 cron 静默停摆 21 天；quant_push.py 10-09 stdout 丢失；10-26 PPO/CCI 复扫 300s 前台被杀成孤儿，同族第 3 次）
     Source: .learnings/LEARNINGS.md#cron.silent-noop-fake-ok / .learnings/ERRORS.md#ERR-20261009-QuantPushDetachedOutputLost
 *   **研究脚本 JSON 键统一 str + 主结果先落盘**。事件研究/统计表用 horizon 等数值键时
     从建表起一律 `str(h)`（`json.dump` 后 int 键必变 str，混用 → 统计全 None 或 KeyError）；

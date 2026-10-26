@@ -277,10 +277,14 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 2. Before relaunching, ALWAYS `pgrep -f quant_push.py` — SIGKILL on the parent does not necessarily kill the child backtest run.
 3. Consider adding stdout tee-to-log inside quant_push.py so the JSON block is always persisted.
 **Pattern-Key**: exec.timeout-orphan-child.cron-longrunning
-**Recurrence-Count**: 2
+**Recurrence-Count**: 3（共享计数：10-09 quant_push / 10-19 同 cron 复发 / 10-26 PPO-CCI 复扫；跨 quant-backtest、ppo-cci-rescan 两任务，30 天窗口内；2026-10-27 维护 bump）
 **First-Seen**: 2026-10-09
-**Last-Seen**: 2026-10-19
+**Last-Seen**: 2026-10-26
 **Promoted**: AGENTS.md「🧠 教训固化原则 · 配套铁律」(2026-10-10, Source: .learnings/ERRORS.md#ERR-20261009-QuantPushDetachedOutputLost)
+
+### Maintenance (2026-10-27 每日维护) — RC 2→3 升格促发条件命中，规则已在前位
+- 10-26 PPO/CCI 复扫第三次命中同模式（见 ERR-20261026-PpocciExecTimeoutOrphan，共享计数）：exec timeout=300 前台跑 → 父死子孤儿。与前两次的区别：本次落盘+孤儿处置规约当场执行（detached 重跑 ~1min 完成），零损失。
+- 复发的不是「无规则」而是「长任务判定阈值靠拍脑袋」：AGENTS.md 铁律已补一句最小必要规则（exec 短超时只留给确定秒级调用；降级链耗时按最坏腿×票数估）；门禁层面不新增（AGENTS.md 铁律 + cron_noop_guard 已覆盖产物侧）。终态保持 promoted。
 
 ### Follow-up (2026-10-19) — 同模式复发，但落盘防御生效 ✅
 - 复发经过：同 cron 仍被以 `exec timeout:300` 短超时启动，wrapper `quant_push.py` 于 300s 被杀（lucky-zephyr failed 5m9s），子进程 `backtest_strategies.py` 再次成孤儿继续跑完（20:30→20:5x，~26min，36 票 x10 策略）。
@@ -770,6 +774,7 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - Status (原 2026-10-23 登记): resolved（两层修复已入库；复核点 2026-10-26 周一 09:27）
 - Maintenance (2026-10-24 每周维护): 旁证 ✅ —— `data/auction/2026-10-23_9_25.json` = 17,222 B 真实快照（10-23 交易日）；cron 列表 `auction-signal-push`(cc1e9a93) 显示的 error 为 10-23 09:27 修复前 run 的残留状态，非新事故。终验等 10-26（周一）09:27 自然 run。
 - Maintenance (2026-10-26 每日维护): 终验点=今日 09:27 自然 run（维护时 06:15 尚未发生，末次 run 为 10-25 下午、status ok）。run 后核对 `data/auction/2026-10-26_9_25.json` 产物 + cron runs 无 traceback 即可终态销账；若再次 None 崩溃则 bump 共享计数并复核 (x.get(k) or {}) 兜底覆盖面（291f1e2 二层）。
+- Maintenance (2026-10-27 每日维护): **终验通过 ✅ 本条终态销账** —— 10-26 09:27 自然 run 三证齐：①`data/auction/2026-10-26_9_25.json` = 17,236 B 真实快照（09:25 落盘）；②`data/auction/signal_push_2026-10-26.json` 09:27 正常产出（212 B，hits/fade_risk 结构完整，非 traceback）；③`openclaw cron list` 复核 `auction-signal-push`(cc1e9a93) status=ok，10-24 记载的 error 残留态已被自然 run 覆盖清除。共享计数维持 RC=3 不虚增（终验通过非新事故），promoted 终态（AGENTS.md 配套铁律在位，grep 复核 L168）。
 
 ---
 ## ERR-20261023-CloseScanPocBinFloat
@@ -819,7 +824,7 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - Recurrence-Count: 1
 - First-Seen: 2026-10-23
 - Last-Seen: 2026-10-23
-- Status: resolved（更正评论已发 #4#issuecomment-6364978142，2026-10-23 20:3x）
+- Status: resolved（更正评论已发 #4#issuecomment-6364978142，2026-10-23 20:3x；上游作者 2026-10-26 16:55 确认并在 v0.3.19/8965d95 修复，含 5-tick 回归测试 77/77，issue 保持 open 至 ClawHub 发布可见）
 
 ## ERR-20261023-BacktestCaliberDegradedSilentPush
 **Date**: 2026-10-23
@@ -835,6 +840,7 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - First-Seen: 2026-10-23
 - Last-Seen: 2026-10-23
 - Status: resolved（脚本自动盖戳已落地；下轮 20:30 自然验证）
+- Maintenance (2026-10-27 每日维护): **自然验证通过 ✅ 本条终态** —— 10-26 20:30 自然 run 产物 `analysis/backtest/2026-10-26.md` 第 5 行为脚本自动生成的「🔴 口径降级告警：36/36 只为不复权数据(新浪日K兜底)…不得跨日比较」戳（当晚恰为真实降级场景，脚本戳实弹生效，非人工补注）。RC 维持 1 不虚增。
 
 > **[2026-10-25 每日维护]** cron failed 红线核对：本条 Source 为 manual-session 非 cron-failed 事件，不受误报红线约束；
 > rc=1 < 3 维持观察，验证点 = 下个工作日 20:30 自然运行报告头部口径戳。另：`auction-signal-push`（cc1e9a93）在现存 52 jobs
@@ -869,6 +875,7 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - Status: resolved（本地规避落地 + 上游 #183499 跟踪；本机 corpus=sessions 可用性待上游修复后复评）
 
 ## [ERR-20261025-GZY] openclaw_session_sweep
+> **[2026-10-27 维护 · 防误报红线核对]** 同上：`openclaw_session_sweep` 不在现存 `cron list`（52 jobs）中 → 历史误报名，仅告警不转发；本条已经 10-25 heartbeat 正常分诊 resolved，维持不变。
 
 **Logged**: 2026-10-25T12:23:57.548Z
 **Priority**: medium
@@ -909,3 +916,16 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - 一次性 transient（RC=1），不立 Pattern，本条关闭。
 
 ---
+
+## ERR-20261026-PpocciExecTimeoutOrphan
+- **日期**: 2026-10-26 21:06-21:16
+- **现象**: 盘后 PPO/CCI 复扫在 exec 内跑（timeout=300s），baostock 不可达时 DataRouter 全链每票白付 2-3s 登录重试 → 36 只拖到 >5min → 被 exec timeout SIGKILL，父 shell 死而 python 子进程幸存成孤儿（stdout 管道断裂，输出不可回收）。
+- **根因**: ①低估降级路径耗时（复权源全败 ×36 票的乘数效应）；②已知 3-5 分钟量级任务仍放 exec 前台跑而非 nohup detached——同族第 3 次实证（10-09 quant_push / 本条 / TOOLS.md 既有铁律）。
+- **处置**: kill 孤儿 → 改直连新浪腿（跳过死腿）→ nohup > log 2>&1 & detached 重跑，~1min 完成。
+- **规约**: 预估 >2min 或耗时受外部源健康度影响的任务，一律 nohup detached + 轮询日志文件；exec timeout 只留给确定秒级返回的调用。给降级链设超时预算时按「最坏腿 × 票数」估算，不按 happy path。
+- **状态**: resolved（已提交 sina 直连腿 + detached 运行规约本条）
+### Metadata (2026-10-27 维护补全)
+- Source: manual-session（盘后复扫任务）
+- Reproducible: yes（baostock 不可达 + 36 票全链重试即可复现耗时膨胀）
+- Pattern-Key: exec.timeout-orphan-child.cron-longrunning（与 ERR-20261009-QuantPushDetachedOutputLost 共享计数，RC=3 已 bump 至主条目，本条为其第 3 次实证，勿单独重复计数）
+- Status: promoted（随主条目终态，规则已补强至 AGENTS.md 配套铁律 2026-10-27）
