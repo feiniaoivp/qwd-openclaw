@@ -113,7 +113,8 @@ def calculate_priorities():
     
     # 按分数降序，分数相同时按 Recall 频次降序
     priorities.sort(key=lambda x: (x["score"], x["recall_freq"]), reverse=True)
-    return priorities[:50]
+    top_n = int(os.getenv("KB_TOP_N", "50"))
+    return priorities[:top_n]
 
 if __name__ == "__main__":
     print("🚀 Starting KB Expansion Planning (Noise-Filtered Version)...")
