@@ -929,3 +929,18 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Reproducible: yes（baostock 不可达 + 36 票全链重试即可复现耗时膨胀）
 - Pattern-Key: exec.timeout-orphan-child.cron-longrunning（与 ERR-20261009-QuantPushDetachedOutputLost 共享计数，RC=3 已 bump 至主条目，本条为其第 3 次实证，勿单独重复计数）
 - Status: promoted（随主条目终态，规则已补强至 AGENTS.md 配套铁律 2026-10-27）
+
+---
+
+## ERR-20261027-BlogwatcherFeedUrlTruncated
+- **日期**: 2026-10-27 06:50-07:00
+- **现象**: blogwatcher 重建 FT中文网镜像 源（Google News RSS 带查询参数 URL）后，扫描抓回 38 条英文默认头条（CNBC/Reuters/NYT），冒充 FT 内容入库。
+- **根因**: `blogwatcher add <name> <url>` 不带 `--feed-url` 时走自动发现，对带 query string 的 URL 会把 feed_url 截断成 `https://news.google.com/rss`（丢整个 query）→ 扫描实际请求 Google 默认 feed。curl 直测同 URL 完全正常，UA 无关。
+- **处置**: remove 后用 `--feed-url` 显式指定完整 URL 重加，scan 后 `articles --blog` 抽样核对内容形态（确为 FT 中文文章）。
+- **规约**: ①blogwatcher 对参数化 feed URL 必须显式传 `--feed-url`，add 后必查 `blogwatcher blogs` 的 Feed 字段是否完整；②换源后首次 scan 必须**抽样核对文章内容语言/主题**，不能只看 Found/New 计数（默认 feed 注入 = 计数也合理、内容全错，属「假 ok 家族」变体）；③Google News RSS 的 `+` 空格分隔符建议改 `%20` 规避解析歧义。
+- **状态**: resolved（FT 源已修复并验证；676 条积压已备份至 data/blogwatcher/unread_backup_2026-10-27.txt 后 read-all 清零）
+### Metadata
+- Source: manual-session（blogwatcher 换源任务）
+- Reproducible: yes（add 带 query URL 不传 --feed-url 即复现）
+- Pattern-Key: blogwatcher.add-feedurl-truncation
+- Pattern-Key: feed.default-feed-injection.silent
