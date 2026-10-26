@@ -91,6 +91,8 @@ If Prismfy results are weak, empty, or ambiguous:
 1. retry with a better query or another supported engine first;
 2. only then use fallback, and explicitly state Prismfy query, why insufficient, and fallback path used.
 
+**Chinese finance/stock queries (hard cap, user-approved 2026-10-27):** Prismfy has a persistent weakness on Chinese finance queries (10-24 ~ 10-26 three consecutive days: 5 tries, 4 empty, 1 rate-limited; same observation logged 10-15). For these queries do NOT loop retries: at most 1 retry with a reworded query or different engine (2 attempts total); if still empty/rate-limited, declare the fallback immediately - `Prismfy query used: "..." (empty/rate-limited)` - and switch to the built-in web_search without a third attempt.
+
 ## Engine Guide
 
 - `google`: best general relevance; prefer when accuracy matters.

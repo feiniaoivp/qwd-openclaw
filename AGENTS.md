@@ -278,6 +278,8 @@ If Prismfy results are weak, empty, or ambiguous:
 1. retry with a better query or another supported engine first;
 2. only then use fallback, and explicitly state Prismfy query, why insufficient, and fallback path used.
 
+**Chinese finance/stock queries (hard cap, user-approved 2026-10-27):** persistent Prismfy weakness (10-24~26: 5 tries, 4 empty, 1 rate-limited). At most 1 retry (2 attempts total); if still empty/rate-limited, declare `Prismfy query used: "..." (empty/rate-limited)` and switch to built-in web_search - no third attempt.
+
 ## Search Mode
 
 Search usage policy is STRICTLY set to: balanced.

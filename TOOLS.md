@@ -168,6 +168,7 @@ cd /Users/duguke/.openclaw/workspace && for f in analysis/*.py scripts/*.py; do 
 - 自检：`~/.prismfy/bin/prismfy-search --quota`
 - 套餐：FREE 1000 次/月
 - **有效 flag 仅**：`--engine / --engines / --time / --domain / --page / --lang / --quota / --raw`；**无 `--count`**（那是内置 web_search/Brave 的参数，混用必报 `Unknown option: --count`，10-16 实测 2 次查询全灭）——控制条数用 `--raw` 出 JSON 后自行截取 [来源: prismfy-search --help, .learnings/ERRORS.md ERR-20261016-C02]
+- **中文财经查询兜底口径（2026-10-27 用户拍板）**：Prismfy 对中文财经/股票类查询长期命中率低（10-24~26 连续三日 5 试 4 空 1 限流）。每问题最多尝试 2 次（首次 + 1 次换措辞/引擎），仍空/限流 → 立即声明 `Prismfy query used: ... (空结果/限流)` 并转内置 web_search，禁止第三次重试。细则见 prismfy-search-guide.md「No Silent Fallback」。
 
 ---
 
@@ -612,3 +613,25 @@ python3 scripts/test_isolation_guard.py --selftest  # 8 例对抗自测
 - 症状：`gh` 任何 API 调用报 `Post "https://api.github.com/graphql": net/http: TLS handshake timeout`，直连与 `HTTPS_PROXY=127.0.0.1:7890` 皆然；同刻 curl 直连/代理均秒回（403/200）。
 - 根因：本网络对 api.github.com 按 **TLS 指纹**放行/拦截——curl(LibreSSL) 过、gh(Go crypto/tls) 被拦（与东财 curl_cffi 指纹同族）。
 - 兜底（外部动作仍须 /approve）：`token=$(gh auth token)`（keyring，勿 echo）→ 写 600 临时 header 文件 → `curl -sS -H @/tmp/gh_header.txt -H "Accept: application/vnd.github+json" -d @payload.json https://api.github.com/...` → 用完立即 `rm` header 文件，token 永不进 stdout/日志/历史。
+
+## 🔴 memory_search corpus 使用注意（2026-10-25 实测定性）
+
+- **corpus=sessions 在本机不可用，禁止调用**：sessions 语料从未被索引（meta.sources=["memory"]，0 行），每次调用在嵌入前挂死（10,211 个会话文件/2.4GB 脏检查）→ 必然 15s 超时（unavailable+disabled，gateway 零日志，还可能触发注定失败的重索引 churn）。查会话历史用 sessions_history 工具或会话文件直读。详见 .learnings/ERRORS.md#ERR-20261025-SessionsCorpusDoomedCatchupSync。
+- **诊断本机服务（localhost/127.0.0.1）curl 必须加 `--noproxy '*'`**：exec 环境自带 http_proxy=7890，裸 curl 打 loopback 的 502/空响应全是代理拒绝伪影（10-23 首证、10-25 二次踩坑；若再犯须升级为可执行门禁）。
+
+---
+
+## 🔴 Embedding 服务架构与 v2 bind-guard（2026-10-25 定案）
+
+**架构**：launchd `com.duguke.embedding-service` → `~/start_gunicorn.py v2` → gunicorn 26 + UvicornWorker ×2 + bge-m3（模型在 import 时全量加载，~3s 热缓存）。日志双文件：stdout=`embedding-service.log`（脚本 print + uvicorn access 行），stderr=`embedding-service.error.log`（gunicorn INFO/错误，**自带时间戳**；access 行 2026-10-25 起补齐时间戳）。
+
+**v2 bind-guard（start_gunicorn.py）**：
+1. 端口预检（lsof LISTEN 探测，失败退化 connect）：被占 → 不 spawn、不加载模型，30s 复检等释放——杜绝 2026-08 风暴（10-26 复检定案：两场三连日风暴 = 08-12~14 约 9,359 轮 + 08-23~25 约 8,571 轮，合计 ≈1.79 万轮；机制 = launchd KeepAlive × v1 无预检：每轮 --preload **先**全量加载 2.2GB 模型（stdout「模型加载成功！」）→ bind 8080 失败（第一场占口者 = 旧版 com.duguke.bge-m3 服务，同 start.py 同端口）→ 退出 1 → ~20-25s/轮循环 = VM churn。**与 10-23 22:35:40 内核恐慌无关**——10-23/24 error log 仅正常 boot + worker timeout，零风暴行；panic 根因 = sysmond VM map zone 越界（10-24 笔记 + .learnings lrn.log-archaeology-absence-fallacy））
+2. SIGTERM/SIGINT 转发 gunicorn 子进程 → kickstart/bootout 不再产生孤儿占口
+3. 脚本常驻循环：gunicorn 退出 5s 后重检端口（不再依赖 launchd KeepAlive 风暴式重启）
+
+**坑账（改动前必读）**：
+- `--access-logformat` 对 UvicornWorker **无效**（worker 用 uvicorn 自己的 access logger）。修法 = `~/start.py` 里给 `uvicorn.access` 的 handler 换 formatter，**fmt 只能用 `%(asctime)s %(message)s`**——uvicorn 0.52.1 AccessFormatter 的字段约定（client_addr/method/...）经 dictConfig 路径会 ValueError 静默弃记录（access 行整体消失、无任何报错到 stdout！），`%(message)s` 拿到的就是拼好的完整行
+- **改日志配置后必须 curl 实测 access 行存在性**（dictConfig 类破坏是静默的）
+- memorySearch.baseUrl 必须用 `localhost` 而非 `127.0.0.1`（受管代理把 IP 字面量 MATCH→远端→502，`localhost` 走 private_domain 直连；10-23 A′ 修复）
+- 诊断本机服务 curl 必加 `--noproxy '*'`（既有条目）；历史事故：2026-08 风暴 + 2026-10-23 22:35:40 内核恐慌（`Kernel-2026-10-24-022423.panic`，死亡 3h49m）
