@@ -50,6 +50,16 @@ def detect_data_day():
     except Exception as e:
         print(f"probe 降级(异常可见): {e}", file=sys.stderr)
     today = date.today().isoformat()
+    # baostock 探测失败 → DataRouter 探测（降级链，失败可见告警；2026-10-26 新增）
+    try:
+        from analysis.close_scan_v2 import get_daily_hist
+        df = get_daily_hist("600030", "中信证券",
+                            start_date=(date.today() - timedelta(days=15)).isoformat())
+        if df is not None and len(df):
+            return str(df["date"].iloc[-1])[:10]
+        print("probe 降级(DataRouter): 返回空", file=sys.stderr)
+    except Exception as e:  # noqa: BLE001
+        print(f"probe 降级(DataRouter 异常可见): {e}", file=sys.stderr)
     days = [d for d in get_trading_days() if d < today]
     return days[-1] if days else None
 
@@ -61,8 +71,8 @@ def fetch_all(end_day):
     import baostock as bs
     lg = bs.login()
     if lg.error_code != "0":
-        print(f"baostock login failed: {lg.error_code} {lg.error_msg}", file=sys.stderr)
-        sys.exit(1)
+        # 不再直接 exit：抛出让 main 切 DataRouter 降级链（2026-10-26 晚 baostock 不可达实证）
+        raise RuntimeError(f"baostock login failed: {lg.error_code} {lg.error_msg}")
     start = (date.fromisoformat(end_day) - timedelta(days=300)).isoformat()
     frames = []
     try:
@@ -85,6 +95,37 @@ def fetch_all(end_day):
         bs.logout()
     out = pd.concat(frames, ignore_index=True)
     out.to_csv(cache, index=False)
+    return out
+
+
+def fetch_all_via_router(end_day):
+    """baostock 不可达时的降级：复用 close_scan_v2 DataRouter 的新浪日K腿直连
+    （本机 15:30 cron 每日实证稳定，0.1s/只）。
+    注：不走 get_daily_hist 全链 —— baostock 挂时每票要白付 2-3s 登录重试
+    （2026-10-26 晚实测拖慢 6 倍且被 exec timeout 误杀）；直连新浪全池口径统一不复权。
+    ⚠️ 口径：新浪日K为不复权，与 baostock 前复权在近期除权股上有差异，
+    输出必须带来源标注（header + JSON source 字段）。"""
+    import time as _t
+    from analysis.close_scan_v2 import get_fetcher
+    fetcher = get_fetcher()
+    frames = []
+    for sym, name in WATCHLIST.items():
+        try:
+            df = fetcher.fetch_sina_daily(sym, n=300)
+        except Exception as e:  # noqa: BLE001
+            print(f"sina 获取 {name}({sym}) 异常(可见): {e}", file=sys.stderr)
+            df = None
+        if df is None or df.empty:
+            print(f"sina 无数据: {name}({sym})", file=sys.stderr)
+            continue
+        g = df.copy()
+        g["date"] = g["date"].astype(str).str[:10]
+        frames.append(g[["date", "close", "high", "low", "volume"]].assign(sym=sym))
+        _t.sleep(0.05)
+    if not frames:
+        return None
+    out = pd.concat(frames, ignore_index=True)
+    out.to_csv(f"/tmp/ppo_cci_cache_{end_day}_router.csv", index=False)
     return out
 
 
@@ -143,7 +184,7 @@ def tags_for(r):
     return tags
 
 
-def emit_json(end_day, ok, bad):
+def emit_json(end_day, ok, bad, src="baostock·前复权"):
     """管线模式：标记包裹 JSON（premarket_pipeline 阶段约定），行内带 tags 免二次推导"""
     rows = [{
         "name": r["name"], "sym": r["sym"], "date": r["date"],
@@ -154,6 +195,7 @@ def emit_json(end_day, ok, bad):
     } for r in ok]
     payload = {
         "data_day": end_day,
+        "source": src,
         "coverage": {"ok": len(ok), "total": len(WATCHLIST)},
         "rows": rows,
         "bad": [{"name": r["name"], "sym": r["sym"], "date": r.get("date", "NODATA")} for r in bad],
@@ -169,7 +211,19 @@ def main():
     if not end_day:
         print("交易日历为空，无法确定数据日", file=sys.stderr)
         sys.exit(1)
-    raw = fetch_all(end_day)
+    try:
+        raw = fetch_all(end_day)
+    except Exception as e:  # noqa: BLE001
+        print(f"baostock 路径异常(可见): {e}", file=sys.stderr)
+        raw = None
+    src = "baostock·前复权"
+    if raw is None or raw.empty:
+        print("baostock 全池获取失败 → 切 DataRouter 降级链", file=sys.stderr)
+        raw = fetch_all_via_router(end_day)
+        src = "DataRouter/新浪日K·不复权"
+    if raw is None or raw.empty:
+        print("全部数据源失败", file=sys.stderr)
+        sys.exit(1)
     results = []
     for sym, name in WATCHLIST.items():
         g = raw[raw["sym"] == sym]
@@ -184,9 +238,9 @@ def main():
     bad = [r for r in results if r["stale"]]
     ok.sort(key=lambda x: -x["cci"])
     if emit_json_mode:
-        emit_json(end_day, ok, bad)
+        emit_json(end_day, ok, bad, src)
         return
-    print(f"=== PPO/CCI 筛选 | 数据日 {end_day} | 覆盖 {len(ok)}/{len(WATCHLIST)} ===\n")
+    print(f"=== PPO/CCI 筛选 | 数据日 {end_day} | 覆盖 {len(ok)}/{len(WATCHLIST)} | 源 {src} ===\n")
     print(f"{'股票':<10}{'收盘':>8}{'CCI20':>8}{'PPO':>8}{'柱':>8}{'柱动':>7}{'振幅%':>7}{'量比':>6}{'叉':>5}  标签")
     for r in ok:
         tags = tags_for(r)
