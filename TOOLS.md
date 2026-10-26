@@ -618,6 +618,7 @@ python3 scripts/test_isolation_guard.py --selftest  # 8 例对抗自测
 
 - **corpus=sessions 在本机不可用，禁止调用**：sessions 语料从未被索引（meta.sources=["memory"]，0 行），每次调用在嵌入前挂死（10,211 个会话文件/2.4GB 脏检查）→ 必然 15s 超时（unavailable+disabled，gateway 零日志，还可能触发注定失败的重索引 churn）。查会话历史用 sessions_history 工具或会话文件直读。详见 .learnings/ERRORS.md#ERR-20261025-SessionsCorpusDoomedCatchupSync。
 - **诊断本机服务（localhost/127.0.0.1）curl 必须加 `--noproxy '*'`**：exec 环境自带 http_proxy=7890，裸 curl 打 loopback 的 502/空响应全是代理拒绝伪影（10-23 首证、10-25 二次踩坑；若再犯须升级为可执行门禁）。
+- **本机不存在真正「直连」（2026-10-27 实测定性）**：DNS 解析全部经 Clash fake-ip 管理（连 `dig @223.5.5.5` 也返回 198.18.x.x）→ 任何「直连失败」（HTTP 000 / TLS 握手被掐，如 ftchinese.com 10-27）先怀疑隧道规则或 TLS 潮汐，不要下「域名被墙」结论；「直连」与「走 7890 代理」行为一致即本条的直证。
 
 ---
 
