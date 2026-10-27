@@ -944,3 +944,51 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Reproducible: yes（add 带 query URL 不传 --feed-url 即复现）
 - Pattern-Key: blogwatcher.add-feedurl-truncation
 - Pattern-Key: feed.default-feed-injection.silent
+
+## ERR-20261027-SpawnDefaultModelUnresolved
+- **日期**: 2026-10-27 07:17
+- **现象**: sessions_spawn 派出 kb-backfill-batch16 子代理，status=accepted 但立即回失败事件：`Model not found: "amd-radeon/Gemma-4-31B-IT" (disabled)` + `No fallback models available (provider=amd-radeon, model=gemma-4-31b-it)`，消耗一次 spawn 往返。
+- **根因**: 未传 `model` 参数时子代理继承会话 default_model（Gemma-4-31B-IT），该模型在 amd-radeon 端点已 disabled，且 amd-radeon 无 fallback 模型列表 → 启动即失败。同会话 session_status 显示实际运行模型为 `amd-radeon/MiMo-V2.6-Flash`（主模型 ≠ default_model），先例 batch_14 曾解析到 z-ai/glm-5.3-flash——子代理模型解析路径不稳定，不能假设默认可跑。
+- **处置**: 显式传 `model="amd-radeon/MiMo-V2.6-Flash"` 重派，resolvedModel=modelApplied=true，二次成功。
+- **规约**: ①sessions_spawn 长任务必须显式传 `model`，不依赖 default_model 解析（主模型/默认模型/disabled 三态不一致）；②accepted≠running——spawn 后留意首个事件是否为失败，失败即带显式 model 重派，不要空等；③模型不可用时优先换同 provider 已验证可用模型（MiMo-V2.6-Flash 本会话实测可用），而非等 fallback（amd-radeon 无 fallback 列表）。
+- **状态**: resolved（batch_16 二次 spawn 成功）
+### Metadata
+- Source: kb-backfill-batch14→16 续轮派批
+- Reproducible: yes（不传 model + default disabled 即复现）
+- Pattern-Key: spawn.model-default-unresolved
+
+## ERR-20261027-BaostockFakeLoginRetrySpin
+- **日期**: 2026-10-27 05:24 故障 / 17:20 修复
+- **现象**: 手动全量扫描 24/36 只失败，连续报 `[BS] 查询错误: 用户未登录, 重试 1/2 → 2/2`；登录本身成功（前 12 只正常），第 13 只起全挂。
+- **根因**: baostock 服务端在会话中途踢线（TCP 层全程可达，应用层 reset），但本地 `_bs_logged_in` 标志仍在 30min TTL 内为 True → `ensure_login()` 直接放行 → 重试永远复现「用户未登录」，24 只 × 2 次重试全部空转。**「本地登录态标志」与「服务端会话状态」是两个独立事实，TTL 内的本地标志不能证明服务端会话还活着。**
+- **处置**: `analysis/bs_session.py` 新增 `_is_session_dead_error()` 关键词表（用户未登录/登录失效/会话/网络接收错误/接收数据异常），查询错误命中时 `force_relogin()` 后再重试（commit e88d231）。实测 force_relogin 恢复 + 全量重扫 36/36。
+- **规约**: ①凡「本地缓存的会话/凭证态」遇服务端拒绝，重试前必须强制重建会话，不能信 TTL 内的本地标志；②诊断这类故障先分三层：TCP 连通性 → 应用层登录握手 → 会话中途错误，登录成功≠会话能撑完整批；③单连接长批量查询要预期服务端踢线，批量越大越要有会话死亡自愈。
+- **状态**: resolved（36/36 重扫验证；18:30 cron 前落地）
+### Metadata
+- Source: manual-session（baostock 诊断任务）
+- Reproducible: yes（服务端踢线 + 无自愈逻辑即复现）
+- Pattern-Key: baostock.session-death.fake-login-flag.retry-spin
+
+## ERR-20261027-KbBackfillSubagentTimeoutLostWork
+- **日期**: 2026-10-27 21:02~22:05
+- **现象**: KB 回填 batch_21 双段子代理两轮 dispatch：第一轮两段均 LLM 请求超时（0 token、无任何产物）；重派后 A 段长时间运行后被超时杀掉，已合成条目只存在于上下文、未落盘 → 稿件全部丢失重跑（B 段正常完成）。
+- **根因**: 免费端点（glm-5.3-flash）瞬时故障叠加子代理「全部内容攒上下文、最后一次性写盘」的默认产出模式——中断点落在写盘前，已完成工作不可恢复。
+- **处置**: batch_22 起任务简报强制「写盘纪律」：每判定完 1 条立即 append 暂存文件（write 首建 + 后续追加），任何时刻中断已写内容必须在盘上。batch_22 实测一次跑通、全部自检通过、零丢稿；batch_21 重派后亦完成并落库。
+- **规约**: ①多条目/多阶段产出的子代理任务简报必须写明「逐条落盘、禁止末尾一次性写」；②超时重派前先 ls 暂存件确认有无半成品（0 token 失败=未开始可整段重派；有 token 无产物=可能丢稿，需先找残件）；③同批次两段同型失败优先怀疑端点级故障而非任务内容。
+- **状态**: resolved（batch_21/22 均落库，batch_22 按新纪律零丢稿）
+### Metadata
+- Source: subagent-dispatch（KB 回填 batch_21/22）
+- Reproducible: yes（端点抖动 + 末尾一次写模式即复现）
+- Pattern-Key: subagent.llm-timeout.context-only-work.write-as-you-go
+
+## ERR-20261028-KbBackupOverwrittenByStaleRerun
+- **日期**: 2026-10-27 06:45（发生）/ 2026-10-28 04:5x（复验发现并恢复）
+- **现象**: `knowledge_base.md.bak-batch14`（pre-batch_14 冻结快照，已随 999657e 入库）在 batch_15 合并窗口后被**整份覆盖**为当时的 KB 状态（5110 行/含 batch_13+14+15 三个回填标记）——备份冻结性被破坏，且无任何告警。10-28 复验时靠「备份行数 > 后继备份行数」的异常（473651B > bak-batch15 的 469658B）+ 标记数审计抓出。
+- **根因（假说，高置信）**: batch_15 前后存在一次带错误批次号的合并脚本重跑：脚本先 `cp KB bak-batch14`（覆盖历史快照）再进入 assert 防重断言 → 断言命中中止、KB 本体无损，但备份已被覆盖。即「备份先于断言」的顺序 + 批次号来源不可靠（stale counter/queue）共同作用。
+- **处置**: `git checkout -- bak-batch14 ×2` 从 999657e 恢复冻结快照原貌（5086 行/仅 batch_13 标记）；七个后继备份标记链审计全部自洽。
+- **规约**: ①合并脚本的断言/防重必须放在**任何写操作（含备份）之前**；②备份文件名生成禁止依赖可变计数器——写前应校验目标备份**不存在**才允许创建（存在即中止并报批）；③备份链完整性验证 = 行数单调性 + 标记集单调性双向审计（行数必须随批次号单调递增，标记集必须是前缀关系）——建议并入 kb 灌溉门禁。
+- **状态**: resolved（git 恢复 + 全链审计通过）
+### Metadata
+- Source: 复验会话（KB 备份链审计）
+- Reproducible: yes（合并脚本重跑 + 批次号错位即复现）
+- Pattern-Key: kb.backup-chain.frozen-snapshot.overwrite-before-assert
