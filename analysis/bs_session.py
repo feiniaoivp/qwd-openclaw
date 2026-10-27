@@ -70,6 +70,19 @@ _LAST_LOGIN_FAIL_TIME = 0.0
 _LOGIN_FAIL_COOLDOWN = 300  # 登录失败后 5 分钟内不再重试（2026-10-02：baostock 服务端不可用时每次失败登录要 ~60s，无负缓存会把整个回测拖死）
 _LOGIN_TTL = 1800  # 30 分钟重新登录一次
 
+# 会话死亡错误关键词（2026-10-27 故障定性）：
+# 服务端会话被踢/连接死亡后，服务端返回「用户未登录」，而本地 _bs_logged_in
+# 标志仍在 TTL 内为 True → ensure_login() 直接放行 → 重试永远空转。
+# 05:24 事故：登录成功后第 13 只股起连续 24 只全报「用户未登录」×2 重试后放弃。
+_SESSION_DEAD_KEYWORDS = ("用户未登录", "登录失效", "会话", "网络接收错误", "接收数据异常")
+
+
+def _is_session_dead_error(error_msg: str) -> bool:
+    """判断错误信息是否指示服务端会话已死亡（需 force_relogin 而非信任本地标志）"""
+    if not error_msg:
+        return False
+    return any(kw in error_msg for kw in _SESSION_DEAD_KEYWORDS)
+
 
 def _do_login() -> bool:
     """内部登录函数"""
@@ -160,6 +173,12 @@ def query_history_k_data_plus_retry(*args, max_retries: int = 3, wait_seconds: f
                 return rs
             elif rs is not None:
                 log.warning(f"[BS] 查询错误: {rs.error_msg}, 重试 {attempt+1}/{max_retries}")
+                # 会话死亡自愈（2026-10-27 事故修复）：服务端踢线后本地登录标志是假的，
+                # ensure_login() 会因 TTL 未到直接放行 → 重试永远复现同一错误。
+                # 检测到会话类错误时强制重新登录，打破假登录态循环。
+                if _is_session_dead_error(rs.error_msg):
+                    log.warning("[BS] 检测到会话死亡错误，强制重新登录...")
+                    force_relogin()
             else:
                 log.warning(f"[BS] 查询返回 None, 重试 {attempt+1}/{max_retries}")
         except (socket.timeout, TimeoutError, OSError) as e:
