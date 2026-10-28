@@ -37,6 +37,11 @@ Investigate `analysis/weekly_full_pipeline.py`; check for deadlocks/infinite loo
 > 2026-10-18 维护复核：TOOLS.md 规则在位于位（含 pgrep -P / 缓存 mtime / timeout 估算三判据），无新复发，终态保持 promoted。
 
 ## [ERR-20260927-87V] openclaw_session_sweep
+> **[2026-10-29 维护 · 同类归并声明]** 本库共 3 条 `openclaw_session_sweep` sweep 条目（本条 09-27 / ERR-20261016-C02 /
+> ERR-20261025-GZY），共享 Pattern-Key `runtime.failure` 家族。它们均属**同一个 sweep-hook 误报源**（钩子在 `/new` 扫会话
+> 尾部日志，把 transient/误报名当失败上报），**不计入彼此 Recurrence-Count**（误报不是真复发，虚增会污染 promote 阈值），
+> 且均已按红线判定为历史误报名（2026-10-29 再次 `openclaw cron list` 复核：52 jobs 中仍无此名）。后续再入同类 sweep 条目：
+> 先看 Pattern-Key 是否已在本三条内，在则仅在本声明追加日期，**不新建条目、不 bump RC**。
 > **[2026-10-22 维护 · 防误报红线核对]** 本条属历史 `Cron: … failed` 类事件，已按红线跑 `openclaw cron list` 核对：`openclaw_session_sweep` **不在现存 48 个 job 列表中** → 判定为历史误报名，**不转发、不计入失败统计、不新增条目**（2026-10-18 auction-analysis-0926 教训）。
 
 **Logged**: 2026-09-27T12:00:56.623Z
@@ -523,6 +528,7 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Validation: verified — `analysis/three_factor_helper.py:50/69-72` 已改为 `score=None` 传播 + `GATE_MISSING_POLICY`（默认 fail_closed）；`analysis/portfolio_core.py:882-885` 已去 `except: pass`，改 `GATE_ERROR_POLICY`（默认 blocked），commit f470472。
 - 注：RC=1 但属「安全级 fail-open 缺陷」，按最小必要防治即时提升（与 10-18 安全类条目同口径）；
   同日观察到的「情绪维度可能退化」为独立待验证假设，不并入本规则。
+- Maintenance (2026-10-29 每日维护): 正文「修复方案待用户拍板」为 10-18 会话旧表述——Validation 已坐实修复落地（f470472，None 传播 + GATE_MISSING_POLICY/GATE_ERROR_POLICY），本条修复侧终态；仅「情绪维度退化」假设仍挂观察（独立事项，不阻塞本条）。
 
 ## ERR-20261018-C04 多臂对照各配"自然基准" → 基准口径差冒充实验效应，结论自动反转
 **日期**: 2026-10-18
@@ -751,6 +757,7 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - First-Seen: 2026-10-22
 - Last-Seen: 2026-10-22
 - Status: resolved（state-bookkeeping 前置落地；21:5x 首个自然 tick 为验证点）
+- Promotion (2026-10-28 每日维护): 同族家族键 `llm.final-response-failure.loses-context-only-work` RC 升至 3（10-22 心跳 / 10-27 KB 子代理 / 10-27 Obsidian cron，跨 3 任务、30 天内）→ 家族规则已提升至 AGENTS.md 配套铁律「凡有价值的 run 产出，禁止只存在于最终回复/上下文」。本条具体修复（state-bookkeeping 前置）继续有效，Status 维持 resolved + promoted 标注。
 - Maintenance (2026-10-23 每日维护): 验证点通过 ✅ —— `memory/heartbeat-state.json` mtime 2026-10-23 05:54（修复后多个自然 tick 持续回写），state-bookkeeping 前置任务实测生效，本条终态。
 
 ---
@@ -980,6 +987,7 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Source: subagent-dispatch（KB 回填 batch_21/22）
 - Reproducible: yes（端点抖动 + 末尾一次写模式即复现）
 - Pattern-Key: subagent.llm-timeout.context-only-work.write-as-you-go
+- Promotion (2026-10-28 每日维护): 同族家族键 `llm.final-response-failure.loses-context-only-work` RC 升至 3（10-22 心跳 / 10-27 KB 子代理 / 10-27 Obsidian cron，跨 3 任务、30 天内）→ 家族规则已提升至 AGENTS.md 配套铁律。本条 write-as-you-go 纪律即该规则的子代理形态实例，Status 维持 resolved + promoted 标注。
 
 ## ERR-20261028-KbBackupOverwrittenByStaleRerun
 - **日期**: 2026-10-27 06:45（发生）/ 2026-10-28 04:5x（复验发现并恢复）
@@ -992,3 +1000,22 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Source: 复验会话（KB 备份链审计）
 - Reproducible: yes（合并脚本重跑 + 批次号错位即复现）
 - Pattern-Key: kb.backup-chain.frozen-snapshot.overwrite-before-assert
+
+## ERR-20261028-ObsidianCronNoResponse
+- **日期**: 2026-10-27 19:30 触发 / 19:33 失败（2026-10-28 每日维护发现并登记）
+- **现象**: cron `Obsidian笔记→投资理念归纳`（181b0304，agentTurn，model=z-ai/glm-5.3-flash）运行 204s（含 Obsidian Vault 全量扫描工具调用）后 `Agent couldn't generate a response`，零 summary、零产物、announce 未投递 → 10-26 19:30→10-27 19:30 窗口的投资理念归纳完全丢失（后续 24h 窗口不会自动补扫该区间）。
+- **根因**: LLM 最终回复轮失败（免费快速模型 + ~3.5min 长 run），唯一成果 = 最终回复文本，失败即全丢。该 job 历史失败同族：10-06 ×4「All models failed (7) deepseek timeout」、10-16 ×4 OutboundDeliveryError（有内容未送达）——**失败高发点始终是「回复/投递」一端，而非扫描本身**。
+- **处置**: 登记本条并并入家族键。10-27 缺口如需补齐须手动指定窗口重跑（涉及 telegram 投递，待用户决定，不自动重跑）。
+- **规约**: ①cron 归纳类任务的成果先落盘产物文件再 announce 引用，不把唯一成果押在最终回复上；②长 run（>3min）的 agentTurn cron 不用免费快速模型（AGENTS.md 既有铁律的又一实证）；③「couldn't generate a response」= run 内已完成工作全部在上下文中，重跑是唯一恢复路径——凡此失败先查产物侧有无部分落盘。
+- **状态**: resolved（登记完成，家族规则已提升；缺口补扫待用户决定）
+### Metadata
+- Source: cron（每日维护 06:00 巡检发现）
+- Reproducible: yes（长 run + 免费模型 + 唯一成果=最终回复即复现丢稿）
+- Pattern-Key: llm.final-response-failure.loses-context-only-work（家族键，本条为第 3 次实证）
+- Recurrence-Count: 3（共享计数：10-22 心跳 final-turn idle timeout / 10-27 KB 子代理超时丢稿 / 10-27 本条；跨 3 任务、30 天内）
+- First-Seen: 2026-10-22
+- Last-Seen: 2026-10-27
+- Status: promoted (2026-10-28 → AGENTS.md「配套铁律 · 凡有价值的 run 产出，禁止只存在于最终回复/上下文」)
+- See Also: ERR-20261022-HeartbeatFinalTurnIdleTimeout（家族第 1 实证）、ERR-20261027-KbBackfillSubagentTimeoutLostWork（家族第 2 实证）、AGENTS.md「免费快速模型不许跑长任务」
+- Source: .learnings/ERRORS.md#llm.final-response-failure.loses-context-only-work
+- Maintenance (2026-10-29 每日维护): ①**缺口销账 ✅** —— 10-27 归纳缺口无需人工补扫：10-28 19:30 自然 run status=ok（382s，delivered），产物 `wiki/sources/investment-philosophy-2026-10-28.md`（19:36 落盘 2.2KB）按 48h 窗口已覆盖 10-27 区间（Vault 0 篇命中、无积压，会话核实）→「缺口补扫待用户决定」关闭，本条终态。②**观察项（不 bump RC）**：10-28 深夜~10-29 凌晨 dashboard webchat 会话（8eadc40c）出现 ≥6 次 `[assistant turn failed before producing content]`（amd-radeon 端点，用户多次「继续」恢复）——属最终轮失败簇，但已完成工作经会话续跑全部找回、**无确证丢稿**，按「无确证不虚增」纪律 RC 维持 3；若后续出现同簇真丢稿则 bump 至 4 并复核端点健康。
