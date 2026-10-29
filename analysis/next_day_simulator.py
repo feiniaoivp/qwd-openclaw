@@ -216,8 +216,12 @@ class NextDaySimulator:
             if r.get("stop_loss"):
                 stop_loss[r["symbol"]] = r["stop_loss"]
 
-        # 从持仓成本计算（兜底）
+        # 从持仓成本计算（兜底）；仅真实持仓（shares>0）参与
+        # [2026-10-29] 幽灵持仓过滤：portfolio_sim_state 26/27 为 shares=0 残留条目，
+        # 旧成本算出的假止损位高于现价（最高 +52%），与 _identify_active_directions 同款护栏。
         for symbol, pos in held_positions.items():
+            if (pos.get("shares", 0) or 0) <= 0:
+                continue
             if symbol not in stop_loss:
                 cost = pos.get("cost", 0) or pos.get("entry_price", 0)
                 if cost > 0:

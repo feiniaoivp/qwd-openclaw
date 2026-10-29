@@ -225,8 +225,12 @@ class SignalArbitrator:
         )
 
         # 6. 止损/支撑价
-        stop_loss = self._calc_stop_loss(held_position) if held_position else None
-        support = self._calc_support(held_position) if held_position else None
+        # [2026-10-29] 幽灵持仓过滤：shares=0（已清仓残留条目）的历史成本不得产出止损/支撑位。
+        # 实证：国瓷材料幽灵 cost 67.27 → 假止损 63.91 vs 现价 41.90（+52%），
+        # next_day_sim stop_loss_map 因此出现 7 只“止损高于现价”的语义错误。
+        _has_shares = bool(held_position) and (held_position.get("shares", 0) or 0) > 0
+        stop_loss = self._calc_stop_loss(held_position) if _has_shares else None
+        support = self._calc_support(held_position) if _has_shares else None
 
         print(f"  [DEBUG arbitrate] {symbol}: evidence.moat_bonus={evidence.get('moat_bonus', 0.0)}")
         return ArbitrationResult(
