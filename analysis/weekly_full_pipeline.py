@@ -320,6 +320,14 @@ def main():
     if not r["success"]:
         print("⚠️ 发现交易日判定/日历获取绕过 SSOT（见上方），节假日误判可能复发（不阻断流水线）...")
 
+    # 步骤 0n: 簇 flag 触发检查（2026-10-30 新增；缘起 4e2b522 update_flags.C04 无消费方——
+    # 簇限仓对失效簇仍全量合并；flagged 成员实际建仓时需人工拍板折算/停用，风控变更须 /approve）
+    print("\n🚦 步骤 0n/9: 簇 flag 触发检查 (cluster_flag_watch.py)")
+    r = run_script("../scripts/cluster_flag_watch.py", timeout=60)
+    results["cluster_flag_watch"] = r
+    if not r["success"]:
+        print("⚠️ flagged 簇成员已有实际持仓（见上方），需拍板簇联动折算/停用（不阻断流水线）...")
+
     # 步骤 0l: 外部数据 astype(float) 裸转棘轮门禁（2026-10-22 第六轮新增；缘起 10-08
     # 外部源空串 '' 非裸转 ValueError 崩批；68 处存量冻结，新增拦截，修复自动降基线）
     print("\n🚦 步骤 0l/9: astype 裸转棘轮门禁 (astype_ratchet_guard.py)")
