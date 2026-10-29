@@ -310,11 +310,34 @@ def main():
     print("=====NEWS_MONITOR_END=====")
     print("\n" + brief)
 
-    # 保存可读知识库片段
+    # 保存可读知识库片段（2026-10-30 防重钩子：• 条目行若 KB 已存在同文本则跳过。
+    # 根治两类粘性重复：a) 同日双窗口双收（手抓+19:06 cron，10-28 两盘后块 12 条重复）；
+    # b) 挂架公告跨日重收（特变业绩说明会 ×3 等）。简报头统计行不参与防重。）
     kb_file = os.path.join(NEWS_DIR, "knowledge_base.md")
+    brief_to_write = brief
+    try:
+        with open(kb_file, encoding="utf-8") as f:
+            _kb_existing = f.read()
+        _existing = {_ln.strip()[1:].strip() for _ln in _kb_existing.splitlines() if _ln.strip().startswith("•")}
+        _kept, _skipped = [], 0
+        for _ln in brief.splitlines():
+            _s = _ln.strip()
+            if _s.startswith("•") and not _s.startswith("• 宏观/政策:") \
+                    and not _s.startswith("• 关注股公告:") and not _s.startswith("• 个股新闻:"):
+                _t = _s[1:].strip()
+                if _t in _existing:
+                    _skipped += 1
+                    continue
+                _existing.add(_t)
+            _kept.append(_ln)
+        if _skipped:
+            print(f"🧹 KB 防重: 跳过已存在条目 {_skipped} 行")
+        brief_to_write = "\n".join(_kept)
+    except Exception as e:
+        print(f"⚠️ KB 防重检查失败({e})，按原文追加")
     with open(kb_file, "a") as f:
         f.write(f"\n## {today_str} {mode}\n\n")
-        f.write(brief + "\n\n")
+        f.write(brief_to_write + "\n\n")
     print(f"\n📄 原始数据: {raw_path}")
     print(f"📄 知识库追加: {kb_file}")
 
