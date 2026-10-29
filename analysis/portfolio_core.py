@@ -527,6 +527,10 @@ def _apply_tier_filter(signal: Dict, pos: Dict, tier: str) -> Dict:
             allowed_sell_keywords = ["ATR止损", "止损", "☠️", "🟡", "🔄", "致命风险", "高风险", "策略切换", "基本面", "估值"]
             is_allowed = any(kw in reason for kw in allowed_sell_keywords)
             if not is_allowed:
+                # [2026-10-30] 补留痕：tier1 择时卖出拦截与 tier2/tier3 买入拦截同协议。
+                # 实证：10-27 越秀(000987) MACD死叉卖出被无痕改写为持有，信号审计报
+                # 「0 冲突各源一致」——被吞信号消失导致审计盲区（10-18 协议只覆盖了买入）。
+                _mark_suppressed(signal, "tier1")
                 signal["action"] = "持有"
                 signal["reason"] = f"🟢 Tier1禁用择时卖出 | 原理由: {reason}"
     
