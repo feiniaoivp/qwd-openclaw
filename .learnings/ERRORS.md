@@ -1019,3 +1019,19 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - See Also: ERR-20261022-HeartbeatFinalTurnIdleTimeout（家族第 1 实证）、ERR-20261027-KbBackfillSubagentTimeoutLostWork（家族第 2 实证）、AGENTS.md「免费快速模型不许跑长任务」
 - Source: .learnings/ERRORS.md#llm.final-response-failure.loses-context-only-work
 - Maintenance (2026-10-29 每日维护): ①**缺口销账 ✅** —— 10-27 归纳缺口无需人工补扫：10-28 19:30 自然 run status=ok（382s，delivered），产物 `wiki/sources/investment-philosophy-2026-10-28.md`（19:36 落盘 2.2KB）按 48h 窗口已覆盖 10-27 区间（Vault 0 篇命中、无积压，会话核实）→「缺口补扫待用户决定」关闭，本条终态。②**观察项（不 bump RC）**：10-28 深夜~10-29 凌晨 dashboard webchat 会话（8eadc40c）出现 ≥6 次 `[assistant turn failed before producing content]`（amd-radeon 端点，用户多次「继续」恢复）——属最终轮失败簇，但已完成工作经会话续跑全部找回、**无确证丢稿**，按「无确证不虚增」纪律 RC 维持 3；若后续出现同簇真丢稿则 bump 至 4 并复核端点健康。
+
+## ERR-20261030-CoverageBoardDisclosureFalseNegative
+- **日期**: 2026-10-29 20:03（特变披露）/ 2026-10-30 05:34（兜底核对假阴性）/ 2026-10-30 06:2x（batch_26 补采发现）
+- **现象**: 05:34 覆盖板兜底核对报「7 只全部未披露，无漏采」，但特变电工 Q3 已于 10-29 20:03 披露（核对时点前 ~9.5h）——新闻流关键词检索式核对漏检。**同族第 2 次**：10-22 中信特钢漏采 7 天（batch_25 stale_articles 捞回，间隔 24h 内复发）。
+- **根因**: 兜底核对用「新闻流检索」而非「公告口径直查」——晚间披露（20:0x）常以「{名称}：2026年第三季度报告」公告快讯形式出现，泛关键词（股票名+业绩/净利）在多源噪声下命中率不稳定；「核对完成」被当成「确认无披露」，实为「本次检索未命中」（假 ok 家族：以动作完成替代事实确认）。
+- **处置**: batch_26 特变补采入 KB（db9610a）+ 覆盖板主表 30/0/0/6 + 剩余 6 只落地前预锚预注册（算术自检公式 + 2025 双源基数，10-30 晨落盘）。
+- **规约**: ①披露收官周兜底核对必须**逐只用公告口径直查**（「{名称} 三季度报告/三季报」），新闻流检索只作补充；②「未披露」结论 = 公告口径零命中 + 公告页/官方渠道核对，不得由单轮新闻检索推出；③落地前预锚（基数+公式）使漏采在落地日必被算术自检暴露（恒力/特变两轮实证有效）。
+- **状态**: resolved（数据补齐；收官窗内控制 = 预锚表 + 19:06 收官抓取 runbook）
+### Metadata
+- Source: 覆盖板兜底核对（05:34 会话）/ batch_26（并行会话补采）/ 本会话登记
+- Reproducible: yes（晚间公告快讯 + 泛关键词检索即复现）
+- Pattern-Key: kb.coverage-board.disclosure-false-negative（家族：ops.fake-ok，第 2 次实证）
+- Recurrence-Count: 2（特钢 10-22 / 特变 10-29；跨 2 个核对轮次）
+- First-Seen: 2026-10-25（特钢披露日）
+- Last-Seen: 2026-10-29
+- Gate-Status: 文档层（覆盖板规约+本条）已落；可执行门禁**有意缓建**——覆盖板为三季报季季节性产物（10-31 收官后退役 36/36），通用「公告口径直查」规则已入预锚 runbook；若非季报窗口复发（如年报季），届时按三层防线建门禁
