@@ -1,5 +1,14 @@
 > **[2026-10-18 维护 · RC>=3 终态确认]** 本 Pattern-Key 共享计数条目 = ERR-20261006-PM（RC=3 跨 3 任务：weekly 09-26 / premarket 10-06 / 本条；跨 30 天内），本条为早期实证不单独计数。防治规则 TOOLS.md「🔴 长跑 pipeline 卡死判定规则」2026-10-18 复核确认在位，无新复发，终态保持 promoted。
 
+> **[2026-10-31 每周维护 · RC≥3 家族合并终态确认]** 本轮覆盖 6 条 RC≥3 共享计数家族：
+> `ops.silent-orchestrator-misjudged-as-hang`(RC=3) / `err.dist-io-no-timeout`(RC=4) / `cron.silent-noop-fake-ok`(RC=3, LEARNINGS)
+> / `exec.timeout-orphan-child.cron-longrunning`(RC=3) / `data.none-valued-key-attr-crash`(RC=3) / `llm.final-response-failure.loses-context-only-work`(RC=3)。
+> 逐一复核：防治规则 grep 全在位（TOOLS.md「网络调用超时铁律」L461、「长跑 pipeline 卡死判定规则」L382；AGENTS.md 配套铁律「数据源容错」L168、「cron 真健康」L182、「run 产出禁止只存在于最终回复」L218），
+> 近 7 天窗口（10-25~10-31）零新复发（`openclaw cron list` 实跑 0 error job；memory 10-30/10-31 无新事故；amd-radeon 最终轮失败簇仍无确证丢稿，RC 不虚增）。
+> **六条全部维持 promoted 终态，本轮零新晋升、零 RC bump。** 依 10-24 收敛规约，各条不再逐条追加重复确认注记，以本合并注记为准。
+> 同日销案：`auction-signal-push` 终验观察项关闭（见 ERR-20261023-BacktestCaliberDegradedSilentPush 尾注）。
+> 红线核对：`openclaw_session_sweep` 仍不在现存 cron 列表 → 历史误报维持，仅 warn，未新增条目。
+
 ## [ERR-20260926-WBP] weekly_full_pipeline 长跑无输出
 
 **Logged**: 2026-09-26
@@ -852,6 +861,8 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 > **[2026-10-25 每日维护]** cron failed 红线核对：本条 Source 为 manual-session 非 cron-failed 事件，不受误报红线约束；
 > rc=1 < 3 维持观察，验证点 = 下个工作日 20:30 自然运行报告头部口径戳。另：`auction-signal-push`（cc1e9a93）在现存 52 jobs
 > 列表内属实（非误报名），其 status=error 残留经 `cron runs` 坐实为 10-23 09:27 修复前末次 run，非新失败，终验等 10-26 周一自然 run。
+> **[2026-10-31 每周维护 · 销案 ✅]** `auction-signal-push` `cron list` 复核 status=ok（末次 run 10-30 09:27 前后，21h ago），
+> error 残留已被后续成功 run 覆盖 → 终验观察项关闭。本条（口径戳实弹验证 10-27 已过关）维持终态，RC 维持 1。
 
 ## ERR-20261025-EditHeaderSwallowOnAppend
 **Date**: 2026-10-25
@@ -1035,3 +1046,35 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - First-Seen: 2026-10-25（特钢披露日）
 - Last-Seen: 2026-10-29
 - Gate-Status: 文档层（覆盖板规约+本条）已落；可执行门禁**有意缓建**——覆盖板为三季报季季节性产物（10-31 收官后退役 36/36），通用「公告口径直查」规则已入预锚 runbook；若非季报窗口复发（如年报季），届时按三层防线建门禁
+
+## ERR-20261030-Tier1SuppressionNoAuditTrail
+- **日期**: 2026-10-27（信号被吞日）/ 2026-10-30 06:1x（发现并修复 e5cbc73）
+- **现象**: 10-27 越秀 MACD 死叉卖出信号被 tier1 择时拦截无痕改写为「持有」，当日 signal_audit 却报「0 冲突/各源一致」——被吞信号直接从审计里消失，审计自身成为盲区，且这是 10-18 留痕协议的第三次同族暴露。
+- **根因**: `_mark_suppressed` 留痕只挂在 tier2/tier3 **买入**拦截分支，tier1 **卖出**拦截分支漏挂。「留痕协议已落地」被当成「全路径留痕」，实际协议覆盖面从未按分支枚举核对（假 ok 家族：以动作存在替代覆盖完整）。
+- **处置**: e5cbc73 为 tier1 卖出拦截分支补挂 `_mark_suppressed(signal, "tier1")`，语法+脱敏检查通过。
+- **规约**: ①任何「拦截/抑制/降级」类留痕协议，落地时必须按**决策树全分支枚举**核对挂点（买入×卖出×每个 tier），禁止只覆盖当次触发的那条分支；②审计报「0 冲突」≠「无拦截」——审计侧需能区分「无信号」与「信号被吞」，否则该结论不可用于放行。
+- **状态**: resolved（e5cbc73；验证点 = 下次 tier1 卖出拦截自然发生时 signal_audit 出现 suppressed 留痕行）
+### Metadata (2026-10-31 每日维护补登记)
+- Source: manual-session（10-30 晨审计，memory/2026-10-30.md「发现 B」）
+- Reproducible: yes（构造 tier1 卖出拦截信号即无留痕）
+- Pattern-Key: ops.silent-suppression-audit-blindspot（假 ok 家族 ops.fake-ok；与 data.caliber-degradation-invisible-downstream、kb.coverage-board.disclosure-false-negative 同族「以动作完成替代事实确认」）
+- Recurrence-Count: 1（家族面计：本条为该家族「审计盲区」变体首证；口径无痕/核对假阴性各为其姊妹变体，不共享计数）
+- First-Seen: 2026-10-27
+- Last-Seen: 2026-10-30
+- Status: resolved（修复已落地；RC=1 < 3 暂不 promote，若留痕协议再漏分支则按三层防线建枚举门禁）
+
+## ERR-20261030-KbStubDuplicationReshaped
+- **日期**: 2026-10-28~30（发现）/ 10-30 当日治理（db9610a）
+- **现象**: KB writer 重复机制未死、**形态已变**——由旧字段级重复变为跨块 stub 重复：10-28 存在两个盘后块（手抓 25 条 vs 官方 19:06 cron 28 条，12 同标题 stub 重叠 ~45%）；特变「Q3 业绩说明会公告」同标题 stub ×3（多晚重抓挂架公告）。危害 = KB 膨胀 + 检索噪声，无事实污染。
+- **根因**: writer append 路径无全文查重，防重只在字段级旧机制上生效；跨块/跨日重抓同标题即产 stub 副本（旧机制治理后残留的形态迁移，非新故障源）。
+- **处置**: news_monitor.py append 前 • 行全文查重（统计行豁免、fail 告警不静默）+ 存量一次性清理 -84 行（69 重复标题→0，detailed 187 保持，.bak-stubdedup 留底）→ db9610a。量化依据先行（真实重复仅 69 标题/84 行），故选「防重+清理」而非接受现状。
+- **规约**: ①旧去重机制修复后必须用**新形态枚举**复查（字段级≠跨块级≠跨日级），"已根治"结论要绑定当时的重复形态；②治理决策前先量化重复规模，规模可控选一次性清理。
+- **状态**: resolved（防重钩子 + 存量清零；验证点 = 后续 KB append 后重复标题数持续为 0）
+### Metadata (2026-10-31 每日维护补登记)
+- Source: manual-session（10-30 webchat 深挖，memory/2026-10-30.md）
+- Reproducible: yes（跨日重抓同标题公告即产 stub 副本，修复前）
+- Pattern-Key: kb.writer.stub-duplication.reshaped-form
+- Recurrence-Count: 1（旧字段级重复为同一机制的前一形态，但旧治理无独立条目可 bump，本条起新计数）
+- First-Seen: 2026-10-28
+- Last-Seen: 2026-10-30
+- Status: resolved（RC=1 < 3 暂不 promote）
