@@ -6,6 +6,7 @@
 """
 
 import sys
+import os
 import json
 import subprocess
 from datetime import datetime, timedelta
@@ -26,55 +27,16 @@ def run_weekly_review():
     lines.append(f"周期: {week_start} ~ {today}")
     lines.append("")
     
-    # 1. 读取模拟盘状态
+    # 1. 模拟盘周报（2026-10-31 改造：复用 analysis/portfolio_weekly.py 单一事实来源。
+    #    修复旧版 0/27 bug：旧代码用 p.get("position") 读不存在的字段（实际字段是 shares），
+    #    永远显示 0 持仓；且旧版只覆盖主盘，现在两账户 + 信号漏斗一并聚合）
     try:
-        import os
-        state_file = os.path.join(WORKSPACE, "data", "portfolio_sim_state.json")
-        trades_file = os.path.join(WORKSPACE, "data", "portfolio_sim_trades.json")
-        
-        if os.path.exists(state_file):
-            with open(state_file) as f:
-                state = json.load(f)
-            
-            positions = state.get("positions", {})
-            held = [p for p in positions.values() if p.get("position")]
-            
-            lines.append(f"💼 模拟盘持仓: {len(held)}/{len(positions)} 只")
-            lines.append("")
-            
-            if held:
-                lines.append("📈 持仓明细 (按收益率):")
-                held_sorted = sorted(held, key=lambda x: x.get("total_pl", 0), reverse=True)
-                for p in held_sorted[:10]:
-                    symbol = p.get("_symbol", "")
-                    name = p.get("name", "")
-                    pl = p.get("total_pl", 0)
-                    pl_pct = 0
-                    if p.get("entry_price"):
-                        pl_pct = (pl / (p.get("shares", 1) * p.get("entry_price", 1))) * 100
-                    lines.append(f"  {name}({symbol}): 盈亏 ¥{pl:+,.0f} ({pl_pct:+.2f}%) 策略:{p.get('strategy','')}")
-                lines.append("")
-        
-        # 读取成交流水
-        if os.path.exists(trades_file):
-            with open(trades_file) as f:
-                trades = json.load(f)
-            
-            week_trades = [t for t in trades if t.get("date", "").startswith(week_start[:7]) or t.get("date", "") >= week_start]
-            buys = [t for t in week_trades if t.get("action") == "BUY"]
-            sells = [t for t in week_trades if t.get("action") == "SELL"]
-            
-            lines.append(f"📊 本周成交: 买入 {len(buys)} 笔 | 卖出 {len(sells)} 笔")
-            
-            if sells:
-                wins = [t for t in sells if t.get("pnl", 0) > 0]
-                total_pl = sum(t.get("pnl", 0) for t in sells)
-                lines.append(f"  卖出盈亏: ¥{total_pl:+,.0f} | 胜率 {len(wins)}/{len(sells)} ({len(wins)/len(sells)*100:.0f}%)")
-            
-            lines.append("")
-            
+        from analysis.portfolio_weekly import build_report, format_telegram
+        rep = build_report()
+        lines.append(format_telegram(rep))
+        lines.append("")
     except Exception as e:
-        lines.append(f"⚠️ 模拟盘数据读取失败: {e}")
+        lines.append(f"⚠️ 模拟盘周报生成失败: {e}")
         lines.append("")
     
     # 2. 策略信号准确率（简易版：读取最近几天的 close_scan 输出）

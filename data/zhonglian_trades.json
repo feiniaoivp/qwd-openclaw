@@ -1,0 +1,15 @@
+[
+  {
+    "ts": "2026-10-31 07:30:00",
+    "data_date": "2026-10-12",
+    "strategy": "strategy1",
+    "strategy_name": "MACD+RSI<50",
+    "action": "BUY",
+    "seed": true,
+    "fill_price": 6.08,
+    "recorded_entry_price": 6.08,
+    "shares": 15700,
+    "capital_after": 499.09,
+    "note": "台账建立前的建仓补记（非当日成交）。成本口径：state 记入价 6.08 与资金占用反推(~6.33)存在差异，缺口为台账缺失的此前已实现盈亏，不可回溯。台账 2026-10-31 起逐笔记录。"
+  }
+]

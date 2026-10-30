@@ -27,6 +27,7 @@ except ImportError:
 
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
 STATE_FILE = os.path.join(WORKSPACE, "data", "zhonglian_state.json")
+TRADES_FILE = os.path.join(WORKSPACE, "data", "zhonglian_trades.json")
 COMMISSION = 0.0003
 SLIPPAGE = 0.001
 CAPITAL = 100_000
@@ -137,6 +138,31 @@ def save_state(state):
     with open(STATE_FILE, "w") as f:
         json.dump(state, f, ensure_ascii=False, indent=2, default=str)
 
+
+def append_trade(record):
+    """追加成交到台账 data/zhonglian_trades.json（2026-10-31 建立，此前无成交历史）。
+
+    契约：临时文件 + os.replace 原子写 + 写后计数校验；
+    失败仅告警不阻断交易状态保存（台账缺失可补，状态错乱不可逆）。
+    """
+    try:
+        trades = []
+        if os.path.exists(TRADES_FILE):
+            with open(TRADES_FILE) as f:
+                trades = json.load(f)
+        before = len(trades)
+        trades.append(record)
+        tmp = TRADES_FILE + ".tmp"
+        with open(tmp, "w") as f:
+            json.dump(trades, f, ensure_ascii=False, indent=2, default=str)
+        os.replace(tmp, TRADES_FILE)
+        with open(TRADES_FILE) as f:
+            check = json.load(f)
+        if len(check) != before + 1:
+            print(f"⚠️ zhonglian 台账计数校验失败: {before}+1 != {len(check)}", file=sys.stderr)
+    except Exception as e:
+        print(f"⚠️ zhonglian 台账写入失败(交易状态不受影响): {e}", file=sys.stderr)
+
 def check_signals(df):
     """计算两个策略的最新信号。
 
@@ -205,8 +231,9 @@ def execute_trade_strategy1(state, signals):
 
     if sig["buy"] and not s["position"]:
         # 买入
-        fee = s["capital"] * COMMISSION
-        available = s["capital"] - fee
+        capital_before = s["capital"]
+        fee = capital_before * COMMISSION
+        available = capital_before - fee
         shares = int(available / (price * (1 + SLIPPAGE)) / 100) * 100
         if shares >= 100:
             cost = shares * price * (1 + SLIPPAGE)
@@ -217,21 +244,42 @@ def execute_trade_strategy1(state, signals):
             s["entry_price"] = price
             s["entry_date"] = dt
             action = "BUY"
+            append_trade({
+                "ts": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "data_date": dt, "strategy": "strategy1", "strategy_name": s["name"],
+                "action": "BUY", "fill_price": price, "shares": shares,
+                "capital_before": round(capital_before, 2),
+                "cost_total": round(cost + fee2, 2), "fee1": round(fee, 2), "fee2": round(fee2, 2),
+                "capital_after": round(s["capital"], 2),
+            })
             msg = f"🟢 **策略1 {s['name']} 买入信号**\n价格: ¥{price} | 数量: {shares}股\n理由: MACD金叉 + RSI<50底部区域"
 
     elif sig["sell"] and s["position"]:
         # 卖出
-        sell_value = s["shares"] * price * (1 - SLIPPAGE)
+        shares_closed = s["shares"]
+        entry_price_used = s["entry_price"]
+        entry_date_used = s["entry_date"]
+        capital_before = s["capital"]
+        sell_value = shares_closed * price * (1 - SLIPPAGE)
         fee = sell_value * COMMISSION
         net = sell_value - fee
-        pnl = net - s["shares"] * s["entry_price"] * (1 + SLIPPAGE)
-        pnl_pct = round((pnl / (s["shares"] * s["entry_price"])) * 100, 2)
-        hold_days = (datetime.strptime(dt, "%Y-%m-%d") - datetime.strptime(s["entry_date"], "%Y-%m-%d")).days if s["entry_date"] else 0
+        pnl = net - shares_closed * entry_price_used * (1 + SLIPPAGE)
+        pnl_pct = round((pnl / (shares_closed * entry_price_used)) * 100, 2)
+        hold_days = (datetime.strptime(dt, "%Y-%m-%d") - datetime.strptime(entry_date_used, "%Y-%m-%d")).days if entry_date_used else 0
         s["capital"] += net
         s["shares"] = 0
         s["position"] = False
         emoji = "🟢" if pnl > 0 else "🔴"
         action = "SELL"
+        append_trade({
+            "ts": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "data_date": dt, "strategy": "strategy1", "strategy_name": s["name"],
+            "action": "SELL", "fill_price": price, "shares_closed": shares_closed,
+            "entry_price": entry_price_used, "entry_date": entry_date_used,
+            "net_proceeds": round(net, 2), "pnl": round(pnl, 2), "pnl_pct": pnl_pct,
+            "hold_days": hold_days, "capital_before": round(capital_before, 2),
+            "capital_after": round(s["capital"], 2),
+        })
         msg = f"{emoji} **策略1 {s['name']} 卖出信号**\n价格: ¥{price} | 盈亏: {pnl_pct}% | 持仓: {hold_days}天"
 
     return action, msg, state
@@ -247,8 +295,9 @@ def execute_trade_strategy2(state, signals):
     msg = None
 
     if sig["buy"] and not s["position"]:
-        fee = s["capital"] * COMMISSION
-        available = s["capital"] - fee
+        capital_before = s["capital"]
+        fee = capital_before * COMMISSION
+        available = capital_before - fee
         shares = int(available / (price * (1 + SLIPPAGE)) / 100) * 100
         if shares >= 100:
             cost = shares * price * (1 + SLIPPAGE)
@@ -259,21 +308,42 @@ def execute_trade_strategy2(state, signals):
             s["entry_price"] = price
             s["entry_date"] = dt
             action = "BUY"
+            append_trade({
+                "ts": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "data_date": dt, "strategy": "strategy2", "strategy_name": s["name"],
+                "action": "BUY", "fill_price": price, "shares": shares,
+                "capital_before": round(capital_before, 2),
+                "cost_total": round(cost + fee2, 2), "fee1": round(fee, 2), "fee2": round(fee2, 2),
+                "capital_after": round(s["capital"], 2),
+            })
             indicators = signals["indicators"]
             msg = f"🟢 **策略2 {s['name']} 买入信号**\n价格: ¥{price} | 数量: {shares}股\nEMA12({indicators['EMA12']}) > EMA26({indicators['EMA26']}) RSI({indicators['RSI14']})<60"
 
     elif sig["sell"] and s["position"]:
-        sell_value = s["shares"] * price * (1 - SLIPPAGE)
+        shares_closed = s["shares"]
+        entry_price_used = s["entry_price"]
+        entry_date_used = s["entry_date"]
+        capital_before = s["capital"]
+        sell_value = shares_closed * price * (1 - SLIPPAGE)
         fee = sell_value * COMMISSION
         net = sell_value - fee
-        pnl = net - s["shares"] * s["entry_price"] * (1 + SLIPPAGE)
-        pnl_pct = round((pnl / (s["shares"] * s["entry_price"])) * 100, 2)
-        hold_days = (datetime.strptime(dt, "%Y-%m-%d") - datetime.strptime(s["entry_date"], "%Y-%m-%d")).days if s["entry_date"] else 0
+        pnl = net - shares_closed * entry_price_used * (1 + SLIPPAGE)
+        pnl_pct = round((pnl / (shares_closed * entry_price_used)) * 100, 2)
+        hold_days = (datetime.strptime(dt, "%Y-%m-%d") - datetime.strptime(entry_date_used, "%Y-%m-%d")).days if entry_date_used else 0
         s["capital"] += net
         s["shares"] = 0
         s["position"] = False
         emoji = "🟢" if pnl > 0 else "🔴"
         action = "SELL"
+        append_trade({
+            "ts": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "data_date": dt, "strategy": "strategy2", "strategy_name": s["name"],
+            "action": "SELL", "fill_price": price, "shares_closed": shares_closed,
+            "entry_price": entry_price_used, "entry_date": entry_date_used,
+            "net_proceeds": round(net, 2), "pnl": round(pnl, 2), "pnl_pct": pnl_pct,
+            "hold_days": hold_days, "capital_before": round(capital_before, 2),
+            "capital_after": round(s["capital"], 2),
+        })
         msg = f"{emoji} **策略2 {s['name']} 卖出信号**\n价格: ¥{price} | 盈亏: {pnl_pct}% | 持仓: {hold_days}天"
         # 说明卖出原因
         sig_desc = ""

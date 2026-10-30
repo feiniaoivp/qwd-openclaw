@@ -277,5 +277,54 @@
     "strategy": "macd",
     "bucket": "satellite",
     "note": "⚠️测试污染：10-20 18:0x e9fb539「功能验证 core 15k/sat 5k」冒烟用占位价10.0直调 execute_trade，未重定向 TRADES_FILE 写入生产底账（state 已在 pre_bucket_split 备份中回滚，仅 trades 残留；shares=1400/400 恰为 15%/5%×100k 在 price=10 下的整百股数；详见 memory/2026-10-20.md:81，标注先例见 778a516）"
+  },
+  {
+    "date": "2026-10-26",
+    "symbol": "000987",
+    "name": "越秀资本",
+    "action": "BUY",
+    "price": 6.91,
+    "shares": 700,
+    "pnl": 0,
+    "pnl_pct": 0.0,
+    "strategy": "macd",
+    "bucket": "satellite"
+  },
+  {
+    "date": "2026-10-30",
+    "symbol": "000987",
+    "name": "越秀资本",
+    "action": "SELL",
+    "price": 6.53,
+    "shares": 0,
+    "pnl": -276.7779286999994,
+    "pnl_pct": -5.72,
+    "strategy": "macd"
+  },
+  {
+    "date": "2026-10-21",
+    "symbol": "600406",
+    "name": "国电南瑞",
+    "action": "SELL",
+    "price": 10.0,
+    "shares": 0,
+    "pnl": 0,
+    "pnl_pct": 0.0,
+    "strategy": "macd",
+    "reversal_of_trade_index": 22,
+    "note": "冲销：对冲 2026-10-20 同股测试污染买入（e9fb539 状态重建的账面补记，非真实成交；现金损耗已固化在净值基期，不回溯修正）"
+  },
+  {
+    "date": "2026-10-21",
+    "symbol": "600036",
+    "name": "招商银行",
+    "action": "SELL",
+    "price": 10.0,
+    "shares": 0,
+    "pnl": 0,
+    "pnl_pct": 0.0,
+    "strategy": "macd",
+    "reversal_of_trade_index": 23,
+    "note": "冲销：对冲 2026-10-20 同股测试污染买入（e9fb539 状态重建的账面补记，非真实成交；现金损耗已固化在净值基期，不回溯修正）"
   }
 ]
