@@ -74,7 +74,7 @@ from analysis.service import is_trading_day
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 STATE_FILE = os.path.join(WORKSPACE, "data", "zhonglian_state.json")
-CACHE_DIR = os.path.join(WORKSPACE, "data_cache")
+LIFECYCLE_FILE = os.path.join(WORKSPACE, "data", "signal_lifecycle.json")
 
 CAPITAL = 100_000
 COMMISSION = 0.0003
@@ -449,6 +449,7 @@ def calc_atr_stops(df: pd.DataFrame, mult: float = 2.0) -> dict:
         "stop_short": stop_short,
         "risk_per_share": round(mult * atr, 2),
         "suggested_shares_per_100k": shares_per_100k,
+        "vol_norm_factor": round(atr / cur_price, 4) if cur_price > 0 else 0,
     }
 
 def calc_fibonacci_confluence(df: pd.DataFrame, sr: dict) -> dict:
@@ -505,6 +506,80 @@ def calc_ema_combo_8_21_50(df: pd.DataFrame) -> dict:
         "bear_setup": bear,
         "pullback_buy_zone": pullback_buy_zone,
     }
+
+def apply_shock_decay(score: float, daily_return: float, flow_shock: bool = False) -> float:
+    """
+    [2026-10-29] 权重剧减弹性防御机制
+    防止在单日极端负面冲击时，因慢指标粘性导致信号钝化（接飞刀）。
+    """
+    decay = 1.0
+    if daily_return <= -0.08:
+        decay = 0.4  # 极端冲击: 显著禁入
+    elif daily_return <= -0.05:
+        decay = 0.6  # 严重冲击: 降级至观察
+    elif daily_return <= -0.03:
+        decay = 0.8  # 轻微冲击: 预警
+    
+    if flow_shock:
+        decay *= 0.9  # 资金流出共振额外惩罚
+    return score * decay
+
+def apply_temporal_decay(symbol: str, score: float, level: str, current_date_str: str) -> tuple[float, str, list]:
+    """
+    [2026-10-30] 时间衰减机制 (Temporal Decay)
+    记录 🟢 强烈买入 信号的 birth date，随时间推移阶梯式衰减其权重。
+    """
+    if level != "🟢 强烈买入":
+        return score, level, []
+
+    # 1. 加载/更新生命周期状态
+    lifecycle = {}
+    if os.path.exists(LIFECYCLE_FILE):
+        try:
+            with open(LIFECYCLE_FILE, "r") as f:
+                lifecycle = json.load(f)
+        except Exception as e:
+            # 损坏即重建会重置全部 birth date（衰减跟踪静默清零），必须可见
+            logging.warning("signal_lifecycle.json 读取失败，本轮按空状态重建: %s", e)
+
+    # 如果是新信号，记录 birth date
+    if symbol not in lifecycle:
+        lifecycle[symbol] = {"birth_date": current_date_str, "initial_score": score}
+    
+    birth_date_str = lifecycle[symbol]["birth_date"]
+    birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d")
+    cur_date = datetime.strptime(current_date_str, "%Y-%m-%d")
+    
+    # 计算交易日差值（简化为自然日）
+    days_diff = (cur_date - birth_date).days
+    
+    # 2. 阶梯衰减曲线
+    decay_factor = 1.0
+    status = "Fresh"
+    if 3 < days_diff <= 6:
+        decay_factor, status = 0.7, "Stale"
+    elif 6 < days_diff <= 10:
+        decay_factor, status = 0.4, "Obsolete"
+    elif days_diff > 10:
+        decay_factor, status = 0.0, "Expired"
+
+    new_score = score * decay_factor
+    
+    # 3. 重新映射等级
+    if new_score >= 20: new_level = "🟢 强烈买入"
+    elif new_score >= 10: new_level = "🟢 关注"
+    elif new_score >= 0: new_level = "🟡 中性"
+    else: new_level = "🔴 强烈卖出"
+
+    # 持久化（写失败 = 衰减时钟静默停摆，必须可见）
+    try:
+        with open(LIFECYCLE_FILE, "w") as f:
+            json.dump(lifecycle, f, indent=2)
+    except Exception as e:
+        logging.warning("signal_lifecycle.json 写入失败: %s", e)
+
+    decay_msg = f"时间衰减({status}: {days_diff}d, x{decay_factor})" if decay_factor < 1.0 else ""
+    return new_score, new_level, [decay_msg] if decay_msg else []
 
 def calc_full_signal_whitelist(df: pd.DataFrame) -> dict:
     """完整技术指标信号 —— 仅白名单指标"""
@@ -564,6 +639,12 @@ def calc_full_signal_whitelist(df: pd.DataFrame) -> dict:
     if atr_stop > 0 and atr_stop < cur_price:
         rr = (sr.get("resistance_strong", cur_price*1.1) - cur_price) / (cur_price - atr_stop)
         if rr >= 2: score += 3; reasons.append(f"盈亏比{rr:.1f}:1")
+    
+    # --- Shock Filter 权重衰减 (2026-10-29) ---
+    daily_ret = (cur_price / prev_close) - 1
+    score = apply_shock_decay(score, daily_ret, flow_shock=False)
+    if daily_ret <= -0.03:
+        risks.append(f"Shock_Filter衰减(跌幅{change_pct}%)")
     
     # 等级判定
     if score >= 20: level = "🟢 强烈买入"
@@ -655,6 +736,9 @@ def load_state() -> dict:
 
 def save_state(state: dict):
     os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
+    import shutil
+    if os.path.exists(STATE_FILE):
+        shutil.copy(STATE_FILE, STATE_FILE + ".bak")
     with open(STATE_FILE, "w") as f:
         json.dump(state, f, ensure_ascii=False, indent=2, default=str)
 
@@ -1164,6 +1248,19 @@ def main(target_date: str = None):
             if df is not None and len(df) >= 60:
                 try:
                     sig = calc_full_signal_whitelist(df)
+                    
+                    # [2026-10-30] 应用时间衰减 (Temporal Decay)
+                    # 记录 🟢 强烈买入 信号的 birth date，随时间推移阶梯式衰减权重
+                    final_score, final_level, decay_logs = apply_temporal_decay(
+                        sym, sig["signal"]["score"], sig["signal"]["level"], today
+                    )
+                    sig["signal"]["score"], sig["signal"]["level"] = final_score, final_level
+                    if decay_logs:
+                        curr_risks = sig["signal"]["risks"]
+                        risk_list = curr_risks.split("; ") if curr_risks != "无" else []
+                        risk_list = risk_list + decay_logs
+                        sig["signal"]["risks"] = "; ".join(risk_list[-5:])
+                    
                     # 斐波那契时间线预警 (⚠️ 2026-09-15 经随机基准对照回测判定【与随机无差异/无效】，
                     # 仅供观察性展示，严禁进入决策链。详见 analysis/fib_time_random_benchmark_2026-09-15.md)
                     fib_time = compute_fib_time_targets(df)
