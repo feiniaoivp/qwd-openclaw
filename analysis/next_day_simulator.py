@@ -171,7 +171,7 @@ class NextDaySimulator:
         high_risk = market_context.get("fatal_risk", {}).get("high_risk_triggered", False)
 
         # 1. 构建止损位图
-        stop_loss_map = self._build_stop_loss_map(arbitration_results, held_positions)
+        stop_loss_map = self._build_stop_loss_map(arbitration_results, held_positions, scan_results)
 
         # 2. 识别活跃方向（有持仓/有信号/有审计关注的方向）
         active_directions = self._identify_active_directions(
@@ -208,8 +208,11 @@ class NextDaySimulator:
 
         return simulation
 
-    def _build_stop_loss_map(self, arbitration_results: List[dict], held_positions: dict) -> Dict[str, float]:
-        """构建止损位图：优先用裁决结果，其次用持仓成本*0.95"""
+    def _build_stop_loss_map(self, arbitration_results: List[dict], held_positions: dict,
+                             scan_results: dict = None) -> Dict[str, float]:
+        """构建止损位图：优先用裁决结果，其次用持仓成本*0.95；
+        [2026-11-01 P1] 买入候选止损兜底：仲裁买入但无止损位时，用扫描支撑位×0.98
+        生成预案止损，消除「买入计划无风险边界」裸奔（成交后由 portfolio_sim 换 ATR 止损）"""
         stop_loss = {}
 
         # 从裁决结果获取
@@ -228,7 +231,46 @@ class NextDaySimulator:
                 if cost > 0:
                     stop_loss[symbol] = round(cost * 0.95, 2)
 
+        # [2026-11-01 P1] 买入候选预案止损（支撑位×0.98）
+        for r in arbitration_results:
+            if r.get("stop_loss"):
+                continue
+            if r.get("final_action") not in ("买入", "小仓买入", "积极买入"):
+                continue
+            support = self._lookup_support(r["symbol"], scan_results)
+            if support and support > 0:
+                stop_loss[r["symbol"]] = round(support * 0.98, 2)
+                print(f"  [STOP_MAP] {r['symbol']} 买入候选预案止损(支撑{support}×0.98): {stop_loss[r['symbol']]}")
+            else:
+                print(f"  [STOP_MAP] {r['symbol']} 买入候选无可用支撑位，预案止损缺位(显式留空，不填补默认值)")
+
         return stop_loss
+
+    def _lookup_support(self, symbol: str, scan_results: dict = None) -> Optional[float]:
+        """支撑位查找: ①scan_results details（若有 support 字段）②close_scan JSON 档案（SSOT）
+        缺失返回 None，不填充默认值（缺数据 ≠ 中性，2026-10-18 铁律）"""
+        if scan_results:
+            for d in scan_results.get("details", []) or []:
+                if d.get("symbol") == symbol and d.get("support"):
+                    try:
+                        return float(d["support"])
+                    except (TypeError, ValueError):
+                        log_missing = f"support 非数值: {d.get('support')}"
+                        print(f"  [STOP_MAP] {symbol} {log_missing}，转 close_scan 档案")
+        for path in (os.path.join(OUTPUT_DIR, f"{self.today}_close_scan.json"),
+                     os.path.join(OUTPUT_DIR, f"{self.prev_date}_close_scan.json")):
+            if not os.path.exists(path):
+                continue
+            try:
+                with open(path, encoding="utf-8") as f:
+                    data = json.load(f)
+                for s in data.get("stocks", []):
+                    if s.get("symbol") == symbol:
+                        sup = s.get("support")
+                        return float(sup) if sup else None
+            except (json.JSONDecodeError, OSError) as e:
+                print(f"  [STOP_MAP] close_scan 档案解析失败 {path}: {e}")
+        return None
 
     def _identify_active_directions(self,
                                     arbitration_results: List[dict],

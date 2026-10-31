@@ -44,6 +44,12 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
+# 情绪反转覆盖（P0 2026-11-01 落地，源自 10-28 教训）
+try:
+    from analysis.emotion_reversal import load_reversal_override
+except ImportError:  # 兜底：脚本直跑时按 analysis 目录内模块导入
+    from emotion_reversal import load_reversal_override
+
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 DATA_DIR = os.path.join(WORKSPACE, "data")
 FACTOR_SCORES_FILE = os.path.join(WORKSPACE, "data", "factor_scores.json")
@@ -228,6 +234,26 @@ class SignalArbitrator:
         final_action, conf, reason, path = self._arbitrate_by_hierarchy(
             evidence, raw_signals, market_context, held_position
         )
+
+        # 4.5 情绪反转覆盖（P0 2026-11-01，10-28 教训）
+        # 竞价 fade_risk 票「高开未回落+收涨」+ 跷跷板验证 = 情绪反转首日，
+        # 技术性卖出信号在反转首日天然滞后 -> 暂时覆盖，仅保留硬止损。
+        # 结构性风险路径（负反馈/出货形态）不覆盖——只覆盖纯技术卖出；
+        # 覆盖名单有效期仅限确认日的次一交易日（load_reversal_override 内控）。
+        try:
+            _rev = load_reversal_override(symbol, self.today)
+        except Exception as _e:  # noqa: BLE001
+            print(f"  [REVERSAL] 反转覆盖加载失败(fail-closed): {_e}")
+            _rev = None
+        if _rev and final_action in (SignalAction.SELL, SignalAction.REDUCE):
+            _structural_paths = {"NEGATIVE_FEEDBACK", "DISTRIBUTION_PATTERN"}
+            if not (_structural_paths & set(path)):
+                final_action = SignalAction.HOLD
+                conf = 0.6
+                reason = (f"🔁 情绪反转确认({_rev['confirmed_date']})覆盖技术卖出："
+                          f"反转首日技术信号滞后，仅执行硬止损(-{_rev['hard_stop_pct']:.0f}%)")
+                path.append("REVERSAL_OVERRIDE")
+                print(f"  [REVERSAL] {symbol}: 技术卖出被反转确认覆盖(确认日 {_rev['confirmed_date']})")
 
         # 5. 计算仓位乘数
         position_mult = self._calc_position_mult(
