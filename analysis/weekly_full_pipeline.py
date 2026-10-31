@@ -249,6 +249,15 @@ def main():
     if not r["success"]:
         print("⚠️ 新增静默异常吞噬（见上方），请人工修复（不阻断流水线）...")
 
+    # 步骤 0f2: 重写型脚本备份保护棘轮门禁（2026-10-31 用户批准接入；缘起 10-21 防线体检
+    # 「.bak 铁律全仓落实数 0」+ 10-25 backup_guard 首扫 300+ 存量；棘轮基线冻结存量，
+    # 新增即拦；基线 data/backup_guard_baseline.json 随门禁入 git）
+    print("\n🚦 步骤 0f2/9: 备份保护棘轮门禁 (backup_guard.py)")
+    r = run_script("../scripts/backup_guard.py", timeout=60)
+    results["backup_guard"] = r
+    if not r["success"]:
+        print("⚠️ 基线外新增「重写型写点无备份保护」（见上方），写前 .bak 教训复发（不阻断流水线）...")
+
     # 步骤 0g: promote 预算淘汰门禁（2026-10-05 新增）
     # 背景：memory-core 插件 compactMemoryForBudget() 默认 1e4 字符预算，
     # 超预算时按日期静默丢弃最老 promote 区块且 journal 无 dropped 字段。

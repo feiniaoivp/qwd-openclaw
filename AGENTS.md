@@ -146,6 +146,7 @@ Starting point — add your own conventions as you learn what works.
 | `silent_except_guard.py` | `scripts/` | 新增静默异常吞噬（AST，棘轮模式：存量仅报告、新增 exit 1） | 周流水线步骤 0f（2026-09-28 新增） |
 | `promotion_guard.py` | `scripts/` | promote 预算淘汰致自动晋升断（棘轮：连续 ≥2 次零存活 exit 1） | 周流水线步骤 0g + 周一审计第 6 项（2026-10-05 新增） |
 | `cron_noop_guard.py` | `scripts/` | cron 任务 status=ok 但毫秒级返回（空转假成功，脚本从未执行；直读 sqlite，棘轮基线 `data/cron_noop_baseline.json`） | 周流水线步骤 0h（2026-10-06 新增；源起 3950d3cc 假 ok 事故，存量 9 个待逐个改造） |
+| `backup_guard.py` | `scripts/` | 重写型脚本 json.dump/open('w') 缺备份保护（棘轮基线 `data/backup_guard_baseline.json`，302 点/128 文件存量冻结；宽启发：源码含 .bak/shutil.copy/backup 即豁免；判定失败绝不写基线防吞没） | 周流水线步骤 0f2（2026-10-31 用户批准接入；缘起 10-21 防线体检「.bak 铁律全仓落实数 0」） |
 
 ### 新增门禁时必做
 
@@ -215,6 +216,13 @@ Starting point — add your own conventions as you learn what works.
     （实证：2026-10-20 `deep.enabled` 兼作 dreaming 总开关 → light/REM 静默停摆；
     2026-10-20 `bucket` 兼作 tier → `bucket=="core"` 40 天永假，commit e9fb539）
     Source: memory/dreaming/daily-report-2026-10-21.md#§5
+*   **凡有价值的 run 产出，禁止只存在于最终回复/上下文**。最终回复轮是 LLM 失败高发区
+    （idle timeout / couldn't generate a response / fallback 降级），晚期写入与最终轮共命运。
+    防法三选一（按任务形态）：heartbeat 类收尾**前置到 run 第一动作**；多条目产出**任务简报强制逐条写盘**；
+    cron 归纳类**先落盘产物文件再 announce 引用**，不把唯一成果押在最终回复上。
+    （实证 RC=3 跨 3 任务：10-22 心跳 state 回写被最终轮 idle timeout 连带丢弃 /
+    10-27 KB 子代理整稿攒上下文被超时杀掉全丢 / 10-27 Obsidian 归纳 204s 扫描后无响应、24h 窗口归纳空洞）
+    Source: .learnings/ERRORS.md#llm.final-response-failure.loses-context-only-work
 
 <!-- prismfy-search:start -->
 Prismfy Web Search is installed and available via `prismfy-search "<query>"`.
