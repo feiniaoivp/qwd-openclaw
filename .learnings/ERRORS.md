@@ -1078,3 +1078,18 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - First-Seen: 2026-10-28
 - Last-Seen: 2026-10-30
 - Status: resolved（RC=1 < 3 暂不 promote）
+
+## ERR-20261031-ExecPipeHeredocLost
+- **日期**: 2026-10-31（03:12/05:12/07:00/09:11/11:43/14:41 六次 Exec failed 推送；当日 15:5x 会话定案）
+- **现象**: 心跳 cron-health-scan 反复报 `NameError: name 'true' is not defined. Did you mean: 'True'?`（line 10/12 漂移）；proactivity-review 链偶发 Exec failed。所有 run 模型均同 run 内用「先落盘再读文件」重试成功；cron 舰队实际全绿（4h cron job 当日三报 0 告警）——纯噪声告警，无真实监控盲区。
+- **根因**: ①主因=模型习惯写 `openclaw cron list --json | python3 - <<'EOF'`（管道+heredoc 同命令）。【10-31 19:5x 深究修正】机制非「exec 层丢 heredoc」：exec 封装（zsh -f -c + snapshot 前置 + eval 包裹，ps 取证）对命令文本无损，真凶是 **zsh 5.9（macOS 自带版）对「管道非首级段挂 heredoc/here-string」的行为=上游管道输出⊕heredoc body 按序拼接**（bash/sh 均正确覆盖管道；zsh 文件模式/eval 包裹/前导行/三级管道全部复现，与 OpenClaw 无关，exec 仅继承）→ 管道输出（cron JSON）被当 Python 源码执行，JSON 语法合法到首个裸 true → NameError（报错行号=JSON 首个布尔行，故 line 10/12 漂移；会话存档脚本第 12 行与报错不符是突破口）。双复现实证（echo JSON 小样 + cron list 全量均复现；独立 heredoc 无管道正常）。②次因=proactivity 链尾裸 grep -c 零匹配 / cat 缺文件（~/proactivity/session-state.md 已丢失）exit 1 被误报。
+- **规约**: ①exec 内联脚本一律「先落盘再 heredoc 读文件」，禁 `cmd | python3 - <<EOF`；②心跳链尾必须 exit 0（grep/find 零匹配、缺文件用 `|| true` 收尾）；③防线已落 HEARTBEAT.md（两任务 prompt + standing rules 两条红线）与 TOOLS.md 红线条目。
+- **状态**: resolved（文档+prompt 层修复；10-31 19:5x 深究定性为 zsh 5.9 管道非首级段 heredoc 拼接行为，OpenClaw exec 仅继承；上游报告草稿已备于 analysis/research/2026-10-31_zsh_heredoc_pipe_concat.md，待用户批准提交）
+### Metadata
+- Source: manual-session（用户问询触发，memory/2026-10-31.md）
+- Reproducible: yes（echo JSON 管道样例 100% 复现）
+- Pattern-Key: exec.pipe-heredoc-lost.json-as-python-source
+- Recurrence-Count: 6（同日六次心跳触发，同一根因；坏写法在会话史最早见于 10-23，此前未归档）
+- First-Seen: 2026-10-31
+- Last-Seen: 2026-10-31
+- Status: resolved（单根因单日集中爆发，当日修复；不另立独立规则）

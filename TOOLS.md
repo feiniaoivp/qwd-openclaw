@@ -636,3 +636,17 @@ python3 scripts/test_isolation_guard.py --selftest  # 8 例对抗自测
 - **改日志配置后必须 curl 实测 access 行存在性**（dictConfig 类破坏是静默的）
 - memorySearch.baseUrl 必须用 `localhost` 而非 `127.0.0.1`（受管代理把 IP 字面量 MATCH→远端→502，`localhost` 走 private_domain 直连；10-23 A′ 修复）
 - 诊断本机服务 curl 必加 `--noproxy '*'`（既有条目）；历史事故：2026-08 风暴 + 2026-10-23 22:35:40 内核恐慌（`Kernel-2026-10-24-022423.panic`，死亡 3h49m）
+
+---
+
+## 🔴 exec 管道+heredoc 丢失红线（2026-10-31 六连发定案；同日 19:5x 深究修正机制）
+
+**禁写** `cmd | python3 - <<'EOF'`（管道与 heredoc 挂同一命令，且 heredoc 在非首级管道段）。
+
+**精确机制（19:5x 深究定案，修正初判「exec 层丢 heredoc」）**：exec 实际执行 `/bin/zsh -f -c "<snapshot前置>; export PATH=…; eval '原命令'"`（ps 取证；shQuote 包裹+真换行，命令文本无损）。真凶是 **zsh 5.9（macOS 15.8.2 自带版）本体行为**：管道中**非首级**段的 heredoc/here-string，其 stdin = **上游管道输出 ⊕ heredoc body 按序拼接**，违反 POSIX/bash「显式重定向覆盖隐式管道」语义。于是管道输出（如 cron JSON）成为 python 的程序源码，合法字面量一路执行到首个裸 `true/false/null` 必炸 `NameError`（报错行号=JSON 首个布尔行，故 line 10/12 漂移；与心跳报错逐字吻合）。
+
+**对照矩阵（subprocess 精确 argv 控制，11 探针）**：zsh -c 直接多行 / 前导 export 行 / eval 包裹 / zsh 文件模式 / 三级管道末级 / 中间级 / here-string（`<<<`）→ 全部中招；heredoc 挂**首级**（`cat <<EOF | cmd`）✅ 正常；独立 heredoc（无管道）✅ 正常；空管道输出→仅 body（证明是拼接非重复）；`bash -c` / bash 文件 / `/bin/sh` → 全部正常（heredoc 覆盖管道）。公开检索（Prismfy×2 + web_search）无同名已知报告。
+
+- **正确写法**：`cmd > /tmp/x.json 2>/dev/null; python3 - <<'EOF'`（heredoc 内读文件）。独立 `python3 - <<'EOF'`（无管道）不受影响，实测正常。
+- **复现**：`echo '{"enabled": true}' | python3 - <<'EOF'` + 任意脚本 → NameError（同一文本交给 bash 正常执行 heredoc 脚本）。异常已隔离到 zsh 本体（与 OpenClaw 封装无关，exec 仅继承）；上游报告草稿见 analysis/research/2026-10-31_zsh_heredoc_pipe_concat.md，待用户批准提交。
+- **连带**：链尾裸 `grep -c`（零匹配 exit 1）、`cat 缺文件` 同样被误报 Exec failed——心跳/脚本链尾一律 `|| true` 收尾。详见 .learnings/ERRORS.md ERR-20261031-ExecPipeHeredocLost。
