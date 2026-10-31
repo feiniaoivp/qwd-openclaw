@@ -19,6 +19,17 @@ import numpy as np
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 from pathlib import Path
+import sys
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 EQUITY_FILE = os.path.join(WORKSPACE, "data", "portfolio_equity.csv")
@@ -385,6 +396,7 @@ def main():
     if args.save:
         os.makedirs(os.path.join(WORKSPACE, "analysis", "daily"), exist_ok=True)
         report_file = os.path.join(WORKSPACE, "analysis", "daily", f"{week_end}_attribution.md")
+        _bak(report_file)
         with open(report_file, "w") as f:
             f.write(report)
         print(f"\n✅ 报告已保存: {report_file}")

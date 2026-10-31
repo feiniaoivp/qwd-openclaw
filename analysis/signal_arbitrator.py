@@ -28,6 +28,16 @@ import numpy as np
 
 import os
 import sys
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
@@ -710,6 +720,7 @@ def save_results(results: List[ArbitrationResult]):
     """保存裁决结果"""
     today = datetime.now().strftime("%Y-%m-%d")
     path = os.path.join(DATA_DIR, f"arbitration_{today}.json")
+    _bak(path)
     with open(path, "w") as f:
         json.dump([asdict(r) for r in results], f, ensure_ascii=False, indent=2, default=str)
 

@@ -23,6 +23,16 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
 import pandas as pd
 
 from analysis.net_guard import install_default_timeout
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 install_default_timeout(15)
 
 CACHE = os.path.join(WORKSPACE, "data", "research_price_cache")
@@ -267,6 +277,7 @@ def main():
     }
     os.makedirs(OUT_DIR, exist_ok=True)
     path = os.path.join(OUT_DIR, f"{date.today().isoformat()}_sentiment_caliber_compare.json")
+    _bak(path)
     with open(path, "w") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
     print(f"\n📄 落盘: {os.path.relpath(path, WORKSPACE)}")

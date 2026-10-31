@@ -26,6 +26,16 @@ if WORKSPACE not in sys.path:
 
 from analysis.data_layer.router import get_router
 from analysis.backtest_guard import assert_beats_random
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 warnings.filterwarnings("ignore")
 
@@ -462,6 +472,7 @@ def main():
     # 保存
     out_file = os.path.join(WORKSPACE, "analysis", f"grid_search_{datetime.now().strftime('%Y%m%d')}.json")
     os.makedirs(os.path.dirname(out_file), exist_ok=True)
+    _bak(out_file)
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(all_results, f, ensure_ascii=False, indent=2)
     print(f"\n✅ 详细结果已保存: {out_file}")

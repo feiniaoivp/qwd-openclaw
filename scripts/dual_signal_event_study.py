@@ -34,6 +34,16 @@ except Exception:
     _HAS_TA = False
 
 from analysis.adaptive_dual import load_dual_strategy_map, fetch_data, SIGNAL_FUNCS, STOCKS
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 WARMUP = 70
 START = "20240101"
@@ -194,11 +204,13 @@ def main():
     # 产出文件名动态日期（2026-10-20：旧硬编码 2026-10-17_ 会在重放时静默覆写当日研究档）
     from datetime import date as _date
     path = os.path.join(WORKSPACE, f"analysis/research/{_date.today().isoformat()}_dual_signal_event_study.json")
+    _bak(path)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
     # 事件明细单独落盘（供离线稳健性分析：分年/个股集中度/去重/bootstrap）
     # 注：固定名 dual_signal_eval_days.json 是下游研究的 SSOT 面板（多脚本引用），不改名
     rows_path = os.path.join(WORKSPACE, "analysis/research/dual_signal_eval_days.json")
+    _bak(rows_path)
     with open(rows_path, "w", encoding="utf-8") as f:
         json.dump(rows, f, ensure_ascii=False)
     print(f"[study] 明细已写 {rows_path} ({len(rows)} 行)")

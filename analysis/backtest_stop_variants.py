@@ -45,6 +45,16 @@ from analysis.backtest_strategies import (
     strategy_bollinger_atr, strategy_kdj_cci, strategy_ema_obv,
     strategy_ema_cross, strategy_macd, strategy_bull_trend_follow,
 )
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 OUTPUT_DIR = os.path.join(WORKSPACE, "analysis", "backtest")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -253,6 +263,7 @@ def main(stocks=None):
         "per_stock": results,
     }
     json_path = os.path.join(OUTPUT_DIR, f"{today}_stop_variants.json")
+    _bak(json_path)
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2, default=str)
 
@@ -293,6 +304,7 @@ def main(stocks=None):
           "- fixed 100% 破位 vs adaptive 0% 破位 (10-15 实盘校验) 的口径差异, 在本回测体现为 stop_exits 差异。",
           "- 结果并入 DSR/护栏评估口径时, 双轨是否采纳以 paired 胜负 + 聚合回撤共同判定。", ""]
     md_path = os.path.join(OUTPUT_DIR, f"{today}_stop_variants.md")
+    _bak(md_path)
     with open(md_path, "w", encoding="utf-8") as f:
         f.write("\n".join(L))
 

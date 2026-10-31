@@ -30,6 +30,16 @@ WORKSPACE = "/Users/duguke/.openclaw/workspace"
 if WORKSPACE not in sys.path:
     sys.path.insert(0, WORKSPACE)
 from analysis.bs_session import ensure_login, logout as bs_logout, query_history_k_data_plus_retry
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 warnings.filterwarnings("ignore")
 
@@ -706,6 +716,7 @@ def main():
 
     # 保存报告
     report_path = os.path.join(OUTPUT_DIR, f"validation_report_{today}.md")
+    _bak(report_path)
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(summary_lines))
     print(f"\n📄 报告已保存: {report_path}")
@@ -721,6 +732,7 @@ def main():
             for symbol, _ in STOCKS:
                 serializable[wname][sname][symbol] = all_results[wname][sname].get(symbol, {})
     
+    _bak(json_path)
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(serializable, f, ensure_ascii=False, indent=2)
     print(f"📄 原始数据已保存: {json_path}")

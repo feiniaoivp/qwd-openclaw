@@ -35,6 +35,16 @@
 import os, sys, json, warnings
 from datetime import datetime
 from typing import Dict, List, Tuple, Optional
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 # 网络兜底：进程级 socket 默认超时（防数据源挂起导致永久阻塞）
 try:
@@ -398,6 +408,7 @@ def main():
     json_out = export_for_adaptive_trader(results)
     json_path = os.path.join(WORKSPACE, "data", "overseas_dual_factor.json")
     os.makedirs(os.path.dirname(json_path), exist_ok=True)
+    _bak(json_path)
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(json_out, f, ensure_ascii=False, indent=2)
     print(f"\n📁 JSON已保存: {json_path}")
@@ -406,6 +417,7 @@ def main():
     md_path = os.path.join(WORKSPACE, "analysis", "daily", 
                            f"overseas_dual_factor_{datetime.now().strftime('%Y-%m-%d')}.md")
     os.makedirs(os.path.dirname(md_path), exist_ok=True)
+    _bak(md_path)
     with open(md_path, "w", encoding="utf-8") as f:
         f.write(format_report(results))
     print(f"📄 报告已保存: {md_path}")

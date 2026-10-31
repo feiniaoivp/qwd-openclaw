@@ -19,6 +19,15 @@ import subprocess
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
+
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 MAP_FILE = os.path.join(WORKSPACE, "data", "adaptive_strategy_map.json")
 VERSIONS_DIR = os.path.join(WORKSPACE, "data", "strategy_map_versions")
@@ -78,6 +87,7 @@ def load_current_map_raw() -> Dict:
 def save_current_map(data: Dict) -> None:
     """保存当前生效的策略映射"""
     os.makedirs(os.path.dirname(MAP_FILE), exist_ok=True)
+    _bak(MAP_FILE)
     with open(MAP_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
@@ -126,6 +136,7 @@ def create_version(data: Dict, source: str = "manual", metadata: Dict = None) ->
     # 保存版本文件
     fname = f"strategy_map_v{version_id}.json"
     fpath = os.path.join(VERSIONS_DIR, fname)
+    _bak(fpath)
     with open(fpath, "w", encoding="utf-8") as f:
         json.dump(version_data, f, ensure_ascii=False, indent=2)
     

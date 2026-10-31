@@ -29,6 +29,16 @@ import time
 import logging
 
 import pandas as pd
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 try:
     import numpy as np
@@ -257,6 +267,7 @@ def main():
             info["by_year"][y] = yinfo
         out["classes"][cls] = info
 
+    _bak(OUT_JSON)
     with open(OUT_JSON, "w") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
     log.info("已落盘 %s", OUT_JSON)
@@ -390,6 +401,7 @@ def write_md(out):
     A("7. 2026 年样本截至数据缓存最后交易日，年内涵盖不完整。")
     A("")
 
+    _bak(OUT_MD)
     with open(OUT_MD, "w") as f:
         f.write("\n".join(lines))
 

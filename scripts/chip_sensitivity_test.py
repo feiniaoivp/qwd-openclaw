@@ -34,6 +34,16 @@ import numpy as np
 import pandas as pd
 
 from analysis.net_guard import install_default_timeout
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 install_default_timeout(15)
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -360,6 +370,7 @@ def main():
         "variants": summary,
     }
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
+    _bak(OUT_JSON)
     with open(OUT_JSON, "w") as f:
         json.dump(out, f, ensure_ascii=False, indent=2, default=str)
 
@@ -567,6 +578,7 @@ def write_md(o):
     A("- cost_bias 依赖全窗口 [min_low, max_high] 网格口径；换票池或长窗口漂移可能改变绝对阈值含义（生产依据是绝对阈值）。")
     A("- bootstrap CI 为同日样本内 i.i.d 重采样，忽略票间/日间相关性，实际不确定性应更宽。")
     A("")
+    _bak(OUT_MD)
     with open(OUT_MD, "w") as f:
         f.write("\n".join(lines) + "\n")
     log.info("已落盘 %s / %s", OUT_JSON, OUT_MD)

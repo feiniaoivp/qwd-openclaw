@@ -25,6 +25,16 @@ import os
 import sys
 import traceback
 from datetime import datetime
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 # 必须同时插入：工作区根 + analysis/（脚本模式/被 import 双兼容）
@@ -80,6 +90,7 @@ def pm_dump(tag="exception", out_dir=None, log=None):
                     for k, v in list(fr.f_locals.items()):
                         lines.append(f"  {k} = {_safe_repr(v)}")
                 tb = tb.tb_next
+        _bak(path)
         with open(path, "w", encoding="utf-8") as f:
             f.write("\n".join(lines))
         log(f"🔴 post-mortem 已落盘: {path}")

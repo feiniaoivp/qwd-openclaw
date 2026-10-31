@@ -38,6 +38,16 @@ from typing import Any, Dict, List, Optional
 from analysis.net_guard import network_timeout_guard
 from analysis.service import is_trading_day
 import daily_news_reader as rdr
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 RAW_DIR = rdr.RAW_DIR
 WINDOW = ("2026-09-09", "2026-09-29")
@@ -175,6 +185,7 @@ def main() -> int:
                 "dates_covered": sorted(span),
             },
         }
+        _bak(path)
         with open(path, "w", encoding="utf-8") as fh:
             json.dump(payload, fh, ensure_ascii=False, indent=2)
         raw_written[td_str] = len(items)
@@ -202,6 +213,7 @@ def main() -> int:
             continue
         report = rdr.build_report(s)
         text = rdr.render(report)
+        _bak(daily_path)
         with open(daily_path, "w", encoding="utf-8") as fh:
             fh.write(text + "\n" + PROVENANCE)
         n_notices = len(report.get("notices", []))
@@ -225,6 +237,7 @@ def main() -> int:
     os.makedirs(OUT_DIR, exist_ok=True)
     suffix = "_dryrun" if dry else ""
     out_json = os.path.join(OUT_DIR, f"{result['date']}_news_backfill_result{suffix}.json")
+    _bak(out_json)
     with open(out_json, "w", encoding="utf-8") as fh:
         json.dump(result, fh, ensure_ascii=False, indent=2)
     print(f"\n[saved] {out_json}")

@@ -30,6 +30,16 @@ import numpy as np
 
 from analysis.backtest_strategies import STOCKS, fetch_data, START_DATE
 from analysis.bs_session import logout as bs_logout
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 ROLL = 120  # 滚动窗口（交易日）
 
@@ -131,6 +141,7 @@ def main():
         "cluster_stability": cluster_stability,
     }
     out = os.path.join(WORKSPACE, "analysis/research/2026-10-17_corr_regime_study.json")
+    _bak(out)
     with open(out, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=1)
 

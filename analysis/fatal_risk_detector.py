@@ -23,6 +23,16 @@ from datetime import datetime, date
 from typing import Dict, List, Optional, Any
 import urllib.request
 import re
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 # 网络兜底：进程级 socket 默认超时（防数据源挂起导致永久阻塞）
 try:
@@ -335,6 +345,7 @@ class FatalRiskDetector:
 def save_result(result: dict):
     """落盘 data/fatal_risk_YYYY-MM-DD.json"""
     path = os.path.join(DATA_DIR, f"fatal_risk_{result['date']}.json")
+    _bak(path)
     with open(path, "w") as f:
         json.dump(result, f, ensure_ascii=False, indent=2, default=str)
     log.info(f"📄 致命风险结果已保存: {path}")

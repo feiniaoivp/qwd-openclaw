@@ -42,6 +42,16 @@ from typing import Any, Dict, List, Optional
 from curl_cffi import requests as cffi_requests
 
 from analysis.net_guard import network_timeout_guard
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 OUT_DIR = os.path.join(WORKSPACE, "analysis", "research")
 
@@ -210,6 +220,7 @@ def main() -> int:
     # 主结果先落盘（AGENTS.md 铁律）
     os.makedirs(OUT_DIR, exist_ok=True)
     out_json = os.path.join(OUT_DIR, f"{date.today()}_push2_self_diagnosis.json")
+    _bak(out_json)
     with open(out_json, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
     print(f"[saved] {out_json}")

@@ -22,6 +22,16 @@ import logging
 logging.basicConfig(level=logging.CRITICAL)
 
 from close_scan_v2 import calc_full_signal_whitelist as calc_full_signal, WATCHLIST
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 # Cron 时间窗口守卫：仅工作日 15:00-16:00 允许执行（配置 cron 为 15:35）
 def _check_eod_window() -> bool:
@@ -191,6 +201,7 @@ def main():
             }
     OUT["generated_at"] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
+    _bak(os.path.join(os.environ["WORKSPACE"], "data", "review_030_snapshot.json"))
     with open(os.path.join(os.environ["WORKSPACE"], "data", "review_030_snapshot.json"), "w") as f:
         json.dump(OUT, f, ensure_ascii=False, indent=2)
     print(f"\n✅ 已保存 data/review_030_snapshot.json", file=sys.stderr)

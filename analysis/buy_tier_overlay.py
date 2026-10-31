@@ -24,6 +24,16 @@ import glob
 import logging
 import argparse
 from typing import Optional
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 # 必须同时插入：工作区根 + analysis/（脚本模式 sys.path 样板）
@@ -252,6 +262,7 @@ def main():
     out_dir = os.path.join(WORKSPACE, "analysis", "daily")
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, f"{date}_buy{len(buys)}_adaptive_moneyflow.md")
+    _bak(out_path)
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(md)
     log.info("落盘: %s", out_path)

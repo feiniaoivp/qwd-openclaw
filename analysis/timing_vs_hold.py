@@ -43,6 +43,16 @@ if WORKSPACE not in sys.path:
 
 from analysis.deep_grid_search import GRIDS, STRATEGY_GENS, run_sim, fetch_data, INITIAL_CAPITAL  # noqa: E402
 from analysis.fib_extension_scan import WATCHLIST  # noqa: E402
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 warnings.filterwarnings("ignore")
 
@@ -198,6 +208,7 @@ def main():
                 f"OOS B&H {r['bh_oos'].get('total_return_pct','-')}% | "
                 f"择时跑赢 {r['n_beats_oos']}/{r['n_valid_oos']} ({r['ratio_oos']:.0%})")
         # 分批落盘
+        _bak(out_json)
         with open(out_json, "w", encoding="utf-8") as f:
             json.dump({"results": results, "generated_at": datetime.now().isoformat()},
                       f, ensure_ascii=False, indent=2)
@@ -243,6 +254,7 @@ def main():
         lines.append(f"| {r['name']}({r['symbol']}) | {r['bh_oos'].get('total_return_pct','-')}% | "
                      f"{r['ratio_oos']:.0%} | {exc_s} | {r['ratio_full']:.0%} | {r['verdict']} |")
     out_md = os.path.join(WORKSPACE, "analysis", f"timing_vs_hold_{datetime.now().strftime('%Y%m%d')}.md")
+    _bak(out_md)
     with open(out_md, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     log(f"✅ MD  : {out_md}")

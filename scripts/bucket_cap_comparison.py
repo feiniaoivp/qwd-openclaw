@@ -34,6 +34,16 @@ from analysis.portfolio_core import (
     classify_bucket, COMMISSION, SLIPPAGE, INITIAL_CAPITAL,
     REFERENCE_TOTAL_CAPITAL,
 )
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 EVAL = os.path.join(WORKSPACE, "analysis", "research", "dual_signal_eval_days.json")
 HOLD_DAYS = 10
@@ -228,6 +238,7 @@ def main() -> int:
 
     jpath = os.path.join(WORKSPACE, "analysis", "research",
                          f"{date.today().isoformat()}_bucket_cap_comparison.json")
+    _bak(jpath)
     with open(jpath, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
 
@@ -269,6 +280,7 @@ def main() -> int:
     md.append("- 总仓上限 80/20：三臂触界次数 " +
               ", ".join(f"{a}={len(cap_hits[a])}" for a in arms))
     mpath = jpath.replace(".json", ".md")
+    _bak(mpath)
     with open(mpath, "w", encoding="utf-8") as f:
         f.write("\n".join(md) + "\n")
     print(f"[cmp] 已写 {jpath}")

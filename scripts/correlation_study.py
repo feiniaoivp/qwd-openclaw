@@ -31,6 +31,16 @@ import numpy as np
 
 from analysis.backtest_strategies import STOCKS, fetch_data, START_DATE
 from analysis.bs_session import logout as bs_logout
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 SECTOR = {  # 来自 portfolio_sim_state.direction + 电网板块常识
     "000157": "工程机械", "000400": "电网", "000708": "特钢", "000987": "基建金融",
@@ -187,6 +197,7 @@ def main():
         "skipped": skipped,
     }
     path = os.path.join(WORKSPACE, f"analysis/research/{today}_correlation_study.json")
+    _bak(path)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1, default=str)
 
@@ -199,6 +210,7 @@ def main():
         for s in g:
             sym_to_cluster[s] = f"C{gi+1:02d}"
     clu_path = os.path.join(WORKSPACE, "data/corr_clusters.json")
+    _bak(clu_path)
     with open(clu_path, "w", encoding="utf-8") as f:
         json.dump({
             "date": today, "window": START_DATE,

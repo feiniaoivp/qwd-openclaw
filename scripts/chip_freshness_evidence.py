@@ -41,6 +41,16 @@ import json
 import numpy as np
 import pandas as pd
 from datetime import date
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
@@ -180,6 +190,7 @@ def main():
         "current_stale_critical_days": 10,
         "by_lag": rows,
     }
+    _bak(OUT_JSON)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
 
@@ -231,6 +242,7 @@ def main():
             lines.append(f"- L=5 {name}: bias(frozen−fresh)={b['bias_mean']:+.4f}，"
                          f"误加分 {b['p_false']:.2%} / 漏加分 {b['p_missed']:.2%}（n={b['n']}）")
     lines.append("")
+    _bak(OUT_MD)
     with open(OUT_MD, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 

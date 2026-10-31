@@ -29,6 +29,16 @@ import warnings
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 # 网络兜底：进程级 socket 默认超时（防数据源挂起导致永久阻塞）
 try:
@@ -325,6 +335,7 @@ def load_static_config() -> Dict:
 
 def save_static_config(config: Dict):
     """保存静态配置"""
+    _bak(STATIC_CONFIG_FILE)
     with open(STATIC_CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(config, f, ensure_ascii=False, indent=2)
 
@@ -541,6 +552,7 @@ def main():
         "scores": {s: asdict(fs) for s, fs in factor_scores.items()}
     }
     
+    _bak(FACTOR_SCORE_FILE)
     with open(FACTOR_SCORE_FILE, "w", encoding="utf-8") as f:
         json.dump(scores_data, f, ensure_ascii=False, indent=2)
     
@@ -550,6 +562,7 @@ def main():
         "total_qualified": len(pool["dual_qualified"]) + len(pool["core_moat"]) + len(pool["oversea_leaders"])
     }
     
+    _bak(FACTOR_POOL_FILE)
     with open(FACTOR_POOL_FILE, "w", encoding="utf-8") as f:
         json.dump(pool_data, f, ensure_ascii=False, indent=2)
     

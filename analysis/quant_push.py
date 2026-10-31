@@ -15,6 +15,16 @@ WORKSPACE = "/Users/duguke/.openclaw/workspace"
 sys.path.insert(0, WORKSPACE)
 
 from send_telegram import send_with_retry
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 
 def run_and_push():
@@ -23,6 +33,8 @@ def run_and_push():
     log_dir = os.path.join(WORKSPACE, "logs")
     os.makedirs(log_dir, exist_ok=True)
     log_path = os.path.join(log_dir, f"backtest_run_{date.today():%Y%m%d}.log")
+    _bak(log_path)
+    _bak(log_path + ".err")
     with open(log_path, "w", encoding="utf-8") as logf, \
             open(log_path + ".err", "w", encoding="utf-8") as errf:
         result = subprocess.run(

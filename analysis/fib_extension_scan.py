@@ -27,6 +27,17 @@ import urllib.request
 from datetime import datetime, date
 
 import pandas as pd
+import os
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 # 网络兜底：进程级 socket 默认超时（防数据源挂起导致永久阻塞）
 try:
@@ -572,6 +583,7 @@ def main():
     if save:
         today = date.today().strftime("%Y-%m-%d")
         out = f"/Users/duguke/.openclaw/workspace/data/fib_predictions_{today}.json"
+        _bak(out)
         with open(out, "w", encoding="utf-8") as f:
             json.dump({"date": today, "baseline": results}, f, ensure_ascii=False, indent=2)
         print(f"✅ 已锁定止盈位基线 → {out}（{len([r for r in results if not r.get('error')])}/{len(results)} 只有效）")

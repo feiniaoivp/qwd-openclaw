@@ -14,6 +14,16 @@ import json
 
 # 关注池单一事实来源（TOOLS.md 口径规则）：不硬编码股票清单
 from analysis.fib_extension_scan import WATCHLIST
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 KB_PATH = os.path.join(WORKSPACE, "data", "news", "knowledge_base.md")
 DREAMING_DIR = os.path.join(WORKSPACE, "memory", "dreaming")
 OUTPUT_PATH = os.path.join(WORKSPACE, "data", "news", "expansion_priority.json")
@@ -121,6 +131,7 @@ if __name__ == "__main__":
     top_50 = calculate_priorities()
     
     if top_50:
+        _bak(OUTPUT_PATH)
         with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
             json.dump(top_50, f, ensure_ascii=False, indent=2)
         

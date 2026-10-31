@@ -35,6 +35,16 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
 
 import numpy as np
 import pandas as pd
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 CACHE = os.path.join(WORKSPACE, "data", "research_price_cache")
 CLU_JSON = os.path.join(WORKSPACE, "data", "corr_clusters.json")
@@ -259,6 +269,7 @@ def main():
             for x in r["_series"].to_dict("records")
         ]
     path = os.path.join(WORKSPACE, f"analysis/research/{date.today().isoformat()}_cluster_cap_scorecard.json")
+    _bak(path)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
     print(f"[sc] 已写 {path}")

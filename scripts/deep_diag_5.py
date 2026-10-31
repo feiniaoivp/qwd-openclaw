@@ -12,6 +12,16 @@ import json
 import logging
 import pandas as pd
 import baostock as bs
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("deep_diag")
@@ -151,6 +161,7 @@ def main():
         except Exception as e:
             log.warning("%s %s 失败: %r", code, name, e)
     path = os.path.join(WORKSPACE, "analysis", "daily", "2026-10-08_deep_diag_5.json")
+    _bak(path)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
     print(json.dumps(out, ensure_ascii=False, indent=2))

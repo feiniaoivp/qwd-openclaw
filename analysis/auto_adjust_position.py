@@ -14,6 +14,17 @@ import json
 import re
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List
+import sys
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 DATA_DIR = os.path.join(WORKSPACE, "data")
@@ -314,6 +325,7 @@ def update_position_sizer_file(adjustments: List[dict]) -> List[dict]:
             set_value(param, namespace, new_val)
 
     if applied:
+        _bak(POSITION_SIZER_FILE)
         with open(POSITION_SIZER_FILE, "w") as f:
             f.write(content)
 
@@ -340,6 +352,7 @@ def log_changes(changes: List[dict]):
             "operator": "auto_weekly_review"
         })
 
+    _bak(PARAM_CHANGE_LOG)
     with open(PARAM_CHANGE_LOG, "w") as f:
         json.dump(log, f, ensure_ascii=False, indent=2)
 

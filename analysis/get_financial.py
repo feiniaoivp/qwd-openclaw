@@ -1,5 +1,17 @@
 import baostock as bs
 import json
+import os
+import sys
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 lg = bs.login()
 
@@ -120,6 +132,7 @@ for i, (code, name) in enumerate(WATCHLIST):
 
 bs.logout()
 
+_bak('/Users/duguke/.openclaw/workspace/analysis/financial_raw.json')
 with open('/Users/duguke/.openclaw/workspace/analysis/financial_raw.json', 'w') as f:
     json.dump(results, f, ensure_ascii=False)
 

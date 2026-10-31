@@ -27,6 +27,16 @@ import pandas as pd
 
 # 进程级 socket 兜底（18:2x 实测: 逐日循环中 030/数据源有裸 socket 调用 → 永久 sock_read 阻塞）
 from analysis.net_guard import install_default_timeout
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 install_default_timeout(15)
 
 CACHE = os.path.join(WORKSPACE, "data/research_price_cache")
@@ -180,6 +190,7 @@ def main():
             "daily_results": r.get("daily_results"),
         }
     path = os.path.join(WORKSPACE, f"analysis/research/{date.today().isoformat()}_cluster_window_ab.json")
+    _bak(path)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1, default=str)
     print(f"\n[ab] 已写 {path}")

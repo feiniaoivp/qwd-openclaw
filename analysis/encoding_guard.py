@@ -30,6 +30,17 @@ import logging
 import os
 import re
 from typing import Iterable, Tuple
+import sys
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 log = logging.getLogger(__name__)
 
@@ -94,6 +105,7 @@ def guard_write(path: str, content: str, label: str | None = None, encoding: str
         log.error("encoding_guard: 写入 %s 前检出污染: %s", label, "; ".join(issues))
     content = sanitize(content)
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+    _bak(path)
     with open(path, "w", encoding=encoding) as f:
         f.write(content)
     # 复查落盘内容

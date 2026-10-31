@@ -18,6 +18,16 @@ import sys
 import json
 import subprocess
 from datetime import datetime
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 sys.path.insert(0, WORKSPACE)
@@ -68,6 +78,7 @@ def _load_index_state() -> dict:
 
 def _save_index_state(st: dict) -> None:
     os.makedirs(os.path.dirname(INDEX_STATE_FILE), exist_ok=True)
+    _bak(INDEX_STATE_FILE)
     with open(INDEX_STATE_FILE, "w", encoding="utf-8") as f:
         json.dump(st, f, ensure_ascii=False, indent=2)
 
@@ -171,6 +182,7 @@ def main():
 
     # 落盘简报供审计
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
+    _bak(OUTPUT_FILE)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump({**data, "brief": msg, "pushed_at": datetime.now().isoformat()},
                   f, ensure_ascii=False, indent=2, default=str)

@@ -42,6 +42,16 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
         sys.path.insert(0, _p)
 
 from analysis.net_guard import install_default_timeout
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 install_default_timeout(15)
 
 EVAL_JSON = os.path.join(WORKSPACE, "analysis/research/dual_signal_eval_days.json")
@@ -188,6 +198,7 @@ def main():
             "criterion": "CI95(低fs-中fs)>0 且 CI95(高fs-中fs)>0，bootstrap 10000 次",
         }
         rpath = os.path.join(RETEST_DIR, f"clash_ushape_retest_{retest['date']}.json")
+        _bak(rpath)
         with open(rpath, "w", encoding="utf-8") as f:
             json.dump({"hypothesis_source":
                        "analysis/research/2026-10-18_gate_clash_downgrade_counterfactual.md",
@@ -220,6 +231,7 @@ def main():
                         prev.append(p)
         prev = [p for p in prev if p.get("date") != today]
         prev.append(rec)
+        _bak(HISTORY_JSONL)
         with open(HISTORY_JSONL, "w", encoding="utf-8") as f:
             for p in prev:
                 f.write(json.dumps(p, ensure_ascii=False) + "\n")

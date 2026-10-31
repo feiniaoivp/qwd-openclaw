@@ -9,6 +9,17 @@
 import urllib.request, json, re, sys, math
 import pandas as pd
 import numpy as np
+import os
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 # 网络兜底：进程级 socket 默认超时（防数据源挂起导致永久阻塞）
 try:
@@ -340,6 +351,7 @@ def main():
     out = {"data_date": next((r["data_date"] for r in results if r["data_date"]), ""),
            "total_analyzed": len(results), "fails": fails,
            "candidates": results}
+    _bak(f"{WORKSPACE}/data/stock_picks_0708.json")
     with open(f"{WORKSPACE}/data/stock_picks_0708.json", "w") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
 

@@ -36,6 +36,16 @@ from typing import Optional
 
 import pandas as pd
 import numpy as np
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 warnings.filterwarnings("ignore")
 
@@ -1010,6 +1020,7 @@ def main():
         print(f"📁 策略映射已保存 (版本化): {STRATEGY_MAP_FILE}")
     except Exception as e:
         # 回退：直接写文件
+        _bak(STRATEGY_MAP_FILE)
         with open(STRATEGY_MAP_FILE, "w") as f:
             json.dump(BEST_STRATEGY_MAP, f, ensure_ascii=False, indent=2)
         print(f"📁 策略映射已保存 (回退): {STRATEGY_MAP_FILE}")
@@ -1030,6 +1041,7 @@ def main():
     today = datetime.now().strftime("%Y-%m-%d")
     report_path = os.path.join(OUTPUT_DIR, f"{today}_adaptive.md")
     _dd = (output or {}).get("data_date", today) if isinstance(output, dict) else today
+    _bak(report_path)
     with open(report_path, "w") as f:
         f.write(f"# 自适应策略日报 {today}\n\n")
         # 🔴 数据新鲜度标注（供 scripts/data_freshness_guard.py 门禁校验）

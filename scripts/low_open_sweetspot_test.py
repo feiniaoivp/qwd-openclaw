@@ -36,6 +36,16 @@ from analysis.net_guard import install_default_timeout
 install_default_timeout(15)
 
 import gap_tier_execution_test as gt   # 口径单一来源（build_recs/year_baseline/boot_ci/tier_of）
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 OUT_JSON = os.path.join(WORKSPACE, "analysis/research/2026-10-20_low_open_sweetspot.json")
 OUT_MD = os.path.join(WORKSPACE, "analysis/research/2026-10-20_low_open_sweetspot.md")
@@ -209,6 +219,7 @@ def main():
         print(f"  {label:>9} n={b.get('n',0):>5} oc1={gt.pct(b.get('oc1_mean'))} {gt.ci_s(b.get('oc1_ci'))}")
     out["q3b_sell_side"] = sell_out
 
+    _bak(OUT_JSON)
     with open(OUT_JSON, "w") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
     print(f"\n📄 落盘: {os.path.relpath(OUT_JSON, WORKSPACE)}")

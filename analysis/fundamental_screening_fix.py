@@ -10,6 +10,16 @@ import socket; socket.setdefaulttimeout(20)
 import akshare as ak
 sys.path.insert(0, os.path.join(WORKSPACE, "analysis"))
 from fundamental_screening import pct, money_yi, classify, GROWTH_YEARS, fmt3
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 TODAY = dt.date.today().isoformat()
 jpath = os.path.join(WORKSPACE, "analysis", "reports", f"fundamental_screening_{TODAY}.json")
@@ -82,5 +92,6 @@ if err:
     lines += ["", "## 数据缺口"]
     for r in err:
         lines.append(f"- {r['code']} {r['name']}: {'; '.join(r['errors'])}")
+_bak(os.path.join(WORKSPACE, "analysis", "reports", f"fundamental_screening_{TODAY}.md"))
 open(os.path.join(WORKSPACE, "analysis", "reports", f"fundamental_screening_{TODAY}.md"), "w").write("\n".join(lines) + "\n")
 print("FIXED OK")

@@ -50,6 +50,16 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 WORKSPACE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 from analysis.service import get_daily_hist, calc_full_signal, WATCHLIST
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 # ---------------- 三因子权重 ----------------
 W_TECH, W_FUND, W_SENT = 0.5, 0.25, 0.25
@@ -394,6 +404,7 @@ def main():
         lines.append(f"- **{r['name']}** ({r['symbol']}): ROE={fd.get('roe')} 净利增速={fd.get('yoy_pni')} 净利率={fd.get('np_margin')} {st}")
 
     out = os.path.join(WORKSPACE, "analysis", "backtest", f"{date}_三因素共振.md")
+    _bak(out)
     with open(out, "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines))
     print(f"\n📄 报告已写入: {out}")

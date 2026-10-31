@@ -29,6 +29,16 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
         sys.path.insert(0, _p)
 
 from analysis.net_guard import install_default_timeout
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 install_default_timeout()
 
 log = logging.getLogger(__name__)
@@ -242,6 +252,7 @@ def save_local_run(job_id: str, run: Dict):
     
     # 写回（按时间排序）
     try:
+        _bak(path)
         with open(path, "w") as f:
             for r in sorted(existing.values(), key=lambda x: x.get("runAtMs", 0)):
                 f.write(json.dumps(r, ensure_ascii=False) + "\n")
@@ -449,6 +460,7 @@ def should_alert(job_id: str, status: str) -> bool:
     # 记录告警时间
     try:
         os.makedirs(CRON_STATE_DIR, exist_ok=True)
+        _bak(alert_file)
         with open(alert_file, "w") as f:
             json.dump({"last_alert_ts": now, "status": status}, f)
     except Exception:

@@ -33,6 +33,16 @@ import numpy as np
 import pandas as pd
 
 import chip_increment_test as cit
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 EVAL = os.path.join(WORKSPACE, "analysis", "research", "dual_signal_eval_days.json")
 OUT_JSON = os.path.join(WORKSPACE, "analysis", "research", "2026-10-20_dim_leave_out_audit.json")
@@ -239,6 +249,7 @@ def main():
                     "n_transitions": len(ch)}
     print(f"\nfull4 top-5 日度换手率: {churn:.0%}（{len(ch)} 个交易日过渡）")
 
+    _bak(OUT_JSON)
     with open(OUT_JSON, "w") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
     print(f"📄 落盘: {os.path.relpath(OUT_JSON, WORKSPACE)}")

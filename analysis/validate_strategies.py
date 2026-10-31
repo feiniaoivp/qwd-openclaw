@@ -40,6 +40,16 @@ from analysis.backtest_strategies import (
 
 # ── 回测护栏：随机基准对照 ──
 from analysis.backtest_guard import compare_to_random, assert_beats_random
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 # ════════════════════════════════════════
 # MACD参数联动EMA12/26最优参数
@@ -313,6 +323,7 @@ def main(stocks=None, write_map=False, arbitrate=False, pending_out=None):
     # ── 保存结果 ──
     os.makedirs(os.path.join(WORKSPACE, "analysis"), exist_ok=True)
     outfile = os.path.join(WORKSPACE, "analysis", f"validation_{today}.json")
+    _bak(outfile)
     with open(outfile, "w", encoding="utf-8") as f:
         json.dump(best_map, f, ensure_ascii=False, indent=2)
 
@@ -483,6 +494,7 @@ def main(stocks=None, write_map=False, arbitrate=False, pending_out=None):
                 "changes": merged_changes,
             }
             os.makedirs(os.path.dirname(pend_path), exist_ok=True)
+            _bak(pend_path)
             with open(pend_path, "w", encoding="utf-8") as f:
                 json.dump(pend, f, ensure_ascii=False, indent=1)
             print(f"\n📮 候审清单已写 {pend_path}（本周新增 {len(pending_changes)} + 上期结转 {len(carried)}，未写入 map）")
@@ -501,6 +513,7 @@ def main(stocks=None, write_map=False, arbitrate=False, pending_out=None):
                 print(f"\n✅ 已写回 {mapfile} (版本化, 变更 {changes} 处)")
             except Exception as e:
                 # 回退：直接写文件
+                _bak(mapfile)
                 with open(mapfile, "w", encoding="utf-8") as f:
                     json.dump(cur_raw if cur_raw else cur, f, ensure_ascii=False, indent=2)
                 print(f"\n✅ 已写回 {mapfile} (回退, 变更 {changes} 处)")

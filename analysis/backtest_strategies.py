@@ -56,6 +56,16 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 # 2026-10-17 对齐：原硬编码 35 只缺翰宇(300199，10-12 新增) → 调参池/validation/diff 三口径分叉
 # （表现为 param_signal_diff 报「一侧无策略」1 只：新参数侧无 300199）
 from analysis.fib_extension_scan import WATCHLIST
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 STOCKS = [(code, name) for code, name in WATCHLIST.items()]
 
 # ── 回测参数 ──
@@ -1110,6 +1120,7 @@ def main():
 
     # 写文件
     report_path = os.path.join(OUTPUT_DIR, f"{today}.md")
+    _bak(report_path)
     with open(report_path, "w") as f:
         f.write(content)
 

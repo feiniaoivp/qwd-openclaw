@@ -8,6 +8,16 @@ import os
 import sys
 import json
 from datetime import date
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
@@ -104,6 +114,7 @@ def main():
     L.append("- 若两周内不想动生产逻辑：保持现状，把本评分卡加入月度复查，观察门禁在真实链路（含止损）下的表现。")
     L.append("")
     path = os.path.join(WORKSPACE, f"analysis/research/{today}_cluster_cap_scorecard.md")
+    _bak(path)
     open(path, "w", encoding="utf-8").write("\n".join(L) + "\n")
     print(f"[report] 已写 {path}")
     return 0

@@ -37,6 +37,16 @@ from analysis.fib_extension_scan import WATCHLIST
 from analysis.backtest_strategies import (
     run_simulation, ALL_STRATEGIES, BENCHMARK_NAMES,
 )
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("exec_caliber_audit")
@@ -200,6 +210,7 @@ def main():
 
 def _save(obj):
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
+    _bak(OUT_JSON)
     with open(OUT_JSON, "w", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False, indent=1)
 

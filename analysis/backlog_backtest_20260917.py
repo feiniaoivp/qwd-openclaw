@@ -34,6 +34,16 @@ CORE_STRATEGIES = {
 
 # ── 数据获取 ──────────────────────────────────────
 from analysis.backtest_strategies import fetch_data, run_simulation
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 def main():
     print(f"📊 回测批次 C 启动 | {datetime.now().strftime('%Y-%m-%d %H:%M')}")
@@ -113,6 +123,7 @@ def main():
         print(f"  成功 {success}/27 | 收益 {avg_ret:+.2f}% | 夏普 {avg_sharpe:.3f} | 回撤 {avg_dd:.2f}% | 交易 {avg_trades:.1f} | 胜率 {avg_wr:.1f}%")
     
     out_path = f"analysis/backlog_backtest_20260917_{datetime.now().strftime('%H%M')}.json"
+    _bak(out_path)
     with open(out_path, 'w', encoding='utf-8') as f:
         json.dump({"strategies": results, "summary": summary_rows}, f, ensure_ascii=False, indent=2, default=str)
     print(f"\n💾 结果已保存: {out_path}")
@@ -269,6 +280,7 @@ if __name__ == "__main__":
         print(f"  成功 {success}/27 | 收益 {avg_ret:+.2f}% | 夏普 {avg_sharpe:.3f} | 回撤 {avg_dd:.2f}% | 交易 {avg_trades:.1f} | 胜率 {avg_wr:.1f}%")
     
     out_path = f"analysis/backlog_backtest_20260917_{datetime.now().strftime('%H%M')}.json"
+    _bak(out_path)
     with open(out_path, 'w', encoding='utf-8') as f:
         json.dump({"strategies": results, "summary": summary_rows}, f, ensure_ascii=False, indent=2, default=str)
     print(f"\n💾 结果已保存: {out_path}")
@@ -386,6 +398,7 @@ if __name__ == "__main__":
         print(f"  成功 {success}/27 | 收益 {avg_ret:+.2f}% | 夏普 {avg_sharpe:.3f} | 回撤 {avg_dd:.2f}% | 交易 {avg_trades:.1f} | 胜率 {avg_wr:.1f}%")
     
     out_path = f"analysis/backlog_backtest_20260917_{datetime.now().strftime('%H%M')}.json"
+    _bak(out_path)
     with open(out_path, 'w', encoding='utf-8') as f:
         json.dump({"strategies": results, "summary": summary_rows}, f, ensure_ascii=False, indent=2, default=str)
     print(f"\n💾 结果已保存: {out_path}")
@@ -503,6 +516,7 @@ if __name__ == "__main__":
         print(f"  成功 {success}/27 | 收益 {avg_ret:+.2f}% | 夏普 {avg_sharpe:.3f} | 回撤 {avg_dd:.2f}% | 交易 {avg_trades:.1f} | 胜率 {avg_wr:.1f}%")
     
     out_path = f"analysis/backlog_backtest_20260917_{datetime.now().strftime('%H%M')}.json"
+    _bak(out_path)
     with open(out_path, 'w', encoding='utf-8') as f:
         json.dump({"strategies": results, "summary": summary_rows}, f, ensure_ascii=False, indent=2, default=str)
     print(f"\n💾 结果已保存: {out_path}")

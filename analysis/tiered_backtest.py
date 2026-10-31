@@ -15,6 +15,17 @@ C组：全池子买入持有（等权）
 import json
 import os
 from datetime import datetime
+import sys
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
 
@@ -266,6 +277,7 @@ def main():
     }
     
     out_file = os.path.join(WORKSPACE, "analysis", f"tiered_backtest_{datetime.now().strftime('%Y%m%d')}.json")
+    _bak(out_file)
     with open(out_file, "w") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
     print(f"\n✅ 详细报告已保存: {out_file}")

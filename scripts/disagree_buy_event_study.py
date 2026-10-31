@@ -19,6 +19,16 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
         sys.path.insert(0, _p)
 
 import logging
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("disagree_buy_study")
@@ -132,6 +142,7 @@ def main():
     }
 
     # 先落盘再打印（分析段崩溃不丢采集数据）
+    _bak(OUT_JSON)
     with open(OUT_JSON, "w") as f:
         json.dump(results, f, ensure_ascii=False, indent=2, default=str)
     log.info("已落盘 %s", OUT_JSON)

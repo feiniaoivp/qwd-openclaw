@@ -15,6 +15,16 @@ WORKSPACE = "/Users/duguke/.openclaw/workspace"
 sys.path.insert(0, WORKSPACE)
 
 from send_telegram import send_with_retry
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 
 def run_weekly_review():
@@ -103,6 +113,7 @@ def main():
     memory_dir = os.path.join(WORKSPACE, "memory")
     os.makedirs(memory_dir, exist_ok=True)
     report_path = os.path.join(memory_dir, f"{today}-weekly-review.md")
+    _bak(report_path)
     with open(report_path, "w") as f:
         f.write(f"# 周六复盘 {today}\n\n")
         f.write(summary)

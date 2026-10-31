@@ -36,6 +36,16 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 WORKSPACE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 import analysis.backtest_strategies as bt
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 try:
     import pandas_ta as ta
 except Exception:
@@ -200,6 +210,7 @@ def main():
         print(f"{sname:<20}{tr:>10.1f}{sh:>10.3f}{mdd:>10.1f}{wr:>10.1f}{n:>8}")
 
     out = os.path.join(WORKSPACE, "analysis", "backtest", f"{datetime.now():%Y-%m-%d}_增强过滤器对比.md")
+    _bak(out)
     with open(out, "w", encoding="utf-8") as f:
         f.write(f"# 增强过滤器对比 {datetime.now():%Y-%m-%d}\n\n窗口{bt.START_DATE}~{bt.END_DATE} | {len(stocks)}只\n\n")
         f.write("| 策略 | 平均收益% | 平均夏普 | 平均回撤% | 平均胜率% | 总交易 |\n|:--|--:|--:|--:|--:|--:|\n")

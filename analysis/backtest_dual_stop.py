@@ -61,6 +61,16 @@ from analysis.backtest_strategies import (  # noqa: E402
     INITIAL_CAPITAL,
 )
 from analysis.bs_session import ensure_login  # noqa: E402
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 STRATEGY_FNS = {
     "macd": strategy_macd,
@@ -419,9 +429,11 @@ def main():
                  "不涉及『命中率 vs 随机基准』型判定，故不适用 backtest_guard 随机对照口径。")
 
     report_path = os.path.join(OUTPUT_DIR, f"dual_stop_{ts}.md")
+    _bak(report_path)
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
     json_path = os.path.join(OUTPUT_DIR, f"dual_stop_{ts}.json")
+    _bak(json_path)
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=1, default=str)
 

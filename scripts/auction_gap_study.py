@@ -13,6 +13,16 @@ import sys
 import json
 import glob
 from collections import defaultdict
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
@@ -106,6 +116,7 @@ out["vol_interaction"] = {
 out["limit_up_rows"] = sum(1 for r in rows_out if r["limit_up"])
 
 path = os.path.join(WORKSPACE, "analysis/research/2026-10-17_auction_gap_study.json")
+_bak(path)
 with open(path, "w", encoding="utf-8") as f:
     json.dump(out, f, ensure_ascii=False, indent=1)
 

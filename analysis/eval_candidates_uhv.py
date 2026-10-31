@@ -33,6 +33,16 @@ from validate_strategies import (
     WIN_START, WINDOWS, slice_window,
 )
 from backtest_strategies import run_simulation, ALL_STRATEGIES
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 # 只用 5 个核心价量策略 (与关注池口径一致), 剔除指数基准/买入持有/牛市(它们连 baostock 或非价量)
 EVAL_STRATEGIES = [s for s in ALL_STRATEGIES if s[0] in (
@@ -212,6 +222,7 @@ def main():
         if isinstance(o, (list, tuple)):
             return [_clean(v) for v in o]
         return str(o)
+    _bak(outfile)
     with open(outfile, "w", encoding="utf-8") as f:
         json.dump({"generated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
                    "gate": {"score": GATE_SCORE, "sharpe_high": GATE_SHARPE_HIGH, "sharpe_low": GATE_SHARPE_LOW},

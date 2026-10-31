@@ -36,6 +36,16 @@ import pandas as pd
 
 import chip_increment_test as cit
 import low_open_sweetspot_test as los
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 EVAL = os.path.join(WORKSPACE, "analysis", "research", "dual_signal_eval_days.json")
 OUT_JSON = os.path.join(WORKSPACE, "analysis", "research", "2026-10-20_v4_threshold_shift_sim.json")
@@ -221,6 +231,7 @@ def main():
         }
         print(f"[{vname}] SELL 名单 +{len(sg)} / -{len(sl)} | 新增行 ex5={out['variants'][vname]['sell_gained']['ex5_mean']} CI={s_ci}")
 
+    _bak(OUT_JSON)
     with open(OUT_JSON, "w") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
     print(f"📄 落盘: {os.path.relpath(OUT_JSON, WORKSPACE)}")

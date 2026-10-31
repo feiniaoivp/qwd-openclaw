@@ -35,6 +35,16 @@ import sys
 
 import numpy as np
 import pandas as pd
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
@@ -238,6 +248,7 @@ def run_batch(validation_path, annual, out_path):
     print(txt)
     if out_path:
         os.makedirs(os.path.dirname(out_path), exist_ok=True)
+        _bak(out_path)
         with open(out_path, "w", encoding="utf-8") as f:
             f.write(txt)
         json.dump(rows, open(out_path.replace(".md", ".json"), "w", encoding="utf-8"),

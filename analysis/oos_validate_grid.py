@@ -45,6 +45,16 @@ from analysis.deep_grid_search import (  # noqa: E402
     INITIAL_CAPITAL,
 )
 from analysis.backtest_guard import compare_to_random  # noqa: E402
+import shutil
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
 
 warnings.filterwarnings("ignore")
 
@@ -275,6 +285,7 @@ def main():
     print(f"\n  合计: {ok}/{len(rows)} 只通过样本外体检")
 
     out_json = os.path.join(WORKSPACE, "analysis", f"oos_validation_{datetime.now().strftime('%Y%m%d')}.json")
+    _bak(out_json)
     with open(out_json, "w", encoding="utf-8") as f:
         json.dump({"results": results, "summary": rows,
                    "is_window": f"{IS_START}~{IS_END}", "oos_window": f"{OOS_START}~{OOS_END}"},
@@ -299,6 +310,7 @@ def main():
             f"{x['oos_trades']} | {x['oos_bh_ret']}% | {exc} | {p} | {x['verdict']} |")
     lines += ["", f"**合计: {ok}/{len(rows)} 只通过样本外体检**", ""]
     out_md = os.path.join(WORKSPACE, "analysis", f"oos_validation_{datetime.now().strftime('%Y%m%d')}.md")
+    _bak(out_md)
     with open(out_md, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     print(f"✅ MD  : {out_md}")
