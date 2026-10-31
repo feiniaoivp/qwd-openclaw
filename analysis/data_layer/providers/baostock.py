@@ -203,17 +203,21 @@ class BaostockProvider:
         try:
             rows = self._query_with_session(
                 index_code,
-                "date,open,close,high,low,volume",
+                "date,open,close,high,low,volume,amount",
                 start_ymd, end_ymd, "d", adjustflag
             )
             if rows is None:
                 raise ValueError("查询失败")
             
-            df = pd.DataFrame(rows, columns=["date", "open", "close", "high", "low", "volume"])
-            for c in ["open", "close", "high", "low", "volume"]:
+            # 2026-11-01 A阶段：补 amount 字段（指数成交量≠成交额；市场健康度量能维需要
+            # 全市场成交额历史。additive 改动，旧消费方按列名取数不受影响）
+            df = pd.DataFrame(rows, columns=["date", "open", "close", "high", "low", "volume", "amount"])
+            for c in ["open", "close", "high", "low", "volume", "amount"]:
                 df[c] = pd.to_numeric(df[c], errors="coerce")
             df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date").reset_index(drop=True).dropna()
+            df = df.sort_values("date").reset_index(drop=True)
+            df = df.dropna(subset=["open", "close", "high", "low", "volume"])
+            # amount 允许为空（老数据/部分指数），不因 amount 缺失整行丢弃
             
             if len(df) >= 2:
                 self._consecutive_failures = 0

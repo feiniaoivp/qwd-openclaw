@@ -8,7 +8,10 @@
 
 数据源:
   - akshare stock_zh_a_spot  (全市场涨跌/涨停/跌停, 带重试)
-  - akshare stock_zt_pool_em (涨停板池, 若可用则算晋级率/炸板率)
+  - akshare stock_zt_pool_em (涨停板池: 梯队/晋级率)
+  - akshare stock_zt_pool_zbgc_em (炸板股池: 真实炸板率, 2026-11-01 A阶段接入)
+  - baostock 指数日线 sh.000002+sz.399107 (全市场成交额5日均值, 2026-11-01 A阶段接入;
+    量能维从「静态绝对阈值」升级为「相对5日均值」颗粒度)
   - hq.sinajs.cn             (指数兜底)
 
 输出:
@@ -21,7 +24,7 @@
 """
 import os, sys, json, time
 import shutil
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 
 # 网络兜底：进程级 socket 默认超时（防数据源挂起导致永久阻塞）
@@ -64,20 +67,39 @@ def fetch_spot(retries=3, wait=3):
 
 
 def fetch_zt_pool(retries=2, wait=3):
-    """东方财富涨停板池，可能失败"""
+    """东方财富涨停板池，可能失败；返回 (df, date_str)（date_str 供炸板池日期对齐校验）"""
     import akshare as ak
-    try:
-        return ak.stock_zt_pool_em(date=datetime.now().strftime("%Y%m%d"))
-    except Exception:
-        # 尝试上一交易日(周末/盘前无当日池)
-        from datetime import timedelta
-        for back in range(1, 4):
-            d = (datetime.now() - timedelta(days=back)).strftime("%Y%m%d")
+    for back in range(0, 4):
+        d = (datetime.now() - timedelta(days=back)).strftime("%Y%m%d")
+        for attempt in range(retries):
             try:
-                return ak.stock_zt_pool_em(date=d)
+                df = ak.stock_zt_pool_em(date=d)
+                if df is not None and not df.empty:
+                    return df, d
+                break
             except Exception:
-                continue
-    return None
+                if attempt == retries - 1:
+                    break
+                time.sleep(wait)
+    return None, None
+
+
+def fetch_zbgc_pool(retries=2, wait=2):
+    """东方财富炸板股池（涨停开板，10-28 复盘验证路径固化）；返回 (df, date_str)"""
+    import akshare as ak
+    for back in range(0, 4):
+        d = (datetime.now() - timedelta(days=back)).strftime("%Y%m%d")
+        for attempt in range(retries):
+            try:
+                df = ak.stock_zt_pool_zbgc_em(date=d)
+                if df is not None and not df.empty:
+                    return df, d
+                break
+            except Exception:
+                if attempt == retries - 1:
+                    break
+                time.sleep(wait)
+    return None, None
 
 
 def score_width(up_ratio):
@@ -117,13 +139,89 @@ def score_tier(zt_pool):
         return 5, "连板数解析失败, 中性分"
 
 
-def score_bomb(zt_pool):
-    """炸板率: <20%=10, 20-30%=7, 30-40%=4, >40%=1"""
-    if zt_pool is None or zt_pool.empty:
-        return 5, "无炸板数据, 中性分"
-    cols = zt_pool.columns
-    # 涨停池通常不含炸板, 用涨停家数近似；无法取时中性
-    return 5, "炸板率需另取炸板池, 中性分"
+def score_bomb(zt_pool, zt_date=None, zbgc_pool=None, zbgc_date=None):
+    """炸板率: <20%=10, <30%=7, <40%=4, else 1（全市场口径，10-28: 69/141≈49%→1分）
+    仅当涨停池与炸板池日期对齐时真实评分，否则中性分（防两池错日假信号）"""
+    zt_n = len(zt_pool) if zt_pool is not None and not zt_pool.empty else 0
+    zb_n = len(zbgc_pool) if zbgc_pool is not None and not zbgc_pool.empty else 0
+    if not (zt_n or zb_n):
+        return 5, "涨停+炸板池均不可得, 中性分"
+    if zt_date and zbgc_date and zt_date != zbgc_date:
+        return 5, f"两池日期未对齐(涨停{zt_date}/炸板{zbgc_date}), 中性分"
+    denom = zt_n + zb_n
+    if denom <= 0:
+        return 5, "无样本, 中性分"
+    rate = zb_n / denom
+    if rate < 0.20: s = 10
+    elif rate < 0.30: s = 7
+    elif rate < 0.40: s = 4
+    else: s = 1
+    return s, f"炸板率{rate:.0%}({zb_n}/{denom})"
+
+
+def score_promotion(prev_codes, today_pool, run_date=None):
+    """晋级率 = 昨日涨停今日再涨停 / 昨日涨停: <15%=1, <25%=4, <40%=7, else 10
+    （10-28 实盘: 8/41≈19.5%→4分；全市场口径）
+    非交易日运行时 zt_pool 会回退到最近交易日 → 与 prev 基准同日 → 假 100%，
+    显式拦截（2026-11-01 周日实跑坐实的自比陷阱，与 bomb 维日期对齐同族）"""
+    if not prev_codes:
+        return 5, "昨日涨停池不可得, 中性分"
+    if run_date:
+        try:
+            from analysis.service import is_trading_day
+            if not is_trading_day(run_date):
+                return 5, f"{run_date} 非交易日(池数据回退自比), 晋级率中性分"
+        except Exception as e:  # noqa: BLE001
+            print(f"⚠️ 交易日判定失败(晋级率降级中性): {e}", file=sys.stderr)
+            return 5, "交易日判定不可得, 晋级率中性分"
+    today_codes = set()
+    if today_pool is not None and not today_pool.empty and "代码" in today_pool.columns:
+        today_codes = set(today_pool["代码"].astype(str))
+    promoted = len(set(prev_codes) & today_codes)
+    rate = promoted / len(prev_codes)
+    if rate < 0.15: s = 1
+    elif rate < 0.25: s = 4
+    elif rate < 0.40: s = 7
+    else: s = 10
+    return s, f"晋级率{rate:.0%}({promoted}/{len(prev_codes)})"
+
+
+def _prev_trading_day():
+    """SSOT 交易日历取上一交易日（晋级率基准日）；不可得返回 None（显式降级）"""
+    try:
+        from analysis.service import get_trading_days
+        today = datetime.now().strftime("%Y-%m-%d")
+        prior = [d for d in get_trading_days(min_date="2026-01-01") if d < today]
+        return prior[-1] if prior else None
+    except Exception as e:  # noqa: BLE001
+        print(f"⚠️ 交易日历不可得(晋级率降级中性): {e}", file=sys.stderr)
+        return None
+
+
+def fetch_amount_history(lookback=5):
+    """全市场成交额历史（沪A sh.000002 + 深A sz.399107，baostock 指数日线 amount 字段）。
+    返回 [(date_str, amount_yi), ...] 升序、不含今日（今日量能由 spot 口径现算）；
+    失败返回 []（量能维显式降级静态阈值，不填默认值）。"""
+    try:
+        from analysis.data_layer import get_router
+        r = get_router()
+        start = (datetime.now() - timedelta(days=20)).strftime("%Y-%m-%d")
+        total = None
+        for code in ("sh.000002", "sz.399107"):
+            df = r.baostock.get_index_daily(code, start, adjustflag="3")
+            if df is None or df.empty or "amount" not in df.columns:
+                raise ValueError(f"{code} amount 序列不可得")
+            s = df.set_index("date")["amount"] / 1e8
+            total = s if total is None else total.add(s, fill_value=0)
+        if total is None or total.empty:
+            return []
+        today = datetime.now().strftime("%Y-%m-%d")
+        out = [(str(d.date()), round(float(v), 0)) for d, v in total.sort_index().items()
+               if pd.notna(v) and str(d.date()) < today]
+        return out[-lookback:]
+    except Exception as e:  # noqa: BLE001
+        print(f"⚠️ 成交额历史获取失败(量能维降级静态阈值): {e}", file=sys.stderr)
+        return []
 
 
 def score_volume(total_amt_yi, history=None):
@@ -218,20 +316,55 @@ def compute():
         result["dimensions"]["negative_feedback"] = {"score": 5, "note": "数据失败, 中性分"}
         total_amt = 0
 
-    # 2. 涨停池（晋级率/炸板率/梯队）
-    zt_pool = fetch_zt_pool()
+    # 2. 涨停池（梯队/炸板率/晋级率 — 2026-11-01 A阶段全市场口径真实化，替代中性占位）
+    zt_pool, zt_date = fetch_zt_pool()
     tier_score, tier_note = score_tier(zt_pool)
-    bomb_score, bomb_note = score_bomb(zt_pool)
     result["dimensions"]["tier_completeness"] = {"score": tier_score, "note": tier_note}
-    result["dimensions"]["bomb_rate"] = {"score": bomb_score, "note": bomb_note}
-    result["dimensions"]["promotion_rate"] = {
-        "score": 5,
-        "note": "晋级率需昨日涨停池对比今日, 中性分(agent可结合新闻)",
-    }
 
-    # 3. 量能
-    v_score, v_note = score_volume(total_amt)
-    result["dimensions"]["volume"] = {"score": v_score, "note": v_note}
+    zbgc_pool, zbgc_date = fetch_zbgc_pool()
+    bomb_score, bomb_note = score_bomb(zt_pool, zt_date, zbgc_pool, zbgc_date)
+    result["dimensions"]["bomb_rate"] = {"score": bomb_score, "note": bomb_note}
+
+    prev_day = _prev_trading_day()
+    prev_codes = []
+    if prev_day:
+        try:
+            import akshare as ak
+            prev_pool = ak.stock_zt_pool_em(date=prev_day.replace("-", ""))
+            if prev_pool is not None and not prev_pool.empty and "代码" in prev_pool.columns:
+                prev_codes = list(prev_pool["代码"].astype(str))
+        except Exception as e:  # noqa: BLE001
+            print(f"⚠️ 昨日涨停池获取失败(晋级率降级中性): {e}", file=sys.stderr)
+    promo_score, promo_note = score_promotion(prev_codes, zt_pool,
+                                               run_date=datetime.now().strftime("%Y-%m-%d"))
+    result["dimensions"]["promotion_rate"] = {"score": promo_score, "note": promo_note,
+                                              "prev_date": prev_day or "不可得"}
+
+    # 3. 量能（2026-11-01 A阶段颗粒度：相对5日全市场均值，替代静态绝对阈值；
+    #    口径：今日=新浪全A沪深成交额合计，历史=baostock 沪A sh.000002+深A sz.399107）
+    _run_date = datetime.now().strftime("%Y-%m-%d")
+    _is_td = True
+    try:
+        from analysis.service import is_trading_day
+        _is_td = is_trading_day(_run_date)
+    except Exception as _e:  # noqa: BLE001
+        print(f"⚠️ 交易日判定失败(量能维保守按交易日处理): {_e}", file=sys.stderr)
+    hist = fetch_amount_history()
+    _vol_self_note = ""
+    if hist and not _is_td:
+        # 非交易日运行：spot total_amt 实为最近交易日数据 → 历史序列剔除该日，防自比虚高
+        hist = hist[:-1]
+        _vol_self_note = "; 非交易日运行已剔除自比日"
+    if hist:
+        last5 = hist[-5:]
+        avg5 = round(sum(v for _, v in last5) / len(last5), 0)
+        v_score, v_note = score_volume(total_amt, history={"amount_hist": avg5})
+        vol_basis = f"5日全市场均值{avg5:.0f}亿(baostock 沪A+深A){_vol_self_note}"
+    else:
+        v_score, v_note = score_volume(total_amt, history=None)
+        vol_basis = "静态阈值(5日均值不可得,显式降级)"
+    result["dimensions"]["volume"] = {"score": v_score, "note": v_note,
+                                      "basis": vol_basis, "amount_hist_5d": hist[-5:]}
 
     # 4. 指数 & 主线
     import urllib.request
@@ -278,5 +411,63 @@ def compute():
     return result
 
 
+def _selftest() -> int:
+    """对抗自测（无网络）：量能比值分档 / 炸板率 / 晋级率 / 日期错配防假信号 / 显式降级"""
+    import pandas as pd
+
+    # 1) 量能比值分档（5日均值接线后走 ratio 分支）
+    t1 = (score_volume(13500, history={"amount_hist": 10000})[0] == 10
+          and score_volume(10500, history={"amount_hist": 10000})[0] == 7
+          and score_volume(8000, history={"amount_hist": 10000})[0] == 4
+          and score_volume(6500, history={"amount_hist": 10000})[0] == 1)
+
+    # 2) 量能无历史 → 静态阈值 fallback（显式降级注记）
+    s, n = score_volume(12500, history=None)
+    t2 = s == 6 and "无5日均值" in n
+
+    # 3) 炸板率真实化：10-28 实盘口径 69/141≈49% → 1分；健康日 14/86≈16% → 10分
+    s3a, _ = score_bomb(_mk_pool(72), "20261028", _mk_pool(69), "20261028")
+    s3b, _ = score_bomb(_mk_pool(72), "20261030", _mk_pool(14), "20261030")
+    t3 = s3a == 1 and s3b == 10
+
+    # 4) 两池日期错配 → 中性分（防错日假信号）
+    s4, n4 = score_bomb(_mk_pool(72), "20261030", _mk_pool(69), "20261029")
+    t4 = s4 == 5 and "未对齐" in n4
+
+    # 5) 双池均空 → 中性分
+    s5, _ = score_bomb(None, None, None, None)
+    t5 = s5 == 5
+
+    # 6) 晋级率：10-28 实盘 8/41≈19.5% → 4分；3/41≈7% → 1分；昨日池不可得 → 中性；
+    #    非交易日运行自比陷阱 → 显式中性（周日实跑坐实）
+    today_pool = _mk_pool(8, codes=[f"60058{i}" for i in range(8)])
+    prev_codes = [f"60058{i}" for i in range(41)]
+    s6a, _ = score_promotion(prev_codes, today_pool, run_date="2026-10-30")
+    s6b, _ = score_promotion(prev_codes[:41], _mk_pool(3, codes=prev_codes[:3]), run_date="2026-10-30")
+    s6c, _ = score_promotion([], today_pool, run_date="2026-10-30")
+    s6d, n6d = score_promotion(prev_codes, today_pool, run_date="2026-11-01")  # 周日
+    t6 = s6a == 4 and s6b == 1 and s6c == 5 and s6d == 5 and "非交易日" in n6d
+
+    cases = [("量能比值分档", t1), ("量能静态降级注记", t2), ("炸板率真实化", t3),
+             ("两池错配防假信号", t4), ("双池空中性", t5), ("晋级率分档+非交易日拦截", t6)]
+    failed = [n for n, ok in cases if not ok]
+    for n, ok in cases:
+        print(f"  {'✅' if ok else '❌'} {n}")
+    if failed:
+        print(f"SELFTEST FAILED: {failed}")
+        return 1
+    print("SELFTEST PASSED (6/6)")
+    return 0
+
+
+def _mk_pool(n, codes=None):
+    """构造最小涨停/炸板池 df（列名对齐东财口径）"""
+    if codes is None:
+        codes = [f"{600000 + i}" for i in range(n)]
+    return pd.DataFrame({"代码": codes[:n] if codes else [f"{600000 + i}" for i in range(n)]})
+
+
 if __name__ == "__main__":
+    if "--selftest" in sys.argv:
+        sys.exit(_selftest())
     compute()
