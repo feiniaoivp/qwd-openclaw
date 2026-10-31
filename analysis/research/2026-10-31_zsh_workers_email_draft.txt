@@ -1,0 +1,64 @@
+To: zsh-workers@zsh.org
+Subject: zsh 5.9 (macOS 15.8.2 Apple build): heredoc/here-string on a non-first pipeline member concatenates upstream pipe output into stdin instead of overriding the pipe
+From: <【待填：用户邮箱】>
+
+Hi zsh-workers,
+
+On this machine (macOS 15.8.2 x86_64, /bin/zsh 5.9 (x86_64-apple-darwin24.0), Apple build), a
+heredoc or here-string attached to a NON-FIRST member of a pipeline does not override the
+implicit pipe on stdin. Instead, the command receives the upstream pipeline output
+CONCATENATED with the heredoc body (in that order, no separator). bash and /bin/sh on the
+same machine implement the standard semantics (explicit redirection wins) correctly.
+
+Minimal repro:
+
+    % printf 'PIPE-CONTENT' | cat <<'EOF'
+    HEREDOC-CONTENT
+    EOF
+    PIPE-CONTENTHEREDOC-CONTENT      # zsh 5.9 actual (concatenated)
+
+    # expected / bash & /bin/sh actual:
+    HEREDOC-CONTENT
+
+Probe matrix (run via python subprocess with exact argv control):
+
+     1. zsh -c, multi-line, heredoc on last stage          -> concatenated
+     2. leading "export PATH=..." line + same command      -> concatenated
+     3. eval '<cmd>' wrapper                               -> concatenated
+     4. zsh script file (non -c mode)                      -> concatenated
+     5. 3-stage pipeline, heredoc on last member           -> concatenated
+     6. heredoc on the MIDDLE member                       -> concatenated
+     7. heredoc on the FIRST member (cat <<EOF | cat)      -> correct (body only)
+     8. standalone heredoc (no pipe)                       -> correct
+     9. empty upstream output (printf '' | cat <<EOF)      -> body only
+        (proves in-order concatenation, not duplication)
+    10. here-string: printf X | cat <<< 'H'                -> concatenated
+    11. bash -c / bash file / /bin/sh -c                   -> correct in all cases
+
+The heredoc body always arrives as data: a line `echo SHOULD-NOT-RUN` inside the body is
+delivered verbatim to the reader's stdin, never executed.
+
+Reproduction rate: 100%. Caveat: this is the Apple-shipped zsh binary; I could not compare
+against a pristine upstream build on this machine (no Homebrew zsh installed), so an
+Apple-specific patch cannot be ruled out.
+
+Context / practical impact: discovered while debugging false failure alerts in an agent
+runtime that executes commands through zsh -c. The pattern
+
+    openclaw cron list --json | python3 - <<'EOF' ... EOF
+
+feeds the piped JSON to python as *source code* (dying with
+`NameError: name 'true' is not defined` at the first bare true) instead of executing the
+heredoc script. Interpreter-from-stdin pipelines (`python3 -`, `bash -s`) are the dangerous
+shape: upstream pipe text becomes executable code.
+
+Happy to test patches or gather more diagnostics.
+
+--
+<【待填：署名与联系方式】>
+
+----
+背景备注（不随邮件发出）：OpenClaw 侧已先行提 issue（该行为经取证与其 exec 封装无关，属继承）：
+https://github.com/openclaw/openclaw/issues/189332
+投递通道实测：本机直投 mail.zsh.org:25 被代理隧道拦截（TCP 握手成功、SMTP 会话即断），
+需经用户邮件客户端发送，或经用户授权的替代通道。
