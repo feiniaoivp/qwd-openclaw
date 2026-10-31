@@ -185,14 +185,21 @@ def classify_audit(arbitration: list, held: dict, day_trades: list, dual_sells: 
             })
         elif act in BUY_ACTIONS and mult <= 0:
             blocked_buys.append({"symbol": sym, "name": name, "action": act,
-                                 "reason": r.get("reason", "")})
+                                 "reason": r.get("reason", ""),
+                                 "resonance_gate": r.get("resonance_gate"),
+                                 "trace_stages": [t.get("stage") for t in (r.get("decision_trace") or [])
+                                                  if isinstance(t, dict) and t.get("stage")]})
 
         # 透明行: 持仓股有日报🔴卖出信号但仲裁未转卖出（10-28 越秀形态）
+        # B阶段 2026-11-01: 附仲裁 reason + 决策轨迹关键阶段 → 透明行能回答「为什么没转卖」
         if is_held and act not in SELL_ACTIONS and sym in dual_sells:
             info = dual_sells[sym]
             transparency.append({
                 "type": "日报卖出未转仲裁", "symbol": sym, "name": name or info["name"],
                 "arbitration": act,
+                "arb_reason": r.get("reason", ""),
+                "arb_trace_stages": [t.get("stage") for t in (r.get("decision_trace") or [])
+                                     if isinstance(t, dict) and t.get("stage")],
                 "sell_strategies": sorted(set(info["strategies"])),
                 "sources": info["sources"],
             })
@@ -249,11 +256,24 @@ def render_brief(result: dict) -> str:
     if result.get("transparency"):
         lines.append("**透明行（供复盘，不计执行率）**:")
         for t in result["transparency"]:
+            why = (t.get("arb_reason") or "").strip()
+            stages = [s for s in (t.get("arb_trace_stages") or [])
+                      if s in ("REVERSAL_OVERRIDE", "RESONANCE_GATE_BLOCK", "RESONANCE_GATE_FAIL_OPEN",
+                               "CONSECUTIVE_SELL_HARD_RULE", "DEFAULT_HOLD", "DOWNGRADE_NOTE")]
+            why_s = f" 原因:{why[:70]}" if why else ""
+            stage_s = f" 轨迹:{'>'.join(stages[-3:])}" if stages else ""
             lines.append(f"- 🟡 {t['name']}({t['symbol']}): 日报🔴卖出({','.join(t['sell_strategies'])}) "
-                         f"但仲裁={t['arbitration']} [{','.join(t['sources'])}]")
+                         f"但仲裁={t['arbitration']}{why_s}{stage_s} [{','.join(t['sources'])}]")
         lines.append("")
     if result.get("blocked_buys"):
         lines.append(f"系统拦截买入: {len(result['blocked_buys'])} 只（mult=0，不计应执行项）")
+        for b in result["blocked_buys"][:5]:
+            gate = b.get("resonance_gate")
+            gate_s = f" 门控:{gate}" if gate else ""
+            stages = [s for s in (b.get("trace_stages") or [])
+                      if s in ("RESONANCE_GATE_BLOCK", "RESONANCE_GATE_FAIL_OPEN", "POSITION_MULT")]
+            stage_s = f" 轨迹:{'>'.join(stages[-2:])}" if stages else ""
+            lines.append(f"  - 🔵 {b['name']}({b['symbol']}): {b['action']} 原因:{(b.get('reason') or '')[:60]}{gate_s}{stage_s}")
     return "\n".join(lines) + "\n"
 
 
@@ -293,16 +313,31 @@ def _selftest() -> int:
     r = classify_audit([arb("000001", "甲", "卖出", 0.0, 6.5)], held,
                        [{"symbol": "000001", "action": "SELL", "shares": 0, "note": "冲销"}], dual)
     t7 = r["actionable"][0]["executed"] is False
+    # 场景8: 透明行附仲裁原因+轨迹阶段（B阶段 2026-11-01 决策留痕契约）
+    arb_with_trace = {"symbol": "000001", "name": "甲", "final_action": "持有",
+                      "position_mult": 0.0, "stop_loss": 6.5, "reason": "情绪反转确认覆盖技术卖出",
+                      "decision_trace": [{"stage": "REVERSAL_OVERRIDE", "confirmed_date": "2026-10-28"},
+                                          {"stage": "POSITION_MULT", "final": 0.0}]}
+    r = classify_audit([arb_with_trace], held, [], dsells)
+    t8 = (len(r["transparency"]) == 1
+          and r["transparency"][0].get("arb_reason") == "情绪反转确认覆盖技术卖出"
+          and "REVERSAL_OVERRIDE" in r["transparency"][0].get("arb_trace_stages", []))
+    # 场景9: 旧格式仲裁记录（无 decision_trace 字段）不报错、正常分类（向后兼容）
+    legacy = {"symbol": "000001", "name": "甲", "final_action": "持有",
+              "position_mult": 0.0, "stop_loss": 6.5, "reason": "旧记录"}
+    r = classify_audit([legacy], held, [], dsells)
+    t9 = len(r["transparency"]) == 1 and r["transparency"][0].get("arb_trace_stages") == []
 
     cases = [("卖出已执行(零股平仓单)", t1), ("卖出未执行", t2), ("无仓标记不算应执行", t3),
-             ("买入未执行", t4), ("系统拦截透明", t5), ("日报卖出未转仲裁", t6), ("冲销单排除", t7)]
+             ("买入未执行", t4), ("系统拦截透明", t5), ("日报卖出未转仲裁", t6), ("冲销单排除", t7),
+             ("透明行附原因+轨迹", t8), ("旧格式仲裁向后兼容", t9)]
     failed = [n for n, ok in cases if not ok]
     for n, ok in cases:
         print(f"  {'✅' if ok else '❌'} {n}")
     if failed:
         print(f"SELFTEST FAILED: {failed}")
         return 1
-    print("SELFTEST PASSED (7/7)")
+    print("SELFTEST PASSED (9/9)")
     return 0
 
 

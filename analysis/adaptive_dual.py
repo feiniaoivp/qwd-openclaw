@@ -1094,13 +1094,29 @@ def scan_all():
                 if _act in ("小仓买入", "买入", "积极买入"):
                     _ok, _info = ResonanceGate().check_buy(str(symbol))
                     if not _ok:
-                        _gate_blocked = _info.get("reason", "")
+                        _gate_blocked = _info.get("reason") or ""
                         # 降级裁决：买入 → 持有/观望, 清仓位
                         from analysis.signal_arbitrator import SignalAction
                         arbitration_result.final_action = SignalAction.HOLD
                         arbitration_result.position_mult = 0.0
+                        # B阶段 2026-11-01 决策留痕：此前门控拦截只改 action 不改 reason/path，
+                        # 仲裁 JSON 里 reason 仍是「买入」→ 下游审计看不见拦截原因（10-28 类盲区）
+                        _gate_tag = f"[三因素门控拦截]{_gate_blocked}"
+                        arbitration_result.reason = ((arbitration_result.reason or "") + "；" + _gate_tag).strip("；")
+                        arbitration_result.arbitration_path.append("RESONANCE_GATE_BLOCK")
+                        if arbitration_result.decision_trace is not None:
+                            arbitration_result.decision_trace.append(
+                                {"stage": "RESONANCE_GATE_BLOCK", "gate_reason": _gate_blocked,
+                                 "overridden_from": _act})
             except Exception as _e:
+                # B阶段 2026-11-01：门控异常原为静默 fail-open（_gate_blocked=None 无痕）。
+                # 维持 fail-open 语义（门控故障不拦买），但必须留痕可见（10-18 铁律：fail-open/fail-closed 显式选择并留痕）
                 _gate_blocked = None
+                print(f"  ⚠️ 三因素门控异常fail-open(不拦买) {symbol}: {_e}")
+                arbitration_result.arbitration_path.append("RESONANCE_GATE_FAIL_OPEN")
+                if arbitration_result.decision_trace is not None:
+                    arbitration_result.decision_trace.append(
+                        {"stage": "RESONANCE_GATE_FAIL_OPEN", "error": str(_e), "fail_open": True})
 
         # ── 2026-10-17 Regime×030 联动：ER 震荡态买入乘数 ×0.5 ──
         # 依据: 21,068 日事件研究——震荡态买入期望≈趋势态0.38×（三年一致
@@ -1144,7 +1160,8 @@ def scan_all():
                 "support_price": arbitration_result.support_price if arbitration_result else None,
                 "reason": arbitration_result.reason if arbitration_result else "",
                 "arbitration_path": arbitration_result.arbitration_path if arbitration_result else [],
-                "resonance_gate": _gate_blocked,  # 若为 str 表示买入被三因素门控拦截的原因
+                "decision_trace": arbitration_result.decision_trace if arbitration_result else [],
+                "resonance_gate": _gate_blocked,  # 若为 str 表示买入被三因素门控拦截的原因（B阶段同步进仲裁 JSON）
             } if arbitration_result else None,
             "position_advice": {
                 "max_amount": round(position_plan.get("single_stock_max_amount", 0) * 
@@ -1353,10 +1370,17 @@ def main():
                 "support_price": arb["support_price"],
                 "reason": arb["reason"],
                 "arbitration_path": arb["arbitration_path"],
+                # B阶段 2026-11-01：门控拦截原因 + 决策轨迹原只留在 details 层，仲裁 JSON 丢失 → 补齐
+                # （此前 execution_audit/next_day_sim 读到的 reason 在门控拦截时仍是「买入」）
+                "resonance_gate": arb.get("resonance_gate"),
+                "decision_trace": arb.get("decision_trace"),
             })
     
     # 保存裁决结果
     arb_path = os.path.join(WORKSPACE, "data", f"arbitration_{today}.json")
+    import shutil
+    if os.path.exists(arb_path):
+        shutil.copy(arb_path, arb_path + '.bak')
     with open(arb_path, "w") as f:
         json.dump(arbitration_results, f, ensure_ascii=False, indent=2, default=str)
     
@@ -1419,6 +1443,9 @@ def main():
 
     report_path = os.path.join(OUTPUT_DIR, f"{today}_dual.md")
     data_date = output.get("data_date", today)
+    import shutil
+    if os.path.exists(report_path):
+        shutil.copy(report_path, report_path + '.bak')
     with open(report_path, "w") as f:
         f.write(f"# 双策略最优扫描日报 {today}\n\n")
         # 🔴 数据新鲜度标注（供 scripts/data_freshness_guard.py 门禁校验）

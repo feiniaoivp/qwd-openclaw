@@ -67,8 +67,8 @@ def _load_factor_scores() -> Dict:
             with open(FACTOR_SCORES_FILE, encoding="utf-8") as f:
                 _factor_scores_cache = json.load(f)
                 return _factor_scores_cache
-        except Exception:
-            pass
+        except Exception as _e:  # noqa: BLE001
+            print(f"⚠️ factor_scores 读取失败,退默认权重(可见告警,原先静默): {_e}", file=sys.stderr)
     return {"scores": {}, "weights": {"core_product": 0.6, "oversea_qual": 0.4}}
 
 def get_factor_score(symbol: str) -> dict:
@@ -130,7 +130,8 @@ class ArbitrationResult:
     support_price: Optional[float] = None  # 支撑价
     reason: str = ""
     raw_signals: List[RawSignal] = None
-    arbitration_path: List[str] = None     # 裁决路径，用于审计追溯
+    arbitration_path: List[str] = None     # 裁决路径，用于审计追溯（signal_audit 消费，保持不变）
+    decision_trace: List[dict] = None      # 决策轨迹（2026-11-01 B阶段：逐层数字证据，回答「为什么降级/压缩」）
     moat_bonus: float = 0.0    # 护城河加分
 
     def __post_init__(self):
@@ -138,6 +139,8 @@ class ArbitrationResult:
             self.raw_signals = []
         if self.arbitration_path is None:
             self.arbitration_path = []
+        if self.decision_trace is None:
+            self.decision_trace = []
 
 
 class SignalArbitrator:
@@ -181,7 +184,8 @@ class SignalArbitrator:
             return ArbitrationResult(
                 symbol="", name="", final_action=SignalAction.WATCH,
                 confidence=0.0, position_mult=0.0,
-                reason="无原始信号输入"
+                reason="无原始信号输入",
+                decision_trace=[{"stage": "INPUT", "n_signals": 0}]
             )
 
         symbol = raw_signals[0].symbol
@@ -191,21 +195,37 @@ class SignalArbitrator:
         for s in raw_signals:
             s.strength = self._normalize_action(s.action)
 
+        # 决策轨迹（B阶段 2026-11-01）：每层裁决记录数字证据，消灭「为什么」盲区
+        trace: List[dict] = [{
+            "stage": "INPUT",
+            "symbol": symbol,
+            "n_signals": len(raw_signals),
+            "signals": [
+                {"source": s.source, "action": s.action, "strength": s.strength,
+                 "strategy": s.strategy, "validation_score": round(s.validation_score, 1)}
+                for s in raw_signals
+            ],
+        }]
+
         # 1. 致命风险绝对否决（最高优先级）
         if fatal_risk.get("fatal_triggered", False):
+            trace.append({"stage": "FATAL_RISK_OVERRIDE", "fired": True})
             return ArbitrationResult(
                 symbol=symbol, name=name,
                 final_action=SignalAction.FORCE_CLEAR,
                 confidence=1.0, position_mult=0.0,
                 reason="☠️ 触发030致命风险：无条件清仓，禁止买入",
                 raw_signals=raw_signals,
-                arbitration_path=["FATAL_RISK_OVERRIDE"]
+                arbitration_path=["FATAL_RISK_OVERRIDE"],
+                decision_trace=trace
             )
 
         # 2. 高风险防御
         high_risk = fatal_risk.get("high_risk_triggered", False)
         if high_risk:
             # 持仓则减仓/止损，无仓则禁买
+            trace.append({"stage": "HIGH_RISK_DEFENSE",
+                          "has_position": bool(held_position and held_position.get("shares", 0) > 0)})
             if held_position and held_position.get("shares", 0) > 0:
                 return ArbitrationResult(
                     symbol=symbol, name=name,
@@ -215,7 +235,8 @@ class SignalArbitrator:
                     support_price=self._calc_support(held_position),
                     reason="🟡 高风险防御：核心中军竞价≤-3%，持仓减仓至30%，设-5%止损",
                     raw_signals=raw_signals,
-                    arbitration_path=["HIGH_RISK_DEFENSE"]
+                    arbitration_path=["HIGH_RISK_DEFENSE"],
+                    decision_trace=trace
                 )
             else:
                 return ArbitrationResult(
@@ -224,16 +245,30 @@ class SignalArbitrator:
                     confidence=0.8, position_mult=0.0,
                     reason="🟡 高风险防御：核心中军竞价≤-3%，不开新仓，观望",
                     raw_signals=raw_signals,
-                    arbitration_path=["HIGH_RISK_DEFENSE_NO_POS"]
+                    arbitration_path=["HIGH_RISK_DEFENSE_NO_POS"],
+                    decision_trace=trace
                 )
 
         # 3. 收集各层级证据
         evidence = self._collect_evidence(raw_signals, market_context)
+        trace.append({
+            "stage": "EVIDENCE",
+            "negative_feedback": len(evidence["negative_feedback"]),
+            "distribution_pattern": len(evidence["distribution_pattern"]),
+            "volume": len(evidence["volume"]),
+            "seal_direction": len(evidence["seal_direction"]),
+            "surprise": len(evidence["surprise"]),
+            "technical": len(evidence["technical"]),
+            "moat_bonus": round(evidence.get("moat_bonus", 0.0), 3),
+            "health_score": market_context.get("health_score", 5),
+        })
 
         # 4. 按层级裁决
         final_action, conf, reason, path = self._arbitrate_by_hierarchy(
-            evidence, raw_signals, market_context, held_position
+            evidence, raw_signals, market_context, held_position, trace
         )
+        trace.append({"stage": "HIERARCHY_RESULT", "action": final_action.value,
+                      "path": list(path), "confidence": round(conf, 2)})
 
         # 4.5 情绪反转覆盖（P0 2026-11-01，10-28 教训）
         # 竞价 fade_risk 票「高开未回落+收涨」+ 跷跷板验证 = 情绪反转首日，
@@ -245,20 +280,39 @@ class SignalArbitrator:
         except Exception as _e:  # noqa: BLE001
             print(f"  [REVERSAL] 反转覆盖加载失败(fail-closed): {_e}")
             _rev = None
+            # B阶段：fail-closed 原先只打 stdout，JSON 无痕 → 补轨迹留痕
+            trace.append({"stage": "REVERSAL_LOAD_FAILED", "fail_closed": True, "error": str(_e)})
         if _rev and final_action in (SignalAction.SELL, SignalAction.REDUCE):
             _structural_paths = {"NEGATIVE_FEEDBACK", "DISTRIBUTION_PATTERN"}
             if not (_structural_paths & set(path)):
+                _pre_action = final_action.value
                 final_action = SignalAction.HOLD
                 conf = 0.6
                 reason = (f"🔁 情绪反转确认({_rev['confirmed_date']})覆盖技术卖出："
                           f"反转首日技术信号滞后，仅执行硬止损(-{_rev['hard_stop_pct']:.0f}%)")
                 path.append("REVERSAL_OVERRIDE")
+                trace.append({"stage": "REVERSAL_OVERRIDE", "confirmed_date": _rev["confirmed_date"],
+                              "overridden_from": _pre_action, "overridden_to": "持有",
+                              "hard_stop_pct": _rev["hard_stop_pct"]})
                 print(f"  [REVERSAL] {symbol}: 技术卖出被反转确认覆盖(确认日 {_rev['confirmed_date']})")
 
-        # 5. 计算仓位乘数
-        position_mult = self._calc_position_mult(
+        # 4.7 降级/升级留痕（B阶段）：原始信号方向 vs 最终裁决方向矛盾时记录证据
+        # （signal_audit 的 arbitration_unexplained_* 消费 path 标签；此处补「为什么」数字链）
+        _raw_buys = [s for s in raw_signals if s.strength >= 1]
+        _raw_sells = [s for s in raw_signals if s.strength <= -1]
+        if _raw_buys and final_action in (SignalAction.HOLD, SignalAction.WATCH):
+            trace.append({"stage": "DOWNGRADE_NOTE", "from": "买入", "to": final_action.value,
+                          "n_buy_signals": len(_raw_buys), "final_reason": reason})
+        if _raw_sells and final_action in (SignalAction.BUY, SignalAction.BUY_SMALL,
+                                           SignalAction.BUY_AGGRESSIVE):
+            trace.append({"stage": "UPGRADE_NOTE", "from": "卖出", "to": final_action.value,
+                          "n_sell_signals": len(_raw_sells), "final_reason": reason})
+
+        # 5. 计算仓位乘数（返回分量明细：健康度压缩透明化）
+        position_mult, _mult_parts = self._calc_position_mult(
             final_action, conf, position_plan, market_context, held_position
         )
+        trace.append({"stage": "POSITION_MULT", **_mult_parts})
 
         # 6. 止损/支撑价
         # [2026-10-29] 幽灵持仓过滤：shares=0（已清仓残留条目）的历史成本不得产出止损/支撑位。
@@ -267,8 +321,13 @@ class SignalArbitrator:
         _has_shares = bool(held_position) and (held_position.get("shares", 0) or 0) > 0
         stop_loss = self._calc_stop_loss(held_position) if _has_shares else None
         support = self._calc_support(held_position) if _has_shares else None
-
-        print(f"  [DEBUG arbitrate] {symbol}: evidence.moat_bonus={evidence.get('moat_bonus', 0.0)}")
+        trace.append({
+            "stage": "STOP_LOSS",
+            "has_shares": _has_shares,
+            "stop_loss": stop_loss,
+            "source": (self._stop_loss_source(held_position) if _has_shares
+                       else "无持仓(幽灵过滤不产出)"),
+        })
         return ArbitrationResult(
             symbol=symbol, name=name,
             final_action=final_action,
@@ -279,6 +338,7 @@ class SignalArbitrator:
             reason=reason,
             raw_signals=raw_signals,
             arbitration_path=path,
+            decision_trace=trace,
             moat_bonus=evidence.get("moat_bonus", 0.0)
         )
 
@@ -346,8 +406,6 @@ class SignalArbitrator:
             oversea_qual = factor.get("oversea_qual_total", 0)
             combined = factor.get("combined_score", 0)
             
-            print(f"  [DEBUG moat] {s.symbol}: core={core_prod}, oversea={oversea_qual}, factor_keys={list(factor.keys())}")
-            
             if core_prod > 0 or oversea_qual > 0:
                 # 权重：核心产品 0.6，出海资质 0.4（与 factor_engine 一致）
                 # 归一化：core_product_total 满分 30，oversea_qual_total 满分 25
@@ -356,7 +414,6 @@ class SignalArbitrator:
                 weighted_moat = core_norm * 0.6 + oversea_norm * 0.4
                 bonus = round(weighted_moat * 0.2, 3)  # 最大加 0.2
                 evidence["moat_bonus"] += bonus
-                print(f"  [DEBUG moat] {s.symbol}: core_norm={core_norm:.3f}, oversea_norm={oversea_norm:.3f}, weighted={weighted_moat:.3f}, bonus={bonus}, total_bonus={evidence['moat_bonus']}")
             elif s.moat_score >= 2.0:
                 # 兜底：兼容旧版 moat_score
                 evidence["moat_bonus"] += 0.1
@@ -373,9 +430,11 @@ class SignalArbitrator:
                                 evidence: dict,
                                 signals: List[RawSignal],
                                 ctx: dict,
-                                held_position: dict) -> tuple:
-        """按层级裁决，返回 (action, confidence, reason, path)"""
+                                held_position: dict,
+                                trace: List[dict] = None) -> tuple:
+        """按层级裁决，返回 (action, confidence, reason, path)；trace 非空时逐层记录数字证据"""
         path = []
+        trace = trace if trace is not None else []
         health = ctx.get("health_score", 5)
 
         # 层级1：负反馈（仅次于致命风险）
@@ -383,6 +442,8 @@ class SignalArbitrator:
             path.append("NEGATIVE_FEEDBACK")
             # 负反馈通常意味着卖出/减仓
             avg_strength = sum(s[1] for s in evidence["negative_feedback"]) / len(evidence["negative_feedback"])
+            trace.append({"stage": "NEGATIVE_FEEDBACK", "n": len(evidence["negative_feedback"]),
+                          "avg_strength": round(avg_strength, 2), "fired": True})
             if avg_strength <= -1:
                 return SignalAction.SELL, 0.85, f"负反馈确认：{'; '.join(s[2] for s in evidence['negative_feedback'][:2])}", path
             else:
@@ -390,6 +451,8 @@ class SignalArbitrator:
 
         # 层级2：出货形态（强出货形态质疑买入信号）
         strong_dist = [e for e in evidence["distribution_pattern"] if "强度" in e[2] and ("4" in e[2] or "5" in e[2])]
+        trace.append({"stage": "DISTRIBUTION_PATTERN", "n_strong": len(strong_dist),
+                      "fired": bool(strong_dist)})
         if strong_dist:
             path.append("DISTRIBUTION_PATTERN")
             # 有买入信号但出现强出货形态 -> 降级为观望/减仓
@@ -413,6 +476,8 @@ class SignalArbitrator:
         # 兜底：若无明确天数，统计当前信号中卖出源的数量
         if tech_sell_streak == 0:
             tech_sell_streak = sum(1 for s in signals if s.source in ("adaptive_dual", "adaptive_trader", "close_scan_v2") and s.strength <= -1)
+        trace.append({"stage": "CONSECUTIVE_SELL_CHECK", "streak": tech_sell_streak,
+                      "fired": tech_sell_streak >= 3})
         
         if tech_sell_streak >= 3:
             path.append("CONSECUTIVE_SELL_HARD_RULE")
@@ -425,6 +490,9 @@ class SignalArbitrator:
         if evidence["volume"]:
             path.append("VOLUME")
             avg_strength = sum(s[1] for s in evidence["volume"]) / len(evidence["volume"])
+            trace.append({"stage": "VOLUME", "n": len(evidence["volume"]),
+                          "avg_strength": round(avg_strength, 2), "health": health,
+                          "fired": bool(avg_strength <= -1 and health <= 5)})
             if avg_strength <= -1 and health <= 5:
                 return SignalAction.REDUCE, 0.7, f"量能配合看空：{'; '.join(s[2] for s in evidence['volume'][:2])}", path
 
@@ -432,18 +500,25 @@ class SignalArbitrator:
         if evidence["seal_direction"]:
             path.append("SEAL_DIRECTION")
             avg_strength = sum(s[1] for s in evidence["seal_direction"]) / len(evidence["seal_direction"])
+            trace.append({"stage": "SEAL_DIRECTION", "n": len(evidence["seal_direction"]),
+                          "avg_strength": round(avg_strength, 2),
+                          "fired": bool(avg_strength >= 1)})
             if avg_strength >= 1:
                 return SignalAction.BUY_SMALL, 0.65, f"封单方向看多：{'; '.join(s[2] for s in evidence['seal_direction'][:2])}", path
 
         # 层级5：超预期（该弱不弱 = 唯一可靠超预期买入信号）
         if evidence["surprise"]:
             path.append("SURPRISE")
+            trace.append({"stage": "SURPRISE", "n": len(evidence["surprise"]),
+                          "hits": [r for _, st, r in evidence["surprise"] if "该弱不弱" in r and st > 0]})
             for src, strg, rsn in evidence["surprise"]:
                 if "该弱不弱" in rsn and strg > 0:
                     return SignalAction.BUY, 0.8, f"超预期买入信号：{rsn}", path
 
         # 层级5.5：RSI 趋势强度过滤器 (P0) —— 在技术投票前插入
         rsi_trend = self._eval_rsi_trend_strength(signals, ctx)
+        trace.append({"stage": "RSI_TREND_FILTER", "value": rsi_trend,
+                      "fired": rsi_trend != 0})
         if rsi_trend != 0:
             path.append("RSI_TREND_FILTER")
             if rsi_trend > 0:
@@ -464,8 +539,12 @@ class SignalArbitrator:
                     weight = max(s.validation_score, 1.0)  # 至少1.0
                     weighted_score += s.strength * weight
                     total_weight += weight
+            avg = (weighted_score / total_weight) if total_weight > 0 else None
+            trace.append({"stage": "TECHNICAL_VOTE", "weighted_avg": (round(avg, 3) if avg is not None else None),
+                          "n_weighted": total_weight and len([s for s in signals if any(kw in s.reason.lower() for kw in ["macd", "ema", "kdj", "rsi", "布林", "均线"])]),
+                          "thresholds": {"agg_buy": 1.5, "buy": 0.5, "sell": -0.5, "agg_sell": -1.5},
+                          "fired": bool(avg is not None and abs(avg) >= 0.5)})
             if total_weight > 0:
-                avg = weighted_score / total_weight
                 if avg >= 1.5:
                     return SignalAction.BUY_AGGRESSIVE, 0.7, f"技术指标强烈共振买入 (加权{avg:.1f})", path
                 elif avg >= 0.5:
@@ -477,6 +556,9 @@ class SignalArbitrator:
 
         # 默认：持有/观望
         path.append("DEFAULT_HOLD")
+        trace.append({"stage": "DEFAULT_HOLD",
+                      "strongest_raw": max((s.strength for s in signals), default=0),
+                      "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"})
         return SignalAction.HOLD, 0.5, "无明确方向性信号，维持持有/观望", path
 
     def _eval_rsi_trend_strength(self, signals: List[RawSignal], ctx: dict) -> int:
@@ -549,8 +631,8 @@ class SignalArbitrator:
                             confidence: float,
                             position_plan: dict,
                             ctx: dict,
-                            held_position: dict) -> float:
-        """计算最终仓位乘数（乘以 position_sizer 给出的单股上限）"""
+                            held_position: dict) -> tuple:
+        """计算最终仓位乘数；返回 (final_mult, 分量明细 dict) 供决策轨迹留痕（B阶段）"""
         base_mult = position_plan.get("buy_signal_multiplier", 1.0)
         single_max_pct = position_plan.get("single_stock_max_pct", 0.05)
         total_limit_pct = position_plan.get("total_limit_pct", 0.0)
@@ -584,8 +666,18 @@ class SignalArbitrator:
         else:
             health_mult = 1.0
 
-        final_mult = round(action_mult * conf_mult * health_mult * base_mult, 2)
-        return max(0.0, min(final_mult, 1.0))
+        final_mult = round(max(0.0, min(action_mult * conf_mult * health_mult * base_mult, 1.0)), 2)
+        parts = {
+            "action": action.value,
+            "action_mult": action_mult,
+            "conf": round(confidence, 2),
+            "conf_mult": round(conf_mult, 2),
+            "health": health,
+            "health_mult": health_mult,
+            "base_mult": base_mult,
+            "final": final_mult,
+        }
+        return final_mult, parts
 
     def _calc_stop_loss(self, held_position: dict) -> Optional[float]:
         """计算止损价：优先用 portfolio_sim 计算好的 atr_stop，其次成本价 * 0.95"""
@@ -598,6 +690,15 @@ class SignalArbitrator:
         if cost > 0:
             return round(cost * 0.95, 2)
         return None
+
+    @staticmethod
+    def _stop_loss_source(held_position: dict) -> str:
+        """止损价来源标注（B阶段决策轨迹用）：atr_stop / cost×0.95 / 无成本不可算"""
+        atr_stop = held_position.get("atr_stop")
+        if atr_stop is not None and atr_stop > 0:
+            return "atr_stop"
+        cost = held_position.get("cost") or held_position.get("entry_price") or 0
+        return "cost×0.95" if cost > 0 else "无成本(不可计算)"
 
     def _calc_support(self, held_position: dict) -> Optional[float]:
         """计算支撑价：成本价 * 0.92"""
@@ -782,8 +883,91 @@ def print_brief(results: List[ArbitrationResult]):
     print("\n".join(lines))
 
 
+def _selftest() -> int:
+    """对抗自测（无网络；factor_scores 本地缓存读取容许缺失）：决策轨迹结构 + 降级留痕 + 反转覆盖留痕"""
+    import json as _json
+    from dataclasses import asdict as _asdict
+
+    def _sig(action, reason, strategy="纯MACD", score=80.0):
+        return RawSignal(source="adaptive_dual", symbol="600584", name="长电科技",
+                         action=action, strength=0, confidence=0.8, reason=reason,
+                         strategy=strategy, validation_score=score)
+
+    arb = SignalArbitrator()
+
+    # 1) 单买入 → BUY：轨迹含 INPUT/TECHNICAL_VOTE/POSITION_MULT，无降级注记
+    r = arb.arbitrate([_sig("买入", "[纯MACD] MACD金叉放量", score=80.0)],
+                      {}, {"buy_signal_multiplier": 1.0}, {"health_score": 6}, None)
+    stages = [t["stage"] for t in r.decision_trace]
+    t1 = (r.final_action == SignalAction.BUY and "INPUT" in stages
+          and "TECHNICAL_VOTE" in stages and "POSITION_MULT" in stages
+          and "DOWNGRADE_NOTE" not in stages)
+
+    # 2) 弱买入被加权票压平 → DEFAULT_HOLD 必须留痕（数字证据 + 降级注记）
+    sigs = [_sig("买入", "[纯MACD] 金叉", score=1.0)]
+    sigs += [_sig("持有", "[均线] 均线走平", strategy="均线", score=1.0) for _ in range(3)]
+    r2 = arb.arbitrate(sigs, {}, {"buy_signal_multiplier": 1.0}, {"health_score": 6}, None)
+    stages2 = [t["stage"] for t in r2.decision_trace]
+    tv = next((t for t in r2.decision_trace if t["stage"] == "TECHNICAL_VOTE"), {})
+    t2 = (r2.final_action == SignalAction.HOLD and "DEFAULT_HOLD" in stages2
+          and "DOWNGRADE_NOTE" in stages2 and tv.get("weighted_avg") is not None)
+
+    # 3) 健康度压缩透明化：health=2 → health_mult=0.2 进轨迹
+    r3 = arb.arbitrate([_sig("买入", "[纯MACD] 金叉", score=80.0)],
+                       {}, {"buy_signal_multiplier": 1.0}, {"health_score": 2}, None)
+    pm = next((t for t in r3.decision_trace if t["stage"] == "POSITION_MULT"), {})
+    t3 = pm.get("health_mult") == 0.2
+
+    # 4) 反转覆盖留痕（monkeypatch，无文件 IO）
+    _orig = load_reversal_override
+    try:
+        globals()["load_reversal_override"] = (
+            lambda sym, date: {"confirmed_date": "2026-10-28", "hard_stop_pct": 5.0})
+        r4 = arb.arbitrate([_sig("卖出", "[纯MACD] 死叉", score=60.0)],
+                           {}, {}, {"health_score": 6},
+                           {"symbol": "600584", "shares": 100, "cost": 50.0})
+        t4 = ("REVERSAL_OVERRIDE" in [t["stage"] for t in r4.decision_trace]
+              and r4.final_action == SignalAction.HOLD
+              and any(t.get("overridden_from") for t in r4.decision_trace))
+    finally:
+        globals()["load_reversal_override"] = _orig
+
+    # 5) 反转加载失败 fail-closed 留痕（技术卖出照常，但轨迹可迮）
+    try:
+        def _boom(sym, date):
+            raise RuntimeError("file corrupt")
+        globals()["load_reversal_override"] = _boom
+        r5 = arb.arbitrate([_sig("卖出", "[纯MACD] 死叉", score=60.0)],
+                           {}, {}, {"health_score": 6},
+                           {"symbol": "600584", "shares": 100, "cost": 50.0})
+        t5 = ("REVERSAL_LOAD_FAILED" in [t["stage"] for t in r5.decision_trace]
+              and r5.final_action in (SignalAction.SELL, SignalAction.REDUCE))
+    finally:
+        globals()["load_reversal_override"] = _orig
+
+    # 6) 轨迹可 JSON 序列化（落盘契约：asdict → json.dump）
+    try:
+        _json.dumps(_asdict(r4), ensure_ascii=False, default=str)
+        t6 = True
+    except Exception:
+        t6 = False
+
+    cases = [("买入轨迹完整", t1), ("DEFAULT_HOLD降级留痕", t2), ("健康度压缩透明", t3),
+             ("反转覆盖留痕", t4), ("反转fail-closed留痕", t5), ("轨迹可序列化", t6)]
+    failed = [n for n, ok in cases if not ok]
+    for n, ok in cases:
+        print(f"  {'✅' if ok else '❌'} {n}")
+    if failed:
+        print(f"SELFTEST FAILED: {failed}")
+        return 1
+    print("SELFTEST PASSED (6/6)")
+    return 0
+
+
 def main():
     """独立运行：汇聚所有信号并裁决"""
+    if "--selftest" in sys.argv:
+        sys.exit(_selftest())
     print("⚖️ 启动030统一信号裁决引擎...")
 
     # 加载输入
