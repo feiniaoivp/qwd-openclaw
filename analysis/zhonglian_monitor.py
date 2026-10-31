@@ -9,7 +9,7 @@
 运行方式: python3 analysis/zhonglian_monitor.py
 输出格式: JSON 包含信号、持仓、净值等
 """
-import os, sys, json
+import os, sys, json, shutil
 import akshare as ak
 import pandas as pd
 import numpy as np
@@ -133,8 +133,18 @@ def load_state():
         "strategy2": {"name": "综合最优(EMA+MACD+RSI)", "position": False, "entry_price": 0, "entry_date": None, "capital": CAPITAL, "shares": 0},
     }
 
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(path, path + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
+
 def save_state(state):
     os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
+    _bak(STATE_FILE)
     with open(STATE_FILE, "w") as f:
         json.dump(state, f, ensure_ascii=False, indent=2, default=str)
 
@@ -153,6 +163,7 @@ def append_trade(record):
         before = len(trades)
         trades.append(record)
         tmp = TRADES_FILE + ".tmp"
+        _bak(TRADES_FILE)
         with open(tmp, "w") as f:
             json.dump(trades, f, ensure_ascii=False, indent=2, default=str)
         os.replace(tmp, TRADES_FILE)

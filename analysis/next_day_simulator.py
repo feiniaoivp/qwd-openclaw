@@ -15,6 +15,7 @@
 
 import os
 import sys
+import shutil
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
@@ -553,12 +554,22 @@ def load_all_inputs() -> tuple:
     return market_context, position_plan, arbitration_results, held_positions, scan_results
 
 
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(path, path + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
+
 def save_simulation(simulation: NextDaySimulation):
     """保存推演结果（JSON + Markdown）"""
     today = simulation.date
 
     # JSON
     json_path = os.path.join(DATA_DIR, f"next_day_sim_{today}.json")
+    _bak(json_path)
     with open(json_path, "w") as f:
         json.dump(asdict(simulation), f, ensure_ascii=False, indent=2, default=str)
 

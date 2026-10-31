@@ -23,6 +23,7 @@
 # 必须显式插入工作区根（供 `from analysis.xxx`）+ analysis/（供子包引用）。
 import os
 import sys
+import shutil
 _WORKSPACE = "/Users/duguke/.openclaw/workspace"
 for _p in (_WORKSPACE, os.path.join(_WORKSPACE, "analysis")):
     if _p not in sys.path:
@@ -193,6 +194,15 @@ def _load_agent_fallback(date: str):
     return None, None
 
 
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
+
 def save_success_output(name: str, data: dict, date: str):
     """保存成功产出供后续降级"""
     if name == "news":
@@ -200,6 +210,7 @@ def save_success_output(name: str, data: dict, date: str):
         return
     path = CACHE_DIR / f"{name}_last.json"
     try:
+        _bak(path)
         with open(path, "w", encoding="utf-8") as f:
             json.dump({"date": date, "data": data}, f, ensure_ascii=False, indent=2)
     except Exception:

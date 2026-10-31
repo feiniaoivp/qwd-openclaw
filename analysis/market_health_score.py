@@ -20,6 +20,7 @@
   # 传昨日得分文件可算出评分变化(030框架跟踪情绪拐点)
 """
 import os, sys, json, time
+import shutil
 from datetime import datetime
 import logging
 
@@ -157,6 +158,15 @@ def score_mainline(index_dict):
 
 
 
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(path, path + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
+
 def compute():
     result = {
         "date": datetime.now().strftime("%Y-%m-%d"),
@@ -257,6 +267,7 @@ def compute():
     # 落盘
     os.makedirs(OUT_DIR, exist_ok=True)
     path = os.path.join(OUT_DIR, f"market_health_{datetime.now().strftime('%Y-%m-%d')}.json")
+    _bak(path)
     with open(path, "w") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 

@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import os
 import sys
+import shutil
 import json
 from datetime import datetime
 
@@ -62,8 +63,18 @@ def load_state() -> dict:
     return state
 
 
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(path, path + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
+
 def save_state(state: dict):
     os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
+    _bak(STATE_FILE)
     with open(STATE_FILE, "w", encoding="utf-8") as f:
         json.dump(state, f, ensure_ascii=False, indent=2)
 
@@ -281,6 +292,7 @@ def main():
 
     # 落盘供 cron/agent 读取
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
+    _bak(OUTPUT_FILE)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2, default=str)
 

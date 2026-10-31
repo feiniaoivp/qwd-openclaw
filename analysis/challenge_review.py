@@ -10,6 +10,7 @@
 """
 
 import os, sys, json, re, glob
+import shutil
 import logging
 from datetime import datetime
 from typing import List, Dict, Any, Optional
@@ -165,14 +166,25 @@ def _forward_return(symbol: str, from_date: str, hold_days: int = 5):
     return (round((end / base - 1) * 100, 2), base_d, end_d)
 
 
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(path, path + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
+
 def _save_price_cache():
     try:
         os.makedirs(os.path.dirname(_PRICE_CACHE_PATH), exist_ok=True)
         # 只落盘非空序列，防止把"拉网失败"的脏数据永久写入
         clean = {k: v for k, v in _PRICE_CACHE.items() if v}
+        _bak(_PRICE_CACHE_PATH)
         with open(_PRICE_CACHE_PATH, "w", encoding="utf-8") as f:
             json.dump(clean, f, ensure_ascii=False)
         clean_prov = {k: v for k, v in _PROVENANCE.items() if k in clean}
+        _bak(_PROVENANCE_PATH)
         with open(_PROVENANCE_PATH, "w", encoding="utf-8") as f:
             json.dump(clean_prov, f, ensure_ascii=False)
     except Exception as e:

@@ -9,6 +9,8 @@
 
 import json
 import sys
+import os
+import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any
@@ -557,6 +559,15 @@ def format_markdown(decision: Dict) -> str:
 
 
 # ==================== 主流程 ====================
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(str(path), str(path) + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
+
 def main() -> int:
     # 1. 加载竞价快照
     snapshot = load_latest_auction_snapshot()
@@ -609,6 +620,7 @@ def main() -> int:
 
     # 5. 保存决策 JSON
     out_json = AUCTION_DIR / f"decision_{date_str}.json"
+    _bak(out_json)
     with open(out_json, "w", encoding="utf-8") as f:
         json.dump(decision, f, ensure_ascii=False, indent=2)
     print(f"[INFO] 决策已保存: {out_json}")

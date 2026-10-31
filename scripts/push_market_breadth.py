@@ -11,6 +11,7 @@
 import os
 import sys
 import json
+import shutil
 from datetime import datetime
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
@@ -19,6 +20,15 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis"), os.path.join(WORKSPAC
         sys.path.insert(0, _p)
 
 OUTPUT_FILE = os.path.join(WORKSPACE, "data", "market_breadth_output.json")
+
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(path, path + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
 
 
 def main() -> int:
@@ -36,6 +46,7 @@ def main() -> int:
 
     brief = scan.get("brief", "")
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
+    _bak(OUTPUT_FILE)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump({**scan, "pushed_at": datetime.now().isoformat(timespec="seconds")},
                   f, ensure_ascii=False, indent=1)

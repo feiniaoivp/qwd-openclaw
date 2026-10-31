@@ -10,6 +10,7 @@ import sys
 import json
 import subprocess
 import os
+import shutil
 from datetime import datetime, timedelta
 
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
@@ -118,7 +119,9 @@ def persist_artifacts(data: dict, summary_text: str) -> list:
     with open(md_path, "w", encoding="utf-8") as f:
         f.write(header + summary_text + "\n")
     paths.append(md_path)
+
     json_path = os.path.join(daily_dir, f"{data_date}_close_scan.json")
+    _bak(json_path)
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(slim, f, ensure_ascii=False, indent=1)
     paths.append(json_path)
@@ -128,6 +131,7 @@ def persist_artifacts(data: dict, summary_text: str) -> list:
     cache_dir = os.path.join(WORKSPACE, "data", "pipeline_cache")
     os.makedirs(cache_dir, exist_ok=True)
     full_path = os.path.join(cache_dir, f"close_scan_{data_date}.json")
+    _bak(full_path)
     with open(full_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, default=str)
     paths.append(full_path)
@@ -139,6 +143,15 @@ def persist_artifacts(data: dict, summary_text: str) -> list:
     except Exception:  # noqa: BLE001
         pass
     return paths
+
+
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(path, path + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
 
 
 def run_and_push():

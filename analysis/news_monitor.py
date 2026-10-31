@@ -16,7 +16,7 @@
 
 已统一使用 analysis.data_layer.router.DataRouter (Phase 1 完成)
 """
-import os, sys, json, hashlib
+import os, sys, json, hashlib, shutil
 from datetime import datetime
 
 # 导入统一数据路由器
@@ -71,7 +71,17 @@ def load_last_run():
     return {"seen_titles": [], "last_date": None}
 
 
+def _bak(path):
+    """写前 .bak 备份（backup_guard 铁律 2026-10-31 接入；失败仅告警不阻断）"""
+    try:
+        if os.path.exists(path):
+            shutil.copy2(path, path + ".bak")
+    except Exception as _e:
+        print(f"⚠️ 写前备份失败(不阻断): {path}: {_e}", file=sys.stderr)
+
+
 def save_last_run(state):
+    _bak(LAST_RUN_FILE)
     with open(LAST_RUN_FILE, "w") as f:
         json.dump(state, f, ensure_ascii=False, indent=2)
 
@@ -241,6 +251,7 @@ def main():
         "stock_news": stock_news,
     }
     raw_path = os.path.join(RAW_DIR, f"{today_str}_{mode}.json")
+    _bak(raw_path)
     with open(raw_path, "w") as f:
         json.dump(raw_data, f, ensure_ascii=False, indent=2)
 
