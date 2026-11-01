@@ -1,0 +1,2319 @@
+{
+ "date": "2026-11-01",
+ "start": "20200101",
+ "fetched": 36,
+ "failed": [],
+ "arm_agg": {
+  "布林带+ATR": {
+   "n_buy": 1060,
+   "n_sell": 1056,
+   "buy_gap_mean_pct": 0.2,
+   "buy_gap_median_pct": 0.0,
+   "sell_gap_mean_pct": -0.061,
+   "sell_gap_median_pct": 0.0,
+   "buy_sealed_share_pct": 10.7,
+   "per_rt_log_drag_bps": 6.6,
+   "trades_per_year": 4.0,
+   "drag_annualized_est_pct": 0.26,
+   "sim_delta_annualized_pct": 0.29,
+   "reconcile_ratio": 0.89
+  },
+  "KDJ+CCI": {
+   "n_buy": 946,
+   "n_sell": 935,
+   "buy_gap_mean_pct": -0.04,
+   "buy_gap_median_pct": -0.026,
+   "sell_gap_mean_pct": -0.018,
+   "sell_gap_median_pct": 0.0,
+   "buy_sealed_share_pct": 0.5,
+   "per_rt_log_drag_bps": -6.6,
+   "trades_per_year": 3.9,
+   "drag_annualized_est_pct": -0.26,
+   "sim_delta_annualized_pct": 0.45,
+   "reconcile_ratio": -0.57
+  },
+  "EMA+OBV": {
+   "n_buy": 2410,
+   "n_sell": 2410,
+   "buy_gap_mean_pct": -0.023,
+   "buy_gap_median_pct": -0.026,
+   "sell_gap_mean_pct": -0.076,
+   "sell_gap_median_pct": 0.0,
+   "buy_sealed_share_pct": 3.2,
+   "per_rt_log_drag_bps": -11.3,
+   "trades_per_year": 9.8,
+   "drag_annualized_est_pct": -1.1,
+   "sim_delta_annualized_pct": 0.77,
+   "reconcile_ratio": -1.43
+  },
+  "EMA12/26金叉(基准C)": {
+   "n_buy": 929,
+   "n_sell": 923,
+   "buy_gap_mean_pct": 0.181,
+   "buy_gap_median_pct": 0.0,
+   "sell_gap_mean_pct": -0.038,
+   "sell_gap_median_pct": 0.0,
+   "buy_sealed_share_pct": 4.1,
+   "per_rt_log_drag_bps": 5.6,
+   "trades_per_year": 3.7,
+   "drag_annualized_est_pct": 0.21,
+   "sim_delta_annualized_pct": -0.62,
+   "reconcile_ratio": -0.33
+  },
+  "纯MACD(基准B)": {
+   "n_buy": 2209,
+   "n_sell": 2193,
+   "buy_gap_mean_pct": -0.005,
+   "buy_gap_median_pct": 0.0,
+   "sell_gap_mean_pct": -0.101,
+   "sell_gap_median_pct": -0.026,
+   "buy_sealed_share_pct": 4.6,
+   "per_rt_log_drag_bps": -11.7,
+   "trades_per_year": 8.8,
+   "drag_annualized_est_pct": -1.03,
+   "sim_delta_annualized_pct": 0.76,
+   "reconcile_ratio": -1.36
+  },
+  "牛市趋势跟踪": {
+   "n_buy": 1207,
+   "n_sell": 1206,
+   "buy_gap_mean_pct": -0.032,
+   "buy_gap_median_pct": -0.024,
+   "sell_gap_mean_pct": -0.07,
+   "sell_gap_median_pct": 0.0,
+   "buy_sealed_share_pct": 0.1,
+   "per_rt_log_drag_bps": -10.4,
+   "trades_per_year": 5.0,
+   "drag_annualized_est_pct": -0.53,
+   "sim_delta_annualized_pct": -0.19,
+   "reconcile_ratio": 2.78
+  }
+ },
+ "flip_attribution": [
+  {
+   "symbol": "002028",
+   "name": "思源电气",
+   "arm_B": "bollinger",
+   "arm_C": "ema_cross",
+   "drag_B": 0.26,
+   "drag_C": 0.21,
+   "direction_ok": true
+  },
+  {
+   "symbol": "002130",
+   "name": "沃尔核材",
+   "arm_B": "kdj_cci",
+   "arm_C": "ema_cross",
+   "drag_B": -0.26,
+   "drag_C": 0.21,
+   "direction_ok": false
+  },
+  {
+   "symbol": "600160",
+   "name": "巨化股份",
+   "arm_B": "ema_obv",
+   "arm_C": "ema_cross",
+   "drag_B": -1.1,
+   "drag_C": 0.21,
+   "direction_ok": false
+  },
+  {
+   "symbol": "600312",
+   "name": "平高电气",
+   "arm_B": "kdj_cci",
+   "arm_C": "macd",
+   "drag_B": -0.26,
+   "drag_C": -1.03,
+   "direction_ok": true
+  },
+  {
+   "symbol": "600570",
+   "name": "恒生电子",
+   "arm_B": "bollinger",
+   "arm_C": "bull_trend",
+   "drag_B": 0.26,
+   "drag_C": -0.53,
+   "direction_ok": true
+  },
+  {
+   "symbol": "601066",
+   "name": "中信建投",
+   "arm_B": "bollinger",
+   "arm_C": "ema_cross",
+   "drag_B": 0.26,
+   "drag_C": 0.21,
+   "direction_ok": true
+  },
+  {
+   "symbol": "601179",
+   "name": "中国西电",
+   "arm_B": "bollinger",
+   "arm_C": "ema_cross",
+   "drag_B": 0.26,
+   "drag_C": 0.21,
+   "direction_ok": true
+  }
+ ],
+ "sim_rows": [
+  {
+   "symbol": "600030",
+   "name": "中信证券",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 31.55,
+   "ret_C": 35.33,
+   "delta_C_minus_B": 3.78,
+   "trades_B": 27
+  },
+  {
+   "symbol": "600030",
+   "name": "中信证券",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -9.21,
+   "ret_C": -4.53,
+   "delta_C_minus_B": 4.68,
+   "trades_B": 25
+  },
+  {
+   "symbol": "600030",
+   "name": "中信证券",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 10.3,
+   "ret_C": 21.73,
+   "delta_C_minus_B": 11.43,
+   "trades_B": 72
+  },
+  {
+   "symbol": "600030",
+   "name": "中信证券",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 22.37,
+   "ret_C": 13.52,
+   "delta_C_minus_B": -8.85,
+   "trades_B": 32
+  },
+  {
+   "symbol": "600030",
+   "name": "中信证券",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 82.97,
+   "ret_C": 107.28,
+   "delta_C_minus_B": 24.31,
+   "trades_B": 55
+  },
+  {
+   "symbol": "600030",
+   "name": "中信证券",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -9.14,
+   "ret_C": -10.36,
+   "delta_C_minus_B": -1.22,
+   "trades_B": 47
+  },
+  {
+   "symbol": "601066",
+   "name": "中信建投",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": -8.73,
+   "ret_C": 4.7,
+   "delta_C_minus_B": 13.43,
+   "trades_B": 24
+  },
+  {
+   "symbol": "601066",
+   "name": "中信建投",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -9.97,
+   "ret_C": -0.91,
+   "delta_C_minus_B": 9.06,
+   "trades_B": 30
+  },
+  {
+   "symbol": "601066",
+   "name": "中信建投",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -60.06,
+   "ret_C": -37.1,
+   "delta_C_minus_B": 22.96,
+   "trades_B": 68
+  },
+  {
+   "symbol": "601066",
+   "name": "中信建投",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": -37.87,
+   "ret_C": -21.54,
+   "delta_C_minus_B": 16.33,
+   "trades_B": 26
+  },
+  {
+   "symbol": "601066",
+   "name": "中信建投",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -7.19,
+   "ret_C": -24.46,
+   "delta_C_minus_B": -17.27,
+   "trades_B": 56
+  },
+  {
+   "symbol": "601066",
+   "name": "中信建投",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -26.88,
+   "ret_C": -28.38,
+   "delta_C_minus_B": -1.5,
+   "trades_B": 26
+  },
+  {
+   "symbol": "600036",
+   "name": "招商银行",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 13.61,
+   "ret_C": 10.14,
+   "delta_C_minus_B": -3.47,
+   "trades_B": 30
+  },
+  {
+   "symbol": "600036",
+   "name": "招商银行",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 17.91,
+   "ret_C": 26.63,
+   "delta_C_minus_B": 8.72,
+   "trades_B": 28
+  },
+  {
+   "symbol": "600036",
+   "name": "招商银行",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -23.14,
+   "ret_C": -20.51,
+   "delta_C_minus_B": 2.63,
+   "trades_B": 85
+  },
+  {
+   "symbol": "600036",
+   "name": "招商银行",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 2.42,
+   "ret_C": 0.51,
+   "delta_C_minus_B": -1.91,
+   "trades_B": 29
+  },
+  {
+   "symbol": "600036",
+   "name": "招商银行",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 77.23,
+   "ret_C": 69.25,
+   "delta_C_minus_B": -7.98,
+   "trades_B": 60
+  },
+  {
+   "symbol": "600036",
+   "name": "招商银行",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -9.28,
+   "ret_C": -5.0,
+   "delta_C_minus_B": 4.28,
+   "trades_B": 40
+  },
+  {
+   "symbol": "601995",
+   "name": "中金公司",
+   "arm": "布林带+ATR",
+   "years": 5.99,
+   "ret_B": -4.7,
+   "ret_C": -22.17,
+   "delta_C_minus_B": -17.47,
+   "trades_B": 20
+  },
+  {
+   "symbol": "601995",
+   "name": "中金公司",
+   "arm": "KDJ+CCI",
+   "years": 5.99,
+   "ret_B": -1.72,
+   "ret_C": 4.24,
+   "delta_C_minus_B": 5.96,
+   "trades_B": 23
+  },
+  {
+   "symbol": "601995",
+   "name": "中金公司",
+   "arm": "EMA+OBV",
+   "years": 5.99,
+   "ret_B": -41.18,
+   "ret_C": -35.4,
+   "delta_C_minus_B": 5.78,
+   "trades_B": 48
+  },
+  {
+   "symbol": "601995",
+   "name": "中金公司",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 5.99,
+   "ret_B": -41.96,
+   "ret_C": -35.77,
+   "delta_C_minus_B": 6.19,
+   "trades_B": 25
+  },
+  {
+   "symbol": "601995",
+   "name": "中金公司",
+   "arm": "纯MACD(基准B)",
+   "years": 5.99,
+   "ret_B": -27.66,
+   "ret_C": -21.13,
+   "delta_C_minus_B": 6.53,
+   "trades_B": 48
+  },
+  {
+   "symbol": "601995",
+   "name": "中金公司",
+   "arm": "牛市趋势跟踪",
+   "years": 5.99,
+   "ret_B": -35.27,
+   "ret_C": -33.98,
+   "delta_C_minus_B": 1.29,
+   "trades_B": 41
+  },
+  {
+   "symbol": "000987",
+   "name": "越秀资本",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 266.95,
+   "ret_C": 214.64,
+   "delta_C_minus_B": -52.31,
+   "trades_B": 21
+  },
+  {
+   "symbol": "000987",
+   "name": "越秀资本",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 13.26,
+   "ret_C": 6.68,
+   "delta_C_minus_B": -6.58,
+   "trades_B": 35
+  },
+  {
+   "symbol": "000987",
+   "name": "越秀资本",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -51.18,
+   "ret_C": -51.92,
+   "delta_C_minus_B": -0.74,
+   "trades_B": 63
+  },
+  {
+   "symbol": "000987",
+   "name": "越秀资本",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 107.86,
+   "ret_C": 91.91,
+   "delta_C_minus_B": -15.95,
+   "trades_B": 28
+  },
+  {
+   "symbol": "000987",
+   "name": "越秀资本",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 120.4,
+   "ret_C": 112.32,
+   "delta_C_minus_B": -8.08,
+   "trades_B": 57
+  },
+  {
+   "symbol": "000987",
+   "name": "越秀资本",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": 31.09,
+   "ret_C": 40.61,
+   "delta_C_minus_B": 9.52,
+   "trades_B": 28
+  },
+  {
+   "symbol": "600584",
+   "name": "长电科技",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 7.46,
+   "ret_C": 17.59,
+   "delta_C_minus_B": 10.13,
+   "trades_B": 23
+  },
+  {
+   "symbol": "600584",
+   "name": "长电科技",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 23.77,
+   "ret_C": 6.07,
+   "delta_C_minus_B": -17.7,
+   "trades_B": 30
+  },
+  {
+   "symbol": "600584",
+   "name": "长电科技",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -37.44,
+   "ret_C": -24.93,
+   "delta_C_minus_B": 12.51,
+   "trades_B": 64
+  },
+  {
+   "symbol": "600584",
+   "name": "长电科技",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 29.1,
+   "ret_C": 74.1,
+   "delta_C_minus_B": 45.0,
+   "trades_B": 21
+  },
+  {
+   "symbol": "600584",
+   "name": "长电科技",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 202.75,
+   "ret_C": 143.79,
+   "delta_C_minus_B": -58.96,
+   "trades_B": 55
+  },
+  {
+   "symbol": "600584",
+   "name": "长电科技",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -31.16,
+   "ret_C": -26.78,
+   "delta_C_minus_B": 4.38,
+   "trades_B": 38
+  },
+  {
+   "symbol": "688981",
+   "name": "中芯国际",
+   "arm": "布林带+ATR",
+   "years": 6.29,
+   "ret_B": 10.11,
+   "ret_C": 6.3,
+   "delta_C_minus_B": -3.81,
+   "trades_B": 28
+  },
+  {
+   "symbol": "688981",
+   "name": "中芯国际",
+   "arm": "KDJ+CCI",
+   "years": 6.29,
+   "ret_B": 42.85,
+   "ret_C": 45.55,
+   "delta_C_minus_B": 2.7,
+   "trades_B": 21
+  },
+  {
+   "symbol": "688981",
+   "name": "中芯国际",
+   "arm": "EMA+OBV",
+   "years": 6.29,
+   "ret_B": -27.07,
+   "ret_C": -31.07,
+   "delta_C_minus_B": -4.0,
+   "trades_B": 71
+  },
+  {
+   "symbol": "688981",
+   "name": "中芯国际",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.29,
+   "ret_B": -8.14,
+   "ret_C": -13.87,
+   "delta_C_minus_B": -5.73,
+   "trades_B": 23
+  },
+  {
+   "symbol": "688981",
+   "name": "中芯国际",
+   "arm": "纯MACD(基准B)",
+   "years": 6.29,
+   "ret_B": 17.61,
+   "ret_C": 16.31,
+   "delta_C_minus_B": -1.3,
+   "trades_B": 56
+  },
+  {
+   "symbol": "688981",
+   "name": "中芯国际",
+   "arm": "牛市趋势跟踪",
+   "years": 6.29,
+   "ret_B": -24.14,
+   "ret_C": -20.05,
+   "delta_C_minus_B": 4.09,
+   "trades_B": 32
+  },
+  {
+   "symbol": "002156",
+   "name": "通富微电",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 34.75,
+   "ret_C": 11.79,
+   "delta_C_minus_B": -22.96,
+   "trades_B": 23
+  },
+  {
+   "symbol": "002156",
+   "name": "通富微电",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 48.67,
+   "ret_C": 76.01,
+   "delta_C_minus_B": 27.34,
+   "trades_B": 24
+  },
+  {
+   "symbol": "002156",
+   "name": "通富微电",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 31.34,
+   "ret_C": 26.75,
+   "delta_C_minus_B": -4.59,
+   "trades_B": 56
+  },
+  {
+   "symbol": "002156",
+   "name": "通富微电",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 104.9,
+   "ret_C": 54.15,
+   "delta_C_minus_B": -50.75,
+   "trades_B": 24
+  },
+  {
+   "symbol": "002156",
+   "name": "通富微电",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 79.56,
+   "ret_C": 130.61,
+   "delta_C_minus_B": 51.05,
+   "trades_B": 52
+  },
+  {
+   "symbol": "002156",
+   "name": "通富微电",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": 32.57,
+   "ret_C": 21.99,
+   "delta_C_minus_B": -10.58,
+   "trades_B": 39
+  },
+  {
+   "symbol": "002413",
+   "name": "雷科防务",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 22.05,
+   "ret_C": -34.85,
+   "delta_C_minus_B": -56.9,
+   "trades_B": 25
+  },
+  {
+   "symbol": "002413",
+   "name": "雷科防务",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -25.21,
+   "ret_C": -24.97,
+   "delta_C_minus_B": 0.24,
+   "trades_B": 35
+  },
+  {
+   "symbol": "002413",
+   "name": "雷科防务",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -44.3,
+   "ret_C": -54.1,
+   "delta_C_minus_B": -9.8,
+   "trades_B": 58
+  },
+  {
+   "symbol": "002413",
+   "name": "雷科防务",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 89.05,
+   "ret_C": 17.9,
+   "delta_C_minus_B": -71.15,
+   "trades_B": 23
+  },
+  {
+   "symbol": "002413",
+   "name": "雷科防务",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 0.06,
+   "ret_C": -18.38,
+   "delta_C_minus_B": -18.44,
+   "trades_B": 56
+  },
+  {
+   "symbol": "002413",
+   "name": "雷科防务",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -48.87,
+   "ret_C": -46.83,
+   "delta_C_minus_B": 2.04,
+   "trades_B": 40
+  },
+  {
+   "symbol": "300014",
+   "name": "亿纬锂能",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 260.18,
+   "ret_C": 259.97,
+   "delta_C_minus_B": -0.21,
+   "trades_B": 23
+  },
+  {
+   "symbol": "300014",
+   "name": "亿纬锂能",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -0.81,
+   "ret_C": -2.32,
+   "delta_C_minus_B": -1.51,
+   "trades_B": 30
+  },
+  {
+   "symbol": "300014",
+   "name": "亿纬锂能",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 32.64,
+   "ret_C": -0.25,
+   "delta_C_minus_B": -32.89,
+   "trades_B": 78
+  },
+  {
+   "symbol": "300014",
+   "name": "亿纬锂能",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 125.54,
+   "ret_C": 103.36,
+   "delta_C_minus_B": -22.18,
+   "trades_B": 25
+  },
+  {
+   "symbol": "300014",
+   "name": "亿纬锂能",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 18.42,
+   "ret_C": 28.03,
+   "delta_C_minus_B": 9.61,
+   "trades_B": 64
+  },
+  {
+   "symbol": "300014",
+   "name": "亿纬锂能",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": 40.68,
+   "ret_C": 47.61,
+   "delta_C_minus_B": 6.93,
+   "trades_B": 20
+  },
+  {
+   "symbol": "002466",
+   "name": "天齐锂业",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 8.57,
+   "ret_C": 124.21,
+   "delta_C_minus_B": 115.64,
+   "trades_B": 23
+  },
+  {
+   "symbol": "002466",
+   "name": "天齐锂业",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -56.65,
+   "ret_C": -48.68,
+   "delta_C_minus_B": 7.97,
+   "trades_B": 44
+  },
+  {
+   "symbol": "002466",
+   "name": "天齐锂业",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 108.79,
+   "ret_C": 200.4,
+   "delta_C_minus_B": 91.61,
+   "trades_B": 37
+  },
+  {
+   "symbol": "002466",
+   "name": "天齐锂业",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 509.01,
+   "ret_C": 434.75,
+   "delta_C_minus_B": -74.26,
+   "trades_B": 17
+  },
+  {
+   "symbol": "002466",
+   "name": "天齐锂业",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -69.04,
+   "ret_C": 5.11,
+   "delta_C_minus_B": 74.15,
+   "trades_B": 63
+  },
+  {
+   "symbol": "002466",
+   "name": "天齐锂业",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -2.38,
+   "ret_C": -3.7,
+   "delta_C_minus_B": -1.32,
+   "trades_B": 13
+  },
+  {
+   "symbol": "300285",
+   "name": "国瓷材料",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 34.13,
+   "ret_C": 47.17,
+   "delta_C_minus_B": 13.04,
+   "trades_B": 31
+  },
+  {
+   "symbol": "300285",
+   "name": "国瓷材料",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 6.13,
+   "ret_C": 8.33,
+   "delta_C_minus_B": 2.2,
+   "trades_B": 29
+  },
+  {
+   "symbol": "300285",
+   "name": "国瓷材料",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 67.05,
+   "ret_C": 29.81,
+   "delta_C_minus_B": -37.24,
+   "trades_B": 78
+  },
+  {
+   "symbol": "300285",
+   "name": "国瓷材料",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 105.66,
+   "ret_C": 47.79,
+   "delta_C_minus_B": -57.87,
+   "trades_B": 27
+  },
+  {
+   "symbol": "300285",
+   "name": "国瓷材料",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 142.41,
+   "ret_C": 184.74,
+   "delta_C_minus_B": 42.33,
+   "trades_B": 62
+  },
+  {
+   "symbol": "300285",
+   "name": "国瓷材料",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": 11.83,
+   "ret_C": -4.92,
+   "delta_C_minus_B": -16.75,
+   "trades_B": 24
+  },
+  {
+   "symbol": "603308",
+   "name": "应流股份",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 184.1,
+   "ret_C": 304.2,
+   "delta_C_minus_B": 120.1,
+   "trades_B": 20
+  },
+  {
+   "symbol": "603308",
+   "name": "应流股份",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -42.34,
+   "ret_C": -24.61,
+   "delta_C_minus_B": 17.73,
+   "trades_B": 33
+  },
+  {
+   "symbol": "603308",
+   "name": "应流股份",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 27.07,
+   "ret_C": 4.94,
+   "delta_C_minus_B": -22.13,
+   "trades_B": 76
+  },
+  {
+   "symbol": "603308",
+   "name": "应流股份",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 751.47,
+   "ret_C": 700.36,
+   "delta_C_minus_B": -51.11,
+   "trades_B": 20
+  },
+  {
+   "symbol": "603308",
+   "name": "应流股份",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 56.07,
+   "ret_C": 51.51,
+   "delta_C_minus_B": -4.56,
+   "trades_B": 60
+  },
+  {
+   "symbol": "603308",
+   "name": "应流股份",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": 7.44,
+   "ret_C": 4.68,
+   "delta_C_minus_B": -2.76,
+   "trades_B": 22
+  },
+  {
+   "symbol": "300124",
+   "name": "汇川技术",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 23.39,
+   "ret_C": 9.25,
+   "delta_C_minus_B": -14.14,
+   "trades_B": 33
+  },
+  {
+   "symbol": "300124",
+   "name": "汇川技术",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -1.94,
+   "ret_C": -14.2,
+   "delta_C_minus_B": -12.26,
+   "trades_B": 27
+  },
+  {
+   "symbol": "300124",
+   "name": "汇川技术",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 33.67,
+   "ret_C": 5.12,
+   "delta_C_minus_B": -28.55,
+   "trades_B": 63
+  },
+  {
+   "symbol": "300124",
+   "name": "汇川技术",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 158.92,
+   "ret_C": 173.69,
+   "delta_C_minus_B": 14.77,
+   "trades_B": 25
+  },
+  {
+   "symbol": "300124",
+   "name": "汇川技术",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -28.83,
+   "ret_C": -26.04,
+   "delta_C_minus_B": 2.79,
+   "trades_B": 70
+  },
+  {
+   "symbol": "300124",
+   "name": "汇川技术",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -23.61,
+   "ret_C": -28.42,
+   "delta_C_minus_B": -4.81,
+   "trades_B": 39
+  },
+  {
+   "symbol": "601100",
+   "name": "恒立液压",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 23.23,
+   "ret_C": 84.47,
+   "delta_C_minus_B": 61.24,
+   "trades_B": 26
+  },
+  {
+   "symbol": "601100",
+   "name": "恒立液压",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -21.2,
+   "ret_C": -18.91,
+   "delta_C_minus_B": 2.29,
+   "trades_B": 26
+  },
+  {
+   "symbol": "601100",
+   "name": "恒立液压",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 14.24,
+   "ret_C": 27.11,
+   "delta_C_minus_B": 12.87,
+   "trades_B": 90
+  },
+  {
+   "symbol": "601100",
+   "name": "恒立液压",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 130.72,
+   "ret_C": 162.07,
+   "delta_C_minus_B": 31.35,
+   "trades_B": 20
+  },
+  {
+   "symbol": "601100",
+   "name": "恒立液压",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -41.17,
+   "ret_C": -44.08,
+   "delta_C_minus_B": -2.91,
+   "trades_B": 76
+  },
+  {
+   "symbol": "601100",
+   "name": "恒立液压",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -3.02,
+   "ret_C": -5.39,
+   "delta_C_minus_B": -2.37,
+   "trades_B": 18
+  },
+  {
+   "symbol": "002318",
+   "name": "久立特材",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 54.76,
+   "ret_C": 28.64,
+   "delta_C_minus_B": -26.12,
+   "trades_B": 32
+  },
+  {
+   "symbol": "002318",
+   "name": "久立特材",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -2.49,
+   "ret_C": 5.45,
+   "delta_C_minus_B": 7.94,
+   "trades_B": 16
+  },
+  {
+   "symbol": "002318",
+   "name": "久立特材",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -30.54,
+   "ret_C": -29.37,
+   "delta_C_minus_B": 1.17,
+   "trades_B": 86
+  },
+  {
+   "symbol": "002318",
+   "name": "久立特材",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 97.63,
+   "ret_C": 83.07,
+   "delta_C_minus_B": -14.56,
+   "trades_B": 26
+  },
+  {
+   "symbol": "002318",
+   "name": "久立特材",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -12.94,
+   "ret_C": -24.8,
+   "delta_C_minus_B": -11.86,
+   "trades_B": 65
+  },
+  {
+   "symbol": "002318",
+   "name": "久立特材",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -19.47,
+   "ret_C": -19.78,
+   "delta_C_minus_B": -0.31,
+   "trades_B": 58
+  },
+  {
+   "symbol": "300719",
+   "name": "安达维尔",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": -23.48,
+   "ret_C": 1.02,
+   "delta_C_minus_B": 24.5,
+   "trades_B": 26
+  },
+  {
+   "symbol": "300719",
+   "name": "安达维尔",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 24.99,
+   "ret_C": 44.0,
+   "delta_C_minus_B": 19.01,
+   "trades_B": 28
+  },
+  {
+   "symbol": "300719",
+   "name": "安达维尔",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -47.97,
+   "ret_C": -22.04,
+   "delta_C_minus_B": 25.93,
+   "trades_B": 66
+  },
+  {
+   "symbol": "300719",
+   "name": "安达维尔",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 34.11,
+   "ret_C": 57.41,
+   "delta_C_minus_B": 23.3,
+   "trades_B": 29
+  },
+  {
+   "symbol": "300719",
+   "name": "安达维尔",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -31.89,
+   "ret_C": 12.45,
+   "delta_C_minus_B": 44.34,
+   "trades_B": 59
+  },
+  {
+   "symbol": "300719",
+   "name": "安达维尔",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -24.81,
+   "ret_C": -26.07,
+   "delta_C_minus_B": -1.26,
+   "trades_B": 34
+  },
+  {
+   "symbol": "002335",
+   "name": "科华数据",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 1.37,
+   "ret_C": -7.12,
+   "delta_C_minus_B": -8.49,
+   "trades_B": 25
+  },
+  {
+   "symbol": "002335",
+   "name": "科华数据",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -20.64,
+   "ret_C": 6.68,
+   "delta_C_minus_B": 27.32,
+   "trades_B": 30
+  },
+  {
+   "symbol": "002335",
+   "name": "科华数据",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 18.34,
+   "ret_C": -10.86,
+   "delta_C_minus_B": -29.2,
+   "trades_B": 52
+  },
+  {
+   "symbol": "002335",
+   "name": "科华数据",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 347.21,
+   "ret_C": 252.66,
+   "delta_C_minus_B": -94.55,
+   "trades_B": 24
+  },
+  {
+   "symbol": "002335",
+   "name": "科华数据",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -18.52,
+   "ret_C": -37.59,
+   "delta_C_minus_B": -19.07,
+   "trades_B": 56
+  },
+  {
+   "symbol": "002335",
+   "name": "科华数据",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -11.59,
+   "ret_C": -11.04,
+   "delta_C_minus_B": 0.55,
+   "trades_B": 24
+  },
+  {
+   "symbol": "300748",
+   "name": "金力永磁",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 23.39,
+   "ret_C": 18.15,
+   "delta_C_minus_B": -5.24,
+   "trades_B": 28
+  },
+  {
+   "symbol": "300748",
+   "name": "金力永磁",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 92.18,
+   "ret_C": 67.72,
+   "delta_C_minus_B": -24.46,
+   "trades_B": 26
+  },
+  {
+   "symbol": "300748",
+   "name": "金力永磁",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -32.29,
+   "ret_C": -32.22,
+   "delta_C_minus_B": 0.07,
+   "trades_B": 61
+  },
+  {
+   "symbol": "300748",
+   "name": "金力永磁",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 74.29,
+   "ret_C": 49.3,
+   "delta_C_minus_B": -24.99,
+   "trades_B": 28
+  },
+  {
+   "symbol": "300748",
+   "name": "金力永磁",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 17.87,
+   "ret_C": 38.87,
+   "delta_C_minus_B": 21.0,
+   "trades_B": 65
+  },
+  {
+   "symbol": "300748",
+   "name": "金力永磁",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -22.3,
+   "ret_C": -14.33,
+   "delta_C_minus_B": 7.97,
+   "trades_B": 31
+  },
+  {
+   "symbol": "600160",
+   "name": "巨化股份",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 18.26,
+   "ret_C": 46.59,
+   "delta_C_minus_B": 28.33,
+   "trades_B": 28
+  },
+  {
+   "symbol": "600160",
+   "name": "巨化股份",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 85.41,
+   "ret_C": 95.08,
+   "delta_C_minus_B": 9.67,
+   "trades_B": 20
+  },
+  {
+   "symbol": "600160",
+   "name": "巨化股份",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 71.31,
+   "ret_C": 46.32,
+   "delta_C_minus_B": -24.99,
+   "trades_B": 63
+  },
+  {
+   "symbol": "600160",
+   "name": "巨化股份",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 67.39,
+   "ret_C": 85.88,
+   "delta_C_minus_B": 18.49,
+   "trades_B": 30
+  },
+  {
+   "symbol": "600160",
+   "name": "巨化股份",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 20.34,
+   "ret_C": 26.73,
+   "delta_C_minus_B": 6.39,
+   "trades_B": 59
+  },
+  {
+   "symbol": "600160",
+   "name": "巨化股份",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": 58.91,
+   "ret_C": 28.98,
+   "delta_C_minus_B": -29.93,
+   "trades_B": 36
+  },
+  {
+   "symbol": "600346",
+   "name": "恒力石化",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": -12.17,
+   "ret_C": -26.9,
+   "delta_C_minus_B": -14.73,
+   "trades_B": 32
+  },
+  {
+   "symbol": "600346",
+   "name": "恒力石化",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -2.24,
+   "ret_C": -9.55,
+   "delta_C_minus_B": -7.31,
+   "trades_B": 36
+  },
+  {
+   "symbol": "600346",
+   "name": "恒力石化",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -17.16,
+   "ret_C": -23.41,
+   "delta_C_minus_B": -6.25,
+   "trades_B": 51
+  },
+  {
+   "symbol": "600346",
+   "name": "恒力石化",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 46.73,
+   "ret_C": 34.96,
+   "delta_C_minus_B": -11.77,
+   "trades_B": 28
+  },
+  {
+   "symbol": "600346",
+   "name": "恒力石化",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 96.72,
+   "ret_C": 67.06,
+   "delta_C_minus_B": -29.66,
+   "trades_B": 51
+  },
+  {
+   "symbol": "600346",
+   "name": "恒力石化",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -13.29,
+   "ret_C": -10.12,
+   "delta_C_minus_B": 3.17,
+   "trades_B": 36
+  },
+  {
+   "symbol": "000708",
+   "name": "中信特钢",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": -40.68,
+   "ret_C": -46.02,
+   "delta_C_minus_B": -5.34,
+   "trades_B": 31
+  },
+  {
+   "symbol": "000708",
+   "name": "中信特钢",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 18.96,
+   "ret_C": 22.82,
+   "delta_C_minus_B": 3.86,
+   "trades_B": 33
+  },
+  {
+   "symbol": "000708",
+   "name": "中信特钢",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -25.59,
+   "ret_C": -37.63,
+   "delta_C_minus_B": -12.04,
+   "trades_B": 82
+  },
+  {
+   "symbol": "000708",
+   "name": "中信特钢",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": -7.03,
+   "ret_C": 6.85,
+   "delta_C_minus_B": 13.88,
+   "trades_B": 25
+  },
+  {
+   "symbol": "000708",
+   "name": "中信特钢",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -21.81,
+   "ret_C": -34.32,
+   "delta_C_minus_B": -12.51,
+   "trades_B": 64
+  },
+  {
+   "symbol": "000708",
+   "name": "中信特钢",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": 53.84,
+   "ret_C": 37.98,
+   "delta_C_minus_B": -15.86,
+   "trades_B": 43
+  },
+  {
+   "symbol": "600660",
+   "name": "福耀玻璃",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 51.2,
+   "ret_C": 65.92,
+   "delta_C_minus_B": 14.72,
+   "trades_B": 27
+  },
+  {
+   "symbol": "600660",
+   "name": "福耀玻璃",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -3.97,
+   "ret_C": -5.82,
+   "delta_C_minus_B": -1.85,
+   "trades_B": 15
+  },
+  {
+   "symbol": "600660",
+   "name": "福耀玻璃",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 33.17,
+   "ret_C": 71.72,
+   "delta_C_minus_B": 38.55,
+   "trades_B": 72
+  },
+  {
+   "symbol": "600660",
+   "name": "福耀玻璃",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 89.93,
+   "ret_C": 101.37,
+   "delta_C_minus_B": 11.44,
+   "trades_B": 31
+  },
+  {
+   "symbol": "600660",
+   "name": "福耀玻璃",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 74.36,
+   "ret_C": 118.58,
+   "delta_C_minus_B": 44.22,
+   "trades_B": 61
+  },
+  {
+   "symbol": "600660",
+   "name": "福耀玻璃",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -34.14,
+   "ret_C": -33.22,
+   "delta_C_minus_B": 0.92,
+   "trades_B": 46
+  },
+  {
+   "symbol": "600570",
+   "name": "恒生电子",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": -3.42,
+   "ret_C": -12.84,
+   "delta_C_minus_B": -9.42,
+   "trades_B": 30
+  },
+  {
+   "symbol": "600570",
+   "name": "恒生电子",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -43.44,
+   "ret_C": -45.68,
+   "delta_C_minus_B": -2.24,
+   "trades_B": 35
+  },
+  {
+   "symbol": "600570",
+   "name": "恒生电子",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 19.88,
+   "ret_C": 6.92,
+   "delta_C_minus_B": -12.96,
+   "trades_B": 61
+  },
+  {
+   "symbol": "600570",
+   "name": "恒生电子",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": -1.17,
+   "ret_C": -21.99,
+   "delta_C_minus_B": -20.82,
+   "trades_B": 24
+  },
+  {
+   "symbol": "600570",
+   "name": "恒生电子",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -19.52,
+   "ret_C": -14.06,
+   "delta_C_minus_B": 5.46,
+   "trades_B": 54
+  },
+  {
+   "symbol": "600570",
+   "name": "恒生电子",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": 13.15,
+   "ret_C": 9.35,
+   "delta_C_minus_B": -3.8,
+   "trades_B": 19
+  },
+  {
+   "symbol": "605566",
+   "name": "福莱蒽特",
+   "arm": "布林带+ATR",
+   "years": 5.01,
+   "ret_B": -32.9,
+   "ret_C": -35.41,
+   "delta_C_minus_B": -2.51,
+   "trades_B": 16
+  },
+  {
+   "symbol": "605566",
+   "name": "福莱蒽特",
+   "arm": "KDJ+CCI",
+   "years": 5.01,
+   "ret_B": 8.77,
+   "ret_C": 8.91,
+   "delta_C_minus_B": 0.14,
+   "trades_B": 22
+  },
+  {
+   "symbol": "605566",
+   "name": "福莱蒽特",
+   "arm": "EMA+OBV",
+   "years": 5.01,
+   "ret_B": 19.86,
+   "ret_C": -16.85,
+   "delta_C_minus_B": -36.71,
+   "trades_B": 38
+  },
+  {
+   "symbol": "605566",
+   "name": "福莱蒽特",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 5.01,
+   "ret_B": -11.27,
+   "ret_C": -59.02,
+   "delta_C_minus_B": -47.75,
+   "trades_B": 19
+  },
+  {
+   "symbol": "605566",
+   "name": "福莱蒽特",
+   "arm": "纯MACD(基准B)",
+   "years": 5.01,
+   "ret_B": 37.46,
+   "ret_C": 4.19,
+   "delta_C_minus_B": -33.27,
+   "trades_B": 36
+  },
+  {
+   "symbol": "605566",
+   "name": "福莱蒽特",
+   "arm": "牛市趋势跟踪",
+   "years": 5.01,
+   "ret_B": -10.61,
+   "ret_C": -17.55,
+   "delta_C_minus_B": -6.94,
+   "trades_B": 22
+  },
+  {
+   "symbol": "000157",
+   "name": "中联重科",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": -1.77,
+   "ret_C": -6.22,
+   "delta_C_minus_B": -4.45,
+   "trades_B": 34
+  },
+  {
+   "symbol": "000157",
+   "name": "中联重科",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 18.38,
+   "ret_C": 14.4,
+   "delta_C_minus_B": -3.98,
+   "trades_B": 28
+  },
+  {
+   "symbol": "000157",
+   "name": "中联重科",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 41.68,
+   "ret_C": 46.76,
+   "delta_C_minus_B": 5.08,
+   "trades_B": 48
+  },
+  {
+   "symbol": "000157",
+   "name": "中联重科",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": -1.0,
+   "ret_C": -3.8,
+   "delta_C_minus_B": -2.8,
+   "trades_B": 29
+  },
+  {
+   "symbol": "000157",
+   "name": "中联重科",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -28.42,
+   "ret_C": -27.62,
+   "delta_C_minus_B": 0.8,
+   "trades_B": 64
+  },
+  {
+   "symbol": "000157",
+   "name": "中联重科",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": 12.68,
+   "ret_C": 14.51,
+   "delta_C_minus_B": 1.83,
+   "trades_B": 44
+  },
+  {
+   "symbol": "601061",
+   "name": "中信金属",
+   "arm": "布林带+ATR",
+   "years": 3.56,
+   "ret_B": 4.31,
+   "ret_C": -11.4,
+   "delta_C_minus_B": -15.71,
+   "trades_B": 15
+  },
+  {
+   "symbol": "601061",
+   "name": "中信金属",
+   "arm": "KDJ+CCI",
+   "years": 3.56,
+   "ret_B": 12.32,
+   "ret_C": 10.47,
+   "delta_C_minus_B": -1.85,
+   "trades_B": 13
+  },
+  {
+   "symbol": "601061",
+   "name": "中信金属",
+   "arm": "EMA+OBV",
+   "years": 3.56,
+   "ret_B": 21.75,
+   "ret_C": 12.71,
+   "delta_C_minus_B": -9.04,
+   "trades_B": 30
+  },
+  {
+   "symbol": "601061",
+   "name": "中信金属",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 3.56,
+   "ret_B": 2.72,
+   "ret_C": -7.47,
+   "delta_C_minus_B": -10.19,
+   "trades_B": 14
+  },
+  {
+   "symbol": "601061",
+   "name": "中信金属",
+   "arm": "纯MACD(基准B)",
+   "years": 3.56,
+   "ret_B": 18.95,
+   "ret_C": 3.42,
+   "delta_C_minus_B": -15.53,
+   "trades_B": 28
+  },
+  {
+   "symbol": "601061",
+   "name": "中信金属",
+   "arm": "牛市趋势跟踪",
+   "years": 3.56,
+   "ret_B": -7.1,
+   "ret_C": 2.0,
+   "delta_C_minus_B": 9.1,
+   "trades_B": 24
+  },
+  {
+   "symbol": "600089",
+   "name": "特变电工",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 26.88,
+   "ret_C": 149.38,
+   "delta_C_minus_B": 122.5,
+   "trades_B": 29
+  },
+  {
+   "symbol": "600089",
+   "name": "特变电工",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -8.64,
+   "ret_C": -1.88,
+   "delta_C_minus_B": 6.76,
+   "trades_B": 27
+  },
+  {
+   "symbol": "600089",
+   "name": "特变电工",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 43.83,
+   "ret_C": 75.82,
+   "delta_C_minus_B": 31.99,
+   "trades_B": 75
+  },
+  {
+   "symbol": "600089",
+   "name": "特变电工",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 304.15,
+   "ret_C": 275.79,
+   "delta_C_minus_B": -28.36,
+   "trades_B": 26
+  },
+  {
+   "symbol": "600089",
+   "name": "特变电工",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 0.39,
+   "ret_C": 88.03,
+   "delta_C_minus_B": 87.64,
+   "trades_B": 57
+  },
+  {
+   "symbol": "600089",
+   "name": "特变电工",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": 19.58,
+   "ret_C": 16.49,
+   "delta_C_minus_B": -3.09,
+   "trades_B": 43
+  },
+  {
+   "symbol": "600406",
+   "name": "国电南瑞",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": -18.71,
+   "ret_C": -34.77,
+   "delta_C_minus_B": -16.06,
+   "trades_B": 32
+  },
+  {
+   "symbol": "600406",
+   "name": "国电南瑞",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -0.12,
+   "ret_C": -2.89,
+   "delta_C_minus_B": -2.77,
+   "trades_B": 16
+  },
+  {
+   "symbol": "600406",
+   "name": "国电南瑞",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -19.5,
+   "ret_C": -16.78,
+   "delta_C_minus_B": 2.72,
+   "trades_B": 89
+  },
+  {
+   "symbol": "600406",
+   "name": "国电南瑞",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": -3.26,
+   "ret_C": -13.58,
+   "delta_C_minus_B": -10.32,
+   "trades_B": 32
+  },
+  {
+   "symbol": "600406",
+   "name": "国电南瑞",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -55.96,
+   "ret_C": -54.59,
+   "delta_C_minus_B": 1.37,
+   "trades_B": 73
+  },
+  {
+   "symbol": "600406",
+   "name": "国电南瑞",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -37.97,
+   "ret_C": -42.07,
+   "delta_C_minus_B": -4.1,
+   "trades_B": 46
+  },
+  {
+   "symbol": "000400",
+   "name": "许继电气",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": -31.38,
+   "ret_C": -2.39,
+   "delta_C_minus_B": 28.99,
+   "trades_B": 28
+  },
+  {
+   "symbol": "000400",
+   "name": "许继电气",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 22.68,
+   "ret_C": 62.88,
+   "delta_C_minus_B": 40.2,
+   "trades_B": 24
+  },
+  {
+   "symbol": "000400",
+   "name": "许继电气",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -40.74,
+   "ret_C": -6.83,
+   "delta_C_minus_B": 33.91,
+   "trades_B": 67
+  },
+  {
+   "symbol": "000400",
+   "name": "许继电气",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 30.96,
+   "ret_C": 35.73,
+   "delta_C_minus_B": 4.77,
+   "trades_B": 25
+  },
+  {
+   "symbol": "000400",
+   "name": "许继电气",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -15.56,
+   "ret_C": 8.64,
+   "delta_C_minus_B": 24.2,
+   "trades_B": 67
+  },
+  {
+   "symbol": "000400",
+   "name": "许继电气",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -25.8,
+   "ret_C": -25.22,
+   "delta_C_minus_B": 0.58,
+   "trades_B": 37
+  },
+  {
+   "symbol": "601179",
+   "name": "中国西电",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 98.26,
+   "ret_C": 89.45,
+   "delta_C_minus_B": -8.81,
+   "trades_B": 24
+  },
+  {
+   "symbol": "601179",
+   "name": "中国西电",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": -22.0,
+   "ret_C": -18.87,
+   "delta_C_minus_B": 3.13,
+   "trades_B": 29
+  },
+  {
+   "symbol": "601179",
+   "name": "中国西电",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 31.07,
+   "ret_C": 62.04,
+   "delta_C_minus_B": 30.97,
+   "trades_B": 66
+  },
+  {
+   "symbol": "601179",
+   "name": "中国西电",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 16.87,
+   "ret_C": 187.06,
+   "delta_C_minus_B": 170.19,
+   "trades_B": 15
+  },
+  {
+   "symbol": "601179",
+   "name": "中国西电",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -19.41,
+   "ret_C": 2.54,
+   "delta_C_minus_B": 21.95,
+   "trades_B": 53
+  },
+  {
+   "symbol": "601179",
+   "name": "中国西电",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -9.36,
+   "ret_C": -13.33,
+   "delta_C_minus_B": -3.97,
+   "trades_B": 33
+  },
+  {
+   "symbol": "002028",
+   "name": "思源电气",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 20.99,
+   "ret_C": -16.75,
+   "delta_C_minus_B": -37.74,
+   "trades_B": 34
+  },
+  {
+   "symbol": "002028",
+   "name": "思源电气",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 0.27,
+   "ret_C": -4.08,
+   "delta_C_minus_B": -4.35,
+   "trades_B": 10
+  },
+  {
+   "symbol": "002028",
+   "name": "思源电气",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -42.81,
+   "ret_C": -0.14,
+   "delta_C_minus_B": 42.67,
+   "trades_B": 89
+  },
+  {
+   "symbol": "002028",
+   "name": "思源电气",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 57.28,
+   "ret_C": 194.81,
+   "delta_C_minus_B": 137.53,
+   "trades_B": 28
+  },
+  {
+   "symbol": "002028",
+   "name": "思源电气",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": -46.36,
+   "ret_C": -34.99,
+   "delta_C_minus_B": 11.37,
+   "trades_B": 75
+  },
+  {
+   "symbol": "002028",
+   "name": "思源电气",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": 6.59,
+   "ret_C": 5.56,
+   "delta_C_minus_B": -1.03,
+   "trades_B": 43
+  },
+  {
+   "symbol": "002270",
+   "name": "华明装备",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 123.04,
+   "ret_C": 18.49,
+   "delta_C_minus_B": -104.55,
+   "trades_B": 21
+  },
+  {
+   "symbol": "002270",
+   "name": "华明装备",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 22.16,
+   "ret_C": 18.19,
+   "delta_C_minus_B": -3.97,
+   "trades_B": 21
+  },
+  {
+   "symbol": "002270",
+   "name": "华明装备",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 50.97,
+   "ret_C": 90.36,
+   "delta_C_minus_B": 39.39,
+   "trades_B": 79
+  },
+  {
+   "symbol": "002270",
+   "name": "华明装备",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 783.8,
+   "ret_C": 847.04,
+   "delta_C_minus_B": 63.24,
+   "trades_B": 16
+  },
+  {
+   "symbol": "002270",
+   "name": "华明装备",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 67.28,
+   "ret_C": -2.58,
+   "delta_C_minus_B": -69.86,
+   "trades_B": 61
+  },
+  {
+   "symbol": "002270",
+   "name": "华明装备",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": 20.85,
+   "ret_C": 14.79,
+   "delta_C_minus_B": -6.06,
+   "trades_B": 21
+  },
+  {
+   "symbol": "002130",
+   "name": "沃尔核材",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": -30.93,
+   "ret_C": -31.93,
+   "delta_C_minus_B": -1.0,
+   "trades_B": 23
+  },
+  {
+   "symbol": "002130",
+   "name": "沃尔核材",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 34.17,
+   "ret_C": 40.65,
+   "delta_C_minus_B": 6.48,
+   "trades_B": 19
+  },
+  {
+   "symbol": "002130",
+   "name": "沃尔核材",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 35.54,
+   "ret_C": 67.07,
+   "delta_C_minus_B": 31.53,
+   "trades_B": 49
+  },
+  {
+   "symbol": "002130",
+   "name": "沃尔核材",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 31.9,
+   "ret_C": 66.04,
+   "delta_C_minus_B": 34.14,
+   "trades_B": 32
+  },
+  {
+   "symbol": "002130",
+   "name": "沃尔核材",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 24.27,
+   "ret_C": 47.62,
+   "delta_C_minus_B": 23.35,
+   "trades_B": 58
+  },
+  {
+   "symbol": "002130",
+   "name": "沃尔核材",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -44.42,
+   "ret_C": -39.49,
+   "delta_C_minus_B": 4.93,
+   "trades_B": 41
+  },
+  {
+   "symbol": "600312",
+   "name": "平高电气",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": -36.91,
+   "ret_C": -43.86,
+   "delta_C_minus_B": -6.95,
+   "trades_B": 30
+  },
+  {
+   "symbol": "600312",
+   "name": "平高电气",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 21.24,
+   "ret_C": 23.35,
+   "delta_C_minus_B": 2.11,
+   "trades_B": 20
+  },
+  {
+   "symbol": "600312",
+   "name": "平高电气",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": -26.98,
+   "ret_C": -8.43,
+   "delta_C_minus_B": 18.55,
+   "trades_B": 60
+  },
+  {
+   "symbol": "600312",
+   "name": "平高电气",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 75.21,
+   "ret_C": 77.59,
+   "delta_C_minus_B": 2.38,
+   "trades_B": 23
+  },
+  {
+   "symbol": "600312",
+   "name": "平高电气",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 25.09,
+   "ret_C": 54.03,
+   "delta_C_minus_B": 28.94,
+   "trades_B": 53
+  },
+  {
+   "symbol": "600312",
+   "name": "平高电气",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -17.79,
+   "ret_C": -15.65,
+   "delta_C_minus_B": 2.14,
+   "trades_B": 37
+  },
+  {
+   "symbol": "300199",
+   "name": "翰宇药业",
+   "arm": "布林带+ATR",
+   "years": 6.83,
+   "ret_B": 129.92,
+   "ret_C": 82.43,
+   "delta_C_minus_B": -47.49,
+   "trades_B": 25
+  },
+  {
+   "symbol": "300199",
+   "name": "翰宇药业",
+   "arm": "KDJ+CCI",
+   "years": 6.83,
+   "ret_B": 79.44,
+   "ret_C": 63.64,
+   "delta_C_minus_B": -15.8,
+   "trades_B": 33
+  },
+  {
+   "symbol": "300199",
+   "name": "翰宇药业",
+   "arm": "EMA+OBV",
+   "years": 6.83,
+   "ret_B": 46.92,
+   "ret_C": 40.76,
+   "delta_C_minus_B": -6.16,
+   "trades_B": 44
+  },
+  {
+   "symbol": "300199",
+   "name": "翰宇药业",
+   "arm": "EMA12/26金叉(基准C)",
+   "years": 6.83,
+   "ret_B": 370.53,
+   "ret_C": 255.12,
+   "delta_C_minus_B": -115.41,
+   "trades_B": 22
+  },
+  {
+   "symbol": "300199",
+   "name": "翰宇药业",
+   "arm": "纯MACD(基准B)",
+   "years": 6.83,
+   "ret_B": 92.63,
+   "ret_C": 54.17,
+   "delta_C_minus_B": -38.46,
+   "trades_B": 61
+  },
+  {
+   "symbol": "300199",
+   "name": "翰宇药业",
+   "arm": "牛市趋势跟踪",
+   "years": 6.83,
+   "ret_B": -15.04,
+   "ret_C": -6.29,
+   "delta_C_minus_B": 8.75,
+   "trades_B": 23
+  }
+ ]
+}
