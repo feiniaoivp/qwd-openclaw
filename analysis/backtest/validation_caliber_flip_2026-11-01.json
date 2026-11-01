@@ -1,0 +1,482 @@
+{
+ "date": "2026-11-01",
+ "coverage": 36,
+ "best_score_mean": {
+  "A": 29.5,
+  "B": 28.4,
+  "C": 27.2
+ },
+ "flips_A_to_B": 2,
+ "flips_A_to_C": 5,
+ "flips_B_vs_C": 7,
+ "incumbent_kept_under_B": 18,
+ "incumbent_lost_under_B": 1,
+ "flip_detail_AB": [
+  [
+   "002028",
+   "思源电气",
+   "ema_cross",
+   "bollinger",
+   25.51,
+   21.36
+  ],
+  [
+   "600160",
+   "巨化股份",
+   "ema_cross",
+   "ema_obv",
+   33.82,
+   30.9
+  ]
+ ],
+ "flip_detail_AC": [
+  [
+   "002130",
+   "沃尔核材",
+   "kdj_cci",
+   "ema_cross",
+   5.63,
+   0.89
+  ],
+  [
+   "600312",
+   "平高电气",
+   "kdj_cci",
+   "macd",
+   15.88,
+   14.19
+  ],
+  [
+   "600570",
+   "恒生电子",
+   "bollinger",
+   "bull_trend",
+   -5.68,
+   -10.18
+  ],
+  [
+   "601066",
+   "中信建投",
+   "bollinger",
+   "ema_cross",
+   1.73,
+   3.87
+  ],
+  [
+   "601179",
+   "中国西电",
+   "bollinger",
+   "ema_cross",
+   66.1,
+   56.74
+  ]
+ ],
+ "incumbent_lost_detail": [
+  [
+   "002028",
+   "思源电气",
+   "ema_cross",
+   "bollinger",
+   25.51,
+   21.36
+  ]
+ ],
+ "rows": [
+  {
+   "symbol": "000157",
+   "name": "中联重科",
+   "incumbent": "ema_cross",
+   "best_A": "ema_cross",
+   "score_A": 1.28,
+   "best_B": "ema_cross",
+   "score_B": 1.28,
+   "best_C": "ema_cross",
+   "score_C": 1.52
+  },
+  {
+   "symbol": "000400",
+   "name": "许继电气",
+   "incumbent": "ema_cross",
+   "best_A": "ema_cross",
+   "score_A": 17.35,
+   "best_B": "ema_cross",
+   "score_B": 15.83,
+   "best_C": "ema_cross",
+   "score_C": 16.86
+  },
+  {
+   "symbol": "000708",
+   "name": "中信特钢",
+   "incumbent": "ema_adaptive_vol",
+   "best_A": "bull_trend",
+   "score_A": -11.23,
+   "best_B": "bull_trend",
+   "score_B": -7.84,
+   "best_C": "bull_trend",
+   "score_C": -11.54
+  },
+  {
+   "symbol": "000987",
+   "name": "越秀资本",
+   "incumbent": "macd",
+   "best_A": "bollinger",
+   "score_A": 51.01,
+   "best_B": "bollinger",
+   "score_B": 54.42,
+   "best_C": "bollinger",
+   "score_C": 50.73
+  },
+  {
+   "symbol": "002028",
+   "name": "思源电气",
+   "incumbent": "ema_cross",
+   "best_A": "ema_cross",
+   "score_A": 25.51,
+   "best_B": "bollinger",
+   "score_B": 21.36,
+   "best_C": "ema_cross",
+   "score_C": 21.56
+  },
+  {
+   "symbol": "002130",
+   "name": "沃尔核材",
+   "incumbent": "kdj_cci",
+   "best_A": "kdj_cci",
+   "score_A": 5.63,
+   "best_B": "kdj_cci",
+   "score_B": -0.7,
+   "best_C": "ema_cross",
+   "score_C": 0.89
+  },
+  {
+   "symbol": "002156",
+   "name": "通富微电",
+   "incumbent": "ema_obv",
+   "best_A": "ema_obv",
+   "score_A": 58.2,
+   "best_B": "ema_obv",
+   "score_B": 46.64,
+   "best_C": "ema_obv",
+   "score_C": 46.73
+  },
+  {
+   "symbol": "002270",
+   "name": "华明装备",
+   "incumbent": "ema_obv",
+   "best_A": "ema_cross",
+   "score_A": 59.17,
+   "best_B": "ema_cross",
+   "score_B": 59.17,
+   "best_C": "ema_cross",
+   "score_C": 63.02
+  },
+  {
+   "symbol": "002318",
+   "name": "久立特材",
+   "incumbent": "ema_cross",
+   "best_A": "ema_cross",
+   "score_A": 30.97,
+   "best_B": "ema_cross",
+   "score_B": 30.97,
+   "best_C": "ema_cross",
+   "score_C": 26.31
+  },
+  {
+   "symbol": "002335",
+   "name": "科华数据",
+   "incumbent": "macd",
+   "best_A": "bull_trend",
+   "score_A": 12.97,
+   "best_B": "bull_trend",
+   "score_B": 12.88,
+   "best_C": "bull_trend",
+   "score_C": 13.81
+  },
+  {
+   "symbol": "002413",
+   "name": "雷科防务",
+   "incumbent": "ema_cross",
+   "best_A": "ema_cross",
+   "score_A": -0.89,
+   "best_B": "ema_cross",
+   "score_B": 15.58,
+   "best_C": "ema_cross",
+   "score_C": -5.15
+  },
+  {
+   "symbol": "002466",
+   "name": "天齐锂业",
+   "incumbent": "ema_obv",
+   "best_A": "ema_cross",
+   "score_A": 40.83,
+   "best_B": "ema_cross",
+   "score_B": 46.28,
+   "best_C": "ema_cross",
+   "score_C": 44.5
+  },
+  {
+   "symbol": "300014",
+   "name": "亿纬锂能",
+   "incumbent": "bull_trend",
+   "best_A": "bull_trend",
+   "score_A": 38.15,
+   "best_B": "bull_trend",
+   "score_B": 38.15,
+   "best_C": "bull_trend",
+   "score_C": 41.53
+  },
+  {
+   "symbol": "300124",
+   "name": "汇川技术",
+   "incumbent": "bollinger",
+   "best_A": "ema_cross",
+   "score_A": 9.64,
+   "best_B": "ema_cross",
+   "score_B": 9.64,
+   "best_C": "ema_cross",
+   "score_C": 13.7
+  },
+  {
+   "symbol": "300199",
+   "name": "翰宇药业",
+   "incumbent": "macd",
+   "best_A": "kdj_cci",
+   "score_A": 21.44,
+   "best_B": "kdj_cci",
+   "score_B": 21.44,
+   "best_C": "kdj_cci",
+   "score_C": 15.08
+  },
+  {
+   "symbol": "300285",
+   "name": "国瓷材料",
+   "incumbent": "macd",
+   "best_A": "macd",
+   "score_A": 119.06,
+   "best_B": "macd",
+   "score_B": 119.06,
+   "best_C": "macd",
+   "score_C": 124.42
+  },
+  {
+   "symbol": "300719",
+   "name": "安达维尔",
+   "incumbent": "ema_cross",
+   "best_A": "ema_cross",
+   "score_A": -9.79,
+   "best_B": "ema_cross",
+   "score_B": -9.79,
+   "best_C": "ema_cross",
+   "score_C": -1.66
+  },
+  {
+   "symbol": "300748",
+   "name": "金力永磁",
+   "incumbent": "kdj_cci",
+   "best_A": "kdj_cci",
+   "score_A": 48.79,
+   "best_B": "kdj_cci",
+   "score_B": 48.79,
+   "best_C": "kdj_cci",
+   "score_C": 42.81
+  },
+  {
+   "symbol": "600030",
+   "name": "中信证券",
+   "incumbent": "macd",
+   "best_A": "macd",
+   "score_A": 24.24,
+   "best_B": "macd",
+   "score_B": 24.24,
+   "best_C": "macd",
+   "score_C": 33.91
+  },
+  {
+   "symbol": "600036",
+   "name": "招商银行",
+   "incumbent": "macd",
+   "best_A": "kdj_cci",
+   "score_A": 18.6,
+   "best_B": "kdj_cci",
+   "score_B": 18.6,
+   "best_C": "kdj_cci",
+   "score_C": 19.13
+  },
+  {
+   "symbol": "600089",
+   "name": "特变电工",
+   "incumbent": "ema_cross",
+   "best_A": "ema_cross",
+   "score_A": 71.08,
+   "best_B": "ema_cross",
+   "score_B": 71.08,
+   "best_C": "ema_cross",
+   "score_C": 70.72
+  },
+  {
+   "symbol": "600160",
+   "name": "巨化股份",
+   "incumbent": "ema_obv",
+   "best_A": "ema_cross",
+   "score_A": 33.82,
+   "best_B": "ema_obv",
+   "score_B": 30.9,
+   "best_C": "ema_cross",
+   "score_C": 30.09
+  },
+  {
+   "symbol": "600312",
+   "name": "平高电气",
+   "incumbent": "macd",
+   "best_A": "kdj_cci",
+   "score_A": 15.88,
+   "best_B": "kdj_cci",
+   "score_B": 15.88,
+   "best_C": "macd",
+   "score_C": 14.19
+  },
+  {
+   "symbol": "600346",
+   "name": "恒力石化",
+   "incumbent": "macd",
+   "best_A": "macd",
+   "score_A": 50.67,
+   "best_B": "macd",
+   "score_B": 49.11,
+   "best_C": "macd",
+   "score_C": 30.26
+  },
+  {
+   "symbol": "600406",
+   "name": "国电南瑞",
+   "incumbent": "ema_obv",
+   "best_A": "ema_obv",
+   "score_A": 9.84,
+   "best_B": "ema_obv",
+   "score_B": 9.84,
+   "best_C": "ema_obv",
+   "score_C": 11.73
+  },
+  {
+   "symbol": "600570",
+   "name": "恒生电子",
+   "incumbent": "ema_adaptive_vol",
+   "best_A": "bollinger",
+   "score_A": -5.68,
+   "best_B": "bollinger",
+   "score_B": -0.43,
+   "best_C": "bull_trend",
+   "score_C": -10.18
+  },
+  {
+   "symbol": "600584",
+   "name": "长电科技",
+   "incumbent": "macd",
+   "best_A": "ema_cross",
+   "score_A": 67.85,
+   "best_B": "ema_cross",
+   "score_B": 57.88,
+   "best_C": "ema_cross",
+   "score_C": 57.05
+  },
+  {
+   "symbol": "600660",
+   "name": "福耀玻璃",
+   "incumbent": "ema_adaptive_vol",
+   "best_A": "macd",
+   "score_A": 2.28,
+   "best_B": "macd",
+   "score_B": -4.27,
+   "best_C": "macd",
+   "score_C": 4.84
+  },
+  {
+   "symbol": "601061",
+   "name": "中信金属",
+   "incumbent": "ema_obv",
+   "best_A": "ema_obv",
+   "score_A": 15.31,
+   "best_B": "ema_obv",
+   "score_B": 17.6,
+   "best_C": "ema_obv",
+   "score_C": 17.58
+  },
+  {
+   "symbol": "601066",
+   "name": "中信建投",
+   "incumbent": "kdj_cci",
+   "best_A": "bollinger",
+   "score_A": 1.73,
+   "best_B": "bollinger",
+   "score_B": 1.46,
+   "best_C": "ema_cross",
+   "score_C": 3.87
+  },
+  {
+   "symbol": "601100",
+   "name": "恒立液压",
+   "incumbent": "ema_cross",
+   "best_A": "ema_cross",
+   "score_A": 20.23,
+   "best_B": "ema_cross",
+   "score_B": 6.55,
+   "best_C": "ema_cross",
+   "score_C": 14.65
+  },
+  {
+   "symbol": "601179",
+   "name": "中国西电",
+   "incumbent": "ema_obv",
+   "best_A": "bollinger",
+   "score_A": 66.1,
+   "best_B": "bollinger",
+   "score_B": 52.34,
+   "best_C": "ema_cross",
+   "score_C": 56.74
+  },
+  {
+   "symbol": "601995",
+   "name": "中金公司",
+   "incumbent": "macd",
+   "best_A": "bollinger",
+   "score_A": -22.27,
+   "best_B": "bollinger",
+   "score_B": -20.07,
+   "best_C": "bollinger",
+   "score_C": -25.63
+  },
+  {
+   "symbol": "603308",
+   "name": "应流股份",
+   "incumbent": "ema_cross",
+   "best_A": "ema_cross",
+   "score_A": 113.26,
+   "best_B": "ema_cross",
+   "score_B": 118.6,
+   "best_C": "ema_cross",
+   "score_C": 115.02
+  },
+  {
+   "symbol": "605566",
+   "name": "福莱蒽特",
+   "incumbent": "macd",
+   "best_A": "macd",
+   "score_A": 32.02,
+   "best_B": "macd",
+   "score_B": 34.45,
+   "best_C": "macd",
+   "score_C": 15.89
+  },
+  {
+   "symbol": "688981",
+   "name": "中芯国际",
+   "incumbent": "kdj_cci",
+   "best_A": "ema_cross",
+   "score_A": 28.18,
+   "best_B": "ema_cross",
+   "score_B": 16.01,
+   "best_C": "ema_cross",
+   "score_C": 14.37
+  }
+ ]
+}

@@ -38,6 +38,12 @@ from backtest_strategies import (
 from analysis.data_layer import get_router
 from analysis.bs_session import ensure_login
 
+# ── 成交口径（2026-11-01 用户批准，与 validate_strategies 同步切 B）：
+# 参数调优分数同用「可实现收益」，避免周六刷新链内 map(B) 与参数(A) 口径分叉。
+#   TUNE_ENFORCE_LIMIT=0 → A 口径（存量对照）；TUNE_FILL_MODE=next_open → C 口径
+TUNE_ENFORCE_LIMIT = os.environ.get("TUNE_ENFORCE_LIMIT", "1") == "1"
+TUNE_FILL_MODE = os.environ.get("TUNE_FILL_MODE", "signal_close")
+
 PARAMS_FILE = os.path.join(WORKSPACE, "data", "adaptive_params.json")
 PREV_PARAMS_FILE = os.path.join(WORKSPACE, "data", "adaptive_params_prev.json")
 STRATEGY_MAP_FILE = os.path.join(WORKSPACE, "data", "adaptive_strategy_map.json")
@@ -344,7 +350,7 @@ def tune_single_stock(symbol: str, name: str, df: pd.DataFrame,
         if fast_mode:
             default_params = DEFAULT_PARAMS[sname]
             wdf = slice_window(df, FAST_WINDOW[1])
-            m = score_strategy_params(wdf, func, default_params)
+            m = score_strategy_params(wdf, func, default_params, symbol=symbol)
             # 预筛选阈值降低到 -0.5，避免弱市全剪枝；若仍为 error 则跳过
             if "error" in m or m.get("sharpe_ratio", -999) < -0.5:
                 stock_detail[sname] = {"pruned": True, "default_score": m.get("total_return_pct", -999), "default_sharpe": m.get("sharpe_ratio", -999)}
@@ -357,7 +363,7 @@ def tune_single_stock(symbol: str, name: str, df: pd.DataFrame,
             windows_to_run = [FAST_WINDOW] if fast_mode else WINDOWS
             for wname, years_back in windows_to_run:
                 wdf = slice_window(df, years_back)
-                m = score_strategy_params(wdf, func, params)
+                m = score_strategy_params(wdf, func, params, symbol=symbol)
                 if "error" in m:
                     wmetrics[wname] = {"error": True}
                 else:
@@ -375,7 +381,7 @@ def tune_single_stock(symbol: str, name: str, df: pd.DataFrame,
             windows_to_run = [FAST_WINDOW] if fast_mode else WINDOWS
             for wname, years_back in windows_to_run:
                 wdf = slice_window(df, years_back)
-                m = score_strategy_params(wdf, func, default_params)
+                m = score_strategy_params(wdf, func, default_params, symbol=symbol)
                 wmetrics[wname] = m
             def_agg = aggregate_score(wmetrics)
             if def_agg:
@@ -400,7 +406,7 @@ def tune_single_stock(symbol: str, name: str, df: pd.DataFrame,
             wmetrics_cur = {}
             for wname, years_back in ([FAST_WINDOW] if fast_mode else WINDOWS):
                 wdf = slice_window(df, years_back)
-                wmetrics_cur[wname] = score_strategy_params(wdf, func, cur_params)
+                wmetrics_cur[wname] = score_strategy_params(wdf, func, cur_params, symbol=symbol)
             cur_agg = aggregate_score(wmetrics_cur)
             if cur_agg and combo_best[0] < cur_agg["score"] + switch_margin:
                 _prev_detail = stock_detail.get(sname) or {}
@@ -448,10 +454,12 @@ def tune_single_stock(symbol: str, name: str, df: pd.DataFrame,
         ],
     }
 
-def score_strategy_params(wdf, func, params):
+def score_strategy_params(wdf, func, params, symbol=None):
     try:
         actions = func(wdf, params)
-        m = run_simulation(wdf, actions)
+        m = run_simulation(wdf, actions, symbol=symbol,
+                           fill_mode=TUNE_FILL_MODE,
+                           enforce_limit=TUNE_ENFORCE_LIMIT)
         m["signals"] = len([a for a in actions if a["type"] == "BUY"])
         m["trades"] = m.get("total_trades", 0)
         return m

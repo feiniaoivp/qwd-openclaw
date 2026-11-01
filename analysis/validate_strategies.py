@@ -40,6 +40,7 @@ from analysis.backtest_strategies import (
 
 # ── 回测护栏：随机基准对照 ──
 from analysis.backtest_guard import compare_to_random, assert_beats_random
+from analysis.backtest_strategies import HEAVY_ARMS
 import shutil
 
 def _bak(path):
@@ -100,6 +101,20 @@ def slice_window(df, start_years_back, _):
     start_date = end_date - pd.Timedelta(days=int(start_years_back * 365))
     return df[df["date"] >= start_date].copy()
 
+
+# ── 成交口径（2026-11-01 用户批准：验证层默认 B 口径 = 信号日收盘 + 涨跌停可成交检查）──
+# 依据：策略映射的护栏分数应用「可实现收益」计算（P0 对照研究实证趋势臂纸面收益虚高 4.8~6.0pp）。
+# 引擎(backtest_strategies)默认保持 A 口径（历史可比），本开关只动验证层。
+#   VALIDATE_ENFORCE_LIMIT=0      → A 口径（存量对照/研究用）
+#   VALIDATE_FILL_MODE=next_open  → C 口径（实盘「信号次日开盘执行」纪律；研究用）
+# 重臂门控：HEAVY_ARMS（ML，~55s/只/窗口）默认不进验证 —— 其 key_map 未开放、
+# 写不进 map，周度验证无决策价值却烧 2~4h；准入评估时显式 VALIDATE_INCLUDE_HEAVY=1。
+VALIDATE_ENFORCE_LIMIT = os.environ.get("VALIDATE_ENFORCE_LIMIT", "1") == "1"
+VALIDATE_FILL_MODE = os.environ.get("VALIDATE_FILL_MODE", "signal_close")
+VALIDATE_INCLUDE_HEAVY = os.environ.get("VALIDATE_INCLUDE_HEAVY", "0") == "1"
+VALIDATE_CALIBER_TAG = ("B" if VALIDATE_ENFORCE_LIMIT and VALIDATE_FILL_MODE == "signal_close"
+                        else "C" if VALIDATE_FILL_MODE == "next_open" else "A")
+
 def pick_safe_strategy_names(df, sfunc):
     """对窗口内数据跑策略并安全地找到交易信号（复用策略函数）"""
     return sfunc(df)
@@ -129,7 +144,7 @@ def main(stocks=None, write_map=False, arbitrate=False, pending_out=None):
         from analysis.fib_extension_scan import WATCHLIST
         stocks = list(WATCHLIST.keys())
     
-    print(f"🔍 跨周期稳健验证开始 | {WIN_START} ~ {today} | {len(stocks)} 只股票 x 4窗口 x 6策略")
+    print(f"🔍 跨周期稳健验证开始 | {WIN_START} ~ {today} | {len(stocks)} 只股票 x 4窗口 x {len(CANDIDATE_STRATEGIES)}策略 | 成交口径 {VALIDATE_CALIBER_TAG}")
     print("=" * 70)
 
     # ── 拉取长历史数据 (每只跑4窗口 x 6策略) ──
@@ -163,9 +178,13 @@ def main(stocks=None, write_map=False, arbitrate=False, pending_out=None):
             print(f"    {wname}: {len(wdf)} 条 ({str(wdf['date'].min().date())} ~ {str(wdf['date'].max().date())})")
             wmetrics = {}
             for sname, sfunc in CANDIDATE_STRATEGIES:
+                if sname in HEAVY_ARMS and not VALIDATE_INCLUDE_HEAVY:
+                    continue
                 try:
                     actions = sfunc(wdf)
-                    m = run_simulation(wdf, actions)
+                    m = run_simulation(wdf, actions, symbol=symbol,
+                                       fill_mode=VALIDATE_FILL_MODE,
+                                       enforce_limit=VALIDATE_ENFORCE_LIMIT)
                     m["signals"] = len([a for a in actions if a["type"] == "BUY"])
                     m["trades"] = m.get("total_trades", 0)
                     wmetrics[sname] = m
@@ -294,6 +313,7 @@ def main(stocks=None, write_map=False, arbitrate=False, pending_out=None):
             continue
         best_map[symbol] = {
             "strategy": key_map[best["strategy"]],
+            "fill_caliber": VALIDATE_CALIBER_TAG,
             "name": name, "score": best["score"],
             "avg_return": best["avg_return"], "avg_sharpe": best["avg_sharpe"],
             "avg_dd": best["avg_dd"], "avg_trades": best["avg_trades"],
