@@ -870,6 +870,20 @@ def strategy_ema_adaptive_vol(df):
     return actions
 
 
+def strategy_turtle_wrapped(df):
+    """海龟突破臂（P2 2026-11-01）：唐奇安 20/10，全进全出（仓位在组合层）。
+    惰性 import：防循环 + 新臂自测不通过时不得拖垮主引擎。"""
+    from analysis.turtle_strategy import strategy_turtle_donchian
+    return strategy_turtle_donchian(df)
+
+
+def strategy_ml_wrapped(df):
+    """ML-RF 方向分类臂（P1 2026-11-01）：walk-forward + 截断攻击自测通过。
+    准入纪律与参数见 analysis/ml_strategy.py；周六管线自动纳入 4 窗口验证 + DSR。"""
+    from analysis.ml_strategy import strategy_ml_rf
+    return strategy_ml_rf(df)
+
+
 ALL_STRATEGIES = [
     ("布林带+ATR", strategy_bollinger_atr),
     ("KDJ+CCI", strategy_kdj_cci),
@@ -878,6 +892,8 @@ ALL_STRATEGIES = [
     ("纯MACD(基准B)", strategy_macd),
     ("牛市趋势跟踪", strategy_bull_trend_follow),
     ("波动自适应EMA", strategy_ema_adaptive_vol),
+    ("海龟突破(唐奇安20/10)", strategy_turtle_wrapped),
+    ("ML-RF方向分类", strategy_ml_wrapped),
     ("买入并持有(个股)", strategy_buy_and_hold),
     ("沪深300基准", lambda df: strategy_index_benchmark_cached(df, "sh.000300", "沪深300")),
     ("中证500基准", lambda df: strategy_index_benchmark_cached(df, "sh.000905", "中证500")),
@@ -892,6 +908,18 @@ BENCHMARK_NAMES = {"买入并持有(个股)", "沪深300基准", "中证500基�
 
 # 仅候选策略（供 validate_strategies 选优使用）
 CANDIDATE_STRATEGIES = [(n, f) for n, f in ALL_STRATEGIES if n not in BENCHMARK_NAMES]
+
+# ── 重臂门控（2026-11-01 P1）：ML 推理 ~55s/只，每日 main() 默认排除，
+# BT_INCLUDE_HEAVY=1 才纳入；周六 4 窗口验证走 CANDIDATE_STRATEGIES 全集
+# （validate_strategies 不经此门控，ML/Turtle 照常参与周度验证 + DSR）。──
+HEAVY_ARMS = {"ML-RF方向分类"}
+
+
+def active_strategies():
+    """main() 实际运行的臂集：重臂默认排除（每日推送从 ~37min 回到 ~4min）。"""
+    if os.environ.get("BT_INCLUDE_HEAVY", "0") == "1":
+        return list(ALL_STRATEGIES)
+    return [(n, f) for n, f in ALL_STRATEGIES if n not in HEAVY_ARMS]
 
 
 
@@ -938,6 +966,8 @@ def _data_caliber_summary(symbols, start_date=START_DATE, adjust="qfq"):
 def main():
     today = datetime.now().strftime("%Y-%m-%d")
 
+    STRATS = active_strategies()  # 重臂(ML)默认排除，BT_INCLUDE_HEAVY=1 纳入
+
     # 确保 baostock 登录（单例）
     # 2026-10-02 修复：登录失败不再整体中止 —— DataRouter 有 akshare/新浪 降级链，
     # 只有全部数据源不可用时才真正无法回测（此前 baostock 服务端抖动会整晚杀掉推送）。
@@ -961,7 +991,7 @@ def main():
             continue
 
         stock_result = {"symbol": symbol, "name": name, "strategies": {}}
-        for sname, sfunc in ALL_STRATEGIES:
+        for sname, sfunc in STRATS:
             try:
                 actions = sfunc(df)
                 # 指数基准使用专用模拟器（跑指数自身的K线）
@@ -996,9 +1026,9 @@ def main():
 
     # ---------- 八个策略性能汇总 (含2个基准) ----------
     lines.append("## 整体概况\n")
-    # 表头根据 ALL_STRATEGIES 动态生成，避免硬编码漏列（曾漏「牛市趋势跟踪」导致 8 表头 / 9 数据错位）
+    # 表头根据 STRATS 动态生成，避免硬编码漏列（曾漏「牛市趋势跟踪」导致 8 表头 / 9 数据错位）
     col_names = []
-    for sname, _ in ALL_STRATEGIES:
+    for sname, _ in STRATS:
         if sname == "买入并持有(个股)":
             col_names.append("买入并持有")
         elif sname == "EMA12/26金叉(基准C)":
@@ -1019,13 +1049,13 @@ def main():
                     "盈亏比", "总交易次数"]
 
     agg = {}
-    for sname, _ in ALL_STRATEGIES:
+    for sname, _ in STRATS:
         agg[sname] = {f: [] for f in fields}
 
     for r in results:
         if "error" in r:
             continue
-        for sname, _ in ALL_STRATEGIES:
+        for sname, _ in STRATS:
             sd = r["strategies"].get(sname, {})
             if "error" not in sd:
                 for f in fields:
@@ -1037,7 +1067,7 @@ def main():
     lines.append(sep)
     for flabel, fname in zip(field_labels, fields):
         row = f"| {flabel} "
-        for sname, _ in ALL_STRATEGIES:
+        for sname, _ in STRATS:
             vals = agg[sname][fname]
             if vals:
                 avg = np.mean(vals)
@@ -1055,7 +1085,7 @@ def main():
     # ---------- 收益排行Top5 ----------
     lines.append("\n## 各策略收益Top5股票\n")
 
-    for sname, _ in ALL_STRATEGIES:
+    for sname, _ in STRATS:
         lines.append(f"\n### {sname}\n")
         ranked = []
         for r in results:
@@ -1077,7 +1107,7 @@ def main():
 
     # ---------- 横向对比：赢家矩阵 ----------
     lines.append("\n## 策略PK：两两对比（胜出股数）\n")
-    strat_names = [s[0] for s in ALL_STRATEGIES]
+    strat_names = [s[0] for s in STRATS]
     for i, s1 in enumerate(strat_names):
         for j, s2 in enumerate(strat_names):
             if i >= j:
@@ -1108,7 +1138,7 @@ def main():
     }
 
     scores = {}
-    for sname, _ in ALL_STRATEGIES:
+    for sname, _ in STRATS:
         score = 0
         breakdown = {}
         for flabel, fname in score_fields.items():
@@ -1132,7 +1162,7 @@ def main():
 
     lines.append(f"| 策略 | 总分 | 收益 | 夏普 | 回撤控制 | 胜率 | 盈亏比 |")
     lines.append(f"|:---|:---:|:---:|:---:|:---:|:---:|:---:|")
-    for sname, _ in ALL_STRATEGIES:
+    for sname, _ in STRATS:
         sc = scores.get(sname, {})
         total = sc.get("总分", 0)
         bd = sc.get("细项", {})
@@ -1145,7 +1175,7 @@ def main():
     #    导致每个策略都被误判「未过」。这里采用带误差传播的比率对照口径。
     print("\n🛡️ 随机基准护栏检验 (胜率 vs 随机50%)...")
     guard_lines = []
-    for sname, _ in ALL_STRATEGIES:
+    for sname, _ in STRATS:
         vals = agg[sname]["win_rate_pct"]
         if not vals:
             continue
@@ -1181,7 +1211,7 @@ def main():
             continue
         best_s = None
         best_ret = -999
-        for sname, _ in ALL_STRATEGIES:
+        for sname, _ in STRATS:
             sd = r["strategies"].get(sname, {})
             ret = sd.get("total_return_pct", -999)
             if ret > best_ret:
@@ -1215,10 +1245,10 @@ def main():
     print(json.dumps({
         "date": today,
         "stock_count": len(results),
-        "strategy_count": len(ALL_STRATEGIES),
-        "avg_returns": {s: round(np.mean(agg[s]["total_return_pct"]), 2) if agg[s]["total_return_pct"] else None for s, _ in ALL_STRATEGIES},
-        "avg_sharpes": {s: round(np.mean(agg[s]["sharpe_ratio"]), 3) if agg[s]["sharpe_ratio"] else None for s, _ in ALL_STRATEGIES},
-        "avg_maxdd": {s: round(np.mean(agg[s]["max_drawdown_pct"]), 2) if agg[s]["max_drawdown_pct"] else None for s, _ in ALL_STRATEGIES},
+        "strategy_count": len(STRATS),
+        "avg_returns": {s: round(np.mean(agg[s]["total_return_pct"]), 2) if agg[s]["total_return_pct"] else None for s, _ in STRATS},
+        "avg_sharpes": {s: round(np.mean(agg[s]["sharpe_ratio"]), 3) if agg[s]["sharpe_ratio"] else None for s, _ in STRATS},
+        "avg_maxdd": {s: round(np.mean(agg[s]["max_drawdown_pct"]), 2) if agg[s]["max_drawdown_pct"] else None for s, _ in STRATS},
         "composite_scores": {s: scores[s]["总分"] for s in scores},
         "winner": winner,
         "winner_avg_return": round(winner_ret, 2),
@@ -1232,10 +1262,10 @@ def main():
 
     # 打印简报表
     print(f"\n📊 **五策略回测完成** ({today})")
-    print(f"覆盖 {len(results)} 只股票 x {len(ALL_STRATEGIES)} 个策略\n")
+    print(f"覆盖 {len(results)} 只股票 x {len(STRATS)} 个策略\n")
     print(f"| 策略 | 平均收益 | 夏普 | 最大回撤 | 胜率 | 总分 |")
     print(f"|:---|:----:|:---:|:------:|:---:|:---:|")
-    for sname, _ in ALL_STRATEGIES:
+    for sname, _ in STRATS:
         sr = scores.get(sname, {})
         ret = np.mean(agg[sname]["total_return_pct"]) if agg[sname]["total_return_pct"] else 0
         sh = np.mean(agg[sname]["sharpe_ratio"]) if agg[sname]["sharpe_ratio"] else 0

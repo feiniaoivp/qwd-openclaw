@@ -27,6 +27,7 @@ from analysis.data_layer.providers.sina_daily import get_provider as get_sina_da
 from analysis.data_layer.providers.baostock import get_provider as get_baostock
 from analysis.data_layer.providers.akshare_finance import get_provider as get_akshare_finance
 from analysis.data_layer.cache import get_cache
+from analysis.data_layer.preprocessor import clean_daily
 
 log = logging.getLogger(__name__)
 
@@ -224,6 +225,7 @@ class DataRouter:
                 if df is not None:
                     log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [baostock {adjust}]")
                     self._mark(cache_key, "baostock", adjust, True)
+                    df = clean_daily(df, symbol=symbol, name=name)
                     self.cache.set(cache_key, df, CACHE_TTL["daily"])
                     return df
             except Exception as e:
@@ -247,6 +249,7 @@ class DataRouter:
                     if df is not None:
                         log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [akshare qfq]")
                         self._mark(cache_key, "akshare", "qfq", True)
+                        df = clean_daily(df, symbol=symbol, name=name)
                         self.cache.set(cache_key, df, CACHE_TTL["daily"])
                         return df
             except Exception as e:
@@ -259,6 +262,7 @@ class DataRouter:
                     log.warning(f"  ⚠️ {name}({symbol}): 复权源全失败，回退新浪【不复权】{len(df)} 条"
                                 f" —— 信号/回测口径可能与其它标的不可比")
                     self._mark(cache_key, "新浪日K", "none", False)
+                    df = clean_daily(df, symbol=symbol, name=name)
                     self.cache.set(cache_key, df, CACHE_TTL["daily"])
                     return df
             except Exception as e:
@@ -271,6 +275,7 @@ class DataRouter:
             if df is not None:
                 log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [新浪日K 不复权]")
                 self._mark(cache_key, "新浪日K", "none", False)
+                df = clean_daily(df, symbol=symbol, name=name)
                 self.cache.set(cache_key, df, CACHE_TTL["daily"])
                 return df
         except Exception as e:
@@ -281,6 +286,7 @@ class DataRouter:
             if df is not None:
                 log.info(f"  ✅ {name}({symbol}): {len(df)} 条日线 [baostock 不复权]")
                 self._mark(cache_key, "baostock", "none", False)
+                df = clean_daily(df, symbol=symbol, name=name)
                 self.cache.set(cache_key, df, CACHE_TTL["daily"])
                 return df
         except Exception as e:
@@ -323,6 +329,7 @@ class DataRouter:
                     # 缓存每只
                     for sym, df in results.items():
                         cache_key = f"daily:{sym}:{start_date}:{adjust}"
+                        df = clean_daily(df, symbol=sym, name=sym)
                         self.cache.set(cache_key, df, CACHE_TTL["daily"])
                     log.info(f"[Router] 批量获取 {len(results)}/{len(symbols)} 只 [baostock {adjust}]")
                     return results
