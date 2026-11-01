@@ -1,1 +1,82 @@
-[]
+[
+  {
+    "title": "机构风向标 | 华明装备0022702026年三季度已披露前十大机构持股比例合计下跌1.54个百分点",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 久立特材0023182026年三季度已披露前十大机构累计持仓占比52.74%",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 汇川技术3001242026年三季度已披露前十大机构持股比例合计下跌4.36个百分点",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 国瓷材料3002852026年三季度已披露前十大机构持股比例合计下跌3.65个百分点",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 沃尔核材0021302026年三季度已披露持仓机构仅8家",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 科华数据0023352026年三季度已披露前十大机构持股比例合计下跌1.15个百分点",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "建投前哨：10-29 业绩说明会公告（notices[12]，601066）= 正文披露前哨信号。",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 恒力石化6003462026年三季度已披露前十大机构累计持仓占比67.16%",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 通富微电0021562026年三季度已披露前十大机构累计持仓占比31.35%",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 雷科防务0024132026年三季度已披露前十大机构持股比例合计下跌1.14个百分点",
+    "score": 1.8,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Stub",
+    "length": 17
+  }
+]

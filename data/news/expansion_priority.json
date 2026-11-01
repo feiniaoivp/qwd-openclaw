@@ -1,37 +1,5 @@
 [
   {
-    "title": "恒力石化600346.SH)：完成发行10亿元短期融资券",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "应流股份603308.SH)：完成发行5亿元科技创新债券",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "002466 上半年净利润超42亿元 同比增长超4900%",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "恒力石化600346.SH)：副总经理黄旭东辞职",
-    "score": 2.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
     "title": "002466，业绩大增超27倍",
     "score": 2.0,
     "recall_freq": 0,
@@ -48,68 +16,92 @@
     "length": 0
   },
   {
-    "title": "机构风向标 | 雷科防务0024132026年二季度已披露持仓机构仅5家",
-    "score": 1.8,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "002028，电网龙头午后跌停",
-    "score": 1.8,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "002466，前三季度预盈超51亿元！",
-    "score": 1.8,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "机构风向标 | 思源电气0020282026年三季度已披露前十大机构持股比例合计下跌5.14个百分点",
-    "score": 1.8,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
     "title": "机构风向标 | 天齐锂业0024662026年三季度机构持仓风向标",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 华明装备0022702026年三季度已披露前十大机构持股比例合计下跌1.54个百分点",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 久立特材0023182026年三季度已披露前十大机构累计持仓占比52.74%",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 汇川技术3001242026年三季度已披露前十大机构持股比例合计下跌4.36个百分点",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 国瓷材料3002852026年三季度已披露前十大机构持股比例合计下跌3.65个百分点",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 沃尔核材0021302026年三季度已披露持仓机构仅8家",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 科华数据0023352026年三季度已披露前十大机构持股比例合计下跌1.15个百分点",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "建投前哨：10-29 业绩说明会公告（notices[12]，601066）= 正文披露前哨信号。",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 恒力石化6003462026年三季度已披露前十大机构累计持仓占比67.16%",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 通富微电0021562026年三季度已披露前十大机构累计持仓占比31.35%",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 雷科防务0024132026年三季度已披露前十大机构持股比例合计下跌1.14个百分点",
     "score": 1.8,
     "recall_freq": 0,
     "entity": true,
     "grade": "Stub",
     "length": 17
-  },
-  {
-    "title": "招商银行600036.SH)：王小青行长任职资格获核准",
-    "score": 1.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Summary",
-    "length": 78
-  },
-  {
-    "title": "300285火了！超150家机构，密集调研！",
-    "score": 1.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Summary",
-    "length": 100
-  },
-  {
-    "title": "久立特材002318.SZ)2026年中报净利润为3.93亿元、较去年同期下降52.55%",
-    "score": 1.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Summary",
-    "length": 68
   },
   {
     "title": "天齐锂业002466.SZ)：2026年中报净利润为42.42亿元",
@@ -157,7 +149,7 @@
     "recall_freq": 0,
     "entity": false,
     "grade": "Detailed",
-    "length": 3631
+    "length": 997
   },
   {
     "title": "住房公积金缴存覆盖面扩大 灵活就业人员可自愿缴纳",
@@ -197,7 +189,7 @@
     "recall_freq": 0,
     "entity": false,
     "grade": "Detailed",
-    "length": 3413
+    "length": 956
   },
   {
     "title": "久立特材002318.SZ)：实控人一致行动人一亩田完成增持62.91万股，耗资约1099.5万元",
@@ -213,7 +205,7 @@
     "recall_freq": 0,
     "entity": false,
     "grade": "Detailed",
-    "length": 4849
+    "length": 1176
   },
   {
     "title": "亿纬锂能300014.SZ)：LG Energy Solution在美提起专利侵权诉讼及337调查，公司称未侵权将积极应诉",
@@ -221,7 +213,7 @@
     "recall_freq": 0,
     "entity": true,
     "grade": "Detailed",
-    "length": 5829
+    "length": 1344
   },
   {
     "title": "亿纬锂能300014.SZ)：董事、高管刘建华拟增持10万股，基于对公司发展信心",
@@ -229,7 +221,7 @@
     "recall_freq": 0,
     "entity": true,
     "grade": "Detailed",
-    "length": 4271
+    "length": 1018
   },
   {
     "title": "601066，临近午盘封涨停！券商股，突然异动拉升！",
@@ -237,7 +229,7 @@
     "recall_freq": 0,
     "entity": true,
     "grade": "Detailed",
-    "length": 2026
+    "length": 2630
   },
   {
     "title": "中信建投：非执行董事杨栋因工作原因辞职",
@@ -245,7 +237,7 @@
     "recall_freq": 0,
     "entity": false,
     "grade": "Detailed",
-    "length": 4092
+    "length": 939
   },
   {
     "title": "金科股份：股东金科控股2250万股被强制执行，交易金额2797万元",
@@ -253,7 +245,7 @@
     "recall_freq": 0,
     "entity": false,
     "grade": "Detailed",
-    "length": 2010
+    "length": 2606
   },
   {
     "title": "中信证券：控股子公司华夏基金上半年净利润14.13亿元",
@@ -261,7 +253,7 @@
     "recall_freq": 0,
     "entity": false,
     "grade": "Detailed",
-    "length": 4715
+    "length": 1162
   },
   {
     "title": "10只个股大宗交易超5000万元",
@@ -269,7 +261,7 @@
     "recall_freq": 0,
     "entity": false,
     "grade": "Detailed",
-    "length": 2131
+    "length": 2771
   },
   {
     "title": "海外机构调研股名单 乐鑫科技最受关注",
@@ -277,7 +269,7 @@
     "recall_freq": 0,
     "entity": false,
     "grade": "Detailed",
-    "length": 1729
+    "length": 1951
   },
   {
     "title": "非银金融行业7月31日资金流向日报",
@@ -285,7 +277,7 @@
     "recall_freq": 0,
     "entity": false,
     "grade": "Detailed",
-    "length": 1979
+    "length": 2249
   },
   {
     "title": "注册制严打带病闯关：渔翁信息欺诈发行被罚八位数",
@@ -352,6 +344,14 @@
     "length": 623
   },
   {
+    "title": "招商银行600036.SH)：王小青行长任职资格获核准",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 391
+  },
+  {
     "title": "美元兑日元USD/JPY短线下挫70点 现报157",
     "score": 0.0,
     "recall_freq": 0,
@@ -388,8 +388,8 @@
     "score": 0.0,
     "recall_freq": 0,
     "entity": false,
-    "grade": "Empty",
-    "length": 0
+    "grade": "Detailed",
+    "length": 1135
   },
   {
     "title": "亚盛医药任命首席业务拓展官和首席商务运营官",
@@ -398,1205 +398,5 @@
     "entity": false,
     "grade": "Empty",
     "length": 0
-  },
-  {
-    "title": "自然资源部：2026年上半年我国海洋生产总值达5.5万亿元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "ADVANTEST股价下跌3.2%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "欧洲斯托克50指数期货上涨0.7%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "DeepSeek又发重磅更新 行业梦回2025年春天",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 42
-  },
-  {
-    "title": "巨湾技研自研全固态电池电芯完成针刺试验",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "我国首次开展碳效领跑者企业遴选",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "从实验室到产业一线：AI“入海”解锁海洋新质生产力",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "南向资金净买入额达60亿港元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "广东河源新丰江水库将于今日17时开闸泄洪",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "伊朗否认与美谈判",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "摩根大通开始追踪覆盖在线视频游戏平台Roblox",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "具身智能企业帕西尼再获10亿元战略轮融资",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "TrendForce：供应短缺 预计第三季度PC DRAM固定交易价格将环比上涨15%至20%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "电影《年会不能停！2》票房破9000万",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 46
-  },
-  {
-    "title": "雷科防务002413.SZ)2026年中报净利润为-1812.04万元，亏损同比减少",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Detailed",
-    "length": 612
-  },
-  {
-    "title": "今日盘中突破半年线个股",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "短线防风险 47只个股短期均线现死叉",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 71
-  },
-  {
-    "title": "“企二代”接班：直播是工具 管理是主业",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中岩大地接连中标浙江某核电站两大重点工程项目",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "明阳电气获海外算力头部企业AI算力大容量主变批量订单",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中金：8月A股行情可能进入大幅回调后的修复阶段",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "日经225指数盘中转跌",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "金刚石是六边形战士 AI散热打开市场空间",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "韩国央行：8月通胀料将走高",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "欧洲斯托克50指数期货上涨0.3%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "日本计划25年内新增9座核反应堆",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中信证券：政策或将持续利好特高压、配网智能化、储能、虚拟电厂等领域",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 29
-  },
-  {
-    "title": "12.37亿主力资金净流入，可控核聚变概念涨2.88%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "解密主力资金出逃股 连续5日净流出281股",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "8只个股大宗交易超5000万元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "通富微电002156龙虎榜数据08-03)",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Detailed",
-    "length": 573
-  },
-  {
-    "title": "强势股追踪 主力资金连续5日净流入120股",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "强势股追踪 主力资金连续5日净流入147股",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "航空发动机概念涨2.67%，主力资金净流入47股",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "官宣涨价！300285，“20cm”涨停",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Detailed",
-    "length": 650
-  },
-  {
-    "title": "国瓷材料300285龙虎榜数据07-21)",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Detailed",
-    "length": 101
-  },
-  {
-    "title": "仕佳光子：1.6T AWG产品已实现小批量出货",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "清风回应卫生纸抽检不合格：已全渠道下架",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "嘉实基金：AI长期成长逻辑依然具备吸引力",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "长城汽车法务部：配合警方侦破一起MCN机构造谣案",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "苹果在印度的年销售额首次突破100亿美元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "戴尔创始人之子联合创办的电池创企Base Power融资10亿美元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "欧洲斯托克600指数创下历史新高",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "百克生物液体剂型鼻喷流感疫苗全国首发",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "上海嘉定南翔宅地溢价13.98%成交",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "上海浦东新区宅地溢价28.45%成交",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 29
-  },
-  {
-    "title": "活力中国调研行｜湖州这家钢企为何多次为“大国重器”核心部件打破国外垄断？",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "24只创业板股最新筹码趋向集中",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 71
-  },
-  {
-    "title": "韩国交易所启动SIDECAR机制 暂停KOSPI程序化买盘",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "比财通新人更惨！“军工一哥”冯福章单月暴跌40% 基民如何调仓？",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "谷歌课堂Gemini扩展至全年龄段学生 新增情境化引导提示",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "日经225指数涨幅扩大至3%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "美联储施密德：人工智能投资正在推高通胀 美联储不应忽视这一点",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "拒绝PR“画饼” 这一届毕业生更相信AI对企业的背调",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中信证券：未来1-2个季度美股重点应用软件公司营收增速有望迎来拐点",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "摩根大通据悉拟38亿欧元收购法国供热与冷却网络运营商Idex",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中信证券：AI硬件品种缩圈 云与应用吸引力提升",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中信证券：黄金4000美元/盎司附近大概率是本轮底部区域",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 29
-  },
-  {
-    "title": "非银金融行业今日跌1.03%，主力资金净流出27.87亿元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "83股特大单净流入资金超2亿元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 34
-  },
-  {
-    "title": "49.40亿元主力资金今日抢筹计算机板块",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "国家大基金持股概念上涨5.73%，17股主力资金净流入超亿元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "电子行业资金流入榜：东山精密等73股净流入资金超亿元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 84
-  },
-  {
-    "title": "鸿海单月营收首度超过九千亿新台币",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "月之暗面投资者砺思资本据悉寻求募集5亿美元新基金",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "均胜电子：公司在L3/L4级自动驾驶方向已有布局",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "新华医疗：全自动血型分析仪及立式蒸汽灭菌器获医疗器械注册证",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "鸿海7月销售额9,465.1亿元台币",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "影石将于东京开设中国影像品牌首家直营旗舰店",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "具身智能创业公司自变量机器人据悉已向港交所秘密提交上市申请",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "胡塞武装称将升级袭击沙特油轮",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "微软将在雷德蒙德裁员605人",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "国债期货收盘 30年期主力合约跌0.11%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 29
-  },
-  {
-    "title": "31股受融资客青睐，净买入超亿元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "券商8月金股转向价值风格，食品饮料、传媒行业权重明显增加",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 88
-  },
-  {
-    "title": "韩国KOSPI指数跌幅扩大至3%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "旺仔牛奶卖不动 340亿旺旺转行卖酒",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "7月的雨下个不停 广州一二手住宅网签量环比、同比均减少",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "国产大模型进入融资与技术双爆发期 DS与Kimi估值暴涨",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "三大上市猪企7月猪产品销售收入环比均增长同比均减少",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "西藏林芝市墨脱县发生4.2级地震 震源深度10千米",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "亿华通PCT国际专利在澳大利亚成功授权",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "嘉能可目标年内在澳大利亚二次上市",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中信证券：韩股杠杆去化尚未完成",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "图灵量子启动IPO辅导",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 63
-  },
-  {
-    "title": "机械设备行业今日涨3.20%，主力资金净流入47.01亿元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "石头科技股价颓势：全刚“双出海”战略遭遇FCC禁令",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 85
-  },
-  {
-    "title": "国家大基金持股概念涨6.44%，主力资金净流入这些股",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 84
-  },
-  {
-    "title": "ST星农：公司及相关人员收到浙江证监局警示函",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "无锡银行：副行长胥焱冰因工作变动原因辞职",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "ST人福：子公司布瑞哌唑片获药品注册证书",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "日本熊本县发生4.0级地震",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "达仁堂：沙格列汀二甲双胍缓释片（I）获得药品注册证书",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "泽连斯基表示乌克兰袭击了两座俄罗斯炼油厂",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "国家能源集团在青海成立煤电公司 注册资本10亿元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "星星科技：公司目前有AR零部件及相关产品销售 对公司业绩影响较小",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "美国非农数据明晚揭晓 美联储9月政策路径或生变",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 29
-  },
-  {
-    "title": "科创板IPO年内首现破发，券商跟投回撤对业绩影响有多大？",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 34
-  },
-  {
-    "title": "国瓷材料300285.SZ)：2026年中报净利润为3.63亿元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Detailed",
-    "length": 581
-  },
-  {
-    "title": "机构风向标 | 国瓷材料3002852026年二季度已披露持股减少机构超10家",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Detailed",
-    "length": 550
-  },
-  {
-    "title": "融资客大幅净买入的科创板股（附股）",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 71
-  },
-  {
-    "title": "字节CEO梁汝波：坚持自研AI大语言模型并非因外部压力",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "科兴人用无血清狂犬病疫苗获批",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "安徽省省长王清宪：巩固提升新一代信息技术产业核心竞争力",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "百利天恒再度递表港交所 此前上市前夕主动刹车",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "建滔系股价暴跌 大股东套现 公募基金接盘了吗？",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "Meta因旗下平台损害青少年权益被判支付5.67亿美元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "韩国KOSPI指数转跌 此前一度涨近2%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "天赐材料：用于数据中心的氟化液产品仍处于实验室小试阶段",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "日经225指数抹去早前涨幅 跌幅扩大至0.75%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "图灵量子启动IPO辅导 资本化进程有望发挥示范效应",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 63
-  },
-  {
-    "title": "32股特大单净流入资金超2亿元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "海外机构调研股名单 东鹏饮料最受关注",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "长电科技600584龙虎榜数据08-06",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": true,
-    "grade": "Detailed",
-    "length": 152
-  },
-  {
-    "title": "汇川技术：8月30日起数字能源部分产品涨价5%-15%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "宇树科技王兴兴：预计未来人形机器人将在服务、医疗、教育等领域不断渗透",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "宇树科技王兴兴：持续开发迭代新型机器人 探索自主推理能力突破",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "宇树科技王兴兴：生态黏性将使新品牌消费级机器人获客成本激增",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "SK海力士：将同时扩大DRAM和NAND的生产规模 并依据客户需求相应提升产能",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "SK海力士：将投资384亿美元在韩国本土扩张芯片业务",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "国债期货收盘全线上涨",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "SK海力士：正研究额外股东回报措施 计划三季度公布细节",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "宇树科技王兴兴：2025年公司人形机器人出货量全球第一",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "宇树科技王兴兴：中国企业有望占据机器人产业发展先机",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 97
-  },
-  {
-    "title": "非银金融行业资金流出榜：中信证券等净流出资金居前",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 68
-  },
-  {
-    "title": "今年以来112家公司完成定增，募资总额3989.70亿元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "国家大基金持股概念上涨2.65%，10股主力资金净流入超亿元",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 78
-  },
-  {
-    "title": "中信证券：配置上科技持仓继续向核心资产集中",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "人才公租房租给高校当宿舍 不妨一试 | 新京报社论",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中信证券：先进封装持续迭代升级 玻璃基板大有可为",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "中信证券：持续推荐稀土产业链战略配置价值",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "OpenAI因网络安全担忧放缓发布新模型 AI时代安全价值量有望提升",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "北京出台房地产新政策 机构称政策可能推动房地产市场走入正循环",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "超高容MLCC产品需求旺盛但供给受限 MLCC产业链有望持续受益",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "港资再加码 李泽楷旗下公司布局内地保险经纪牌照",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "夏普股价下跌8%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 63
-  },
-  {
-    "title": "非银金融行业资金流出榜：华泰证券等净流出资金居前",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 85
-  },
-  {
-    "title": "跨境支付(CIPS)概念下跌1.82%，主力资金净流出54股",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Stub",
-    "length": 17
-  },
-  {
-    "title": "POE胶膜概念涨3.95%，主力资金净流入16股",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "42只股即将分红 抢权行情能否开启？",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 78
-  },
-  {
-    "title": "比亚迪“RACCO”在日本上市两周订单破千",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "深圳8月新房、二手房成交同步走高",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "先导基电在武汉成立半导体公司",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "华硕7月销售额841.3亿元台币",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "乌克兰农业部：今年秋季乌克兰谷物储存能力缺口可能达到1100万吨",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "土耳其官员否认黑海通航受限",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "恒生科技指数涨幅扩大至1%",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "美国前空军部长被指泄露“空军一号”机密",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "澳洲国民银行外汇策略师：美联储短期大概率维持观望 保持利率不变",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Empty",
-    "length": 0
-  },
-  {
-    "title": "纽约梅隆银行：美国劳动力市场走弱的信号已拉低实际利率预期",
-    "score": 0.0,
-    "recall_freq": 0,
-    "entity": false,
-    "grade": "Summary",
-    "length": 80
   }
 ]
