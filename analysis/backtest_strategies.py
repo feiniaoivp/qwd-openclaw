@@ -37,6 +37,9 @@ from analysis.data_layer.router import get_router
 # 回测护栏：随机基准对照
 from analysis.backtest_guard import compare_to_random, assert_beats_random
 
+# 成交真实性层（2026-11-01 P0：涨跌停可成交性 + fill 口径，默认关闭=存量口径）
+from analysis.fill_rules import limit_ratio, is_sealed
+
 # 指数代码映射 (baostock)
 INDEX_CODES = {
     "hs300": "sh.000300",      # 沪深300
@@ -320,70 +323,148 @@ def strategy_macd(df):
 # 统一回测模拟器
 # ════════════════════════════════════════
 
-def run_simulation(df, actions):
-    """根据交易信号列表模拟真实交易，返回完整绩效指标"""
+def run_simulation(df, actions, symbol=None, fill_mode=None, enforce_limit=None):
+    """根据交易信号列表模拟真实交易，返回完整绩效指标。
+
+    2026-11-01 P0 成交真实性层（规则见 analysis/fill_rules.py）：
+    - fill_mode="signal_close" 信号日收盘成交（存量默认，与历史口径一致）
+    - fill_mode="next_open"    信号次日开盘成交（与实盘「次日开盘执行」纪律一致）
+    - enforce_limit=True       涨停封板拒买 / 跌停封板卖单顺延到下一可成交日
+    不传参 = 环境变量 BT_FILL_MODE / BT_ENFORCE_LIMIT（默认 signal_close + 不检查），
+    即存量口径：历史结果可比，所有旧调用方（20 处）行为不变。
+    返回 dict 额外携带 fill_mode / enforce_limit / fill_stats（加键不破坏下游 .get）。"""
+    if fill_mode is None:
+        fill_mode = os.environ.get("BT_FILL_MODE", "signal_close")
+    if enforce_limit is None:
+        enforce_limit = os.environ.get("BT_ENFORCE_LIMIT", "0") == "1"
+    ratio = limit_ratio(symbol) if (enforce_limit and symbol) else 0.0
+
     capital = float(INITIAL_CAPITAL)
     shares = 0
     entry_price = 0
     trades = []
     equity_curve = []
+    pending_sell = False  # 跌停封板顺延的卖单（enforce_limit=True 时可能出现）
+    fill_stats = {"rejected_buys": 0, "blocked_sells": 0,
+                  "filled_buys": 0, "filled_sells": 0,
+                  "final_marked_to_market": 0}
 
     # 将actions转换为按日索引
     action_map = {}
     for a in actions:
         action_map[a["date"]] = a
 
+    def _do_buy(fill_dt, fill_price, reason):
+        nonlocal capital, shares, entry_price
+        fee = capital * COMMISSION
+        available = capital - fee
+        shares = int(available / (fill_price * (1 + SLIPPAGE)) / 100) * 100
+        if shares >= 100:
+            cost = shares * fill_price * (1 + SLIPPAGE)
+            fee2 = cost * COMMISSION
+            capital -= (cost + fee2)
+            entry_price = fill_price
+            trades.append({"date": fill_dt, "type": "BUY", "price": fill_price,
+                           "shares": shares, "reason": reason})
+            fill_stats["filled_buys"] += 1
+            return True
+        return False
+
+    def _do_sell(fill_dt, fill_price, reason, trade_type="SELL"):
+        nonlocal capital, shares, entry_price, pending_sell
+        sell_value = shares * fill_price * (1 - SLIPPAGE)
+        fee = sell_value * COMMISSION
+        net = sell_value - fee - sell_value * STAMP_TAX
+        pnl = net - shares * entry_price * (1 + SLIPPAGE)
+        pnl_pct = round((pnl / (shares * entry_price)) * 100, 2)
+        trades.append({"date": fill_dt, "type": trade_type, "price": fill_price,
+                       "shares": shares, "pnl": round(pnl, 2),
+                       "pnl_pct": pnl_pct, "reason": reason})
+        capital += net
+        shares = 0
+        entry_price = 0
+        pending_sell = False
+        fill_stats["filled_sells"] += 1
+
     # 每日模拟
     for i in range(len(df)):
         row = df.iloc[i]
         dt = str(row["date"].date())
         price = float(row["close"])
+        prev_close = float(df.iloc[i - 1]["close"]) if i > 0 else None
 
-        if dt in action_map:
-            act = action_map[dt]
-            if act["type"] == "BUY" and shares == 0:
-                fee = capital * COMMISSION
-                available = capital - fee
-                shares = int(available / (price * (1 + SLIPPAGE)) / 100) * 100
-                if shares >= 100:
-                    cost = shares * price * (1 + SLIPPAGE)
-                    fee2 = cost * COMMISSION
-                    capital -= (cost + fee2)
-                    entry_price = price
-                    trades.append({"date": dt, "type": "BUY", "price": price,
-                                   "shares": shares, "reason": act["reason"]})
+        if fill_mode == "next_open" and i > 0:
+            open_price = float(row["open"])
+            sig = action_map.get(str(df.iloc[i - 1]["date"].date()))
+            # 顺延卖单优先在今日开盘重试
+            if pending_sell and shares > 0:
+                sealed = (enforce_limit and prev_close is not None
+                          and is_sealed(prev_close, open_price, ratio, direction="down"))
+                if not sealed:
+                    _do_sell(dt, open_price, "[跌停顺延后成交] ")
+            if sig is not None:
+                if sig["type"] == "SELL" and shares > 0 and not pending_sell:
+                    if enforce_limit and prev_close is not None and is_sealed(
+                            prev_close, open_price, ratio, direction="down"):
+                        pending_sell = True
+                        fill_stats["blocked_sells"] += 1
+                    else:
+                        _do_sell(dt, open_price, "[次日开盘] " + str(sig["reason"]))
+                elif sig["type"] == "BUY" and shares == 0 and not pending_sell:
+                    if enforce_limit and prev_close is not None and is_sealed(
+                            prev_close, open_price, ratio, direction="up"):
+                        fill_stats["rejected_buys"] += 1
+                    else:
+                        _do_buy(dt, open_price, "[次日开盘] " + str(sig["reason"]))
 
-            elif act["type"] == "SELL" and shares > 0:
-                sell_value = shares * price * (1 - SLIPPAGE)
-                fee = sell_value * COMMISSION
-                net = sell_value - fee - sell_value * STAMP_TAX
-                pnl = net - shares * entry_price * (1 + SLIPPAGE)
-                pnl_pct = round((pnl / (shares * entry_price)) * 100, 2)
-                trades.append({"date": dt, "type": "SELL", "price": price,
-                               "shares": shares, "pnl": round(pnl, 2),
-                               "pnl_pct": pnl_pct, "reason": act["reason"]})
-                capital += net
-                shares = 0
-                entry_price = 0
+        elif fill_mode == "signal_close":
+            # 跌停顺延卖单优先重试（本bar收盘价）
+            if pending_sell and shares > 0:
+                sealed = (enforce_limit and prev_close is not None
+                          and is_sealed(prev_close, price, ratio, direction="down"))
+                if not sealed:
+                    _do_sell(dt, price, "[跌停顺延后成交] ")
+            act = action_map.get(dt)
+            if act is not None:
+                if act["type"] == "SELL" and shares > 0 and not pending_sell:
+                    if enforce_limit and prev_close is not None and is_sealed(
+                            prev_close, price, ratio, direction="down"):
+                        pending_sell = True
+                        fill_stats["blocked_sells"] += 1
+                    else:
+                        _do_sell(dt, price, act["reason"])
+                elif act["type"] == "BUY" and shares == 0 and not pending_sell:
+                    if enforce_limit and prev_close is not None and is_sealed(
+                            prev_close, price, ratio, direction="up"):
+                        fill_stats["rejected_buys"] += 1
+                    else:
+                        _do_buy(dt, price, act["reason"])
 
         equity_curve.append({"date": dt,
                              "equity": capital + shares * price,
                              "position": shares > 0})
 
-    # 最终若还持仓，按最后价格平仓
+    # 最终若还持仓，按最后价格平仓；enforce 口径下若末日跌停封板则改为盯市
     final_price = float(df.iloc[-1]["close"])
     if shares > 0:
-        sell_value = shares * final_price * (1 - SLIPPAGE)
-        fee = sell_value * COMMISSION
-        net = sell_value - fee - sell_value * STAMP_TAX
-        pnl = net - shares * entry_price * (1 + SLIPPAGE)
-        pnl_pct = round((pnl / (shares * entry_price)) * 100, 2)
-        trades.append({"date": str(df.iloc[-1]["date"].date()), "type": "SELL(平)",
-                       "price": final_price, "shares": shares,
-                       "pnl": round(pnl, 2), "pnl_pct": pnl_pct,
-                       "reason": "期末平仓"})
-        capital += net
-        shares = 0
+        final_prev = float(df.iloc[-2]["close"]) if len(df) > 1 else None
+        final_sealed_down = (enforce_limit and fill_mode == "signal_close"
+                             and final_prev is not None
+                             and is_sealed(final_prev, final_price, ratio, direction="down"))
+        if final_sealed_down:
+            fill_stats["final_marked_to_market"] = 1
+        else:
+            sell_value = shares * final_price * (1 - SLIPPAGE)
+            fee = sell_value * COMMISSION
+            net = sell_value - fee - sell_value * STAMP_TAX
+            pnl = net - shares * entry_price * (1 + SLIPPAGE)
+            pnl_pct = round((pnl / (shares * entry_price)) * 100, 2)
+            trades.append({"date": str(df.iloc[-1]["date"].date()), "type": "SELL(平)",
+                           "price": final_price, "shares": shares,
+                           "pnl": round(pnl, 2), "pnl_pct": pnl_pct,
+                           "reason": "期末平仓"})
+            capital += net
+            shares = 0
 
     # ── 绩效指标 ──
     eq_df = pd.DataFrame(equity_curve)
@@ -474,6 +555,10 @@ def run_simulation(df, actions):
         "p25_ret": round(p25_ret, 2),
         "mean_ret": round(mean_ret, 2),
         "std_ret": round(std_ret, 2),
+        # 成交真实性层（2026-11-01 P0；存量默认口径下 stats 全零）
+        "fill_mode": fill_mode,
+        "enforce_limit": bool(enforce_limit),
+        "fill_stats": fill_stats,
     }
 
 
