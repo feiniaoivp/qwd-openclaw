@@ -75,36 +75,121 @@ def apply_linking():
         return
 
     with open(KB_PATH, "r", encoding="utf-8") as f:
-        kb_content = f.read()
+        lines = f.read().splitlines()
 
+    SUB = re.compile(r"^\s*-\s*(Details|Data|Insight|Related)\s*:")
     updated_count = 0
     # 我们只为那些已经在 KB 中且有 Detailed 内容的条目添加链接
     for title, related_titles in rel_map.items():
-        # 查找该条目在 KB 中的位置
-        escaped_title = re.escape(title)
-        # 匹配该条目的末尾（直到下一个 bullet 之前）
-        pattern = rf"(^[ \t]*[•-]\s*{escaped_title}.*?)(?=\n\s*[•-]| \Z)"
-        
-        # 构造链接字符串
-        links = [f"[[{rt}]]" for rt in list(related_titles)[:5]] # 最多关联 5 个
-        link_str = "\\n      - Related: " + ", ".join(links)
-        
-        m = re.search(pattern, kb_content, re.MULTILINE | re.DOTALL)
-        if m:
-            # 2026-10-26 修复两处：
-            #   1. 原替换串 rf"\\1" 是字面量反斜杠+1（非分组引用），曾把 54 个标题行毁成孤立 \1
-            #   2. 幂等保护：已含 Related: 的条目跳过，防重复追加堆叠
-            if "Related:" in m.group(1):
-                continue
-            kb_content = re.sub(pattern, rf"\g<1>{link_str}", kb_content, count=1, flags=re.MULTILINE | re.DOTALL)
-            updated_count += 1
-            print(f"🔗 Linked: {title} -> {len(links)} related")
+        # 行级定位：首个「弹符+标题全文」相等的行（含索引区子行，与旧版 prefix 正则同族）
+        tgt = None
+        for i, ln in enumerate(lines):
+            m = re.match(r"^[ \t]*[•\-\*][ \t]*(.+)$", ln)
+            if m and m.group(1).strip() == title.strip():
+                tgt = i
+                break
+        if tgt is None:
+            continue
+        # 块扫描：标题行后的连续子行区间；已有 Related 子行 → 跳过（幂等）
+        # 修复记录（2026-11-01）：旧守卫 `if "Related:" in m.group(1)` 因 lazy .*? 在首个子行
+        # 前就停（lookahead `\n\s*[•-]` 连子行都匹配），group(1) 永远只含标题行，
+        # 守卫形同虚设 → 每轮运行重复追加，重灾块堆到 15 行（已由 kb_related_dedup.py 治理存量）。
+        j = tgt + 1
+        has_rel = False
+        block_end = tgt
+        while j < len(lines):
+            msub = SUB.match(lines[j])
+            if not msub:
+                break
+            if msub.group(1) == "Related":
+                has_rel = True
+            block_end = j
+            j += 1
+        if has_rel:
+            continue
+        links = [f"[[{rt}]]" for rt in list(related_titles)[:5]]  # 最多关联 5 个
+        link_line = "      - Related: " + ", ".join(links)
+        lines.insert(block_end + 1, link_line)
+        updated_count += 1
+        print(f"🔗 Linked: {title} -> {len(links)} related")
 
     _bak(KB_PATH)
     with open(KB_PATH, "w", encoding="utf-8") as f:
-        f.write(kb_content)
-        
-    print(f"\\n🎉 Knowledge Linking Complete. Updated {updated_count} entries.")
+        f.write("\n".join(lines) + "\n")
+
+    print(f"\n🎉 Knowledge Linking Complete. Updated {updated_count} entries.")
+
+def _selftest():
+    """对抗自测：①已有 Related 子行 → 跳过；②无 Related → 恰插 1 行；
+    ③Related 位于子行中段也能识别；④二跑幂等（0 更新）；⑤插入位置在块尾。"""
+    import tempfile
+    fixture = [
+        "• 标题A",
+        "      - Details: 甲",
+        "      - Related: [[标题B]]",
+        "• 标题C",
+        "      - Data: 乙",
+        "      - Insight: 丙",
+        "• 标题D",
+        "",
+        "  **分组头**:",
+        "    - 某索引行",
+    ]
+    rel = {
+        "标题A": {"标题B"},
+        "标题C": {"标题D"},
+        "标题D": {"标题C"},
+    }
+    global KB_PATH
+    old_kb, old_rel = KB_PATH, build_relation_matrix
+    tmpdir = tempfile.mkdtemp()
+    KB_PATH = os.path.join(tmpdir, "kb.md")
+    with open(KB_PATH, "w", encoding="utf-8") as f:
+        f.write("\n".join(fixture) + "\n")
+    # monkeypatch rel_map 数据源
+    globals()["build_relation_matrix"] = lambda: dict(rel)
+    try:
+        import io, contextlib
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            apply_linking()
+        out1 = open(KB_PATH, encoding="utf-8").read().splitlines()
+        buf2 = io.StringIO()
+        with contextlib.redirect_stdout(buf2):
+            apply_linking()
+        out2 = open(KB_PATH, encoding="utf-8").read().splitlines()
+    finally:
+        KB_PATH = old_kb
+        globals()["build_relation_matrix"] = old_rel
+
+    errs = []
+    # ① A 块未被追加（全库 Related 行 = A/C/D 各 1 行 = 3 行）
+    n_rel_a = sum(1 for l in out1 if l.strip().lstrip("- ").startswith("Related:"))
+    # A/C/D 各恰好 1 行 Related = 3 行
+    if n_rel_a != 3:
+        errs.append(f"Related 行数应=3 实际={n_rel_a}")
+    # ② C 的插入位置：紧跟其 Insight 子行后
+    if "标题C" in "\n".join(out1):
+        ic = next(i for i, l in enumerate(out1) if l.strip() == "• 标题C")
+        if not out1[ic + 3].strip().lstrip("- ").startswith("Related:"):
+            errs.append(f"C 块插入位置错: {out1[ic+1:ic+4]}")
+    # ③ 二跑幂等
+    if out1 != out2:
+        errs.append("二跑不幂等（第二轮仍产生变更）")
+    # ④ 分组头后的索引行未被误挂
+    if any("某索引行" in l and "Related" in l for l in out1):
+        errs.append("索引行被误改")
+
+    if errs:
+        print("❌ selftest FAILED:")
+        for e in errs:
+            print("  -", e)
+        return 1
+    print("✅ kb_linker selftest 5/5 通过（跳过已有/恰插一行/中段识别/二跑幂等/不误挂索引）")
+    return 0
+
 
 if __name__ == "__main__":
+    if "--selftest" in sys.argv:
+        sys.exit(_selftest())
     apply_linking()
