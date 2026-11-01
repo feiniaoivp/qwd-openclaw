@@ -373,6 +373,16 @@ def main():
     if not r["success"]:
         print("⚠️ 知识库正文抽样异常（见上方），关注 [EMPTY] 条目比例（不阻断流水线）...")
 
+    # 步骤 0ae: KB 裸 stub 重复堆积监测（2026-11-01 专项处置后接入，warn-only dry-run）
+    # 背景：收口入库曾反复堆同题裸 stub（存量 182 组已治理）；源头已加 kb_append_guard.py，
+    # 此步为兑底监测：backlog >0 即报，由 agent 会话跑 kb_variant_merge.py --apply 治理
+    # （合并工具已内建裁决门禁：非同串变体/含信息 Raw 行默认拒绝，safe-by-default）。
+    print("\n🚦 步骤 0ae/9: KB 裸stub重复堆积监测 (kb_variant_merge.py dry-run)")
+    r = run_script("../scripts/kb_variant_merge.py", timeout=120)
+    results["kb_stub_merge"] = r
+    if not r["success"]:
+        print("⚠️ KB 存在可合并的裸 stub 重复（见上方 ✂️ 清单）；由下次 KB 会话裁决后 --apply（不阻断流水线）...")
+
     # 步骤 0ad: dreaming 日报 §7 job 名对账（2026-10-23 新增，warn-only）
     # 背景：dreaming §7 虚构「记忆维护-周五」（thursday 系列外推）；daily-report 由插件
     # magic-token 生成、cron message 不可改 → 事后门禁对账 job 名 vs cron list 实名。

@@ -17,19 +17,21 @@ def _bak(path):
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 KB_PATH = os.path.join(WORKSPACE, "data", "news", "knowledge_base.md")
-# 这里的 assets 应该是我们之前合成的 json 文件
-SYNTHESIZED_FILES = [
-    os.path.join(WORKSPACE, "data", "news", "batch_1_synthesized.json"),
-    os.path.join(WORKSPACE, "data", "news", "batch_2_synthesized.json"),
-    os.path.join(WORKSPACE, "data", "news", "batch_3_synthesized.json"),
-]
+NEWS_DIR = os.path.join(WORKSPACE, "data", "news")
+
+
+def _synthesized_files():
+    """2026-11-01 升级：扫描全部 batch_*_synthesized.json（旧版硬编码 batch_1~3，
+    关系矩阵只覆盖前三批，后续批次的实体共现全部丢失）。"""
+    import glob
+    return sorted(glob.glob(os.path.join(NEWS_DIR, "batch_*_synthesized.json")))
 
 def build_relation_matrix():
     """
     扫描所有已合成的 Detailed 条目，根据标题和内容建立关联矩阵。
     """
     all_entries = []
-    for f_path in SYNTHESIZED_FILES:
+    for f_path in _synthesized_files():
         if os.path.exists(f_path):
             with open(f_path, "r", encoding="utf-8") as f:
                 all_entries.extend(json.load(f))
@@ -101,7 +103,9 @@ def apply_linking():
             msub = SUB.match(lines[j])
             if not msub:
                 break
-            if msub.group(1) == "Related":
+            # 2026-11-01 升级：独立 Related 子行或子行文本内联 [[Related: ...]] 均算已链接
+            # （synthesis 风格把 Related 写在 Insight 尾部，旧版只认独立子行会对已策展条目重复挂机械链接）
+            if msub.group(1) == "Related" or "[[Related:" in lines[j]:
                 has_rel = True
             block_end = j
             j += 1
@@ -132,6 +136,9 @@ def _selftest():
         "      - Insight: 丙",
         "• 标题D",
         "",
+        "• 标题E",
+        "      - Details: 丁",
+        "      - Insight: 戊，另见。[[Related: 标题D]]",
         "  **分组头**:",
         "    - 某索引行",
     ]
@@ -139,6 +146,7 @@ def _selftest():
         "标题A": {"标题B"},
         "标题C": {"标题D"},
         "标题D": {"标题C"},
+        "标题E": {"标题A"},   # E 已有内联 Related → 守卫必须跳过
     }
     global KB_PATH
     old_kb, old_rel = KB_PATH, build_relation_matrix
@@ -163,7 +171,7 @@ def _selftest():
         globals()["build_relation_matrix"] = old_rel
 
     errs = []
-    # ① A 块未被追加（全库 Related 行 = A/C/D 各 1 行 = 3 行）
+    # ① A 块未被追加；E（内联 Related）被跳过 → 全库独立 Related 行 = A/C/D 各 1 行 = 3 行
     n_rel_a = sum(1 for l in out1 if l.strip().lstrip("- ").startswith("Related:"))
     # A/C/D 各恰好 1 行 Related = 3 行
     if n_rel_a != 3:
@@ -176,7 +184,11 @@ def _selftest():
     # ③ 二跑幂等
     if out1 != out2:
         errs.append("二跑不幂等（第二轮仍产生变更）")
-    # ④ 分组头后的索引行未被误挂
+    # ⑤ E 的 Insight 内联 Related 未被拆出成独立行（保持 1 行）
+    e_insight = [l for l in out1 if "[[Related: 标题D]]" in l]
+    if len(e_insight) != 1 or not e_insight[0].strip().lstrip("- ").startswith("Insight:"):
+        errs.append(f"E 内联 Related 被改动: {e_insight}")
+    # ⑥ 分组头后的索引行未被误挂
     if any("某索引行" in l and "Related" in l for l in out1):
         errs.append("索引行被误改")
 
@@ -185,7 +197,7 @@ def _selftest():
         for e in errs:
             print("  -", e)
         return 1
-    print("✅ kb_linker selftest 5/5 通过（跳过已有/恰插一行/中段识别/二跑幂等/不误挂索引）")
+    print("✅ kb_linker selftest 6/6 通过（跳过已有/恰插一行/中段识别/二跑幂等/不误挂索引/内联Related感知）")
     return 0
 
 
