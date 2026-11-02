@@ -26,6 +26,7 @@ import json
 from datetime import datetime, date
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
+from analysis.stop_loss_manager import StopLossManager
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 DATA_DIR = os.path.join(WORKSPACE, "data")
@@ -244,6 +245,9 @@ class NextDaySimulator:
             else:
                 print(f"  [STOP_MAP] {r['symbol']} 买入候选无可用支撑位，预案止损缺位(显式留空，不填补默认值)")
 
+        # 2026-11-01 A阶段增强：将当日计算的止损地图落盘为审计快照，防止内存丢失/静默篡改
+        StopLossManager.save(stop_loss)
+
         return stop_loss
 
     def _lookup_support(self, symbol: str, scan_results: dict = None) -> Optional[float]:
@@ -268,6 +272,29 @@ class NextDaySimulator:
                     if s.get("symbol") == symbol:
                         sup = s.get("support")
                         return float(sup) if sup else None
+            except (json.JSONDecodeError, OSError) as e:
+                print(f"  [STOP_MAP] close_scan 档案解析失败 {path}: {e}")
+        return None
+
+    def _lookup_scan_stop(self, symbol: str) -> Optional[float]:
+        """[2026-11-02] 止损位渲染兜底：方向核心无裁决止损（幽灵过滤后无持仓、非买入候选）时，
+        回填 close_scan 档案 stop_long（扫描链 ATR 跟踪止损，与 _lookup_support 同档案同模式）。
+        缺失返回 None，不填充默认值（缺数据 ≠ 中性）。"""
+        for path in (os.path.join(OUTPUT_DIR, f"{self.today}_close_scan.json"),
+                     os.path.join(OUTPUT_DIR, f"{self.prev_date}_close_scan.json")):
+            if not os.path.exists(path):
+                continue
+            try:
+                with open(path, encoding="utf-8") as f:
+                    data = json.load(f)
+                for s in data.get("stocks", []):
+                    if s.get("symbol") == symbol:
+                        v = s.get("stop_long")
+                        try:
+                            return float(v) if v else None
+                        except (TypeError, ValueError):
+                            print(f"  [STOP_MAP] {symbol} stop_long 非数值: {v!r}，显式留空")
+                            return None
             except (json.JSONDecodeError, OSError) as e:
                 print(f"  [STOP_MAP] close_scan 档案解析失败 {path}: {e}")
         return None
@@ -491,11 +518,17 @@ class NextDaySimulator:
         # 拆分子表达式，避免在 f-string 表达式内使用反斜杠（部分 Python 版本不受支持）
         parts = []
         for s in stocks[:2]:
-            if f"{s}_stop" in levels:
+            stop = levels.get(f"{s}_stop")
+            if not stop:
+                # [2026-11-02] 方向核心无裁决止损（幽灵过滤后无持仓、非买入候选）时，
+                # 回填 close_scan 档案 stop_long，消除「止损位（）」空渲染（中信金属实证）
+                stop = self._lookup_scan_stop(s)
+            if stop:
                 name = SYMBOL_TO_NAME.get(s, s)
-                stop = levels.get(f"{s}_stop", "?")
                 parts.append(f"{name}¥{stop}")
-        return f"核心标的跌破止损位（{', '.join(parts)}）无条件离场；未持仓者绝不抄底，等待情绪冰点后企稳确认"
+        if parts:
+            return f"核心标的跌破止损位（{', '.join(parts)}）无条件离场；未持仓者绝不抄底，等待情绪冰点后企稳确认"
+        return "核心标的无条件离场；未持仓者绝不抄底，等待情绪冰点后企稳确认"
 
     def _gen_risk_warnings(self, market_context: dict, position_plan: dict,
                            arbitration_results: List[dict], fatal: bool, high_risk: bool) -> List[str]:
