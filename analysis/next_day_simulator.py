@@ -626,6 +626,25 @@ def load_all_inputs() -> tuple:
         with open(dual_path) as f:
             scan_results = json.load(f)
 
+    # 🔴 空输入显式告警护栏（2026-11-03 用户拍板落地；事故实证 2026-11-02）
+    # 独立入口的 {date}_dual.json / {date}_adaptive.json 是死引用：全仓无脚本写这两个文件，
+    # 生产走 adaptive_dual 内存直传 scan_results（adaptive_dual.py 直调 NextDaySimulator.generate）。
+    # scan_results 为空时方向推演会静默缩水（11-02 实证：方向 13→9，军工电子/特种陶瓷/
+    # 高端液压/消费电子四块无声消失），故空扫描输入必须显式告警并拒跑（exit 1），
+    # 禁止静默降级出报告。
+    if not (isinstance(scan_results, dict) and scan_results.get("details")):
+        found = dual_path if os.path.exists(dual_path) else None
+        print("❌ [next_day_sim] 扫描输入为空 —— 独立入口拒跑（禁止空输入静默降级）。", file=sys.stderr)
+        print(f"   查找路径: {today}_dual.json / {today}_adaptive.json（目录 {OUTPUT_DIR}）", file=sys.stderr)
+        if found:
+            print(f"   实际情况: 读到 {os.path.basename(found)}，但 details 为空/缺失——输入数据不完整。", file=sys.stderr)
+        else:
+            print("   实际情况: 两个文件均不存在（已知死引用：全仓无脚本写这两个文件）。", file=sys.stderr)
+        print("   生产路径: adaptive_dual 内存直传 scan_results（不落盘），独立入口因此天然拿不到当日扫描。", file=sys.stderr)
+        print("   处理: 改走生产路径（adaptive_dual 直调 NextDaySimulator.generate），或先让生产链路落盘当日 dual JSON 再运行。", file=sys.stderr)
+        print("   事故实证: 2026-11-02 手动重跑 scan_results 为空 → 方向 13→9，四块（军工电子/特种陶瓷/高端液压/消费电子）静默消失。", file=sys.stderr)
+        sys.exit(1)
+
     return market_context, position_plan, arbitration_results, held_positions, scan_results
 
 
