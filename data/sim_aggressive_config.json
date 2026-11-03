@@ -1,0 +1,31 @@
+{
+  "mode": "aggressive",
+  "enabled": true,
+  "_meta": {
+    "approved_by": "用户 2026-11-03 20:01 /approve 落实激进模式",
+    "scope": "模拟盘(paper trading)专用, 无真实资金",
+    "rollback": "enabled=false 或删除本文件 或 环境变量 SIM_AGGRESSIVE=0",
+    "hard_safety": "030致命风险硬保险(仓位归零/禁买)不受影响; tier3禁买保留; 总仓上限仍执法(1.5x放宽后)"
+  },
+  "total_limit_multiplier": 1.5,
+  "single_stock_max_multiplier": 2.5,
+  "single_stock_cap": 0.3,
+  "core_single_cap": 0.3,
+  "sat_single_cap": 0.12,
+  "health_multiplier_floor": 0.5,
+  "high_risk_buy_mult": 0.5,
+  "high_risk_position_mult": 0.7,
+  "direction_max_ratio": 0.8,
+  "cluster_expo_cap": 0.45,
+  "dumbbell_core_max": 0.75,
+  "dumbbell_sat_max": 0.4,
+  "allow_tier2_buy": true,
+  "allow_tier3_buy": false,
+  "atr_stop_mult": 3,
+  "risk_per_trade": 0.02,
+  "max_position_pct": 0.3,
+  "gate_buy_line": 45,
+  "gate_missing_policy": "ignore",
+  "streak_max_bonus": 2,
+  "stop_cooldown_days": 5
+}

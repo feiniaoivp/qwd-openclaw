@@ -210,6 +210,40 @@ STOCK_DIRECTION_MAP = {
 }
 
 
+# ═══════════════════════════════════════════
+# 模拟盘激进模式（2026-11-03 用户批准；配置: data/sim_aggressive_config.json）
+# 回滚: 配置 enabled=false / 删除文件 / 环境变量 SIM_AGGRESSIVE=0
+# 致命风险行(仓位=0)硬保险不放宽
+# ═══════════════════════════════════════════
+try:
+    from analysis.sim_aggressive import AGGR as _AGGR
+except Exception as _e:
+    print(f"⚠️ sim_aggressive 加载失败, 激进模式禁用: {_e}")
+    _AGGR = {"enabled": False}
+
+if _AGGR.get("enabled"):
+    _tot_m = float(_AGGR.get("total_limit_multiplier", 1.0))
+    _sgl_m = float(_AGGR.get("single_stock_max_multiplier", 1.0))
+    _sgl_cap = float(_AGGR.get("single_stock_cap", 0.20))
+    for _stage, _row in POSITION_MATRIX.items():
+        if _stage == "致命风险":
+            continue  # 致命风险仓位=0 硬保险保留
+        for _k, _v in _row.items():
+            if _v > 0:
+                _row[_k] = min(1.0, round(_v * _tot_m, 4))
+    for _stage, _row in SINGLE_STOCK_MAX.items():
+        if _stage == "致命风险":
+            continue
+        for _k, _v in _row.items():
+            if _v > 0:
+                _row[_k] = min(_sgl_cap, round(_v * _sgl_m, 4))
+    DIRECTION_MAX_RATIO = float(_AGGR.get("direction_max_ratio", DIRECTION_MAX_RATIO))
+    _hfloor = float(_AGGR.get("health_multiplier_floor", 0.2))
+    HEALTH_MULTIPLIER = {k: max(v, _hfloor) for k, v in HEALTH_MULTIPLIER.items()}
+    print(f"🔥 激进模式已启用(position_sizer): 总仓乘数{_tot_m}x 单股乘数{_sgl_m}x "
+          f"(天花板{_sgl_cap:.0%}) 健康度乘数地板{_hfloor} 方向占比{DIRECTION_MAX_RATIO:.0%}")
+
+
 @dataclass
 class PositionPlan:
     """仓位计划数据类"""
@@ -323,8 +357,8 @@ class PositionSizer:
         # 3. 健康度乘数
         health_mult = self._get_health_multiplier(health_score)
 
-        # 4. 高风险防御额外降仓
-        high_risk_mult = 0.5 if high_risk_triggered else 1.0
+        # 4. 高风险防御额外降仓（激进模式可配置，关闭时默认0.5与原值一致）
+        high_risk_mult = float(_AGGR.get("high_risk_position_mult", 0.5)) if high_risk_triggered else 1.0
 
         # 5. 最终总仓位上限
         total_limit_pct = round(base_pct * health_mult * high_risk_mult, 4)
@@ -383,9 +417,10 @@ class PositionSizer:
     def _calc_buy_multiplier(self, fatal: bool, high_risk: bool, health: int, atr_estimates: dict = None) -> float:
         """买入信号强度乘数（含ATR仓位约束）"""
         if fatal:
-            return 0.0  # 完全禁买
+            return 0.0  # 完全禁买（硬保险，激进模式不放宽）
         if high_risk:
-            return 0.3  # 高风险防御：仅允许极小仓试探
+            # 激进模式(2026-11-03): 高风险买入乘数可配置；关闭时默认0.3与原值一致
+            return float(_AGGR.get("high_risk_buy_mult", 0.3))  # 高风险防御：仅允许极小仓试探
         
         base_mult = 1.0
         if health >= 8:
@@ -396,6 +431,8 @@ class PositionSizer:
             base_mult = 0.5
         else:
             base_mult = 0.2
+        # 激进模式: 健康度乘数地板（关闭时默认0.2=不改变任何分支值）
+        base_mult = max(base_mult, float(_AGGR.get("health_multiplier_floor", 0.2)))
         
         # ATR仓位约束：若预估仓位普遍偏小（高波动），降低乘数
         if atr_estimates:

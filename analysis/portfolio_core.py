@@ -64,6 +64,29 @@ CLUSTER_EXPO_CAP = float(os.getenv("CLUSTER_EXPO_CAP", "0.25"))
 TOTAL_LIMIT_ENFORCE = os.getenv("TOTAL_LIMIT_ENFORCE", "1") == "1"
 ATR_STOP_MULT = 2.0
 
+# 模拟盘激进模式（2026-11-03 用户批准；配置 data/sim_aggressive_config.json，
+# 回滚: enabled=false / 删文件 / 环境变量 SIM_AGGRESSIVE=0；致命风险硬保险不受影响）
+try:
+    from analysis.sim_aggressive import AGGR as _AGGR_CFG
+except Exception as _e:
+    print(f"⚠️ sim_aggressive 加载失败, 激进模式禁用: {_e}")
+    _AGGR_CFG = {"enabled": False}
+if _AGGR_CFG.get("enabled"):
+    CLUSTER_EXPO_CAP = float(_AGGR_CFG.get("cluster_expo_cap", CLUSTER_EXPO_CAP))
+    ATR_STOP_MULT = float(_AGGR_CFG.get("atr_stop_mult", ATR_STOP_MULT))
+    print(f"🔥 激进模式已启用(portfolio_core): 单簇上限{CLUSTER_EXPO_CAP:.0%} ATR止损倍数{ATR_STOP_MULT}")
+
+
+def _aggr_single_cap_pct(bucket: str) -> float:
+    """单股上限（占单票本金10万比例），激进模式感知（2026-11-03）。
+    标准: core 15% / satellite 5%；激进: 按配置 core_single_cap/sat_single_cap。
+    """
+    if _AGGR_CFG.get("enabled"):
+        if bucket == "core":
+            return float(_AGGR_CFG.get("core_single_cap", 0.15))
+        return float(_AGGR_CFG.get("sat_single_cap", 0.05))
+    return 0.15 if bucket == "core" else 0.05
+
 # 单一事实来源：参考总本金（仓位计算/风控限额/收益率分母统一引用）
 # 注：该值为"参考分母"常量，不随关注池只数自动变动；如需调整须走风控变更流程。
 REFERENCE_TOTAL_CAPITAL = 2_700_000
@@ -411,7 +434,10 @@ def init_position(symbol: str, name: str, strategy: str, bucket: str = "tier1") 
         "tier": (bucket if bucket in ("tier2", "tier3") else _resolve_tier(symbol)),
         "bucket": classify_bucket(symbol)[0],
         "direction": STOCK_DIRECTION_MAP.get(symbol, "其他") if HAS_030_MODULES else "其他",
-        "atr_params": {"stop_mult": ATR_STOP_MULT, "risk_per_trade": 0.01, "max_position_pct": 0.15},
+        "atr_params": {"stop_mult": ATR_STOP_MULT,
+                       # 激进模式(2026-11-03): 单笔风险/仓位上限按配置放宽（仅新开仓生效）
+                       "risk_per_trade": float(_AGGR_CFG.get("risk_per_trade", 0.01)),
+                       "max_position_pct": float(_AGGR_CFG.get("max_position_pct", 0.15))},
     }
 
 
@@ -518,9 +544,13 @@ def _apply_tier_filter(signal: Dict, pos: Dict, tier: str) -> Dict:
             pos["_force_sell_tier3"] = False
     elif tier == "tier2":
         if action == "买入":
-            _mark_suppressed(signal, "tier2")
-            signal["action"] = "持有"
-            signal["reason"] = f"🟡 Tier2屏蔽买入 | 原理由: {signal.get('suppressed_reason', '')}"
+            # 激进模式(2026-11-03 用户批准): tier2 买入放行，写留痕字段供事后归因
+            if _AGGR_CFG.get("enabled") and _AGGR_CFG.get("allow_tier2_buy", False):
+                signal["aggressive_allowed"] = "tier2_buy"
+            else:
+                _mark_suppressed(signal, "tier2")
+                signal["action"] = "持有"
+                signal["reason"] = f"🟡 Tier2屏蔽买入 | 原理由: {signal.get('suppressed_reason', '')}"
     elif tier == "tier1":
         if action == "卖出":
             reason = signal.get("reason", "")
@@ -845,6 +875,8 @@ class RiskGuard:
                 max_streak = 2
             else:
                 max_streak = 3
+            # 激进模式(2026-11-03): 连续买入天数上限放宽（默认+0不改变行为）
+            max_streak += int(_AGGR_CFG.get("streak_max_bonus", 0))
             
             # 检查是否需要钝化
             if streak > max_streak:
@@ -896,16 +928,16 @@ def classify_bucket(symbol: str) -> Tuple[str, float, float]:
         "600312", "002028", "002270", "002130"
     }
     if symbol in POWER_OVERSEAS:
-        return "core", 0.15, 0.80
+        return "core", _aggr_single_cap_pct("core"), 0.80
     if HAS_030_MODULES:
         try:
             moat_score, _ = calc_moat_score(symbol)
             is_core = is_core_moat_stock(symbol)
             if is_core:
-                return "core", 0.15, 0.80
+                return "core", _aggr_single_cap_pct("core"), 0.80
         except Exception:
             pass
-    return "satellite", 0.05, 0.20
+    return "satellite", _aggr_single_cap_pct("satellite"), 0.20
 
 
 # ═══════════════════════════════════════════
@@ -921,8 +953,9 @@ def execute_trade(pos: Dict, signal: Dict, dt: str, strategy: str,
     action = signal["action"]
     # 2026-10-20 A 方案：bucket=core/satellite（classify_bucket 驱动），
     # 核心 15% / 卫星 5% 与哑铃 80/20 首次真正生效（修复前恒为卫星 5%）
+    # 激进模式(2026-11-03): 单股上限按 _aggr_single_cap_pct 放宽
     bucket = pos.get("bucket", "satellite")
-    max_single_pct = 0.15 if bucket == "core" else 0.05
+    max_single_pct = _aggr_single_cap_pct(bucket)
     single_cap = INITIAL_CAPITAL * max_single_pct
 
     # 030 仓位限制：动态调整可用资金
@@ -1008,7 +1041,8 @@ def execute_trade(pos: Dict, signal: Dict, dt: str, strategy: str,
             is_stop_loss = True
         
         if is_stop_loss:
-            RiskGuard.record_stop_loss_cooldown(pos, cooldown_days=15)
+            # 激进模式(2026-11-03): 止损冷却期可配置（默认仍15天）
+            RiskGuard.record_stop_loss_cooldown(pos, cooldown_days=int(_AGGR_CFG.get("stop_cooldown_days", 15)))
         
         append_trade({"date": dt, "symbol": pos["_symbol"], "name": pos["name"],
                       "action": "SELL", "price": price, "shares": 0,
@@ -1031,7 +1065,7 @@ def _check_barbell_constraints(pos: Dict, signal: Dict, position_plan: Dict,
         return True, None  # 卖出或已持仓不检查
     
     bucket = pos.get("bucket", "satellite")
-    max_single_pct = 0.15 if bucket == "core" else 0.05
+    max_single_pct = _aggr_single_cap_pct(bucket)
     single_cap = INITIAL_CAPITAL * max_single_pct
     
     # 1. 030 仓位限制：单股上限
@@ -1039,10 +1073,10 @@ def _check_barbell_constraints(pos: Dict, signal: Dict, position_plan: Dict,
     if max_amount > single_cap:
         max_amount = single_cap
     
-    # 2. 核心/卫星仓位总上限检查
+    # 2. 核心/卫星仓位总上限检查（激进模式: 哑铃占比可配置，2026-11-03）
     total_initial = REFERENCE_TOTAL_CAPITAL
-    core_limit = total_initial * 0.80  # 核心仓最多80%
-    sat_limit = total_initial * 0.20   # 卫星仓最多20%
+    core_limit = total_initial * float(_AGGR_CFG.get("dumbbell_core_max", 0.80))  # 核心仓最多80%
+    sat_limit = total_initial * float(_AGGR_CFG.get("dumbbell_sat_max", 0.20))   # 卫星仓最多20%
     
     # 计算当前核心/卫星仓位价值
     positions = state.get("positions", {})
@@ -1153,7 +1187,7 @@ def _apply_cluster_cap(signal, pos, state, should_exec, sym, sym_to_cluster, nam
         # 预估本笔买入额（与 execute_trade 限额口径一致）
         plan = position_plan or {}
         bucket = pos.get("bucket", "satellite")
-        single_cap = INITIAL_CAPITAL * (0.15 if bucket == "core" else 0.05)
+        single_cap = INITIAL_CAPITAL * _aggr_single_cap_pct(bucket)
         max_amount = plan.get("single_stock_max_amount", 100_000) * plan.get("buy_signal_multiplier", 1.0)
         est_buy = max(0.0, min(float(pos.get("cash", 0) or 0), max_amount, single_cap))
 
@@ -1216,7 +1250,7 @@ def _apply_total_expo_cap(signal, pos, state, should_exec, sym, name,
 
         # 预估买入额（与 execute_trade 同口径钳制）
         bucket = pos.get("bucket", "satellite")
-        single_cap = INITIAL_CAPITAL * (0.15 if bucket == "core" else 0.05)
+        single_cap = INITIAL_CAPITAL * _aggr_single_cap_pct(bucket)
         max_amount = plan.get("single_stock_max_amount", 100_000) * plan.get("buy_signal_multiplier", 1.0)
         est_buy = max(0.0, min(float(pos.get("cash", 0) or 0), max_amount, single_cap))
 
