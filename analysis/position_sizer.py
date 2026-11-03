@@ -317,6 +317,7 @@ class PositionSizer:
             "stop_loss": round(stop_loss_price, 2),
             "risk_amount": round(risk_amount, 2),
             "stop_distance": round(stop_distance, 2),
+            "entry_price": entry_price,
         }
 
     def calculate(self,
@@ -325,7 +326,8 @@ class PositionSizer:
                   health_score: int,
                   fatal_risk: dict = None,
                   held_positions: Dict[str, dict] = None,
-                  watchlist: List[str] = None) -> PositionPlan:
+                  watchlist: List[str] = None,
+                  atr_map: Dict[str, tuple] = None) -> PositionPlan:
         """
         计算仓位计划
 
@@ -371,10 +373,11 @@ class PositionSizer:
         single_max_pct = round(single_max_pct * health_mult * high_risk_mult, 4)
         single_max_amount = round(self.total_capital * single_max_pct, 2)
 
-        # 6b. ATR波动率仓位预估（用于买入信号乘数微调）
+        # 6b. ATR波动率仓位预估（用于买入信号乘数微调；
+        #     2026-11-03 接真实 ATR：无真实数据的标的直接跳过，不再伪造）
         atr_position_estimates = {}
         if watchlist:
-            atr_position_estimates = self._estimate_atr_positions(watchlist, held_positions)
+            atr_position_estimates = self._estimate_atr_positions(watchlist, held_positions, atr_map=atr_map)
 
         # 7. 买入信号乘数（致命风险/高风险/健康度/ATR仓位综合）
         buy_mult = self._calc_buy_multiplier(fatal_triggered, high_risk_triggered, health_score, atr_position_estimates)
@@ -436,33 +439,36 @@ class PositionSizer:
         
         # ATR仓位约束：若预估仓位普遍偏小（高波动），降低乘数
         if atr_estimates:
-            avg_atr_pct = sum(e["stop_distance"] / 10.0 for e in atr_estimates.values()) / len(atr_estimates) if atr_estimates else 0
+            # 2026-11-03 修复：除数由硬编码 10.0 改为真实 entry_price
+            avg_atr_pct = sum(
+                e["stop_distance"] / e["entry_price"] for e in atr_estimates.values() if e.get("entry_price")
+            ) / len(atr_estimates) if atr_estimates else 0
             # 简化：如果平均止损距离 > 5%，视为高波动，降权
             if avg_atr_pct > 0.05:
                 base_mult *= 0.8
         
         return round(base_mult, 2)
 
-    def _estimate_atr_positions(self, watchlist: List[str], held_positions: Dict[str, dict] = None) -> dict:
-        """预估监控池各股票的ATR仓位（用于买入信号乘数微调）"""
+    def _estimate_atr_positions(self, watchlist: List[str], held_positions: Dict[str, dict] = None,
+                                atr_map: Dict[str, tuple] = None) -> dict:
+        """预估监控池各股票的ATR仓位（用于买入信号乘数微调）。
+
+        2026-11-03 修复（用户拍板「接真实 ATR」）：旧实现 entry_price 硬编码 10.0、
+        ATR≈价格 3% 经验值 —— 纯常量伪装成变量，导致 avg_atr_pct 恒 ≈6% > 5% 阈值、
+        买入乘数永久 ×0.8（激进 health_multiplier_floor 被静默击穿成 0.4）。
+        新口径：仅当调用方提供真实 (close, atr14)（atr_map，来自上一扫描日缓存）
+        才参与估算；无真实数据的标的直接跳过（缺数据≠中性假设，10-18 教训）。
+        """
         estimates = {}
+        atr_map = atr_map or {}
         for symbol in watchlist:
-            stock_params = self.adaptive_params.get("stocks", {}).get(symbol, {})
-            atr_params = stock_params.get("atr_params", {})
-            
-            # 尝试从持仓获取成本价，或用自适应参数中的价格估算
-            entry_price = None
-            if held_positions and symbol in held_positions:
-                entry_price = held_positions[symbol].get("cost", 0)
-            
-            # 简单估算：用最近收盘价代替（需要外部数据，这里用默认）
-            if not entry_price:
-                entry_price = 10.0  # 默认价格，实际应接入实时行情
-            
-            # 获取ATR值（简化：用固定比例估算）
-            stop_mult = atr_params.get("stop_mult", 2.0)
-            atr_est = entry_price * 0.03  # 经验值：ATR约占价格3%
-            
+            real = atr_map.get(str(symbol))
+            if not real:
+                continue  # 无真实数据：跳过，不编造默认值
+            entry_price = float(real[0])
+            atr_est = float(real[1])
+            if entry_price <= 0 or atr_est <= 0:
+                continue
             est = self._get_atr_position(symbol, entry_price, atr_est)
             if est["amount"] > 0:
                 estimates[symbol] = est

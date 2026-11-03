@@ -87,6 +87,48 @@ def _aggr_single_cap_pct(bucket: str) -> float:
         return float(_AGGR_CFG.get("sat_single_cap", 0.05))
     return 0.15 if bucket == "core" else 0.05
 
+
+def _clamp_legacy_stop_cooldowns(state: Dict) -> int:
+    """模式切换自愈：存量止损冷却一次性收缩到当前配置上限（2026-11-03 用户拍板）。
+
+    背景：激进模式 stop_cooldown_days=5 只影响新止损（record 时读配置），
+    旧 15 天制遗留值（实证 000987 =13）会静默封锁买入到 ~11-16，违背切换意图。
+    规则：仅激进模式启用且配置天数 < 15 时，把 > 配置值的存量冷却收缩到配置值
+    （min(现值, 配置)）；标准模式不动作。幂等，随每次扫描自愈。
+    返回：本次收缩的票数。
+    """
+    if not _AGGR_CFG.get("enabled"):
+        return 0
+    cfg_days = int(_AGGR_CFG.get("stop_cooldown_days", 15))
+    if cfg_days >= 15:
+        return 0
+    n = 0
+    for pos in (state.get("positions") or {}).values():
+        if not isinstance(pos, dict):
+            continue
+        cur = int(pos.get("_stop_cooldown_days", 0) or 0)
+        if cur > cfg_days:
+            pos["_stop_cooldown_days"] = cfg_days
+            n += 1
+    return n
+
+
+def _build_atr_map_from_state(state: Dict) -> Dict[str, tuple]:
+    """从 state 提取上一扫描日真实 (close, atr14)，供 030 买入乘数微调（2026-11-03）。
+    配套修复：position_sizer._estimate_atr_positions 旧实现硬编码 price=10.0/
+    ATR≈3%（常量伪装变量，买入乘数永久 ×0.8）；现仅用真实数据，无数据则跳过微调。
+    """
+    m: Dict[str, tuple] = {}
+    for sym, pos in (state.get("positions") or {}).items():
+        try:
+            c = float(pos.get("_last_close") or 0)
+            a = float(pos.get("_last_atr") or 0)
+        except (TypeError, ValueError):
+            continue
+        if c > 0 and a > 0:
+            m[str(sym)] = (c, a)
+    return m
+
 # 单一事实来源：参考总本金（仓位计算/风控限额/收益率分母统一引用）
 # 注：该值为"参考分母"常量，不随关注池只数自动变动；如需调整须走风控变更流程。
 REFERENCE_TOTAL_CAPITAL = 2_700_000
@@ -742,11 +784,13 @@ class RiskGuard:
     _last_refresh_key = None
 
     @classmethod
-    def refresh(cls, cache_key: str = None):
+    def refresh(cls, cache_key: str = None, atr_map: Dict = None):
         """刷新 030 风控。
 
         cache_key 非空时，同一 key 只真正刷新一次（回测逐日循环里避免
         对每只股票/每一天重复调用 Detector 造成的 O(天×股) 网络开销）。
+        atr_map: {symbol: (close, atr14)} 上一扫描日真实数据缓存（2026-11-03
+        接真实 ATR：无数据的标的跳过乘数微调，不再用硬编码伪造值参与计算）。
         """
         if cache_key is not None and cache_key == cls._last_refresh_key:
             return
@@ -781,7 +825,8 @@ class RiskGuard:
                     health_score=pos_context["health_score"],
                     fatal_risk=cls._fatal_risk,
                     held_positions=pos_context.get("held_positions"),
-                    watchlist=_watch
+                    watchlist=_watch,
+                    atr_map=atr_map
                 )
                 cls._position_plan = {
                     "buy_signal_multiplier": pos_plan_obj.buy_signal_multiplier,
@@ -1045,7 +1090,10 @@ def execute_trade(pos: Dict, signal: Dict, dt: str, strategy: str,
             RiskGuard.record_stop_loss_cooldown(pos, cooldown_days=int(_AGGR_CFG.get("stop_cooldown_days", 15)))
         
         append_trade({"date": dt, "symbol": pos["_symbol"], "name": pos["name"],
-                      "action": "SELL", "price": price, "shares": 0,
+                      "action": "SELL", "price": price,
+                      # 2026-11-03 修复：卖出 shares 恒 0 → 台账无法重建持仓史；
+                      # 实际股数已存于 _last_sell_shares（本函数上文）
+                      "shares": pos.get("_last_sell_shares", 0),
                       "pnl": pnl, "pnl_pct": round((pnl / cost_basis) * 100, 2) if cost_basis else 0.0,
                       "strategy": strategy})
         pnl_pct = round((pnl / cost_basis) * 100, 2) if cost_basis else 0
@@ -1286,8 +1334,8 @@ def run_portfolio_scan(
     if strategy_map is None:
         strategy_map = load_strategy_map()
 
-    # 刷新 030 风控
-    RiskGuard.refresh()
+    # 刷新 030 风控（附带上一扫描日真实 (close, atr) 缓存；2026-11-03 接真实 ATR）
+    RiskGuard.refresh(atr_map=_build_atr_map_from_state(state))
     fatal_risk = RiskGuard.get_fatal_risk()
     position_plan = RiskGuard.get_position_plan()
     # 同相关簇映射（2026-10-17 同簇约束数据源；fail-open）
@@ -1297,6 +1345,11 @@ def run_portfolio_scan(
 
     # 同步策略映射（含 bucket）
     sync_strategy_map(state, strategy_map, default_strategy)
+
+    # 模式切换自愈：存量止损冷却收缩到当前配置（2026-11-03 用户拍板）
+    _n_clamped = _clamp_legacy_stop_cooldowns(state)
+    if _n_clamped:
+        print(f"  ♻️ 存量止损冷却已收缩到激进配置({_AGGR_CFG.get('stop_cooldown_days')}天): {_n_clamped} 只")
 
     # Tier3：启动时强制清仓（仅首次）
     _force_liquidate_tier3(state, strategy_map)
@@ -1342,6 +1395,16 @@ def run_portfolio_scan(
             results.append({"symbol": sym, "name": name, "error": str(e),
                             "position": pos["position"], "strategy": slabel})
             continue
+
+        # 缓存真实 (close, atr14) 供次日 030 买入乘数微调（2026-11-03 接真实 ATR）
+        _p = signal.get("price") or 0
+        _a = signal.get("atr") or 0
+        if _p and _a:
+            try:
+                pos["_last_close"] = round(float(_p), 4)
+                pos["_last_atr"] = round(float(_a), 6)
+            except (TypeError, ValueError) as _e:
+                print(f"⚠️ ATR缓存失败 {name}({sym}): {_e}")
 
         # 三层分层过滤（核心逻辑）
         # 注入标识供 Tier 吞信号留痕（_apply_tier_filter 需要 symbol/name）
