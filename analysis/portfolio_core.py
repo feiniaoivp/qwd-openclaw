@@ -17,6 +17,7 @@ Portfolio Core - 可复用的组合核心逻辑
 
 import os
 import json
+import time
 import warnings
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
@@ -51,8 +52,45 @@ BACKTEST_MODE = False
 # 常量与配置
 # ═══════════════════════════════════════════
 COMMISSION = 0.0003
-SLIPPAGE = 0.001
+SLIPPAGE = float(os.getenv("SLIP_BASE", "0.001"))  # 基础滑点（T2-1 后仅为底座分量）
 INITIAL_CAPITAL = 100_000
+
+# ═══════════════════════════════════════════
+# T2-1: 动态滑点模型（2026-11-04，取代固定 0.001）
+# ═══════════════════════════════════════════
+# slip = base + k_vol × (ATR/price) + k_impact × √(订单金额/当日成交额)，上限 cap。
+# - 波动率分量：ATR/price 越大 → 短时价格噪声越宽 → 冲击成本越高
+# - 流动性分量：订单占当日成交额比例越大（平方根模型，Kyle-type 简化）→ 越难成交
+# - 环境变量可调；SLIP_DYNAMIC=0 一键回退固定滑点旧行为
+SLIP_DYNAMIC = os.getenv("SLIP_DYNAMIC", "1") == "1"
+SLIP_VOL_K = float(os.getenv("SLIP_VOL_K", "0.5"))
+SLIP_IMPACT_K = float(os.getenv("SLIP_IMPACT_K", "0.1"))
+SLIP_CAP = float(os.getenv("SLIP_CAP", "0.02"))
+
+def calc_slippage(price, atr=None, day_amount=None, order_value=None):
+    """计算单笔成交的动态滑点率（0~SLIP_CAP）。
+
+    price: 成交参考价（必填）
+    atr:   该票最近 ATR14（缺失时波动率分量=0，fail-open 到基础滑点）
+    day_amount: 当日成交额（缺失时流动性分量=0）
+    order_value: 本笔订单金额（缺失时流动性分量=0）
+    """
+    if not SLIP_DYNAMIC:
+        return SLIPPAGE
+    try:
+        price = float(price)
+        if price <= 0:
+            return SLIPPAGE
+        slip = SLIPPAGE
+        if atr is not None and float(atr) > 0:
+            slip += SLIP_VOL_K * (float(atr) / price)
+        if day_amount is not None and order_value is not None \
+                and float(day_amount) > 0 and float(order_value) > 0:
+            participation = min(float(order_value) / float(day_amount), 1.0)
+            slip += SLIP_IMPACT_K * (participation ** 0.5)
+        return round(min(slip, SLIP_CAP), 6)
+    except (TypeError, ValueError):
+        return SLIPPAGE
 
 # 单簇市值占比上限（2026-10-18 用户拍板：同相关簇约束从「只数≤2」升级为组合层
 # 市值占比、持仓期持续生效；依据 analysis/research/2026-10-18_cluster_cap_scorecard.md）
@@ -954,9 +992,12 @@ class RiskGuard:
 
     @classmethod
     def check_dedup(cls, signal: Dict, pos: Dict, dt: str) -> bool:
-        """去重：同一日同方向不重复执行"""
+        """去重：同一日同方向不重复执行 (D3: 硬限单日成交上限=1)"""
         last_action = pos.get("_last_action")
         last_date = pos.get("_last_action_date")
+        if last_date == dt:
+            # D3: 单日成交上限=1，任何方向（买/卖）当日只能成交一次
+            return False
         if last_action == signal["action"] and last_date == dt:
             return False
         return True
@@ -1028,17 +1069,22 @@ def execute_trade(pos: Dict, signal: Dict, dt: str, strategy: str,
 
         fee = available_cash * COMMISSION
         cash_after_fee = available_cash - fee
-        max_shares = int(single_cap / (price * (1 + SLIPPAGE)) / 100) * 100
-        shares = int(min(cash_after_fee, single_cap) / (price * (1 + SLIPPAGE)) / 100) * 100
+        # T2-1: 动态滑点（买入）——波动率分量用缓存 ATR，流动性分量用 订单金额/当日成交额
+        slip_buy = calc_slippage(price, atr=pos.get("_last_atr"),
+                                 day_amount=pos.get("_last_amount"),
+                                 order_value=min(cash_after_fee, single_cap))
+        max_shares = int(single_cap / (price * (1 + slip_buy)) / 100) * 100
+        shares = int(min(cash_after_fee, single_cap) / (price * (1 + slip_buy)) / 100) * 100
 
         if shares >= 100:
-            cost = shares * price * (1 + SLIPPAGE)
+            cost = shares * price * (1 + slip_buy)
             fee2 = cost * COMMISSION
             pos["cash"] -= (cost + fee2)
             pos["shares"] = shares
             pos["position"] = True
             pos["entry_price"] = price
             pos["entry_date"] = dt
+            pos["entry_slippage"] = slip_buy  # T2-1: 留痕买入时实际滑点，供卖出成本基准/未实现盈亏复用
             pos["trade_count"] += 1
             pos["bucket"] = bucket
             pos["_last_action"] = action
@@ -1055,10 +1101,76 @@ def execute_trade(pos: Dict, signal: Dict, dt: str, strategy: str,
             return "BUY", f"{bucket_emoji} **{pos['name']}({dt}) 买入**\n价格 ¥{price:.2f} | {shares}股({bucket}) | 理由: {signal['reason']}{fib_str}"
 
     elif action == "卖出" and pos["position"]:
-        sell_value = pos["shares"] * price * (1 - SLIPPAGE)
+        # ── 斐波那契止盈触发检查（D1: 分批止盈模式 B）──
+        fib_targets = pos.get("fib_targets", {})
+        tp_hit = None
+        if fib_targets:
+            # 分批比例：1.0=30%, 1.272=50%, 1.618=50%, 2.618=20%（累计150%，按比例卖出）
+            # 实际实现：按顺序检查，触及即按对应比例卖出
+            tp_ratios = [("1.0", 0.30), ("1.272", 0.50), ("1.618", 0.50), ("2.618", 0.20)]
+            for ratio_str, sell_pct in tp_ratios:
+                target_price = fib_targets.get(ratio_str)
+                if target_price and price >= target_price:
+                    # 检查该止盈位是否已触发过
+                    if pos.get(f"_tp_hit_{ratio_str}", False):
+                        continue
+                    tp_hit = (ratio_str, target_price, sell_pct)
+                    break
+            if tp_hit:
+                ratio_str, target_price, sell_pct = tp_hit
+                # 计算分批卖出股数
+                shares_to_sell = int(pos["shares"] * sell_pct / 100) * 100
+                if shares_to_sell < 100:
+                    shares_to_sell = pos["shares"]  # 不足100股则全卖
+                
+                slip_tp = calc_slippage(price, atr=pos.get("_last_atr"),
+                                        day_amount=pos.get("_last_amount"),
+                                        order_value=shares_to_sell * price)
+                sell_value = shares_to_sell * price * (1 - slip_tp)
+                fee = sell_value * COMMISSION
+                net = sell_value - fee
+                cost_basis = shares_to_sell * pos["entry_price"] * (1 + pos.get("entry_slippage", SLIPPAGE))
+                pnl = net - cost_basis
+                
+                # 记录本次平仓明细
+                pos["_last_sell_shares"] = shares_to_sell
+                pos["_last_sell_entry"] = pos["entry_price"]
+                pos["cash"] += net
+                pos["total_pl"] += pnl
+                pos["shares"] -= shares_to_sell
+                
+                # 标记已触及的止盈位，避免重复触发
+                tp_hit_key = f"_tp_hit_{ratio_str}"
+                pos[tp_hit_key] = True
+                
+                # 全部卖完则清空仓位状态
+                if pos["shares"] == 0:
+                    pos["position"] = False
+                    pos["entry_price"] = 0.0
+                    pos["entry_date"] = None
+                
+                pos["trade_count"] += 1
+                pos["_buy_streak"] = 0
+                pos["_last_action"] = "卖出"
+                pos["_last_action_date"] = dt
+                
+                # 记录止损冷却（止盈不触发冷却）
+                append_trade({"date": dt, "symbol": pos["_symbol"], "name": pos["name"],
+                              "action": "SELL", "price": price,
+                              "shares": shares_to_sell,
+                              "pnl": pnl, "pnl_pct": round((pnl / cost_basis) * 100, 2) if cost_basis else 0.0,
+                              "strategy": strategy, "reason": f"斐波止盈 {ratio_str} ({sell_pct:.0%})"})
+                pnl_pct = round((pnl / cost_basis) * 100, 2) if cost_basis else 0
+                emoji = "🟢" if pnl > 0 else "🔴"
+                return "SELL", f"{emoji} **{pos['name']}({dt}) 斐波止盈 {ratio_str} ({sell_pct:.0%})**\n价格 ¥{price:.2f} | 目标 ¥{target_price:.2f} | 卖出 {shares_to_sell}股 | 盈亏 {pnl_pct:+.2f}%"
+
+        slip_sell = calc_slippage(price, atr=pos.get("_last_atr"),
+                                  day_amount=pos.get("_last_amount"),
+                                  order_value=pos["shares"] * price)
+        sell_value = pos["shares"] * price * (1 - slip_sell)
         fee = sell_value * COMMISSION
         net = sell_value - fee
-        cost_basis = pos["shares"] * pos["entry_price"] * (1 + SLIPPAGE)
+        cost_basis = pos["shares"] * pos["entry_price"] * (1 + pos.get("entry_slippage", SLIPPAGE))
         pnl = net - cost_basis
         # 记录本次平仓明细（供回测单笔盈亏统计使用）
         pos["_last_sell_shares"] = pos["shares"]
@@ -1360,6 +1472,62 @@ def run_portfolio_scan(
     errors = []
     results = []
 
+    # ── T2-3: 批量 I/O 预载（2026-11-04）──
+    # 信号存档/交易意向/审计日志原实现每票读+写整个文件（36 票≈150 次文件 IO）→
+    # 全部改为内存缓冲 + 扫描结束一次性落盘；审计日志用单句柄逐条 append（崩溃不丢已写条目）
+    signal_archive_path = os.path.join(WORKSPACE, "data", "signal_archive", f"{today_str}_signals.json")
+    signal_archive_buf: Dict[str, Any] = {}
+    if os.path.exists(signal_archive_path):
+        try:
+            with open(signal_archive_path, "r") as f:
+                signal_archive_buf = json.load(f)
+        except Exception as e:
+            print(f"⚠️ 信号存档预载失败（将重建）: {e}")
+            signal_archive_buf = {}
+    intents_path = os.path.join(WORKSPACE, "data", "trade_intents", f"{today_str}_intents.json")
+    intents_buf: Dict[str, Any] = {}
+    if os.path.exists(intents_path):
+        try:
+            with open(intents_path, "r") as f:
+                intents_buf = json.load(f)
+        except Exception as e:
+            print(f"⚠️ 交易意向预载失败（将重建）: {e}")
+            intents_buf = {}
+    audit_path = os.path.join(WORKSPACE, "audit", "trades_audit.jsonl")
+    os.makedirs(os.path.dirname(audit_path), exist_ok=True)
+    try:
+        audit_fh = open(audit_path, "a", encoding="utf-8")
+    except Exception as e:
+        print(f"⚠️ 审计日志打开失败（本轮不落盘审计）: {e}")
+        audit_fh = None
+
+    # ── T2-3: 并行预取阶段（2026-11-04 执行流水线优化）──
+    # 数据获取是纯 IO，与策略计算/风控完全解耦；预取完成后主循环变纯 CPU。
+    # 线程安全：新浪 HTTP 主源天然并发；baostock 降级链已在 bs_session 用 RLock 串行化。
+    # 回退：SCAN_PARALLEL_WORKERS=0 恢复串行。
+    t_scan_start = time.time()
+    workers = int(os.getenv("SCAN_PARALLEL_WORKERS", "6"))
+    dfs: Dict[str, Any] = {}
+    if workers > 1 and len(stocks) > 3:
+        from concurrent.futures import ThreadPoolExecutor
+
+        def _fetch_one(s):
+            try:
+                return s, fetch_data_func(s)
+            except Exception as e:
+                return s, e
+
+        with ThreadPoolExecutor(max_workers=workers) as _pool:
+            for _s, _df in _pool.map(_fetch_one, [sym for sym, _ in stocks]):
+                dfs[_s] = _df
+        print(f"  ⚡ 并行预取 {len(dfs)}/{len(stocks)} 只完成 (workers={workers}, {time.time()-t_scan_start:.1f}s)")
+    else:
+        for sym, _ in stocks:
+            try:
+                dfs[sym] = fetch_data_func(sym)
+            except Exception as e:
+                dfs[sym] = e
+
     for sym, name in stocks:
         pos = state["positions"].get(sym)
         if pos is None:
@@ -1380,7 +1548,13 @@ def run_portfolio_scan(
         tier = pos.get("tier") or get_bucket(sym, strategy_map)
         slabel = STRATEGY_LABELS.get(strat, strat)
 
-        df = fetch_data_func(sym)
+        t_sym_start = time.time()
+        df = dfs.get(sym)
+        if isinstance(df, Exception):
+            errors.append(f"{name}({sym}) 数据获取失败: {df}")
+            results.append({"symbol": sym, "name": name, "error": f"数据获取失败: {df}",
+                            "position": pos["position"], "strategy": slabel})
+            continue
         if df is None or len(df) < 60:
             errors.append(f"{name}({sym}) 数据获取失败")
             results.append({"symbol": sym, "name": name, "error": "数据获取失败",
@@ -1395,8 +1569,35 @@ def run_portfolio_scan(
             results.append({"symbol": sym, "name": name, "error": str(e),
                             "position": pos["position"], "strategy": slabel})
             continue
+        t_signal_ms = round((time.time() - t_sym_start) * 1000, 1)
+
+        # ── T1-1: 信号存档 (Signal Archiving，T2-3 改批量 I/O) ──
+        # 在进入任何风险门控/修改前，保存策略原生信号；
+        # 全部写入内存字典，扫描结束时一次性落盘（原实现每票读+写整个文件 2 次 IO）
+        raw_signal = signal.copy()
+        signal_archive_buf[sym] = {
+            "name": name,
+            "strategy": strat,
+            "raw_signal": raw_signal,
+            "timestamp": datetime.now().isoformat()
+        }
+
+        # ── T1-2: 决策链路审计 (Full-Chain Audit Log，T2-3 改单句柄批量写) ──
+        # 记录从【原生信号】到【最终意向】的每一个拦截点
+        audit_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "symbol": sym,
+            "name": name,
+            "strategy": strat,
+            "raw_action": raw_signal["action"],
+            "guards": {},
+            "timing_ms": {"signal": t_signal_ms},
+            "final_action": "UNKNOWN",
+            "status": "SKIPPED"
+        }
 
         # 缓存真实 (close, atr14) 供次日 030 买入乘数微调（2026-11-03 接真实 ATR）
+        # T2-1: 同步缓存当日成交额 _last_amount（动态滑点流动性分量输入）
         _p = signal.get("price") or 0
         _a = signal.get("atr") or 0
         if _p and _a:
@@ -1405,31 +1606,94 @@ def run_portfolio_scan(
                 pos["_last_atr"] = round(float(_a), 6)
             except (TypeError, ValueError) as _e:
                 print(f"⚠️ ATR缓存失败 {name}({sym}): {_e}")
+        try:
+            _last_row = df.iloc[-1]
+            _vol = float(pd.to_numeric(_last_row.get("volume"), errors="coerce") or 0)
+            _amt = pd.to_numeric(_last_row.get("amount"), errors="coerce")
+            if pd.isna(_amt) or _amt <= 0:
+                _amt = _vol * float(_p or 0)  # 无成交额列时用 成交量×收盘价 估算
+            if _amt and _amt > 0:
+                pos["_last_amount"] = round(float(_amt), 2)
+        except (TypeError, ValueError, KeyError) as _e:
+            # 成交额缺失时流动性分量自然退化为0，不阻断扫描，但必须可见（silent_except 棘轮）
+            print(f"⚠️ 成交额缓存失败 {name}({sym}): {_e}")
 
         # 三层分层过滤（核心逻辑）
         # 注入标识供 Tier 吞信号留痕（_apply_tier_filter 需要 symbol/name）
         signal.setdefault("_symbol", sym)
         signal.setdefault("name", name)
-        signal = _apply_tier_filter(signal, pos, tier)
         
-        # 030 风控覆盖
+        # 1. Tier Filter
+        sig_before = signal.copy()
+        signal = _apply_tier_filter(signal, pos, tier)
+        audit_entry["guards"]["tier"] = "OK" if signal["action"] == sig_before["action"] else f"BLOCK({sig_before['action']}->{signal['action']})"
+        
+        # 2. RiskGuard Overrides
+        sig_before = signal.copy()
         signal = RiskGuard.override_signal(signal, pos)
-        # 策略切换强平
+        audit_entry["guards"]["risk_override"] = "OK" if signal["action"] == sig_before["action"] else f"BLOCK({sig_before['action']}->{signal['action']})"
+        
+        # 3. Strategy Switch
+        sig_before = signal.copy()
         signal = RiskGuard.check_strategy_switch(signal, pos)
-        # 重复 BUY 钝化
+        audit_entry["guards"]["strat_switch"] = "OK" if signal["action"] == sig_before["action"] else f"BLOCK({sig_before['action']}->{signal['action']})"
+        
+        # 4. Buy Streak Dampening
+        sig_before = signal.copy()
         signal, should_exec = RiskGuard.apply_buy_streak_dampening(signal, pos)
-        # 同相关簇市值占比上限（2026-10-18 由只数≤2升级；买入链尾部、去重之前拦截）
+        audit_entry["guards"]["streak_damp"] = "OK" if signal["action"] == sig_before["action"] else f"BLOCK({sig_before['action']}->{signal['action']})"
+        
+        # 5. Resonance Gate (T0-4)
+        if signal["action"] == "买入" and not pos["position"]:
+            try:
+                from analysis.three_factor_helper import ResonanceGate
+                ok, info = ResonanceGate().check_buy(str(pos["_symbol"]))
+                if not ok:
+                    sig_before = signal.copy()
+                    signal["action"] = "持有"
+                    signal["reason"] = f"⛔ 三因素门控拦截: {info.get('reason','')}"
+                    should_exec = False
+                    audit_entry["guards"]["resonance"] = f"BLOCK({sig_before['action']}->持有)"
+                else:
+                    audit_entry["guards"]["resonance"] = "OK"
+            except Exception as e:
+                if os.getenv("GATE_ERROR_POLICY", "blocked").lower() == "pass":
+                    audit_entry["guards"]["resonance"] = "ERROR(PASS)"
+                else:
+                    sig_before = signal.copy()
+                    signal["action"] = "持有"
+                    signal["reason"] = f"⛔ 三因素门控异常拦截 (GATE_ERROR_POLICY=blocked): {str(e)[:120]}"
+                    should_exec = False
+                    audit_entry["guards"]["resonance"] = f"BLOCK({sig_before['action']}->持有)"
+        else:
+            audit_entry["guards"]["resonance"] = "N/A"
+            
+        # 6. Cluster Cap
+        sig_before = signal.copy()
         signal, should_exec = _apply_cluster_cap(
             signal, pos, state, should_exec, sym, cluster_map, name,
             mv_map=mv_map, position_plan=position_plan)
-        # 组合总仓位上限执法（2026-10-18 接线：030 total_limit_amount 首消费方）
+        audit_entry["guards"]["cluster"] = "OK" if signal["action"] == sig_before["action"] else f"BLOCK({sig_before['action']}->{signal['action']})"
+        
+        # 7. Total Cap
+        sig_before = signal.copy()
         signal, should_exec = _apply_total_expo_cap(
             signal, pos, state, should_exec, sym, name,
             mv_map=mv_map, position_plan=position_plan)
+        audit_entry["guards"]["total_cap"] = "OK" if signal["action"] == sig_before["action"] else f"BLOCK({sig_before['action']}->{signal['action']})"
+        
+        # 8. Dedup
         # 去重（统一用真实交易日 today_str；data_date 仅用于诊断/滞后检测）
+        # 🔴 2026-11-04 T2-3 改造中曾误删此行，零污染端到端测试拦下（NameError）——已恢复
         data_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
+        sig_before = signal.copy()
         if not RiskGuard.check_dedup(signal, pos, today_str):
             should_exec = False
+            # Dedup is a should_exec block, doesn't necessarily change action
+            audit_entry["guards"]["dedup"] = "BLOCK(exec)"
+        else:
+            audit_entry["guards"]["dedup"] = "OK"
+
 
         # 🔴 数据滞后守卫（2026-09-29 新增）：
         # 成交日期必须 == 真实交易日 today_str。若拉到的数据最新日期滞后于今天
@@ -1441,19 +1705,46 @@ def run_portfolio_scan(
             if should_exec:
                 errors.append(f"{name}({sym}) {stale_reason}（原信号:{signal['action']}）")
             should_exec = False
+        audit_entry["guards"]["stale_data"] = "BLOCK" if data_stale else "OK"
 
         # 仅新交易日执行（成交日期统一用 today_str，绝不回填历史日期）
         if should_exec and state.get("last_signal_date") is not None and today_str != state.get("last_signal_date"):
+            # ── T1-1: 交易意向存档（T2-3 改内存缓冲，扫描结束一次性落盘）──
+            intents_buf[sym] = {
+                "name": name,
+                "action": signal["action"],
+                "reason": signal["reason"],
+                "price": signal["price"],
+                "bucket": pos.get("bucket", "satellite"),
+                "execution_timestamp": datetime.now().isoformat(),
+                "status": "PENDING"
+            }
+
             action, msg = execute_trade(pos, signal, today_str, strategy=strat, position_plan=position_plan)
             if action:
                 trade_count += 1
                 all_msgs.append(msg)
+                intents_buf[sym]["status"] = "SUCCESS"
+            audit_entry["final_action"] = action or signal["action"]
+            audit_entry["status"] = "SUCCESS" if action else "HOLD"
+        else:
+            audit_entry["final_action"] = signal["action"]
+            audit_entry["status"] = "HOLD"
+
+        # ── T1-2 审计落盘（T2-3 改单句柄逐条写；此处是每票唯一写入点）──
+        try:
+            audit_entry["timing_ms"]["guards"] = round((time.time() - t_sym_start) * 1000 - t_signal_ms, 1)
+            if audit_fh:
+                audit_fh.write(json.dumps(audit_entry, ensure_ascii=False) + "\n")
+                audit_fh.flush()
+        except Exception as e:
+            print(f"⚠️ 审计日志写入失败 {name}({sym}): {e}")
 
         # 计算持仓价值
         pos_val = calc_position_value(pos, signal["price"])
         pos_pl = pos["total_pl"]
         if pos.get("position"):
-            pos_pl += (pos["shares"] * signal["price"]) - (pos["shares"] * pos["entry_price"] * (1 + SLIPPAGE))
+            pos_pl += (pos["shares"] * signal["price"]) - (pos["shares"] * pos["entry_price"] * (1 + pos.get("entry_slippage", SLIPPAGE)))
         pos_return = round((pos_val / INITIAL_CAPITAL - 1) * 100, 2)
         pos_pl_round = round(pos_pl, 2)
 
@@ -1492,6 +1783,26 @@ def run_portfolio_scan(
 
     state["last_signal_date"] = today_str
     save_state(state)
+
+    # ── T2-3: 扫描结束批量落盘（信号存档 + 交易意向）──
+    try:
+        os.makedirs(os.path.dirname(signal_archive_path), exist_ok=True)
+        with open(signal_archive_path, "w") as f:
+            json.dump(signal_archive_buf, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"⚠️ 信号存档落盘失败: {e}")
+    try:
+        os.makedirs(os.path.dirname(intents_path), exist_ok=True)
+        with open(intents_path, "w") as f:
+            json.dump(intents_buf, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"⚠️ 交易意向落盘失败: {e}")
+    try:
+        if audit_fh:
+            audit_fh.close()
+    except Exception:
+        pass
+    print(f"⏱️ 扫描总耗时 {time.time()-t_scan_start:.1f}s (预取→信号→门控→成交)")
 
     # 汇总
     # 治本（2026-09-25）：total_value / cash_total 改从持久化 state 计算，

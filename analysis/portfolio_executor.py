@@ -60,6 +60,7 @@ from analysis.portfolio_core import (
     calc_position_value, execute_trade, _check_barbell_constraints,
     generate_human_report,
     REFERENCE_TOTAL_CAPITAL,
+    calc_slippage,  # T2-1: 动态滑点模型（回测与实盘同口径）
 ) 
 # 权威扫描实现（唯一事实来源）
 from analysis.portfolio_core import run_portfolio_scan as _core_run_portfolio_scan
@@ -343,11 +344,20 @@ class PortfolioExecutor:
         for i, day in enumerate(trading_days):
             day_str = day.strftime("%Y-%m-%d")
             
-            # 回测风控：历史日期无法真实复现当时的 030 市场环境，
-            # 因此整个回测只刷新一次（用当下风控状态作为常量上下文），
-            # 避免逐周网络调用（252 交易日 × 3s ≈ 每只股票数分钟）。
-            if last_risk_refresh is None:
-                RiskGuard.refresh(cache_key=f"backtest:{start_date}")
+            # 回测风控（T0-5: 逐周刷新 + atr_map 传递）
+            # 历史日期无法真实复现当时的 030 市场环境，
+            # 但逐周刷新 + 传入 atr_map 能让买入乘数微调用真实 ATR（而非硬编码 0.8）
+            if last_risk_refresh is None or (day - last_risk_refresh).days >= 5:
+                # 构建 atr_map：上一扫描日真实 (close, atr14)
+                atr_map = {}
+                for sym in symbols:
+                    pos = self.state["positions"].get(sym)
+                    if pos:
+                        c = pos.get("_last_close")
+                        a = pos.get("_last_atr")
+                        if c and a:
+                            atr_map[sym] = (float(c), float(a))
+                RiskGuard.refresh(cache_key=f"backtest:{start_date}:{day_str}", atr_map=atr_map)
                 cached_fatal_risk = RiskGuard.get_fatal_risk()
                 cached_position_plan = RiskGuard.get_position_plan()
                 last_risk_refresh = day
@@ -376,6 +386,23 @@ class PortfolioExecutor:
                 # 获取预计算的信号
                 sig_cache = all_signals.get(sym, {})
                 signal = sig_cache.get(day_str)
+                
+                # 回测路径补 atr_map（T0-5）：逐日缓存 (close, atr14) 传给 RiskGuard.refresh
+                # T2-1: 同步缓存当日成交额（动态滑点流动性分量输入；成交量×收盘价估算）
+                if signal and signal.get("price") and signal.get("atr"):
+                    try:
+                        pos["_last_close"] = round(float(signal["price"]), 4)
+                        pos["_last_atr"] = round(float(signal["atr"]), 6)
+                        _row = price_data.get(sym)
+                        if _row is not None and day in _row.index:
+                            _v = pd.to_numeric(_row.loc[day].get("volume"), errors="coerce")
+                            _a = pd.to_numeric(_row.loc[day].get("amount"), errors="coerce")
+                            if pd.isna(_a) or _a <= 0:
+                                _a = (float(_v) if pd.notna(_v) else 0.0) * float(signal["price"])
+                            if _a and _a > 0:
+                                pos["_last_amount"] = round(float(_a), 2)
+                    except (TypeError, ValueError):
+                        pass
                 
                 if signal is None:
                     # 信号未预计算，实时计算（兜底）
@@ -452,8 +479,12 @@ class PortfolioExecutor:
                                 shares = pos.get("_last_sell_shares", 0)
                                 entry = pos.get("_last_sell_entry", 0)
                                 px = signal["price"]
-                                gross = shares * px * (1 - SLIPPAGE)
-                                cost = shares * entry * (1 + SLIPPAGE)
+                                # T2-1: 与 execute_trade 同口径——卖出用动态滑点，买入成本用留痕 entry_slippage
+                                _slip_sell = calc_slippage(px, atr=pos.get("_last_atr"),
+                                                           day_amount=pos.get("_last_amount"),
+                                                           order_value=shares * px)
+                                gross = shares * px * (1 - _slip_sell)
+                                cost = shares * entry * (1 + pos.get("entry_slippage", SLIPPAGE))
                                 pnl = gross - gross * COMMISSION - cost
                                 trade_log.append({
                                     "date": day_str, "symbol": sym, "name": name,
@@ -466,7 +497,7 @@ class PortfolioExecutor:
                 pos_val = calc_position_value(pos, signal["price"])
                 pos_pl = pos["total_pl"]
                 if pos.get("position"):
-                    pos_pl += (pos["shares"] * signal["price"]) - (pos["shares"] * pos["entry_price"] * (1 + SLIPPAGE))
+                    pos_pl += (pos["shares"] * signal["price"]) - (pos["shares"] * pos["entry_price"] * (1 + pos.get("entry_slippage", SLIPPAGE)))
                 pos_return = round((pos_val / INITIAL_CAPITAL - 1) * 100, 2)
                 pos_pl_round = round(pos_pl, 2)
                 

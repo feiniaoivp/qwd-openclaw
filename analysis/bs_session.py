@@ -63,7 +63,7 @@ def _harden_socket() -> None:
 
 log = logging.getLogger(__name__)
 
-_bs_lock = threading.Lock()
+_bs_lock = threading.RLock()  # 2026-11-04 T2-3: Lock→RLock，支持查询全程持锁（内嵌 ensure_login 不死锁）
 _bs_logged_in = False
 _last_login_time = 0.0
 _LAST_LOGIN_FAIL_TIME = 0.0
@@ -150,8 +150,11 @@ def query_history_k_data_plus(*args, **kwargs):
     _harden_socket()  # 查询前自愈：防外部代码换入无超时的常驻连接
     # 函数体内超时护栏（铁律①）：兜住库内新建 socket 的路径；
     # 常驻连接本身的 recv 上限由 _harden_socket 钉住，与 guard 互补
-    with network_timeout_guard(_QUERY_TIMEOUT):
-        return bs.query_history_k_data_plus(*args, **kwargs)
+    # T2-3 线程安全：bs 全局会话非线程安全，RLock 串行化底层查询
+    # （并发扫描时新浪 HTTP 主源照常并行，仅 baostock 降级链串行）
+    with _bs_lock:
+        with network_timeout_guard(_QUERY_TIMEOUT):
+            return bs.query_history_k_data_plus(*args, **kwargs)
 
 
 def query_history_k_data_plus_retry(*args, max_retries: int = 3, wait_seconds: float = 2.0, **kwargs):

@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+import os
+import sys
+import json
+import pandas as pd
+from datetime import datetime, timedelta
+
+# 必须包含工作区样板
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
+from analysis.fib_extension_scan import WATCHLIST
+
+# 配置项
+DATA_DIR = os.path.join(WORKSPACE, "data", "stock_data")
+STATE_FILE = os.path.join(WORKSPACE, "data", "sim_state.json")
+ALERT_THRESHOLD_HOURS = 24  # 超过24小时未更新则告警
+
+def check_csv_freshness():
+    """检查关注池所有股票的 CSV 文件更新时间"""
+    stale_stocks = []
+    now = datetime.now()
+    
+    print(f"🔍 检查数据湖新鲜度... (关注池: {len(WATCHLIST)} 只)")
+    
+    for sym, name in WATCHLIST.items():
+        file_path = os.path.join(DATA_DIR, f"{sym}.csv")
+        if not os.path.exists(file_path):
+            stale_stocks.append(f"{name}({sym}) [缺失文件]")
+            continue
+        
+        # 检查文件修改时间 (mtime)
+        mtime = datetime.fromtimestamp(os.path.getmtime(file_path))
+        diff = now - mtime
+        if diff.total_seconds() > ALERT_THRESHOLD_HOURS * 3600:
+            stale_stocks.append(f"{name}({sym}) [滞后 {diff.days}d {diff.seconds//3600}h]")
+            
+    return stale_stocks
+
+def check_state_freshness():
+    """检查模拟盘状态文件更新时间"""
+    if not os.path.exists(STATE_FILE):
+        return ["模拟盘状态文件 (sim_state.json) 缺失"]
+    
+    mtime = datetime.fromtimestamp(os.path.getmtime(STATE_FILE))
+    diff = datetime.now() - mtime
+    if diff.total_seconds() > ALERT_THRESHOLD_HOURS * 3600:
+        return [f"模拟盘状态滞后 {diff.days}d {diff.seconds//3600}h"]
+    return []
+
+def main():
+    stale_csv = check_csv_freshness()
+    stale_state = check_state_freshness()
+    
+    all_stale = stale_csv + stale_state
+    
+    if all_stale:
+        print("🔴 [DATA_STALE_ALERT] 检测到数据滞后：")
+        for item in all_stale:
+            print(f" - {item}")
+        sys.exit(1) # 触发 cron 告警
+    else:
+        print("✅ 所有核心数据源新鲜。")
+        sys.exit(0)
+
+if __name__ == "__main__":
+    main()
