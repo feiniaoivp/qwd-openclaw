@@ -15,6 +15,7 @@ You wake up fresh each session. These files are your continuity:
 - **Long-term:** `MEMORY.md` — curated memories. **ONLY load in main session** (security: don't leak personal context to strangers); read/edit/update freely there. Distill daily notes into it over time.
 - **Self-improving:** `~/self-improving/` — execution-quality memory (preferences, workflows, style, what improved/worsened outcomes). Tentative until human validation. Before non-trivial work: read `memory.md`, list domain/project files, read up to 3 matching `domains/*.md` (+ `projects/<project>.md` if clearly active). Never read unrelated domains "just in case".
 - **Proactivity:** `~/proactivity/` — read `memory.md` + `session-state.md` before non-trivial or proactive work; `memory/working-buffer.md` only when context is long/fragile/recovery risk high. Working style: anticipate needs, check missing steps, follow through, recover local state before asking the user to repeat work, leave one clear next move in state.
+- **产出写盘纪律**：凡涉及多条目/多阶段产出的任务（尤其是子代理），必须执行「逐条落盘」，禁止在最终回复轮一次性写盘，以防超时丢稿。(Source: .learnings/ERRORS.md#llm.final-response-failure.loses-context-only-work, 2026-11-03)
 
 If inferring a new rule, keep it tentative until human validation.
 

@@ -1,6 +1,5 @@
 {
  "analysis/five_stock_scan.py": 1,
- "analysis/po_ppo_cci_screen.py": 3,
  "analysis/backtest_dual_stop.py": 2,
  "analysis/adaptive_dual.py": 2,
  "analysis/picks_20261008_repair.py": 1,

@@ -1,0 +1,4103 @@
+[
+  {
+    "symbol": "600030",
+    "name": "中信证券",
+    "final_action": "买入",
+    "confidence": 0.6,
+    "position_mult": 0.1,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "技术指标倾向买入 (加权1.4)；[ER震荡态]买入乘数×0.5(震荡态买入期望≈趋势态0.4×,事件研究2026-10-17)",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "[ER震荡态]买入乘数×0.5(震荡态买入期望≈趋势态0.4×,事件研究2026-10-17)"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "600030",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "🟢买入",
+            "strength": 2,
+            "strategy": "macd",
+            "validation_score": 19.1
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_obv",
+            "validation_score": 7.4
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.126,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 1.441,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": true
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "买入",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE"
+        ],
+        "confidence": 0.6
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "买入",
+        "action_mult": 0.7,
+        "conf": 0.6,
+        "conf_mult": 0.6,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.21
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "601066",
+    "name": "中信建投",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "601066",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 9.1
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": 8.2
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.12,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "600036",
+    "name": "招商银行",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "600036",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 3.5
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "kdj_cci",
+            "validation_score": -0.2
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.144,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "601995",
+    "name": "中金公司",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "601995",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": -20.1
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": -28.5
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.138,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "000987",
+    "name": "越秀资本",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "000987",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "macd",
+            "validation_score": 82.1
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": 31.1
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.118,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "600584",
+    "name": "长电科技",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "600584",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "macd",
+            "validation_score": 115.3
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 79.9
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.226,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "688981",
+    "name": "中芯国际",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": 95.0,
+    "support_price": 92.0,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "688981",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 36.0
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": 23.2
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.194,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": true,
+        "stop_loss": 95.0,
+        "source": "cost×0.95"
+      }
+    ]
+  },
+  {
+    "symbol": "002156",
+    "name": "通富微电",
+    "final_action": "减仓",
+    "confidence": 0.6,
+    "position_mult": 0.09,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "技术指标倾向卖出 (加权-0.6)",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "002156",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "ema_obv",
+            "validation_score": 106.2
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 57.9
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.184,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": -0.647,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": true
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "减仓",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE"
+        ],
+        "confidence": 0.6
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "减仓",
+        "action_mult": 0.3,
+        "conf": 0.6,
+        "conf_mult": 0.6,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.09
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "002413",
+    "name": "雷科防务",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "002413",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 43.7
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "ema_obv",
+            "validation_score": 20.0
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.196,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": -0.314,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "300014",
+    "name": "亿纬锂能",
+    "final_action": "买入",
+    "confidence": 0.6,
+    "position_mult": 0.1,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "技术指标倾向买入 (加权1.1)；[ER震荡态]买入乘数×0.5(震荡态买入期望≈趋势态0.4×,事件研究2026-10-17)",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "[ER震荡态]买入乘数×0.5(震荡态买入期望≈趋势态0.4×,事件研究2026-10-17)"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "300014",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "🟢买入",
+            "strength": 2,
+            "strategy": "ema_obv",
+            "validation_score": 61.3
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "kdj_cci",
+            "validation_score": 28.0
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.288,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 1.06,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": true
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "买入",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE"
+        ],
+        "confidence": 0.6
+      },
+      {
+        "stage": "UPGRADE_NOTE",
+        "from": "卖出",
+        "to": "买入",
+        "n_sell_signals": 1,
+        "final_reason": "技术指标倾向买入 (加权1.1)"
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "买入",
+        "action_mult": 0.7,
+        "conf": 0.6,
+        "conf_mult": 0.6,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.21
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "002466",
+    "name": "天齐锂业",
+    "final_action": "减仓",
+    "confidence": 0.6,
+    "position_mult": 0.09,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "技术指标倾向卖出 (加权-0.6)",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "002466",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "ema_obv",
+            "validation_score": 65.0
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "macd",
+            "validation_score": 36.9
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.214,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": -0.638,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": true
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "减仓",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE"
+        ],
+        "confidence": 0.6
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "减仓",
+        "action_mult": 0.3,
+        "conf": 0.6,
+        "conf_mult": 0.6,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.09
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "300285",
+    "name": "国瓷材料",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "300285",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "macd",
+            "validation_score": 258.6
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "ema_obv",
+            "validation_score": 151.9
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.244,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": -0.37,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "603308",
+    "name": "应流股份",
+    "final_action": "减仓",
+    "confidence": 0.6,
+    "position_mult": 0.09,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "技术指标倾向卖出 (加权-0.5)",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "603308",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "ema_obv",
+            "validation_score": 110.0
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": 97.9
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.224,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": -0.529,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": true
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "减仓",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE"
+        ],
+        "confidence": 0.6
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "减仓",
+        "action_mult": 0.3,
+        "conf": 0.6,
+        "conf_mult": 0.6,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.09
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "300124",
+    "name": "汇川技术",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "300124",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": 16.8
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 1.5
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.234,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "601100",
+    "name": "恒立液压",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "601100",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 17.4
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "kdj_cci",
+            "validation_score": 3.0
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.226,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": -0.145,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "002318",
+    "name": "久立特材",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "002318",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": 13.2
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 10.9
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.232,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "300719",
+    "name": "安达维尔",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "300719",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": -9.8
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": -19.8
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.186,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "002335",
+    "name": "科华数据",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "002335",
+        "n_signals": 1,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 8.8
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 1,
+        "moat_bonus": 0.098,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 1,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "300748",
+    "name": "金力永磁",
+    "final_action": "减仓",
+    "confidence": 0.6,
+    "position_mult": 0.09,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "技术指标倾向卖出 (加权-1.0)",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "300748",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "kdj_cci",
+            "validation_score": 60.6
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": -15.4
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.19,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": -0.984,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": true
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "减仓",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE"
+        ],
+        "confidence": 0.6
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "减仓",
+        "action_mult": 0.3,
+        "conf": 0.6,
+        "conf_mult": 0.6,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.09
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "600160",
+    "name": "巨化股份",
+    "final_action": "减仓",
+    "confidence": 0.6,
+    "position_mult": 0.09,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "技术指标倾向卖出 (加权-0.7)",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "600160",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "ema_obv",
+            "validation_score": 45.5
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 23.8
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.192,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": -0.656,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": true
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "减仓",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE"
+        ],
+        "confidence": 0.6
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "减仓",
+        "action_mult": 0.3,
+        "conf": 0.6,
+        "conf_mult": 0.6,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.09
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "600346",
+    "name": "恒力石化",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "600346",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "macd",
+            "validation_score": 98.0
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 8.2
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.178,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "000708",
+    "name": "中信特钢",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "000708",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": -2.5
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "macd",
+            "validation_score": -33.9
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.184,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "600660",
+    "name": "福耀玻璃",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "600660",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "macd",
+            "validation_score": -4.3
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": -15.0
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.254,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "600570",
+    "name": "恒生电子",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "600570",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "kdj_cci",
+            "validation_score": -12.4
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": -14.2
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.22,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "605566",
+    "name": "福莱蒽特",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "605566",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "macd",
+            "validation_score": 68.5
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "kdj_cci",
+            "validation_score": 14.1
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.142,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": -0.171,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "000157",
+    "name": "中联重科",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "000157",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 7.3
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": -24.9
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.24,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "601061",
+    "name": "中信金属",
+    "final_action": "减仓",
+    "confidence": 0.6,
+    "position_mult": 0.09,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "技术指标倾向卖出 (加权-0.6)",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "601061",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "ema_obv",
+            "validation_score": 103.1
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "macd",
+            "validation_score": 60.2
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.194,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": -0.632,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": true
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "减仓",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE"
+        ],
+        "confidence": 0.6
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "减仓",
+        "action_mult": 0.3,
+        "conf": 0.6,
+        "conf_mult": 0.6,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.09
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "600089",
+    "name": "特变电工",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "600089",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": 75.5
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 69.8
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.268,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "600406",
+    "name": "国电南瑞",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "600406",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_obv",
+            "validation_score": 34.0
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": -1.4
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.286,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "000400",
+    "name": "许继电气",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "000400",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 31.2
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "macd",
+            "validation_score": 10.7
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.294,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "601179",
+    "name": "中国西电",
+    "final_action": "减仓",
+    "confidence": 0.6,
+    "position_mult": 0.09,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "技术指标倾向卖出 (加权-0.7)",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "601179",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "ema_obv",
+            "validation_score": 119.1
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": 55.5
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.234,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": -0.682,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": true
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "减仓",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE"
+        ],
+        "confidence": 0.6
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "减仓",
+        "action_mult": 0.3,
+        "conf": 0.6,
+        "conf_mult": 0.6,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.09
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "002028",
+    "name": "思源电气",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "002028",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": 83.1
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": 55.4
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.244,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "002270",
+    "name": "华明装备",
+    "final_action": "买入",
+    "confidence": 0.6,
+    "position_mult": 0.21,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "技术指标倾向买入 (加权1.3)",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "002270",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "🟢买入",
+            "strength": 2,
+            "strategy": "ema_obv",
+            "validation_score": 124.3
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "bollinger",
+            "validation_score": 62.1
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.268,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 1.334,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": true
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "买入",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE"
+        ],
+        "confidence": 0.6
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "买入",
+        "action_mult": 0.7,
+        "conf": 0.6,
+        "conf_mult": 0.6,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.21
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "002130",
+    "name": "沃尔核材",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "002130",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "kdj_cci",
+            "validation_score": -0.7
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "ema_cross",
+            "validation_score": -9.8
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.286,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "600312",
+    "name": "平高电气",
+    "final_action": "持有",
+    "confidence": 0.5,
+    "position_mult": 0.0,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "无明确方向性信号，维持持有/观望",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE",
+      "DEFAULT_HOLD"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "600312",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "kdj_cci",
+            "validation_score": 30.5
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "macd",
+            "validation_score": 27.9
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.312,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 0,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": 0.0,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": false
+      },
+      {
+        "stage": "DEFAULT_HOLD",
+        "strongest_raw": 0,
+        "note": "无层级命中：负反馈/出货/连续卖/量能/封单/超预期/技术投票均未触发"
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "持有",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE",
+          "DEFAULT_HOLD"
+        ],
+        "confidence": 0.5
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "持有",
+        "action_mult": 0.0,
+        "conf": 0.5,
+        "conf_mult": 0.5,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.0
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  },
+  {
+    "symbol": "300199",
+    "name": "翰宇药业",
+    "final_action": "减仓",
+    "confidence": 0.6,
+    "position_mult": 0.09,
+    "stop_loss": null,
+    "support_price": null,
+    "reason": "技术指标倾向卖出 (加权-0.7)",
+    "arbitration_path": [
+      "VOLUME",
+      "TECHNICAL_VOTE"
+    ],
+    "resonance_gate": null,
+    "decision_trace": [
+      {
+        "stage": "INPUT",
+        "symbol": "300199",
+        "n_signals": 2,
+        "signals": [
+          {
+            "source": "adaptive_dual",
+            "action": "🔴卖出",
+            "strength": -1,
+            "strategy": "ema_obv",
+            "validation_score": 54.9
+          },
+          {
+            "source": "adaptive_dual",
+            "action": "持有",
+            "strength": 0,
+            "strategy": "macd",
+            "validation_score": 21.4
+          }
+        ]
+      },
+      {
+        "stage": "EVIDENCE",
+        "negative_feedback": 0,
+        "distribution_pattern": 0,
+        "volume": 1,
+        "seal_direction": 0,
+        "surprise": 0,
+        "technical": 2,
+        "moat_bonus": 0.0,
+        "health_score": 5
+      },
+      {
+        "stage": "DISTRIBUTION_PATTERN",
+        "n_strong": 0,
+        "fired": false
+      },
+      {
+        "stage": "CONSECUTIVE_SELL_CHECK",
+        "streak": 1,
+        "fired": false
+      },
+      {
+        "stage": "VOLUME",
+        "n": 1,
+        "avg_strength": 0.0,
+        "health": 5,
+        "fired": false
+      },
+      {
+        "stage": "RSI_TREND_FILTER",
+        "value": 0,
+        "fired": false
+      },
+      {
+        "stage": "TECHNICAL_VOTE",
+        "weighted_avg": -0.72,
+        "n_weighted": 2,
+        "thresholds": {
+          "agg_buy": 1.5,
+          "buy": 0.5,
+          "sell": -0.5,
+          "agg_sell": -1.5
+        },
+        "fired": true
+      },
+      {
+        "stage": "HIERARCHY_RESULT",
+        "action": "减仓",
+        "path": [
+          "VOLUME",
+          "TECHNICAL_VOTE"
+        ],
+        "confidence": 0.6
+      },
+      {
+        "stage": "POSITION_MULT",
+        "action": "减仓",
+        "action_mult": 0.3,
+        "conf": 0.6,
+        "conf_mult": 0.6,
+        "health": 5,
+        "health_mult": 0.5,
+        "base_mult": 1.0,
+        "final": 0.09
+      },
+      {
+        "stage": "STOP_LOSS",
+        "has_shares": false,
+        "stop_loss": null,
+        "source": "无持仓(幽灵过滤不产出)"
+      }
+    ]
+  }
+]

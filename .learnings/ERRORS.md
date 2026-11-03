@@ -7,7 +7,7 @@
 > 近 7 天窗口（10-25~10-31）零新复发（`openclaw cron list` 实跑 0 error job；memory 10-30/10-31 无新事故；amd-radeon 最终轮失败簇仍无确证丢稿，RC 不虚增）。
 > **六条全部维持 promoted 终态，本轮零新晋升、零 RC bump。** 依 10-24 收敛规约，各条不再逐条追加重复确认注记，以本合并注记为准。
 > 同日销案：`auction-signal-push` 终验观察项关闭（见 ERR-20261023-BacktestCaliberDegradedSilentPush 尾注）。
-> 红线核对：`openclaw_session_sweep` 仍不在现存 cron 列表 → 历史误报维持，仅 warn，未新增条目。
+> 红线核对：`openclaw_session_sweep` 仍不在现存 cron 列表 (2026-11-01 复核) → 历史误报维持，仅 warn，未新增条目。
 
 ## [ERR-20260926-WBP] weekly_full_pipeline 长跑无输出
 
@@ -1023,7 +1023,9 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Source: cron（每日维护 06:00 巡检发现）
 - Reproducible: yes（长 run + 免费模型 + 唯一成果=最终回复即复现丢稿）
 - Pattern-Key: llm.final-response-failure.loses-context-only-work（家族键，本条为第 3 次实证）
-- Recurrence-Count: 3（共享计数：10-22 心跳 final-turn idle timeout / 10-27 KB 子代理超时丢稿 / 10-27 本条；跨 3 任务、30 天内）
+- Recurrence-Count: 3
+- Status: promoted (2026-11-03 → AGENTS.md「产出写盘纪律」)
+- Promoted: AGENTS.md「产出写盘纪律」 (2026-11-03, Source: .learnings/ERRORS.md#llm.final-response-failure.loses-context-only-work)
 - First-Seen: 2026-10-22
 - Last-Seen: 2026-10-27
 - Status: promoted (2026-10-28 → AGENTS.md「配套铁律 · 凡有价值的 run 产出，禁止只存在于最终回复/上下文」)
@@ -1089,7 +1091,21 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Source: manual-session（用户问询触发，memory/2026-10-31.md）
 - Reproducible: yes（echo JSON 管道样例 100% 复现）
 - Pattern-Key: exec.pipe-heredoc-lost.json-as-python-source
-- Recurrence-Count: 6（同日六次心跳触发，同一根因；坏写法在会话史最早见于 10-23，此前未归档）
+- Recurrence-Count: 6 [Promoted]（同日六次心跳触发，同一根因；坏写法在会话史最早见于 10-23，此前未归档）
 - First-Seen: 2026-10-31
 - Last-Seen: 2026-10-31
 - Status: resolved（单根因单日集中爆发，当日修复；不另立独立规则）
+
+## [2026-11-01] ERR-20261101-C01: 模拟盘成交档案平仓量不入档 + 指数代码路由误判
+- **现象**: ①执行审计按「BUY 累计−SELL」重建持仓得 9 只，与实际（越秀 1 只）严重不符；②反转模块拉沪深300 得 `sz.000300 返回空序列`。
+- **根因**: ①portfolio_sim_trades.json 的 SELL 单 **15/15 全部 shares=0**（平仓量从不写入该档案）→ 任何基于成交差值的持仓重建必然虚增；②baostock 代码路由按「0/3 开头=深市」前缀规则把指数 000300 误判为 sz.（指数在沪市 sh.000300），个股路由规则不适用于指数代码。
+- **规约**: ①模拟盘「时点持仓」的权威口径 = 仲裁档案 stop_loss 非空（030 幽灵过滤保证 shares>0 才算）或 portfolio_sim_state；禁用 trades 差值重建；②已执行匹配对 SELL 不看 shares、只看 note 无「冲销」；③baostock 指数代码必须显式指定（sh.000300），不走个股前缀路由。
+- **状态**: resolved（执行审计 v1.1 + emotion_reversal bs_code 参数当日修复，自测覆盖三场景）
+### Metadata
+- Source: manual-session（量化系统加固落地，memory/2026-11-01.md）
+- Reproducible: yes（10-28 审计复现 / sz.000300 空序列复现）
+- Pattern-Key: data.sim-trades-sell-shares-zero + api.bs-index-code-routing
+- Recurrence-Count: 1（首证）
+- First-Seen: 2026-11-01
+- Last-Seen: 2026-11-01
+- Status: resolved

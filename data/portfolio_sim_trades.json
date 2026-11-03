@@ -326,5 +326,17 @@
     "strategy": "macd",
     "reversal_of_trade_index": 23,
     "note": "冲销：对冲 2026-10-20 同股测试污染买入（e9fb539 状态重建的账面补记，非真实成交；现金损耗已固化在净值基期，不回溯修正）"
+  },
+  {
+    "date": "2026-11-02",
+    "symbol": "688981",
+    "name": "中芯国际",
+    "action": "BUY",
+    "price": 100.0,
+    "shares": 100,
+    "pnl": 0,
+    "pnl_pct": 0.0,
+    "strategy": "kdj_cci",
+    "bucket": "core"
   }
 ]

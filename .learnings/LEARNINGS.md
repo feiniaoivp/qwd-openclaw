@@ -274,3 +274,9 @@ moneyflow 三 host curl_cffi 全 curl(56) 的同一分钟里，裸 curl 曾独�
 **B. uvicorn AccessFormatter 经 dictConfig 换 fmt 的字段陷阱**
 - 经过：给 uvicorn.access handler 换带时间戳 formatter，fmt 用 AccessFormatter 文档化字段（client_addr/method/...）→ 每条记录 ValueError 被 logging 静默丢弃，**access 行整体消失且无任何可见报错**（仅在 stderr 侧的 logging error traceback 可见）；两次重启才定位。
 - 规约：①fmt 用 `%(asctime)s %(message)s`（uvicorn 传入的 message 已是拼好的完整行，永远可用）；②改任何日志配置后必须 curl 实测目标行的存在性与格式，静默失败是这类改动的默认失败模式。
+
+## [2026-10-31] 棘轮门禁复跑会洗白首跑违规（silent_except_guard 基线吞没）
+- 现象：周流水线 0f silent_except_guard exit 1（close_scan_v2 新增 2 处 except-pass），手动复跑却 exit 0。
+- 根因：guard 在 exit 判定**之前**无条件把 current 写回 baseline → 任何复跑都把上一次的「新增债务」并入基线，违规证据消失，但代码没修。
+- 对策：判定 exit 1 时应**跳过基线写回**（或写回前打印将被并入的 new_debt 并留痕 logs/）；排障类复跑前先 `git stash baseline` 或读 git diff 保住首跑证据。
+Source: weekly_pipeline_2026-10-31 step 0f

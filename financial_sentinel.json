@@ -1,0 +1,48 @@
+{
+  "sentinels": [
+    {
+      "symbol": "中国西电",
+      "logic_mapping": "Model B (Standard Lock)",
+      "metrics": [
+        {
+          "name": "contract_asset_ratio",
+          "formula": "Contract Assets / Total Assets",
+          "threshold": "growth > 20% while revenue_growth < 5%",
+          "signal": "Delivery Delay / Standard Conflict"
+        },
+        {
+          "name": "interest_coverage",
+          "formula": "EBIT / Interest Expense",
+          "threshold": "< 3.0",
+          "signal": "Model A (Capital Chain) stress"
+        }
+      ]
+    },
+    {
+      "symbol": "通富微电",
+      "logic_mapping": "Model C (Yield Wall)",
+      "metrics": [
+        {
+          "name": "inventory_turnover_decay",
+          "formula": "Inventory / Revenue",
+          "threshold": "increase > 15% YoY",
+          "signal": "WIP Pile-up / Yield Failure"
+        },
+        {
+          "name": "asset_impairment_spike",
+          "formula": "Impairment Loss / Total Assets",
+          "threshold": "> 2%",
+          "signal": "Model C (Capital Trap) realized"
+        }
+      ]
+    }
+  ],
+  "global_vacuum_watch": [
+    {
+      "logic": "Advanced Packaging / Hybrid Bonding",
+      "status": "Information Vacuum",
+      "last_audit": "2026-10-26",
+      "next_audit_trigger": "daily"
+    }
+  ]
+}

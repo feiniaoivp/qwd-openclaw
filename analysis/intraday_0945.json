@@ -1,0 +1,101 @@
+{
+  "mode": "intraday_alert",
+  "generated_at": "2026-10-29 09:45:26",
+  "scanned": 36,
+  "total_alert_rules": 6,
+  "alerts": [
+    {
+      "code": "buy_zone",
+      "symbol": "600030",
+      "name": "中信证券",
+      "price": 24.56,
+      "level": 24.65,
+      "change_pct": -1.21,
+      "msg": "进入买入参考区 (现24.56 接近24.65) 可考虑低吸",
+      "action": "观望",
+      "type": "业绩硬/券商",
+      "level_name": "低吸区",
+      "severity": "LOW",
+      "levels_src": "scan:2026-10-28"
+    },
+    {
+      "code": "break_below",
+      "symbol": "601995",
+      "name": "中金公司",
+      "price": 28.08,
+      "level": 28.67,
+      "change_pct": -6.8,
+      "msg": "跌破止损位28.67 (现28.08) 应变事件关注",
+      "action": "事件关注",
+      "type": "并购催化",
+      "level_name": "跌破止损",
+      "severity": "HIGH",
+      "levels_src": "scan:2026-10-28"
+    },
+    {
+      "code": "buy_zone",
+      "symbol": "000987",
+      "name": "越秀资本",
+      "price": 6.58,
+      "level": 6.6,
+      "change_pct": -1.5,
+      "msg": "进入买入参考区 (现6.58 接近6.60) 可考虑低吸",
+      "action": "波段操作",
+      "type": "中性",
+      "level_name": "低吸区",
+      "severity": "LOW",
+      "levels_src": "scan:2026-10-28"
+    },
+    {
+      "code": "buy_zone",
+      "symbol": "002335",
+      "name": "科华数据",
+      "price": 24.18,
+      "level": 24.46,
+      "change_pct": -3.28,
+      "msg": "进入买入参考区 (现24.18 接近24.46) 可考虑低吸",
+      "action": "波段操作",
+      "type": "中性",
+      "level_name": "低吸区",
+      "severity": "LOW",
+      "levels_src": "scan:2026-10-28"
+    },
+    {
+      "code": "buy_zone",
+      "symbol": "601179",
+      "name": "中国西电",
+      "price": 10.64,
+      "level": 10.71,
+      "change_pct": -1.85,
+      "msg": "进入买入参考区 (现10.64 接近10.71) 可考虑低吸",
+      "action": "波段操作",
+      "type": "电网装备/特高压",
+      "level_name": "低吸区",
+      "severity": "LOW",
+      "levels_src": "scan:2026-10-28"
+    },
+    {
+      "code": "break_below",
+      "symbol": "300199",
+      "name": "翰宇药业",
+      "price": 22.68,
+      "level": 24.0,
+      "change_pct": -2.07,
+      "msg": "跌破止损位24.00 (现22.68) 应变观察·分歧未解",
+      "action": "观察·分歧未解",
+      "type": "医药·多肽",
+      "level_name": "跌破止损",
+      "severity": "HIGH",
+      "levels_src": "static_config(lock)"
+    }
+  ],
+  "triggered_this_run": [],
+  "levels_provenance": {
+    "source": "analysis/daily/2026-10-28_close_scan.json",
+    "data_date": "2026-10-28",
+    "scan_run_at": "2026-10-28 18:31:42",
+    "coverage": 36,
+    "stale": false,
+    "warning": null
+  }
+}

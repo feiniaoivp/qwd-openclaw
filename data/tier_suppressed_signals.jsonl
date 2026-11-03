@@ -2,3 +2,28 @@
 {"ts": "2026-10-18 11:14:44", "date": "2026-10-18", "symbol": "601995", "name": "中金", "tier": "tier2", "from_action": "买入", "orig_reason": "x", "price": 1}
 {"ts": "2026-10-18 11:14:44", "date": "2026-10-18", "symbol": "601995", "name": "中金", "tier": "tier3", "from_action": "买入", "orig_reason": "x", "price": 1}
 {"ts": "2026-10-20 18:06:21", "date": "2026-10-20", "symbol": "600570", "name": "恒生电子", "tier": "tier2", "from_action": "买入", "orig_reason": "test", "price": 10.0}
+{"ts": "2026-10-26 15:40:03", "date": "2026-10-26", "symbol": "600030", "name": "中信证券", "tier": "tier3", "from_action": "买入", "orig_reason": "MACD金叉(-0.3853/-0.3862) 止损¥24.62", "price": 25.69}
+{"ts": "2026-10-26 15:40:44", "date": "2026-10-26", "symbol": "300124", "name": "汇川技术", "tier": "tier2", "from_action": "买入", "orig_reason": "布林上轨突破(¥54.77) ATR=1.74 止损¥51.77", "price": 55.25}
+{"ts": "2026-10-28 15:40:21", "date": "2026-10-28", "symbol": "300124", "name": "汇川技术", "tier": "tier2", "from_action": "买入", "orig_reason": "布林上轨突破(¥55.39) ATR=1.97 止损¥52.22", "price": 56.16}
+{"ts": "2026-10-30 15:40:26", "date": "2026-10-30", "symbol": "688981", "name": "中芯国际", "tier": "tier1", "from_action": "卖出", "orig_reason": "KDJ死叉", "price": 96.79}
+{"ts": "2026-10-30 15:40:28", "date": "2026-10-30", "symbol": "002156", "name": "通富微电", "tier": "tier1", "from_action": "卖出", "orig_reason": "跌破EMA20(¥48.98)", "price": 40.72}
+{"ts": "2026-10-30 15:40:31", "date": "2026-10-30", "symbol": "300014", "name": "亿纬锂能", "tier": "tier1", "from_action": "卖出", "orig_reason": "价格跌破EMA60(50.34) 长期趋势支撑失效", "price": 46.8}
+{"ts": "2026-10-30 15:40:33", "date": "2026-10-30", "symbol": "002466", "name": "天齐锂业", "tier": "tier1", "from_action": "卖出", "orig_reason": "跌破EMA20(¥37.57)", "price": 34.5}
+{"ts": "2026-10-30 15:40:50", "date": "2026-10-30", "symbol": "300748", "name": "金力永磁", "tier": "tier1", "from_action": "卖出", "orig_reason": "CCI高位(90%)", "price": 23.53}
+{"ts": "2026-10-30 15:40:52", "date": "2026-10-30", "symbol": "600160", "name": "巨化股份", "tier": "tier1", "from_action": "卖出", "orig_reason": "跌破EMA20(¥30.89)", "price": 28.76}
+{"ts": "2026-10-30 15:41:07", "date": "2026-10-30", "symbol": "601061", "name": "中信金属", "tier": "tier1", "from_action": "卖出", "orig_reason": "跌破EMA20(¥10.17)", "price": 9.25}
+{"ts": "2026-11-02 15:44:41", "date": "2026-11-02", "symbol": "002156", "name": "通富微电", "tier": "tier1", "from_action": "卖出", "orig_reason": "跌破EMA20(¥48.23)", "price": 41.12}
+{"ts": "2026-11-02 15:46:08", "date": "2026-11-02", "symbol": "300014", "name": "亿纬锂能", "tier": "tier1", "from_action": "卖出", "orig_reason": "价格跌破EMA60(50.38) 长期趋势支撑失效", "price": 48.07}
+{"ts": "2026-11-02 15:47:17", "date": "2026-11-02", "symbol": "002466", "name": "天齐锂业", "tier": "tier1", "from_action": "卖出", "orig_reason": "跌破EMA20(¥37.32)", "price": 34.86}
+{"ts": "2026-11-02 15:53:04", "date": "2026-11-02", "symbol": "300748", "name": "金力永磁", "tier": "tier1", "from_action": "卖出", "orig_reason": "CCI高位(88%)", "price": 23.51}
+{"ts": "2026-11-02 15:54:12", "date": "2026-11-02", "symbol": "600160", "name": "巨化股份", "tier": "tier1", "from_action": "卖出", "orig_reason": "跌破EMA20(¥30.77)", "price": 29.43}
+{"ts": "2026-11-02 15:58:01", "date": "2026-11-02", "symbol": "601061", "name": "中信金属", "tier": "tier1", "from_action": "卖出", "orig_reason": "跌破EMA20(¥10.09)", "price": 9.3}
+{"ts": "2026-11-03 15:40:03", "date": "2026-11-03", "symbol": "600030", "name": "中信证券", "tier": "tier3", "from_action": "买入", "orig_reason": "MACD金叉(-0.3701/-0.4324) 止损¥24.81", "price": 26.05}
+{"ts": "2026-11-03 15:40:06", "date": "2026-11-03", "symbol": "600036", "name": "招商银行", "tier": "tier1", "from_action": "卖出", "orig_reason": "MACD死叉(0.5066/0.5123)", "price": 42.69}
+{"ts": "2026-11-03 15:40:14", "date": "2026-11-03", "symbol": "002156", "name": "通富微电", "tier": "tier1", "from_action": "卖出", "orig_reason": "跌破EMA20(¥47.30)", "price": 38.48}
+{"ts": "2026-11-03 15:40:17", "date": "2026-11-03", "symbol": "300014", "name": "亿纬锂能", "tier": "tier1", "from_action": "卖出", "orig_reason": "价格跌破EMA60(50.22) 长期趋势支撑失效", "price": 48.92}
+{"ts": "2026-11-03 15:40:18", "date": "2026-11-03", "symbol": "002466", "name": "天齐锂业", "tier": "tier1", "from_action": "卖出", "orig_reason": "跌破EMA20(¥37.10)", "price": 35.05}
+{"ts": "2026-11-03 15:40:34", "date": "2026-11-03", "symbol": "300748", "name": "金力永磁", "tier": "tier1", "from_action": "卖出", "orig_reason": "CCI高位(86%)", "price": 23.33}
+{"ts": "2026-11-03 15:40:35", "date": "2026-11-03", "symbol": "600160", "name": "巨化股份", "tier": "tier1", "from_action": "卖出", "orig_reason": "跌破EMA20(¥30.75)", "price": 30.74}
+{"ts": "2026-11-03 15:40:49", "date": "2026-11-03", "symbol": "601061", "name": "中信金属", "tier": "tier1", "from_action": "卖出", "orig_reason": "跌破EMA20(¥10.01)", "price": 9.25}
+{"ts": "2026-11-03 20:24:09", "date": "2026-11-03", "symbol": "", "name": "", "tier": "tier2", "from_action": "买入", "orig_reason": "MACD金叉测试", "price": 26.0}

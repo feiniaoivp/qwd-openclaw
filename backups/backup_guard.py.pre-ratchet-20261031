@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+import ast
+import os
+import sys
+import glob
+
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
+
+def check_file(filepath):
+    with open(filepath, 'r', encoding='utf-8') as f:
+        try:
+            tree = ast.parse(f.read())
+        except SyntaxError:
+            return []
+
+    violations = []
+    # 寻找所有写操作的调用
+    # 重点关注: json.dump, json.dumps (配合 open 'w'), write_file, open(..., 'w')
+    
+    # 追踪变量名以判断是否有备份动作
+    # 简化逻辑：在同一个函数/作用域内，如果出现了写入目标文件，之前必须出现 shutil.copy 或 备份后缀的写入
+    
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            # 1. 检查 json.dump(..., fp)
+            if isinstance(node.func, ast.Attribute) and node.func.attr == 'dump':
+                if isinstance(node.func.value, ast.Name) and node.func.value.id == 'json':
+                    # 检查是否有备份逻辑
+                    if not has_backup_logic(tree, node):
+                        violations.append(f"L{node.lineno}: json.dump 缺少备份保护")
+
+            # 2. 检查 open(..., 'w')
+            if isinstance(node.func, ast.Name) and node.func.id == 'open':
+                args = node.args
+                if len(args) >= 2:
+                    mode_node = args[1]
+                    if isinstance(mode_node, ast.Constant) and mode_node.value == 'w':
+                        if not has_backup_logic(tree, node):
+                            violations.append(f"L{node.lineno}: open(..., 'w') 缺少备份保护")
+
+    return violations
+
+def has_backup_logic(tree, trigger_node):
+    """
+    极其简化的启发式检查：在触发节点之前的代码中，是否出现了 '.bak' 字符串
+    或 shutil.copy 调用。
+    """
+    # 实际生产中应分析控制流，这里采用 AST 扫描-触发点之前是否有备份关键字
+    # 只要同一个文件里有 shutil.copy 或 .bak 且在逻辑上看起来像备份即可
+    # 这里的实现采用：扫描整个文件，如果完全没有 shutil.copy 或 .bak，则判定违规
+    # 如果有，则暂时放行（降低误报，由人工在 review 时确认）
+    
+    source = ast.unparse(tree)
+    if '.bak' in source or 'shutil.copy' in source or 'backup' in source.lower():
+        return True
+    return False
+
+def main():
+    files = glob.glob(os.path.join(WORKSPACE, "analysis/*.py")) + \
+            glob.glob(os.path.join(WORKSPACE, "scripts/*.py"))
+    
+    all_violations = {}
+    high_count = 0
+
+    for f in files:
+        # 豁免名单：某些纯生成类的脚本不需要备份
+        if 'fill_missing' in f or 'builder' in f:
+            continue
+            
+        v = check_file(f)
+        if v:
+            all_violations[f] = v
+            high_count += len(v)
+
+    if all_violations:
+        print("🔴 [backup_guard] 发现重写型脚本缺失备份保护：")
+        for f, vs in all_violations.items():
+            print(f"\nFile: {f}")
+            for v in vs:
+                print(f"  - {v}")
+        print(f"\n总计违规点: {high_count}")
+        sys.exit(1)
+    else:
+        print("✅ [backup_guard] 所有重写脚本均已包含备份逻辑")
+        sys.exit(0)
+
+if __name__ == "__main__":
+    main()

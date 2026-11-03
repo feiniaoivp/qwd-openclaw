@@ -1,0 +1,110 @@
+{
+ "actionable": [
+  {
+   "kind": "buy",
+   "symbol": "600584",
+   "name": "长电科技",
+   "action": "买入",
+   "position_mult": 0.21,
+   "executed": false,
+   "status": "未执行-纪律未执行",
+   "reason": "技术指标倾向买入 (加权1.3)"
+  },
+  {
+   "kind": "buy",
+   "symbol": "300124",
+   "name": "汇川技术",
+   "action": "积极买入",
+   "position_mult": 0.17,
+   "executed": false,
+   "status": "未执行-纪律未执行",
+   "reason": "技术指标强烈共振买入 (加权2.0)；[ER震荡态]买入乘数×0.5(震荡态买入期望≈趋势态0.4×,事件研究2026-10-17)"
+  },
+  {
+   "kind": "sell",
+   "symbol": "600160",
+   "name": "巨化股份",
+   "action": "减仓",
+   "stop_loss": 39.28,
+   "executed": false,
+   "status": "未执行-纪律未执行",
+   "reason": "技术指标倾向卖出 (加权-0.7)"
+  },
+  {
+   "kind": "sell",
+   "symbol": "601061",
+   "name": "中信金属",
+   "action": "减仓",
+   "stop_loss": 11.12,
+   "executed": false,
+   "status": "未执行-纪律未执行",
+   "reason": "技术指标倾向卖出 (加权-0.6)"
+  }
+ ],
+ "blocked_buys": [],
+ "transparency": [
+  {
+   "type": "日报卖出未转仲裁",
+   "symbol": "600030",
+   "name": "中信证券",
+   "arbitration": "持有",
+   "sell_strategies": [
+    "MACD"
+   ],
+   "sources": [
+    "2026-10-27_dual.md"
+   ]
+  },
+  {
+   "type": "日报卖出未转仲裁",
+   "symbol": "000987",
+   "name": "越秀资本",
+   "arbitration": "持有",
+   "sell_strategies": [
+    "MACD"
+   ],
+   "sources": [
+    "2026-10-27_dual.md"
+   ]
+  }
+ ],
+ "n_actionable": 4,
+ "n_executed": 0,
+ "execution_rate": 0.0,
+ "verdict": "⚠️ 执行率 0/4 —— 执行率 < 100% = 无系统",
+ "date": "2026-10-28",
+ "generated_at": "2026-11-01 06:22:21",
+ "held_marker": {
+  "600030": 26.22,
+  "601066": 24.49,
+  "600036": 40.62,
+  "000987": 6.56,
+  "002413": 7.59,
+  "300285": 63.91,
+  "600160": 39.28,
+  "600570": 22.02,
+  "601061": 11.12
+ },
+ "held_marker_quality": "ghost-risk（仲裁幽灵过滤 10-29 上线前，卖侧应执行项可能含幽灵持仓）",
+ "signal_basis": {
+  "prev_trading_day": "2026-10-27",
+  "calendar_mode": "calendar",
+  "dual_sell_stocks": [
+   "000987",
+   "002156",
+   "002318",
+   "002335",
+   "002466",
+   "300014",
+   "300748",
+   "600030",
+   "600160",
+   "600312",
+   "600584",
+   "601061",
+   "601179",
+   "603308"
+  ]
+ },
+ "trades_count": 0
+}

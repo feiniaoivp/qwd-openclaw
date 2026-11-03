@@ -36,8 +36,9 @@ OUTPUT_FILE = os.path.join(WORKSPACE, "data", "intraday_alert_output.json")
 
 
 def run_scan() -> dict:
-    """跑 --intraday 扫描并把结果 (JSON stdout) 解析回 dict"""
-    cmd = [sys.executable, os.path.join(WORKSPACE, "analysis", "close_scan_v2.py"), "--intraday"]
+    """跑 intraday_alert.py 扫描并把结果 (JSON stdout) 解析回 dict
+    使用新的增强版预警脚本 (含方向性建议)"""
+    cmd = [sys.executable, os.path.join(WORKSPACE, "analysis", "intraday_alert.py")]
     try:
         r = subprocess.run(cmd, capture_output=True, text=True, timeout=60,
                            cwd=WORKSPACE, env={**os.environ, "WORKSPACE": WORKSPACE})
@@ -132,7 +133,8 @@ def check_index_levels() -> list:
 
 
 def build_message(data: dict, triggered: list = None) -> str:
-    """纯文本简报(不带 Markdown 特殊字符，规避 TG 实体 400)"""
+    """纯文本简报(不带 Markdown 特殊字符，规避 TG 实体 400)
+    增强版: 包含方向性建议 (2026-11-02)"""
     t = data.get("generated_at", "") or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     if triggered is None:
         triggered = data.get("triggered_this_run", [])
@@ -147,16 +149,51 @@ def build_message(data: dict, triggered: list = None) -> str:
     elif prov.get("warning"):
         lines.append(f"⚠️ {prov['warning']}")
     sev = {"HIGH": "🔴", "MEDIUM": "🟡", "LOW": "🔵"}
-    lname = {"break_below": "跌破止损", "break_above": "升破关键位", "buy_zone": "低吸区", "drop_pct": "急跌预警", "surge_pct": "急涨预警"}
+    lname = {"break_below": "跌破止损", "break_above": "升破关键位", "buy_zone": "低吸区", "drop_pct": "急跌预警", "surge_pct": "急涨预警", "atr_stop_loss": "ATR止损"}
     for a in triggered:
         emoji = sev.get(a.get("severity"), "⚪")
         label = a.get("level_name") or lname.get(a.get("code"), "")
+        # 基础信息
         lines.append(
             f"{emoji} {a['name']}({a['symbol']}) · {label}\n"
             f"   现价 {a['price']} · 日内 {a['change_pct']:+.2f}%\n"
             f"   提示: {a['msg']}"
         )
-    return "\n".join(lines)
+        # 方向性指导 (新增)
+        dg = a.get("directional_guidance")
+        if dg and dg != "无额外指导":
+            lines.append(f"   📊 方向参考: {dg}")
+        # 具体价位信息
+        stop_long = a.get("stop_long")
+        support = a.get("support")
+        resistance = a.get("resistance")
+        fib_time_info = a.get("fib_time_info")
+        price_positions = []
+        if stop_long and a.get('price', 0) > 0:
+            dist = (a['price'] - stop_long) / a['price'] * 100
+            price_positions.append(f"ATR止损 ¥{stop_long:.2f} ({dist:+.1f}%)")
+        if support and a.get('price', 0) > 0:
+            dist = (a['price'] - support) / a['price'] * 100
+            price_positions.append(f"支撑 ¥{support:.2f} ({dist:+.1f}%)")
+        if resistance and a.get('price', 0) > 0:
+            dist = (resistance - a['price']) / a['price'] * 100
+            price_positions.append(f"阻力 ¥{resistance:.2f} ({dist:+.1f}%)")
+        if price_positions:
+            lines.append(f"   📍 关键位: {' | '.join(price_positions)}")
+        if fib_time_info:
+            lines.append(f"   ⏰ {fib_time_info}")
+        # 信号等级和政权
+        signal_level = a.get("signal_level")
+        regime = a.get("regime")
+        er_status = a.get("er_status")
+        if signal_level:
+            lines.append(f"   📈 收盘信号: {signal_level}")
+        if er_status:
+            lines.append(f"   🌊 ER状态: {er_status}")
+        if regime:
+            lines.append(f"   🏛️ 政权: {regime}")
+        lines.append("")  # 空行分隔
+    return "\n".join(lines).strip()
 
 
 def main():

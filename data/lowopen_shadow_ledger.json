@@ -20,6 +20,469 @@
   "p1_chop": false,
   "p1_zone": true,
   "created_at": "2026-10-22 18:45:03",
+  "gap": -0.00773,
+  "tier": "-1%~0%",
+  "oc1": 0.01385,
+  "fwd5_oc": 0.0026,
+  "gap_filled_at": "2026-10-23 18:45:03",
+  "matured_at": "2026-10-30 18:45:03"
+ },
+ "2026-10-23|600584": {
+  "symbol": "600584",
+  "name": "长电科技",
+  "signal_date": "2026-10-23",
+  "cls": "分歧买",
+  "actions": [
+   "🟢买入",
+   "持有"
+  ],
+  "strategies": [
+   "macd",
+   "ema_cross"
+  ],
+  "close_t": 59.78,
+  "er20": 0.2986,
+  "regime_er": "trend",
+  "chop_idx": 46.7,
+  "ema_gap_atr": 1.08,
+  "p1_chop": false,
+  "p1_zone": false,
+  "created_at": "2026-10-23 18:45:02",
+  "gap": -0.02007,
+  "tier": "gap<-1%",
+  "oc1": -0.05941,
+  "fwd5_oc": -0.14135,
+  "gap_filled_at": "2026-10-26 18:45:03",
+  "matured_at": "2026-11-02 18:45:02"
+ },
+ "2026-10-23|600346": {
+  "symbol": "600346",
+  "name": "恒力石化",
+  "signal_date": "2026-10-23",
+  "cls": "分歧买",
+  "actions": [
+   "🟢买入",
+   "持有"
+  ],
+  "strategies": [
+   "macd",
+   "ema_cross"
+  ],
+  "close_t": 15.46,
+  "er20": 0.179,
+  "regime_er": "chop",
+  "chop_idx": 50.5,
+  "ema_gap_atr": 0.94,
+  "p1_chop": false,
+  "p1_zone": false,
+  "created_at": "2026-10-23 18:45:03",
+  "gap": -0.00065,
+  "tier": "-1%~0%",
+  "oc1": 0.00065,
+  "fwd5_oc": 0.0233,
+  "gap_filled_at": "2026-10-26 18:45:03",
+  "matured_at": "2026-11-02 18:45:03"
+ },
+ "2026-10-26|600030": {
+  "symbol": "600030",
+  "name": "中信证券",
+  "signal_date": "2026-10-26",
+  "cls": "分歧买",
+  "actions": [
+   "🟢买入",
+   "持有"
+  ],
+  "strategies": [
+   "macd",
+   "bollinger"
+  ],
+  "close_t": 25.69,
+  "er20": 0.1683,
+  "regime_er": "chop",
+  "chop_idx": 59.1,
+  "ema_gap_atr": 0.72,
+  "p1_chop": false,
+  "p1_zone": false,
+  "created_at": "2026-10-26 18:45:02",
+  "gap": -0.01985,
+  "tier": "gap<-1%",
+  "oc1": -0.00516,
+  "fwd5_oc": 0.03455,
+  "gap_filled_at": "2026-10-27 18:45:04",
+  "matured_at": "2026-11-03 18:45:02"
+ },
+ "2026-10-26|000987": {
+  "symbol": "000987",
+  "name": "越秀资本",
+  "signal_date": "2026-10-26",
+  "cls": "分歧买",
+  "actions": [
+   "🟢买入",
+   "持有"
+  ],
+  "strategies": [
+   "macd",
+   "bollinger"
+  ],
+  "close_t": 6.91,
+  "er20": 0.2024,
+  "regime_er": "chop",
+  "chop_idx": 48.9,
+  "ema_gap_atr": 0.78,
+  "p1_chop": false,
+  "p1_zone": false,
+  "created_at": "2026-10-26 18:45:03",
+  "gap": -0.00145,
+  "tier": "-1%~0%",
+  "oc1": -0.03188,
+  "fwd5_oc": -0.00725,
+  "gap_filled_at": "2026-10-27 18:45:04",
+  "matured_at": "2026-11-03 18:45:03"
+ },
+ "2026-10-26|300014": {
+  "symbol": "300014",
+  "name": "亿纬锂能",
+  "signal_date": "2026-10-26",
+  "cls": "分歧买",
+  "actions": [
+   "🟢买入",
+   "持有"
+  ],
+  "strategies": [
+   "ema_obv",
+   "bollinger"
+  ],
+  "close_t": 47.21,
+  "er20": 0.1815,
+  "regime_er": "chop",
+  "chop_idx": 39.4,
+  "ema_gap_atr": 0.9,
+  "p1_chop": false,
+  "p1_zone": false,
+  "created_at": "2026-10-26 18:45:03",
+  "gap": 0.0,
+  "tier": "0~+1%",
+  "oc1": -0.01334,
+  "fwd5_oc": 0.03622,
+  "gap_filled_at": "2026-10-27 18:45:04",
+  "matured_at": "2026-11-03 18:45:03"
+ },
+ "2026-10-26|300124": {
+  "symbol": "300124",
+  "name": "汇川技术",
+  "signal_date": "2026-10-26",
+  "cls": "分歧买",
+  "actions": [
+   "🟢买入",
+   "持有"
+  ],
+  "strategies": [
+   "bollinger",
+   "ema_cross"
+  ],
+  "close_t": 55.25,
+  "er20": 0.1589,
+  "regime_er": "chop",
+  "chop_idx": 47.7,
+  "ema_gap_atr": 0.54,
+  "p1_chop": false,
+  "p1_zone": false,
+  "created_at": "2026-10-26 18:45:03",
+  "gap": -0.02262,
+  "tier": "gap<-1%",
+  "oc1": -0.01278,
+  "fwd5_oc": 0.04667,
+  "gap_filled_at": "2026-10-27 18:45:04",
+  "matured_at": "2026-11-03 18:45:03"
+ },
+ "2026-10-26|600570": {
+  "symbol": "600570",
+  "name": "恒生电子",
+  "signal_date": "2026-10-26",
+  "cls": "分歧买",
+  "actions": [
+   "持有",
+   "🟢买入"
+  ],
+  "strategies": [
+   "ema_cross",
+   "bollinger"
+  ],
+  "close_t": 20.84,
+  "er20": 0.1358,
+  "regime_er": "chop",
+  "chop_idx": 46.4,
+  "ema_gap_atr": 0.18,
+  "p1_chop": false,
+  "p1_zone": true,
+  "created_at": "2026-10-26 18:45:03",
+  "gap": -0.00192,
+  "tier": "-1%~0%",
+  "oc1": -0.0351,
+  "fwd5_oc": 0.01779,
+  "gap_filled_at": "2026-10-27 18:45:05",
+  "matured_at": "2026-11-03 18:45:03"
+ },
+ "2026-10-28|300124": {
+  "symbol": "300124",
+  "name": "汇川技术",
+  "signal_date": "2026-10-28",
+  "cls": "分歧买",
+  "actions": [
+   "🟢买入",
+   "持有"
+  ],
+  "strategies": [
+   "bollinger",
+   "ema_cross"
+  ],
+  "close_t": 56.16,
+  "er20": 0.1014,
+  "regime_er": "chop",
+  "chop_idx": 43.8,
+  "ema_gap_atr": 0.18,
+  "p1_chop": false,
+  "p1_zone": true,
+  "created_at": "2026-10-28 18:45:04",
+  "gap": -0.00926,
+  "tier": "-1%~0%",
+  "oc1": 0.02049,
+  "fwd5_oc": null,
+  "gap_filled_at": "2026-10-29 18:45:02"
+ },
+ "2026-10-29|600036": {
+  "symbol": "600036",
+  "name": "招商银行",
+  "signal_date": "2026-10-29",
+  "cls": "分歧买",
+  "actions": [
+   "🟢买入",
+   "持有"
+  ],
+  "strategies": [
+   "kdj_cci",
+   "ema_cross"
+  ],
+  "close_t": 42.94,
+  "er20": 0.2833,
+  "regime_er": "trend",
+  "chop_idx": 74.3,
+  "ema_gap_atr": 0.57,
+  "p1_chop": true,
+  "p1_zone": false,
+  "created_at": "2026-10-29 18:45:02",
+  "gap": 0.00815,
+  "tier": "0~+1%",
+  "oc1": 0.00601,
+  "fwd5_oc": null,
+  "gap_filled_at": "2026-10-30 18:45:03"
+ },
+ "2026-10-29|300124": {
+  "symbol": "300124",
+  "name": "汇川技术",
+  "signal_date": "2026-10-29",
+  "cls": "分歧买",
+  "actions": [
+   "持有",
+   "🟢买入"
+  ],
+  "strategies": [
+   "bollinger",
+   "ema_cross"
+  ],
+  "close_t": 56.78,
+  "er20": 0.202,
+  "regime_er": "chop",
+  "chop_idx": 42.9,
+  "ema_gap_atr": 0.0,
+  "p1_chop": false,
+  "p1_zone": true,
+  "created_at": "2026-10-29 18:45:02",
+  "gap": -0.00793,
+  "tier": "-1%~0%",
+  "oc1": -0.01669,
+  "fwd5_oc": null,
+  "gap_filled_at": "2026-10-30 18:45:03"
+ },
+ "2026-10-30|600660": {
+  "symbol": "600660",
+  "name": "福耀玻璃",
+  "signal_date": "2026-10-30",
+  "cls": "分歧买",
+  "actions": [
+   "🟢买入",
+   "持有"
+  ],
+  "strategies": [
+   "macd",
+   "bollinger"
+  ],
+  "close_t": 53.49,
+  "er20": 0.0677,
+  "regime_er": "chop",
+  "chop_idx": 49.6,
+  "ema_gap_atr": 0.15,
+  "p1_chop": false,
+  "p1_zone": true,
+  "created_at": "2026-10-30 18:45:03",
+  "gap": -0.00542,
+  "tier": "-1%~0%",
+  "oc1": 0.00564,
+  "fwd5_oc": null,
+  "gap_filled_at": "2026-11-02 18:45:03"
+ },
+ "2026-11-02|002270": {
+  "symbol": "002270",
+  "name": "华明装备",
+  "signal_date": "2026-11-02",
+  "cls": "分歧买",
+  "actions": [
+   "🟢买入",
+   "持有"
+  ],
+  "strategies": [
+   "ema_obv",
+   "bollinger"
+  ],
+  "close_t": 18.64,
+  "er20": 0.3071,
+  "regime_er": "trend",
+  "chop_idx": 58.6,
+  "ema_gap_atr": 0.13,
+  "p1_chop": false,
+  "p1_zone": true,
+  "created_at": "2026-11-02 18:45:03",
+  "gap": 0.00161,
+  "tier": "0~+1%",
+  "oc1": 0.01875,
+  "fwd5_oc": null,
+  "gap_filled_at": "2026-11-03 18:45:03"
+ },
+ "2026-11-03|600030": {
+  "symbol": "600030",
+  "name": "中信证券",
+  "signal_date": "2026-11-03",
+  "cls": "双买",
+  "actions": [
+   "🟢买入",
+   "🟢买入"
+  ],
+  "strategies": [
+   "macd",
+   "ema_obv"
+  ],
+  "close_t": 26.05,
+  "er20": 0.034,
+  "regime_er": "chop",
+  "chop_idx": 55.2,
+  "ema_gap_atr": 0.6,
+  "p1_chop": false,
+  "p1_zone": false,
+  "created_at": "2026-11-03 18:45:02",
+  "gap": null,
+  "tier": null,
+  "oc1": null,
+  "fwd5_oc": null
+ },
+ "2026-11-03|000987": {
+  "symbol": "000987",
+  "name": "越秀资本",
+  "signal_date": "2026-11-03",
+  "cls": "分歧买",
+  "actions": [
+   "🟢买入",
+   "持有"
+  ],
+  "strategies": [
+   "macd",
+   "bollinger"
+  ],
+  "close_t": 6.85,
+  "er20": 0.0739,
+  "regime_er": "chop",
+  "chop_idx": 54.7,
+  "ema_gap_atr": 0.8,
+  "p1_chop": false,
+  "p1_zone": false,
+  "created_at": "2026-11-03 18:45:03",
+  "gap": null,
+  "tier": null,
+  "oc1": null,
+  "fwd5_oc": null
+ },
+ "2026-11-03|600570": {
+  "symbol": "600570",
+  "name": "恒生电子",
+  "signal_date": "2026-11-03",
+  "cls": "分歧买",
+  "actions": [
+   "持有",
+   "🟢买入"
+  ],
+  "strategies": [
+   "kdj_cci",
+   "bollinger"
+  ],
+  "close_t": 21.17,
+  "er20": 0.2316,
+  "regime_er": "chop",
+  "chop_idx": 51.2,
+  "ema_gap_atr": 0.03,
+  "p1_chop": false,
+  "p1_zone": true,
+  "created_at": "2026-11-03 18:45:03",
+  "gap": null,
+  "tier": null,
+  "oc1": null,
+  "fwd5_oc": null
+ },
+ "2026-11-03|000157": {
+  "symbol": "000157",
+  "name": "中联重科",
+  "signal_date": "2026-11-03",
+  "cls": "分歧买",
+  "actions": [
+   "持有",
+   "🟢买入"
+  ],
+  "strategies": [
+   "ema_cross",
+   "bollinger"
+  ],
+  "close_t": 6.16,
+  "er20": 0.2308,
+  "regime_er": "chop",
+  "chop_idx": 57.8,
+  "ema_gap_atr": 0.63,
+  "p1_chop": false,
+  "p1_zone": false,
+  "created_at": "2026-11-03 18:45:03",
+  "gap": null,
+  "tier": null,
+  "oc1": null,
+  "fwd5_oc": null
+ },
+ "2026-11-03|600312": {
+  "symbol": "600312",
+  "name": "平高电气",
+  "signal_date": "2026-11-03",
+  "cls": "分歧买",
+  "actions": [
+   "持有",
+   "🟢买入"
+  ],
+  "strategies": [
+   "kdj_cci",
+   "macd"
+  ],
+  "close_t": 21.63,
+  "er20": 0.2476,
+  "regime_er": "chop",
+  "chop_idx": 58.3,
+  "ema_gap_atr": 0.52,
+  "p1_chop": false,
+  "p1_zone": false,
+  "created_at": "2026-11-03 18:45:03",
   "gap": null,
   "tier": null,
   "oc1": null,

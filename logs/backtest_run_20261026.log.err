@@ -1,0 +1,221 @@
+[BS] 登录失败: 网络接收错误。
+[BS] 登录失败，重试 1/1
+[BS] 登录失败，重试 1/1
+[BS] 登录失败，重试 1/1
+[BS] 登录失败，重试 1/1
+[BS] 登录失败，重试 1/1
+[BS] 登录失败，重试 1/1
+[BS] 登录失败，重试 1/2
+[BS] 登录失败，重试 2/2
+  ⚠️ 600030 baostock获取失败: 查询失败
+  ⚠️ 中信证券 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.600030&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+  ⚠️ 中信证券(600030): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:30:35,263 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:30:36,767 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:30:38,274 WARNING   ⚠️ 601066 baostock获取失败: 查询失败
+2026-10-26 20:30:38,319 WARNING   ⚠️ 中信建投 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.601066&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:30:38,543 WARNING   ⚠️ 中信建投(601066): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:30:40,211 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:30:41,717 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:30:43,223 WARNING   ⚠️ 600036 baostock获取失败: 查询失败
+2026-10-26 20:30:58,272 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:30:58,343 WARNING   ⚠️ 招商银行 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.600036&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:30:58,695 WARNING   ⚠️ 招商银行(600036): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:31:00,392 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:31:01,897 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:31:03,406 WARNING   ⚠️ 601995 baostock获取失败: 查询失败
+2026-10-26 20:31:18,409 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:31:18,451 WARNING   ⚠️ 中金公司 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.601995&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:31:18,667 WARNING   ⚠️ 中金公司(601995): 复权源全失败，回退新浪【不复权】653 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:31:20,270 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:31:21,772 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:31:23,274 WARNING   ⚠️ 000987 baostock获取失败: 查询失败
+2026-10-26 20:31:38,277 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:31:38,320 WARNING   ⚠️ 越秀资本 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.000987&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:31:38,693 WARNING   ⚠️ 越秀资本(000987): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:31:40,360 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:31:41,869 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:31:43,373 WARNING   ⚠️ 600584 baostock获取失败: 查询失败
+2026-10-26 20:31:58,377 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:31:58,425 WARNING   ⚠️ 长电科技 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.600584&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:31:58,847 WARNING   ⚠️ 长电科技(600584): 复权源全失败，回退新浪【不复权】674 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:32:00,493 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:32:02,002 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:32:03,505 WARNING   ⚠️ 688981 baostock获取失败: 查询失败
+2026-10-26 20:32:18,507 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:32:18,557 WARNING   ⚠️ 中芯国际 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.688981&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:32:18,793 WARNING   ⚠️ 中芯国际(688981): 复权源全失败，回退新浪【不复权】673 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:32:20,436 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:32:21,943 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:32:23,452 WARNING   ⚠️ 002156 baostock获取失败: 查询失败
+2026-10-26 20:32:38,455 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:32:38,505 WARNING   ⚠️ 通富微电 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.002156&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:32:38,836 WARNING   ⚠️ 通富微电(002156): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:32:40,536 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:32:42,037 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:32:43,545 WARNING   ⚠️ 002413 baostock获取失败: 查询失败
+2026-10-26 20:32:58,549 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:32:58,596 WARNING   ⚠️ 雷科防务 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.002413&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:32:58,927 WARNING   ⚠️ 雷科防务(002413): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:33:00,609 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:33:02,118 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:33:03,625 WARNING   ⚠️ 300014 baostock获取失败: 查询失败
+2026-10-26 20:33:18,629 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:33:18,674 WARNING   ⚠️ 亿纬锂能 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.300014&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:33:19,005 WARNING   ⚠️ 亿纬锂能(300014): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:33:20,660 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:33:22,169 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:33:23,677 WARNING   ⚠️ 002466 baostock获取失败: 查询失败
+2026-10-26 20:33:38,681 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:33:38,725 WARNING   ⚠️ 天齐锂业 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.002466&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:33:39,058 WARNING   ⚠️ 天齐锂业(002466): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:33:40,727 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:33:42,235 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:33:43,745 WARNING   ⚠️ 300285 baostock获取失败: 查询失败
+2026-10-26 20:33:58,747 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:33:58,793 WARNING   ⚠️ 国瓷材料 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.300285&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:33:59,091 WARNING   ⚠️ 国瓷材料(300285): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:34:00,762 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:34:02,271 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:34:03,781 WARNING   ⚠️ 603308 baostock获取失败: 查询失败
+2026-10-26 20:34:18,783 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:34:18,830 WARNING   ⚠️ 应流股份 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.603308&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:34:19,142 WARNING   ⚠️ 应流股份(603308): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:34:20,814 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:34:22,318 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:34:23,826 WARNING   ⚠️ 300124 baostock获取失败: 查询失败
+2026-10-26 20:34:38,829 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:34:38,874 WARNING   ⚠️ 汇川技术 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.300124&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:34:39,187 WARNING   ⚠️ 汇川技术(300124): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:34:40,858 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:34:42,367 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:34:43,877 WARNING   ⚠️ 601100 baostock获取失败: 查询失败
+2026-10-26 20:34:58,880 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:34:58,947 WARNING   ⚠️ 恒立液压 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.601100&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:34:59,252 WARNING   ⚠️ 恒立液压(601100): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:35:00,928 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:35:02,435 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:35:03,941 WARNING   ⚠️ 002318 baostock获取失败: 查询失败
+2026-10-26 20:35:18,945 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:35:18,993 WARNING   ⚠️ 久立特材 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.002318&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:35:19,295 WARNING   ⚠️ 久立特材(002318): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:35:20,962 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:35:22,465 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:35:23,974 WARNING   ⚠️ 300719 baostock获取失败: 查询失败
+2026-10-26 20:35:38,976 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:35:39,018 WARNING   ⚠️ 安达维尔 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.300719&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:35:39,290 WARNING   ⚠️ 安达维尔(300719): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:35:40,964 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:35:42,474 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:35:43,975 WARNING   ⚠️ 002335 baostock获取失败: 查询失败
+2026-10-26 20:35:58,978 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:35:59,019 WARNING   ⚠️ 科华数据 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.002335&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:35:59,416 WARNING   ⚠️ 科华数据(002335): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:36:01,080 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:36:02,589 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:36:04,090 WARNING   ⚠️ 300748 baostock获取失败: 查询失败
+2026-10-26 20:36:19,092 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:36:19,134 WARNING   ⚠️ 金力永磁 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.300748&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:36:19,381 WARNING   ⚠️ 金力永磁(300748): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:36:21,059 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:36:22,564 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:36:24,069 WARNING   ⚠️ 600160 baostock获取失败: 查询失败
+2026-10-26 20:36:39,071 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:36:39,113 WARNING   ⚠️ 巨化股份 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.600160&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:36:39,483 WARNING   ⚠️ 巨化股份(600160): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:36:41,154 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:36:42,663 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:36:44,172 WARNING   ⚠️ 600346 baostock获取失败: 查询失败
+2026-10-26 20:36:59,175 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:36:59,216 WARNING   ⚠️ 恒力石化 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.600346&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:36:59,649 WARNING   ⚠️ 恒力石化(600346): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:37:01,347 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:37:02,854 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:37:04,360 WARNING   ⚠️ 000708 baostock获取失败: 查询失败
+2026-10-26 20:37:19,364 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:37:19,406 WARNING   ⚠️ 中信特钢 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.000708&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:37:19,752 WARNING   ⚠️ 中信特钢(000708): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:37:21,433 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:37:22,944 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:37:24,451 WARNING   ⚠️ 600660 baostock获取失败: 查询失败
+2026-10-26 20:37:39,454 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:37:39,502 WARNING   ⚠️ 福耀玻璃 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.600660&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:37:39,872 WARNING   ⚠️ 福耀玻璃(600660): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:37:41,547 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:37:43,054 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:37:44,561 WARNING   ⚠️ 600570 baostock获取失败: 查询失败
+2026-10-26 20:37:59,565 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:37:59,608 WARNING   ⚠️ 恒生电子 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.600570&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:37:59,955 WARNING   ⚠️ 恒生电子(600570): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:38:01,614 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:38:03,121 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:38:04,628 WARNING   ⚠️ 605566 baostock获取失败: 查询失败
+2026-10-26 20:38:19,632 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:38:19,679 WARNING   ⚠️ 福莱蒽特 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.605566&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:38:19,914 WARNING   ⚠️ 福莱蒽特(605566): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:38:21,606 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:38:23,115 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:38:24,619 WARNING   ⚠️ 000157 baostock获取失败: 查询失败
+2026-10-26 20:39:29,628 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:39:29,673 WARNING   ⚠️ 中联重科 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.000157&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:39:30,045 WARNING   ⚠️ 中联重科(000157): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:39:31,758 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:39:33,266 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:39:34,770 WARNING   ⚠️ 601061 baostock获取失败: 查询失败
+2026-10-26 20:39:49,772 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:39:49,818 WARNING   ⚠️ 中信金属 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.601061&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:39:50,031 WARNING   ⚠️ 中信金属(601061): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:39:51,741 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:39:53,250 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:39:54,755 WARNING   ⚠️ 600089 baostock获取失败: 查询失败
+2026-10-26 20:40:09,757 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:40:09,810 WARNING   ⚠️ 特变电工 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.600089&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:40:10,202 WARNING   ⚠️ 特变电工(600089): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:40:11,896 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:40:13,401 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:40:14,906 WARNING   ⚠️ 600406 baostock获取失败: 查询失败
+2026-10-26 20:40:29,910 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:40:29,959 WARNING   ⚠️ 国电南瑞 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.600406&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:40:30,353 WARNING   ⚠️ 国电南瑞(600406): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:40:32,087 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:40:33,589 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:40:35,099 WARNING   ⚠️ 000400 baostock获取失败: 查询失败
+2026-10-26 20:41:40,118 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:41:40,164 WARNING   ⚠️ 许继电气 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.000400&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:41:40,545 WARNING   ⚠️ 许继电气(000400): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:41:42,277 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:41:43,787 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:41:45,296 WARNING   ⚠️ 601179 baostock获取失败: 查询失败
+2026-10-26 20:42:50,310 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:42:50,355 WARNING   ⚠️ 中国西电 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.601179&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:42:50,672 WARNING   ⚠️ 中国西电(601179): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:42:52,373 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:42:53,876 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:42:55,385 WARNING   ⚠️ 002028 baostock获取失败: 查询失败
+2026-10-26 20:43:10,387 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:43:10,431 WARNING   ⚠️ 思源电气 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.002028&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:43:10,812 WARNING   ⚠️ 思源电气(002028): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:43:12,507 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:43:14,017 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:43:15,524 WARNING   ⚠️ 002270 baostock获取失败: 查询失败
+2026-10-26 20:44:20,494 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:44:20,536 WARNING   ⚠️ 华明装备 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.002270&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:44:20,913 WARNING   ⚠️ 华明装备(002270): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:44:22,653 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:44:24,156 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:44:25,660 WARNING   ⚠️ 002130 baostock获取失败: 查询失败
+2026-10-26 20:45:30,669 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:45:30,709 WARNING   ⚠️ 沃尔核材 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.002130&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:45:31,068 WARNING   ⚠️ 沃尔核材(002130): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:45:32,764 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:45:34,266 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:45:35,769 WARNING   ⚠️ 600312 baostock获取失败: 查询失败
+2026-10-26 20:46:40,778 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:46:40,817 WARNING   ⚠️ 平高电气 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=1.600312&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:46:41,191 WARNING   ⚠️ 平高电气(600312): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比
+2026-10-26 20:46:42,840 WARNING [BS] 登录失败，重试 1/2
+2026-10-26 20:46:44,342 WARNING [BS] 登录失败，重试 2/2
+2026-10-26 20:46:45,843 WARNING   ⚠️ 300199 baostock获取失败: 查询失败
+2026-10-26 20:47:50,852 ERROR [BS] 登录失败: 网络接收错误。
+2026-10-26 20:47:50,891 WARNING   ⚠️ 翰宇药业 akshare失败: HTTPSConnectionPool(host='push2his.eastmoney.com', port=443): Max retries exceeded with url: /api/qt/stock/kline/get?fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58%2Cf59%2Cf60%2Cf61%2Cf116&ut=7eea3edcaed734bea9cbfc24409ed989&klt=101&fqt=1&secid=0.300199&beg=20240101&end=20500101 (Caused by ProxyError('Unable to connect to proxy', RemoteDisconnected('Remote end closed connection without response')))
+2026-10-26 20:47:51,202 WARNING   ⚠️ 翰宇药业(300199): 复权源全失败，回退新浪【不复权】679 条 —— 信号/回测口径可能与其它标的不可比

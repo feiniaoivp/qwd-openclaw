@@ -1587,3 +1587,11 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **部署文档**：`RSSHUB_BLOGWATCHER_DEPLOYMENT.md` (含完整架构图、文件清单、运维命令、故障排查、扩展指南)
 *   **验证清单**：launchctl 进程存活、1200 端口单进程、7/7 路由健康、13 源扫描全绿、3 个 Cron 全 enabled、Telegram 推送成功、每日摘要含关注池/宏观/去重统计
 *   **后续扩展点**：华尔街见闻/虎嗅/澎湃/雪球等源、RSSHub 路由扩展、摘要格式调整、异常告警渠道增加
+
+### 2026-11-03 模拟盘激进模式（永久记忆）
+*   **用户拍板**：模拟盘放开约束做激进实测（19:55 提出，20:01 /approve），动机=「分析热闹、模拟成交可怜」——分析通道与执行通道脱节，四道静默拦截吞信号。
+*   **架构**：`analysis/sim_aggressive.py`（配置SSOT加载器）+ `data/sim_aggressive_config.json`（24键）；position_sizer 3处 + portfolio_core 12处执法点消费配置。
+*   **核心放宽**：总仓上限×1.5、单股 core 15%→30% / satellite 5%→12%、单簇暴露 25%→45%、tier2 买入放行（aggressive_allowed 留痕）、三因素门控买入线 55→45 + 缺失策略 fail_closed→ignore、止损冷却 15→5 天、ATR止损倍数 2.0→3.0、连续买入上限+2天、哑铃 80/20→75/40。
+*   **硬保险不放宽**：030致命风险仓位归零、tier3禁买、总仓上限仍执法。
+*   **一键回滚**：config `enabled=false` / 删配置文件 / 环境变量 `SIM_AGGRESSIVE=0`。变更日志 `data/sim_aggressive_changelog_2026-11-03.md`；commit `d357fb8`，tag `guard/20261103-sim-aggressive-mode`。
+*   **方法论教训**：改交易约束前必须先跑**合成交易测试**（构造假信号直调 execute_trade）——静态 grep 执法点会漏掉「三因素门控」这类藏在函数体内的网络型拦截器；本次靠它发现第四道门。测试直接调 execute_trade 会写 trades 流水（BACKTEST_MODE 才跳过），测完必须清理污染。

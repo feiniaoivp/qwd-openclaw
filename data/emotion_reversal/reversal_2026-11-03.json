@@ -1,0 +1,39 @@
+{
+ "date": "2026-11-03",
+ "generated_at": "2026-11-03 19:40:02",
+ "rule_version": "v1.1 (2026-11-01, 10-28 量能三tier校准)",
+ "candidates": [
+  {
+   "code": "600570",
+   "name": "恒生电子",
+   "kind": "fade",
+   "open_chg_pct": 2.79
+  }
+ ],
+ "auction_file_missing": false,
+ "per_stock": [
+  {
+   "code": "600570",
+   "name": "恒生电子",
+   "kind": "fade",
+   "open_chg_pct": 2.79,
+   "confirmed": false,
+   "data_gap": true,
+   "note": "K线数据缺口，无法确认"
+  }
+ ],
+ "seesaw": false,
+ "seesaw_parts": {
+  "breadth": false
+ },
+ "seesaw_data_gap": false,
+ "breadth_gap": false,
+ "index_gap": true,
+ "confirmed_codes": [],
+ "reversal_confirmed": false,
+ "breadth": {
+  "up_ratio_today": 0.3991,
+  "up_ratio_prev": 0.851
+ },
+ "hard_stop_pct": 5.0
+}

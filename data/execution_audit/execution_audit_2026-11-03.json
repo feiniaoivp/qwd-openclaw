@@ -1,0 +1,71 @@
+{
+ "actionable": [
+  {
+   "kind": "buy",
+   "symbol": "600030",
+   "name": "中信证券",
+   "action": "买入",
+   "position_mult": 0.1,
+   "executed": false,
+   "status": "未执行-纪律未执行",
+   "reason": "技术指标倾向买入 (加权0.6)；[ER震荡态]买入乘数×0.5(震荡态买入期望≈趋势态0.4×,事件研究2026-10-17)"
+  },
+  {
+   "kind": "buy",
+   "symbol": "000987",
+   "name": "越秀资本",
+   "action": "买入",
+   "position_mult": 0.1,
+   "executed": false,
+   "status": "未执行-纪律未执行",
+   "reason": "技术指标倾向买入 (加权1.5)；[ER震荡态]买入乘数×0.5(震荡态买入期望≈趋势态0.4×,事件研究2026-10-17)"
+  },
+  {
+   "kind": "buy",
+   "symbol": "600570",
+   "name": "恒生电子",
+   "action": "买入",
+   "position_mult": 0.1,
+   "executed": false,
+   "status": "未执行-纪律未执行",
+   "reason": "技术指标倾向买入 (加权1.0)；[ER震荡态]买入乘数×0.5(震荡态买入期望≈趋势态0.4×,事件研究2026-10-17)"
+  },
+  {
+   "kind": "buy",
+   "symbol": "600312",
+   "name": "平高电气",
+   "action": "买入",
+   "position_mult": 0.1,
+   "executed": false,
+   "status": "未执行-纪律未执行",
+   "reason": "技术指标倾向买入 (加权1.0)；[ER震荡态]买入乘数×0.5(震荡态买入期望≈趋势态0.4×,事件研究2026-10-17)"
+  }
+ ],
+ "blocked_buys": [],
+ "transparency": [],
+ "n_actionable": 4,
+ "n_executed": 0,
+ "execution_rate": 0.0,
+ "verdict": "⚠️ 执行率 0/4 —— 执行率 < 100% = 无系统",
+ "date": "2026-11-03",
+ "generated_at": "2026-11-03 19:41:40",
+ "held_marker": {
+  "688981": 95.0
+ },
+ "held_marker_quality": "reliable",
+ "signal_basis": {
+  "prev_trading_day": "2026-11-02",
+  "calendar_mode": "calendar",
+  "dual_sell_stocks": [
+   "002156",
+   "002466",
+   "300199",
+   "300748",
+   "600160",
+   "601061",
+   "601179",
+   "603308"
+  ]
+ },
+ "trades_count": 0
+}

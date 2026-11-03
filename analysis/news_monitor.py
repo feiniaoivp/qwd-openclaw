@@ -23,6 +23,8 @@ from datetime import datetime
 WORKSPACE = "/Users/duguke/.openclaw/workspace"
 sys.path.insert(0, WORKSPACE)
 from analysis.data_layer.router import get_router
+# 研报抽取集成 (2026-11-03 新增)
+from analysis.research_report_extractor import run_daily_extraction as extract_research_reports
 
 NEWS_DIR = os.path.join(WORKSPACE, "data", "news")
 RAW_DIR = os.path.join(NEWS_DIR, "raw")
@@ -321,11 +323,24 @@ def main():
     print("=====NEWS_MONITOR_END=====")
     print("\n" + brief)
 
+
+    # ── 研报观点结构化抽取 (2026-11-03 新增) ──
+    # 仅在盘后模式运行一次，避免重复抓取
+    research_reports = []
+    research_summary = ""
+    if mode == "盘后":
+        print("  [4/4] 抓取研报观点结构化...")
+        try:
+            research_reports, research_summary = extract_research_reports(today_str)
+        except Exception as e:
+            log.warning(f"研报抽取失败: {e}")
+            research_summary = f"研报抽取失败: {e}"
+
     # 保存可读知识库片段（2026-10-30 防重钩子：• 条目行若 KB 已存在同文本则跳过。
     # 根治两类粘性重复：a) 同日双窗口双收（手抓+19:06 cron，10-28 两盘后块 12 条重复）；
     # b) 挂架公告跨日重收（特变业绩说明会 ×3 等）。简报头统计行不参与防重。）
     kb_file = os.path.join(NEWS_DIR, "knowledge_base.md")
-    brief_to_write = brief
+    brief_to_write = brief + ("\n\n" + research_summary if research_summary else "")
     try:
         with open(kb_file, encoding="utf-8") as f:
             _kb_existing = f.read()

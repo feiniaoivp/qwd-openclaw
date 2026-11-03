@@ -1,0 +1,129 @@
+{
+ "date": "2026-11-02",
+ "generated_at": "2026-11-02 19:40:02",
+ "rule_version": "v1.1 (2026-11-01, 10-28 量能三tier校准)",
+ "candidates": [
+  {
+   "code": "002156",
+   "name": "通富微电",
+   "kind": "fade",
+   "open_chg_pct": 2.87
+  },
+  {
+   "code": "300748",
+   "name": "金力永磁",
+   "kind": "fade",
+   "open_chg_pct": 2.76
+  },
+  {
+   "code": "688981",
+   "name": "中芯国际",
+   "kind": "fade",
+   "open_chg_pct": 2.68
+  },
+  {
+   "code": "601995",
+   "name": "中金公司",
+   "kind": "fade",
+   "open_chg_pct": 2.43
+  },
+  {
+   "code": "300285",
+   "name": "国瓷材料",
+   "kind": "fade",
+   "open_chg_pct": 2.14
+  },
+  {
+   "code": "600584",
+   "name": "长电科技",
+   "kind": "fade",
+   "open_chg_pct": 2.04
+  },
+  {
+   "code": "600570",
+   "name": "恒生电子",
+   "kind": "trap",
+   "open_chg_pct": 3.13
+  }
+ ],
+ "auction_file_missing": false,
+ "per_stock": [
+  {
+   "code": "002156",
+   "name": "通富微电",
+   "kind": "fade",
+   "open_chg_pct": 2.87,
+   "confirmed": false,
+   "data_gap": true,
+   "note": "K线数据缺口，无法确认"
+  },
+  {
+   "code": "300748",
+   "name": "金力永磁",
+   "kind": "fade",
+   "open_chg_pct": 2.76,
+   "confirmed": false,
+   "data_gap": true,
+   "note": "K线数据缺口，无法确认"
+  },
+  {
+   "code": "688981",
+   "name": "中芯国际",
+   "kind": "fade",
+   "open_chg_pct": 2.68,
+   "confirmed": false,
+   "data_gap": true,
+   "note": "K线数据缺口，无法确认"
+  },
+  {
+   "code": "601995",
+   "name": "中金公司",
+   "kind": "fade",
+   "open_chg_pct": 2.43,
+   "confirmed": false,
+   "data_gap": true,
+   "note": "K线数据缺口，无法确认"
+  },
+  {
+   "code": "300285",
+   "name": "国瓷材料",
+   "kind": "fade",
+   "open_chg_pct": 2.14,
+   "confirmed": false,
+   "data_gap": true,
+   "note": "K线数据缺口，无法确认"
+  },
+  {
+   "code": "600584",
+   "name": "长电科技",
+   "kind": "fade",
+   "open_chg_pct": 2.04,
+   "confirmed": false,
+   "data_gap": true,
+   "note": "K线数据缺口，无法确认"
+  },
+  {
+   "code": "600570",
+   "name": "恒生电子",
+   "kind": "trap",
+   "open_chg_pct": 3.13,
+   "confirmed": false,
+   "data_gap": true,
+   "note": "K线数据缺口，无法确认"
+  }
+ ],
+ "seesaw": true,
+ "seesaw_parts": {
+  "breadth": true
+ },
+ "seesaw_data_gap": false,
+ "breadth_gap": false,
+ "index_gap": true,
+ "confirmed_codes": [],
+ "reversal_confirmed": false,
+ "breadth": {
+  "up_ratio_today": 0.851,
+  "up_ratio_prev": 0.166
+ },
+ "hard_stop_pct": 5.0
+}

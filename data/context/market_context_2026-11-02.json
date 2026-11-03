@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-02",
+  "breadth": {
+    "up": 2022,
+    "down": 3045,
+    "flat": 156,
+    "total": 5223,
+    "limit_up": 50,
+    "limit_down": 24,
+    "big_up": 3,
+    "avg_chg": -0.99,
+    "med_chg": -0.6,
+    "total_amount_yi": 17025.0,
+    "up_ratio": 0.3871,
+    "width_score": 4,
+    "neg_score": 1,
+    "data_time": null
+  },
+  "index": {
+    "上证指数": {
+      "price": 3608.0976,
+      "change_pct": -0.82,
+      "amount_yi": 8108.0
+    },
+    "创业板指": {
+      "price": 2391.65,
+      "change_pct": -2.73,
+      "amount_yi": 2041.0
+    },
+    "科创50": {
+      "price": 1151.2826,
+      "change_pct": -3.81,
+      "amount_yi": 873.0
+    }
+  },
+  "yesterday_hot_sectors": [
+    "半导体",
+    "锂电",
+    "高端制造"
+  ],
+  "yesterday_strong_stocks": [
+    "600160",
+    "600346",
+    "600660",
+    "000400",
+    "002028"
+  ],
+  "market_phase": "震荡期",
+  "sentiment": "一般",
+  "notes": "两市成交17025亿，涨停50家，跌停24家，上涨比38.7%"
+}

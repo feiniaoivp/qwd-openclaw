@@ -67,6 +67,7 @@ from analysis.data_layer.router import get_router
 from analysis.fib_extension_scan import compute_fib_time_targets
 # 交易日判定收敛到 service 单一来源（2026-10-01 立项）：本文件不再自持实现
 from analysis.service import is_trading_day
+from analysis.data_layer.router import get_router
 
 # ============================================================================
 # 配置常量
@@ -75,6 +76,7 @@ from analysis.service import is_trading_day
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 STATE_FILE = os.path.join(WORKSPACE, "data", "zhonglian_state.json")
 LIFECYCLE_FILE = os.path.join(WORKSPACE, "data", "signal_lifecycle.json")
+NEWS_SENTIMENT_FILE = os.path.join(WORKSPACE, "data", "news", "sentiment_cache.json")
 
 CAPITAL = 100_000
 COMMISSION = 0.0003
@@ -581,10 +583,120 @@ def apply_temporal_decay(symbol: str, score: float, level: str, current_date_str
     decay_msg = f"时间衰减({status}: {days_diff}d, x{decay_factor})" if decay_factor < 1.0 else ""
     return new_score, new_level, [decay_msg] if decay_msg else []
 
+def get_news_sentiment(symbol: str, name: str, lookback_days: int = 5) -> dict:
+    """
+    获取个股新闻情绪评分
+    
+    返回: {
+        "score": float,        # 情绪分 -2 到 +2
+        "label": str,          # 标签
+        "count": int,          # 新闻条数
+        "positive": int,       # 利好条数
+        "negative": int,       # 利空条数
+        "details": list        # 明细
+    }
+    """
+    try:
+        router = get_router()
+        df_news = router.get_stock_news(symbol)
+        if df_news is None or df_news.empty:
+            return {"score": 0, "label": "无新闻", "count": 0, "positive": 0, "negative": 0, "details": []}
+        
+        # 解析发布时间，只取近 N 天
+        cutoff = datetime.now() - timedelta(days=lookback_days)
+        
+        positive_keywords = [
+            r"回购", r"增持", r"预增", r"业绩.*增长", r"扭亏", r"重大合同", r"中标",
+            r"战略合作", r"重组", r"分红", r"派息", r"业绩超预期", r"净利润.*增"
+        ]
+        negative_keywords = [
+            r"减持", r"预亏", r"业绩.*下降", r"巨额亏损", r"立案", r"调查", r"违规",
+            r"处罚", r"警示", r"风险提示", r"业绩暴雷", r"净利润.*亏"
+        ]
+        
+        pos_patterns = [re.compile(kw, re.IGNORECASE) for kw in positive_keywords]
+        neg_patterns = [re.compile(kw, re.IGNORECASE) for kw in negative_keywords]
+        
+        positive_count = 0
+        negative_count = 0
+        details = []
+        
+        for _, row in df_news.iterrows():
+            title = str(row.get("新闻标题", ""))
+            pub_time_str = str(row.get("发布时间", ""))
+            
+            # 解析时间
+            pub_time = None
+            for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
+                try:
+                    pub_time = datetime.strptime(pub_time_str[:len(fmt)], fmt)
+                    break
+                except ValueError:
+                    continue
+            
+            if pub_time and pub_time < cutoff:
+                continue
+            
+            # 关键词匹配
+            is_positive = any(p.search(title) for p in pos_patterns)
+            is_negative = any(p.search(title) for p in neg_patterns)
+            
+            if is_positive and not is_negative:
+                positive_count += 1
+                details.append({"title": title, "time": pub_time_str, "sentiment": "positive"})
+            elif is_negative and not is_positive:
+                negative_count += 1
+                details.append({"title": title, "time": pub_time_str, "sentiment": "negative"})
+            elif is_positive and is_negative:
+                # 混合信号，按权重判断
+                details.append({"title": title, "time": pub_time_str, "sentiment": "mixed"})
+        
+        total = positive_count + negative_count
+        if total == 0:
+            return {"score": 0, "label": "中性/无关键词", "count": len(df_news), "positive": 0, "negative": 0, "details": details}
+        
+        # 评分：-2 到 +2
+        # 利好 +1~2，利空 -1~-2
+        net = positive_count - negative_count
+        if net >= 2:
+            score = 2
+        elif net >= 1:
+            score = 1
+        elif net <= -2:
+            score = -2
+        elif net <= -1:
+            score = -1
+        else:
+            score = 0
+        
+        if score > 0:
+            label = f"利好({positive_count}条)"
+        elif score < 0:
+            label = f"利空({negative_count}条)"
+        else:
+            label = "中性"
+        
+        return {
+            "score": score,
+            "label": label,
+            "count": total,
+            "positive": positive_count,
+            "negative": negative_count,
+            "details": details
+        }
+    except Exception as e:
+        logging.warning(f"get_news_sentiment({symbol}) 失败: {e}")
+        return {"score": 0, "label": "获取失败", "count": 0, "positive": 0, "negative": 0, "details": []}
+
+
 def calc_full_signal_whitelist(df: pd.DataFrame) -> dict:
-    """完整技术指标信号 —— 仅白名单指标"""
+    """完整技术指标信号 —— 仅白名单指标 + 新闻情绪"""
     if len(df) < 60:
         return {"error": "历史数据不足 60 根"}
+    
+    # 从 DataFrame 属性或外部传入获取 symbol/name（close_scan_v2.py main() 中已知）
+    # 这里通过全局变量或上下文获取，简化：假设调用者会在外部计算 news_sentiment 并注入
+    # 实际集成见 main() 中的调用逻辑
     
     # 1. 三大原子指标
     sr = calc_support_resistance(df)
@@ -639,6 +751,18 @@ def calc_full_signal_whitelist(df: pd.DataFrame) -> dict:
     if atr_stop > 0 and atr_stop < cur_price:
         rr = (sr.get("resistance_strong", cur_price*1.1) - cur_price) / (cur_price - atr_stop)
         if rr >= 2: score += 3; reasons.append(f"盈亏比{rr:.1f}:1")
+    
+    # --- 新闻情绪因子 (2026-11-03 新增) ---
+    # 从 indicators 注入的 news_sentiment 读取（由 main() 计算并注入）
+    news_sentiment = df.attrs.get("news_sentiment") if hasattr(df, "attrs") else None
+    if news_sentiment and isinstance(news_sentiment, dict):
+        ns_score = news_sentiment.get("score", 0)
+        if ns_score != 0:
+            score += ns_score  # -2 到 +2 直接加到总分
+            if ns_score > 0:
+                reasons.append(f"新闻情绪利好({news_sentiment.get('positive',0)}条)")
+            else:
+                risks.append(f"新闻情绪利空({news_sentiment.get('negative',0)}条)")
     
     # --- Shock Filter 权重衰减 (2026-10-29) ---
     daily_ret = (cur_price / prev_close) - 1
@@ -1247,6 +1371,13 @@ def main(target_date: str = None):
                     continue
             if df is not None and len(df) >= 60:
                 try:
+                    # 计算新闻情绪因子
+                    news_sentiment = get_news_sentiment(sym, item["name"], lookback_days=5)
+                    # 将新闻情绪注入 DataFrame attrs，供 calc_full_signal_whitelist 读取
+                    if not hasattr(df, "attrs"):
+                        df.attrs = {}
+                    df.attrs["news_sentiment"] = news_sentiment
+                    
                     sig = calc_full_signal_whitelist(df)
                     
                     # [2026-10-30] 应用时间衰减 (Temporal Decay)

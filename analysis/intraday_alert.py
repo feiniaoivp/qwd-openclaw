@@ -16,6 +16,7 @@
   - 预警规则由 config 定义: break_below(跌破止损) / break_above(升破买点) / drop_pct(跌超) / surge_pct(涨超)
   - 新增: 自动检查 portfolio_sim_state.json 中持仓的 ATR 止损价，跌破即触发 HIGH 级预警
   - 每次运行全量输出(触发/未触发都列)，由调用方(cron/agent)判断是否推送，避免重复推送
+  - 2026-11-02 新增: 结合 close_scan 指导数据生成方向性建议
 """
 
 from __future__ import annotations
@@ -24,6 +25,7 @@ import os
 import sys
 import shutil
 import json
+import glob
 from datetime import datetime
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
@@ -34,6 +36,7 @@ CONFIG_FILE = os.path.join(WORKSPACE, "data", "intraday_alert_config.json")
 OUTPUT_FILE = os.path.join(WORKSPACE, "data", "intraday_alert_output.json")
 STATE_FILE = os.path.join(WORKSPACE, "data", "intraday_alert_state.json")
 PORTFOLIO_STATE_FILE = os.path.join(WORKSPACE, "data", "portfolio_sim_state.json")
+SIGNAL_LIFECYCLE_FILE = os.path.join(WORKSPACE, "data", "signal_lifecycle.json")
 
 
 def load_config() -> dict:
@@ -87,6 +90,54 @@ def load_portfolio_state() -> dict:
     return {"positions": {}}
 
 
+def load_signal_lifecycle() -> dict:
+    """加载信号生命周期（存活天数、初始评分）"""
+    if os.path.exists(SIGNAL_LIFECYCLE_FILE):
+        with open(SIGNAL_LIFECYCLE_FILE, encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+
+def find_latest_close_scan_json() -> str | None:
+    """查找最新的 close_scan JSON 文件"""
+    cands = glob.glob(os.path.join(WORKSPACE, "analysis", "daily", "*_close_scan.json"))
+    if not cands:
+        return None
+    return max(cands, key=os.path.getmtime)
+
+
+def load_close_scan_guidance() -> dict:
+    """从最新 close_scan JSON 加载方向性指导数据。
+    返回: {code: {level, score, reasons, risks, fib_time, stop_long, support, resistance, indicators...}}"""
+    path = find_latest_close_scan_json()
+    if not path or not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        print(f"⚠️ close_scan JSON 读取失败: {e}", file=sys.stderr)
+        return {}
+    guidance = {}
+    for s in data.get("stocks", []):
+        code = str(s.get("symbol") or "")
+        if not code:
+            continue
+        guidance[code] = {
+            "signal_level": s.get("signal", {}).get("level"),
+            "signal_score": s.get("signal", {}).get("score"),
+            "signal_reasons": s.get("signal", {}).get("reasons"),
+            "signal_risks": s.get("signal", {}).get("risks"),
+            "fib_time": s.get("signal", {}).get("fib_time"),
+            "stop_long": s.get("stop_long"),
+            "support": s.get("support"),
+            "resistance": s.get("resistance"),
+            "data_date": data.get("data_date"),
+            "indicators": s.get("indicators", {}),
+        }
+    return guidance
+
+
 def check_atr_stop_loss(portfolio_state: dict, spot_data: dict) -> list[dict]:
     """检查持仓是否触及 ATR 止损价，返回预警列表"""
     alerts = []
@@ -134,8 +185,8 @@ def check_atr_stop_loss(portfolio_state: dict, spot_data: dict) -> list[dict]:
     return alerts
 
 
-def evaluate_stock(cfg: dict, spot: dict) -> list[dict]:
-    """对单只股票对照规则判定预警"""
+def evaluate_stock(cfg: dict, spot: dict, guidance: dict) -> list[dict]:
+    """对单只股票对照规则判定预警，结合 close_scan 指导生成方向性建议"""
     alerts = []
     sym = spot["symbol"]
     price = spot["price"]
@@ -143,55 +194,174 @@ def evaluate_stock(cfg: dict, spot: dict) -> list[dict]:
     levels = cfg.get("levels", {})
     action = cfg.get("action", "")
     type_ = cfg.get("type", "")
+    
+    g = guidance.get(sym, {})
+    signal_level = g.get("signal_level")
+    signal_score = g.get("signal_score")
+    signal_reasons = g.get("signal_reasons")
+    signal_risks = g.get("signal_risks")
+    fib_time = g.get("fib_time")
+    stop_long = g.get("stop_long")
+    support = g.get("support")
+    resistance = g.get("resistance")
+    indicators = g.get("indicators", {})
+    data_date = g.get("data_date")
+    
+    # 提取 ER 状态和政权信息
+    ema_trend = indicators.get("ema_trend", {})
+    macd = indicators.get("macd", {})
+    vol = indicators.get("volume", {})
+    
+    # 判断 ER 状态（趋势/震荡）
+    er_status = "趋势" if ema_trend.get("ER20", 0) > 0.3 else "震荡"
+    # 政权
+    adx = ema_trend.get("ADX", 0)
+    chop = ema_trend.get("CHOP", 0)
+    if adx > 25 and chop < 50:
+        regime = "强趋势"
+    elif adx > 25:
+        regime = "弱趋势"
+    else:
+        regime = "无趋势"
+    
+    # 获取斐波那契时间窗口信息
+    fib_time_info = ""
+    if fib_time and isinstance(fib_time, dict):
+        for anchor in fib_time.get("anchors", []):
+            for t in anchor.get("targets", []):
+                if not t.get("passed") and t.get("fib") in [1, 2, 3, 5, 8, 13, 21, 34]:
+                    fib_time_info = f"斐波时间窗口: {t.get('date')} (Fib {t.get('fib')})"
+                    break
+            if fib_time_info:
+                break
+    
+    # 构建基础方向性指导文本
+    base_guidance = []
+    if signal_level:
+        base_guidance.append(f"收盘信号: {signal_level} (分数: {signal_score})")
+    if signal_reasons:
+        base_guidance.append(f"利好因子: {signal_reasons}")
+    if signal_risks:
+        base_guidance.append(f"风险因子: {signal_risks}")
+    if er_status:
+        base_guidance.append(f"ER状态: {er_status}")
+    if regime:
+        base_guidance.append(f"市场政权: {regime} (ADX{adx:.1f}/CHOP{chop:.1f})")
+    if fib_time_info:
+        base_guidance.append(fib_time_info)
+    if stop_long and price > 0:
+        base_guidance.append(f"ATR止损: ¥{stop_long:.2f} (距当前: {(price-stop_long)/price*100:.1f}%)")
+    if support and price > 0:
+        base_guidance.append(f"支撑位: ¥{support:.2f} (距当前: {(price-support)/price*100:.1f}%)")
+    if resistance and price > 0:
+        base_guidance.append(f"阻力位: ¥{resistance:.2f} (距当前: {(resistance-price)/price*100:.1f}%)")
+    if data_date:
+        base_guidance.append(f"数据基准: {data_date} 收盘")
+    guidance_text = " | ".join(base_guidance) if base_guidance else "无额外指导"
 
     # 跌破关键位
     bl = levels.get("break_below")
     if bl is not None and price > 0 and price <= bl:
-        alerts.append({
+        alert = {
             "code": "break_below", "symbol": sym, "name": cfg.get("name", sym),
             "price": price, "level": bl, "change_pct": chg,
-            "msg": f"跌破止损位 {bl:.2f} (现{price:.2f}) 应{action}", "action": action, "type": type_,
+            "msg": f"跌破止损位 {bl:.2f} (现{price:.2f}) 应{action}",
+            "action": action, "type": type_,
             "level_name": "止损/减仓", "severity": "HIGH",
-        })
+            "directional_guidance": guidance_text,
+            "signal_level": signal_level,
+            "signal_score": signal_score,
+            "er_status": er_status,
+            "regime": regime,
+            "stop_long": stop_long,
+            "support": support,
+            "resistance": resistance,
+            "fib_time_info": fib_time_info,
+        }
+        alerts.append(alert)
 
     # 升破买点
     ba = levels.get("break_above")
     if ba is not None and price > 0 and price >= ba:
-        alerts.append({
+        alert = {
             "code": "break_above", "symbol": sym, "name": cfg.get("name", sym),
             "price": price, "level": ba, "change_pct": chg,
-            "msg": f"升破关键位 {ba:.2f} (现{price:.2f}) 应{action}", "action": action, "type": type_,
+            "msg": f"升破关键位 {ba:.2f} (现{price:.2f}) 应{action}",
+            "action": action, "type": type_,
             "level_name": "买点/加仓", "severity": "MEDIUM",
-        })
+            "directional_guidance": guidance_text,
+            "signal_level": signal_level,
+            "signal_score": signal_score,
+            "er_status": er_status,
+            "regime": regime,
+            "stop_long": stop_long,
+            "support": support,
+            "resistance": resistance,
+            "fib_time_info": fib_time_info,
+        }
+        alerts.append(alert)
 
     # 进入买入区下限 (仅当未被 break_below 触发时用于低吸参考)
     blz = levels.get("buy_zone_low")
     if blz is not None and price > 0 and (bl is None or price > bl) and price <= blz:
-        alerts.append({
+        alert = {
             "code": "buy_zone", "symbol": sym, "name": cfg.get("name", sym),
             "price": price, "level": blz, "change_pct": chg,
-            "msg": f"进入买入参考区 (现{price:.2f} 接近{blz:.2f}) 可考虑低吸", "action": action, "type": type_,
+            "msg": f"进入买入参考区 (现{price:.2f} 接近{blz:.2f}) 可考虑低吸",
+            "action": action, "type": type_,
             "level_name": "回补/低吸", "severity": "LOW",
-        })
+            "directional_guidance": guidance_text,
+            "signal_level": signal_level,
+            "signal_score": signal_score,
+            "er_status": er_status,
+            "regime": regime,
+            "stop_long": stop_long,
+            "support": support,
+            "resistance": resistance,
+            "fib_time_info": fib_time_info,
+        }
+        alerts.append(alert)
 
     # 急跌 / 急涨 (异常波动)
     dd = cfg.get("drop_pct")
     if dd is not None and chg <= dd:
-        alerts.append({
+        alert = {
             "code": "drop_pct", "symbol": sym, "name": cfg.get("name", sym),
             "price": price, "level": dd, "change_pct": chg,
-            "msg": f"日内跌超{abs(dd):.1f}% ({chg:.1f}%) 注意风控", "action": action, "type": type_,
+            "msg": f"日内跌超{abs(dd):.1f}% ({chg:.1f}%) 注意风控",
+            "action": action, "type": type_,
             "level_name": "急跌预警", "severity": "HIGH",
-        })
+            "directional_guidance": guidance_text,
+            "signal_level": signal_level,
+            "signal_score": signal_score,
+            "er_status": er_status,
+            "regime": regime,
+            "stop_long": stop_long,
+            "support": support,
+            "resistance": resistance,
+            "fib_time_info": fib_time_info,
+        }
+        alerts.append(alert)
 
     sg = cfg.get("surge_pct")
     if sg is not None and chg >= sg:
-        alerts.append({
+        alert = {
             "code": "surge_pct", "symbol": sym, "name": cfg.get("name", sym),
             "price": price, "level": sg, "change_pct": chg,
-            "msg": f"日内涨超{sg:.1f}% ({chg:.1f}%) 注意止盈/追高风险", "action": action, "type": type_,
+            "msg": f"日内涨超{sg:.1f}% ({chg:.1f}%) 注意止盈/追高风险",
+            "action": action, "type": type_,
             "level_name": "急涨预警", "severity": "MEDIUM",
-        })
+            "directional_guidance": guidance_text,
+            "signal_level": signal_level,
+            "signal_score": signal_score,
+            "er_status": er_status,
+            "regime": regime,
+            "stop_long": stop_long,
+            "support": support,
+            "resistance": resistance,
+            "fib_time_info": fib_time_info,
+        }
+        alerts.append(alert)
 
     return alerts
 
@@ -207,6 +377,9 @@ def main():
     meta = config.get("_meta", {})
     state = load_state()
     now = datetime.now()
+
+    # 加载 close_scan 方向性指导
+    guidance = load_close_scan_guidance()
 
     # 只扫描有规则（静态配置 ∪ 派生价位）的股票
     name_by_code = dict(WATCHLIST)
@@ -261,7 +434,7 @@ def main():
         chg = (r["last"] / r["pre_close"] - 1) * 100
         spot = {"symbol": code, "name": cfg.get("name", code),
                 "price": round(r["last"], 2), "change_pct": round(chg, 2)}
-        al = evaluate_stock(cfg, spot)
+        al = evaluate_stock(cfg, spot, guidance)
         for a in al:
             a["levels_src"] = levels_src
         if al:

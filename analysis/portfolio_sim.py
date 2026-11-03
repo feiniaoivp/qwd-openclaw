@@ -273,6 +273,9 @@ def main():
 
     # 保存日报（2026-10-16: 头部显式数据日期 —— data_freshness_guard 要求交易日报告标注数据日期）
     report_path = os.path.join(OUTPUT_DIR, f"{today_str}_portfolio_sim.md")
+    import shutil
+    if os.path.exists(report_path):
+        shutil.copy(report_path, report_path + '.bak')
     with open(report_path, "w") as f:
         f.write(f"# 全组合模拟盘日报 {today_str}\n\n")
         f.write(f"数据日期: {today_str}\n\n")

@@ -1,0 +1,35 @@
+{
+ "actionable": [],
+ "blocked_buys": [],
+ "transparency": [],
+ "n_actionable": 0,
+ "n_executed": 0,
+ "execution_rate": null,
+ "verdict": "无应执行项",
+ "date": "2026-10-30",
+ "generated_at": "2026-11-01 06:22:29",
+ "held_marker": {},
+ "held_marker_quality": "reliable",
+ "signal_basis": {
+  "prev_trading_day": "2026-10-29",
+  "calendar_mode": "calendar",
+  "dual_sell_stocks": [
+   "002156",
+   "002270",
+   "002335",
+   "002466",
+   "300014",
+   "300199",
+   "300748",
+   "600089",
+   "600160",
+   "600312",
+   "600584",
+   "601061",
+   "601179",
+   "603308",
+   "688981"
+  ]
+ },
+ "trades_count": 1
+}

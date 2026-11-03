@@ -1,7 +1,260 @@
 {
- "generated_at": "2026-10-22 04:55:30",
- "validation_date": "2026-10-22",
- "carried_from_previous": 1,
+ "generated_at": "2026-10-31 06:14:39",
+ "validation_date": "2026-10-31",
+ "carried_from_previous": 0,
  "note": "DSR 不显著/无法验证的策略变更候审清单；批准后用 apply_strategy_pending.py 应用",
- "changes": []
+ "changes": [
+  {
+   "symbol": "000987",
+   "name": "越秀资本",
+   "old": "macd",
+   "new": "bollinger",
+   "reason": "采信验证(跨窗口稳健): bollinger(分51.01 夏普0.864) vs 调优:macd(分82.1 夏普0.915)",
+   "val": {
+    "strategy": "bollinger",
+    "score": 51.01,
+    "sharpe": 0.864,
+    "trades": 9.2
+   },
+   "tune": {
+    "strategy": "macd",
+    "score": 82.1,
+    "sharpe": 0.915,
+    "trades": 12.0
+   },
+   "dsr_trials": [
+    {
+     "strategy": "布林带+ATR",
+     "sharpes": [
+      0.672,
+      0.834,
+      0.917,
+      1.033
+     ]
+    },
+    {
+     "strategy": "纯MACD(基准B)",
+     "sharpes": [
+      0.349,
+      0.297,
+      0.915,
+      -0.749
+     ]
+    },
+    {
+     "strategy": "EMA12/26金叉(基准C)",
+     "sharpes": [
+      0.27,
+      0.453,
+      0.397,
+      -0.291
+     ]
+    },
+    {
+     "strategy": "波动自适应EMA",
+     "sharpes": [
+      0.188,
+      0.263,
+      0.32,
+      -1.589
+     ]
+    },
+    {
+     "strategy": "KDJ+CCI",
+     "sharpes": [
+      -0.01,
+      -0.865,
+      -0.727,
+      -0.877
+     ]
+    },
+    {
+     "strategy": "EMA+OBV",
+     "sharpes": [
+      -0.838,
+      -1.07,
+      -0.873,
+      -1.192
+     ]
+    },
+    {
+     "strategy": "牛市趋势跟踪",
+     "sharpes": [
+      0.19,
+      -1.714,
+      -1.419,
+      -2.936
+     ]
+    }
+   ]
+  },
+  {
+   "symbol": "600312",
+   "name": "平高电气",
+   "old": "macd",
+   "new": "kdj_cci",
+   "reason": "双方一致(kdj_cci) 验证=❌ 调优=✅",
+   "val": {
+    "strategy": "kdj_cci",
+    "score": 15.88,
+    "sharpe": 0.362,
+    "trades": 8.8
+   },
+   "tune": {
+    "strategy": "kdj_cci",
+    "score": 30.52,
+    "sharpe": 0.373,
+    "trades": 13.0
+   },
+   "dsr_trials": [
+    {
+     "strategy": "KDJ+CCI",
+     "sharpes": [
+      0.089,
+      0.413,
+      0.49,
+      0.454
+     ]
+    },
+    {
+     "strategy": "纯MACD(基准B)",
+     "sharpes": [
+      0.098,
+      0.498,
+      0.274,
+      -0.487
+     ]
+    },
+    {
+     "strategy": "EMA+OBV",
+     "sharpes": [
+      -0.066,
+      0.11,
+      0.042,
+      0.291
+     ]
+    },
+    {
+     "strategy": "EMA12/26金叉(基准C)",
+     "sharpes": [
+      0.156,
+      -0.025,
+      -0.087,
+      0.0
+     ]
+    },
+    {
+     "strategy": "波动自适应EMA",
+     "sharpes": [
+      0.037,
+      -0.09,
+      0.467,
+      -0.401
+     ]
+    },
+    {
+     "strategy": "布林带+ATR",
+     "sharpes": [
+      -0.242,
+      -0.476,
+      -0.754,
+      -0.889
+     ]
+    },
+    {
+     "strategy": "牛市趋势跟踪",
+     "sharpes": [
+      -0.458,
+      -0.737,
+      -0.369,
+      -1.464
+     ]
+    }
+   ]
+  },
+  {
+   "symbol": "300199",
+   "name": "翰宇药业",
+   "old": "macd",
+   "new": "ema_obv",
+   "reason": "调优显著更优: ema_obv(分54.87 夏普0.769) > kdj_cci(分21.44 夏普0.302)",
+   "val": {
+    "strategy": "kdj_cci",
+    "score": 21.44,
+    "sharpe": 0.302,
+    "trades": 12.0
+   },
+   "tune": {
+    "strategy": "ema_obv",
+    "score": 54.87,
+    "sharpe": 0.769,
+    "trades": 9.0
+   },
+   "dsr_trials": [
+    {
+     "strategy": "KDJ+CCI",
+     "sharpes": [
+      0.387,
+      0.205,
+      0.234,
+      0.382
+     ]
+    },
+    {
+     "strategy": "纯MACD(基准B)",
+     "sharpes": [
+      0.127,
+      0.136,
+      0.198,
+      -0.263
+     ]
+    },
+    {
+     "strategy": "波动自适应EMA",
+     "sharpes": [
+      0.202,
+      0.196,
+      -0.272,
+      -0.333
+     ]
+    },
+    {
+     "strategy": "EMA12/26金叉(基准C)",
+     "sharpes": [
+      0.385,
+      -0.079,
+      -0.621,
+      -0.702
+     ]
+    },
+    {
+     "strategy": "EMA+OBV",
+     "sharpes": [
+      0.094,
+      -0.297,
+      0.769,
+      -0.831
+     ]
+    },
+    {
+     "strategy": "布林带+ATR",
+     "sharpes": [
+      0.099,
+      -0.049,
+      0.218,
+      -0.904
+     ]
+    },
+    {
+     "strategy": "牛市趋势跟踪",
+     "sharpes": [
+      -0.414,
+      -0.243,
+      -1.084,
+      -1.228
+     ]
+    }
+   ]
+  }
+ ]
 }

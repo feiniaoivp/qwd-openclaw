@@ -1,0 +1,127 @@
+{
+ "date": "2026-10-28",
+ "generated_at": "2026-11-01 06:13:55",
+ "rule_version": "v1 (2026-11-01)",
+ "candidates": [
+  {
+   "code": "300285",
+   "name": "国瓷材料",
+   "kind": "fade",
+   "open_chg_pct": 2.93
+  },
+  {
+   "code": "300748",
+   "name": "金力永磁",
+   "kind": "fade",
+   "open_chg_pct": 2.68
+  },
+  {
+   "code": "002156",
+   "name": "通富微电",
+   "kind": "fade",
+   "open_chg_pct": 2.11
+  },
+  {
+   "code": "600584",
+   "name": "长电科技",
+   "kind": "fade",
+   "open_chg_pct": 2.06
+  },
+  {
+   "code": "688981",
+   "name": "中芯国际",
+   "kind": "trap",
+   "open_chg_pct": 3.42
+  }
+ ],
+ "auction_file_missing": false,
+ "per_stock": [
+  {
+   "code": "300285",
+   "name": "国瓷材料",
+   "kind": "fade",
+   "open_chg_pct": 2.93,
+   "confirmed": true,
+   "data_gap": false,
+   "bullish_close": true,
+   "vol_surge": false,
+   "vol_waived_by_breadth": true,
+   "vol_multiple_ma5": 0.89,
+   "vol_ratio_prev": 0.89
+  },
+  {
+   "code": "300748",
+   "name": "金力永磁",
+   "kind": "fade",
+   "open_chg_pct": 2.68,
+   "confirmed": true,
+   "data_gap": false,
+   "bullish_close": true,
+   "vol_surge": false,
+   "vol_waived_by_breadth": true,
+   "vol_multiple_ma5": 0.93,
+   "vol_ratio_prev": 0.88
+  },
+  {
+   "code": "002156",
+   "name": "通富微电",
+   "kind": "fade",
+   "open_chg_pct": 2.11,
+   "confirmed": true,
+   "data_gap": false,
+   "bullish_close": true,
+   "vol_surge": true,
+   "vol_waived_by_breadth": false,
+   "vol_multiple_ma5": 1.09,
+   "vol_ratio_prev": 1.36
+  },
+  {
+   "code": "600584",
+   "name": "长电科技",
+   "kind": "fade",
+   "open_chg_pct": 2.06,
+   "confirmed": true,
+   "data_gap": false,
+   "bullish_close": true,
+   "vol_surge": true,
+   "vol_waived_by_breadth": false,
+   "vol_multiple_ma5": 0.94,
+   "vol_ratio_prev": 1.16
+  },
+  {
+   "code": "688981",
+   "name": "中芯国际",
+   "kind": "trap",
+   "open_chg_pct": 3.42,
+   "confirmed": false,
+   "data_gap": false,
+   "bullish_close": false,
+   "vol_surge": false,
+   "vol_waived_by_breadth": false,
+   "vol_multiple_ma5": 0.83,
+   "vol_ratio_prev": 1.13
+  }
+ ],
+ "seesaw": true,
+ "seesaw_parts": {
+  "breadth": true,
+  "index_reversal": true
+ },
+ "seesaw_data_gap": false,
+ "breadth_gap": false,
+ "index_gap": false,
+ "confirmed_codes": [
+  "300285",
+  "300748",
+  "002156",
+  "600584"
+ ],
+ "reversal_confirmed": true,
+ "breadth": {
+  "up_ratio_today": 0.767,
+  "up_ratio_prev": 0.1113
+ },
+ "index_close": 4083.87,
+ "index_prev_close": 4049.55,
+ "hard_stop_pct": 5.0
+}

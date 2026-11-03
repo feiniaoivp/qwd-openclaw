@@ -431,6 +431,9 @@ def load_state():
 
 def save_state(state):
     os.makedirs(os.path.dirname(STATE_FILE), exist_ok=True)
+    import shutil
+    if os.path.exists(STATE_FILE):
+        shutil.copy(STATE_FILE, STATE_FILE + ".bak")
     with open(STATE_FILE,"w") as f:
         json.dump(state, f, ensure_ascii=False, indent=2, default=str)
 

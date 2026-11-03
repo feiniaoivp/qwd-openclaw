@@ -1,0 +1,109 @@
+{
+ "date": "2026-10-28",
+ "generated_at": "2026-11-01 06:10:12",
+ "rule_version": "v1 (2026-11-01)",
+ "candidates": [
+  {
+   "code": "300285",
+   "name": "国瓷材料",
+   "kind": "fade",
+   "open_chg_pct": 2.93
+  },
+  {
+   "code": "300748",
+   "name": "金力永磁",
+   "kind": "fade",
+   "open_chg_pct": 2.68
+  },
+  {
+   "code": "002156",
+   "name": "通富微电",
+   "kind": "fade",
+   "open_chg_pct": 2.11
+  },
+  {
+   "code": "600584",
+   "name": "长电科技",
+   "kind": "fade",
+   "open_chg_pct": 2.06
+  },
+  {
+   "code": "688981",
+   "name": "中芯国际",
+   "kind": "trap",
+   "open_chg_pct": 3.42
+  }
+ ],
+ "auction_file_missing": false,
+ "per_stock": [
+  {
+   "code": "300285",
+   "name": "国瓷材料",
+   "kind": "fade",
+   "open_chg_pct": 2.93,
+   "confirmed": false,
+   "data_gap": false,
+   "bullish_close": true,
+   "vol_surge": false,
+   "vol_multiple": 0.89
+  },
+  {
+   "code": "300748",
+   "name": "金力永磁",
+   "kind": "fade",
+   "open_chg_pct": 2.68,
+   "confirmed": false,
+   "data_gap": false,
+   "bullish_close": true,
+   "vol_surge": false,
+   "vol_multiple": 0.93
+  },
+  {
+   "code": "002156",
+   "name": "通富微电",
+   "kind": "fade",
+   "open_chg_pct": 2.11,
+   "confirmed": false,
+   "data_gap": false,
+   "bullish_close": true,
+   "vol_surge": false,
+   "vol_multiple": 1.09
+  },
+  {
+   "code": "600584",
+   "name": "长电科技",
+   "kind": "fade",
+   "open_chg_pct": 2.06,
+   "confirmed": false,
+   "data_gap": false,
+   "bullish_close": true,
+   "vol_surge": false,
+   "vol_multiple": 0.94
+  },
+  {
+   "code": "688981",
+   "name": "中芯国际",
+   "kind": "trap",
+   "open_chg_pct": 3.42,
+   "confirmed": false,
+   "data_gap": false,
+   "bullish_close": false,
+   "vol_surge": false,
+   "vol_multiple": 0.83
+  }
+ ],
+ "seesaw": true,
+ "seesaw_parts": {
+  "breadth": true
+ },
+ "seesaw_data_gap": false,
+ "breadth_gap": false,
+ "index_gap": true,
+ "confirmed_codes": [],
+ "reversal_confirmed": false,
+ "breadth": {
+  "up_ratio_today": 0.767,
+  "up_ratio_prev": 0.1113
+ },
+ "hard_stop_pct": 5.0
+}

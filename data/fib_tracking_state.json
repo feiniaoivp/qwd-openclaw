@@ -488,6 +488,12 @@
       "level": 42.25,
       "touch_date": "2026-10-12",
       "touch_price": 42.76
+    },
+    "600036:1.272:43.4": {
+      "level_name": "1.272",
+      "level": 43.4,
+      "touch_date": "2026-10-30",
+      "touch_price": 43.55
     }
   },
   "outcomes": {
@@ -581,6 +587,15 @@
         "outcome": "pending",
         "date": "2026-10-12",
         "price": 42.76,
+        "note": "观察中"
+      },
+      {
+        "level": "1.272",
+        "touch_date": "2026-10-30",
+        "touch_price": 43.55,
+        "outcome": "pending",
+        "date": "2026-10-30",
+        "price": 43.55,
         "note": "观察中"
       }
     ]
@@ -780,6 +795,48 @@
     },
     {
       "date": "2026-10-23",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "1/1"
+    },
+    {
+      "date": "2026-10-26",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "1/1"
+    },
+    {
+      "date": "2026-10-27",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "1/1"
+    },
+    {
+      "date": "2026-10-28",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "1/1"
+    },
+    {
+      "date": "2026-10-29",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "1/1"
+    },
+    {
+      "date": "2026-10-30",
+      "kind": "verify",
+      "events": 1,
+      "hit_rate": "1/1"
+    },
+    {
+      "date": "2026-11-02",
+      "kind": "verify",
+      "events": 0,
+      "hit_rate": "1/1"
+    },
+    {
+      "date": "2026-11-03",
       "kind": "verify",
       "events": 0,
       "hit_rate": "1/1"

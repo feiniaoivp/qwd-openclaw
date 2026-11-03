@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "bot_token": "9260006850:AAHvcpYyt5RxIR12haSoLpGwQ2Vho7W-lm8",
+  "chat_id": "626141741",
+  "proxy": "http://127.0.0.1:7890",
+  "parse_mode": "Markdown"
+}

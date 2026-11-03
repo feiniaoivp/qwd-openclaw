@@ -1,0 +1,402 @@
+[
+  {
+    "title": "002466，业绩大增超27倍",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 亿纬锂能3000142026年三季度已披露持仓机构仅9家",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 天齐锂业0024662026年三季度机构持仓风向标",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 华明装备0022702026年三季度已披露前十大机构持股比例合计下跌1.54个百分点",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 久立特材0023182026年三季度已披露前十大机构累计持仓占比52.74%",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 汇川技术3001242026年三季度已披露前十大机构持股比例合计下跌4.36个百分点",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 国瓷材料3002852026年三季度已披露前十大机构持股比例合计下跌3.65个百分点",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 沃尔核材0021302026年三季度已披露持仓机构仅8家",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 科华数据0023352026年三季度已披露前十大机构持股比例合计下跌1.15个百分点",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "建投前哨：10-29 业绩说明会公告（notices[12]，601066）= 正文披露前哨信号。",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 恒力石化6003462026年三季度已披露前十大机构累计持仓占比67.16%",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 通富微电0021562026年三季度已披露前十大机构累计持仓占比31.35%",
+    "score": 2.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "机构风向标 | 雷科防务0024132026年三季度已披露前十大机构持股比例合计下跌1.14个百分点",
+    "score": 1.8,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Stub",
+    "length": 17
+  },
+  {
+    "title": "天齐锂业002466.SZ)：2026年中报净利润为42.42亿元",
+    "score": 1.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Summary",
+    "length": 34
+  },
+  {
+    "title": "精准激光龙头来了！2万元顶格打新",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "伊朗革命卫队称摧毁3架美军F－35战机",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 701
+  },
+  {
+    "title": "世卫组织：本轮疫情为刚果（金）史上最大埃博拉疫情",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "天健所不到一个月两度领罚 头部会计大所执业防线为何接连失守？",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 643
+  },
+  {
+    "title": "上半年全国二手房交易占比超新房",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 997
+  },
+  {
+    "title": "住房公积金缴存覆盖面扩大 灵活就业人员可自愿缴纳",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 763
+  },
+  {
+    "title": "国家防灾减灾救灾委员会对甘肃渭源县重大山洪灾害调查评估挂牌督办",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "0元拿下10亿元股权！玲珑轮胎董事长送妻子超级大礼",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 593
+  },
+  {
+    "title": "电影《汪汪队立大功大电影3：勇闯恐龙岛》点映及预售总票房破1000万",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "布伦特原油暗盘跌破86美元 日内跌超4.6%",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 956
+  },
+  {
+    "title": "久立特材002318.SZ)：实控人一致行动人一亩田完成增持62.91万股，耗资约1099.5万元",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 1076
+  },
+  {
+    "title": "久立特材：拟2亿元—4亿元回购公司股份",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 1176
+  },
+  {
+    "title": "亿纬锂能300014.SZ)：LG Energy Solution在美提起专利侵权诉讼及337调查，公司称未侵权将积极应诉",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 1344
+  },
+  {
+    "title": "亿纬锂能300014.SZ)：董事、高管刘建华拟增持10万股，基于对公司发展信心",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 1018
+  },
+  {
+    "title": "601066，临近午盘封涨停！券商股，突然异动拉升！",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 2630
+  },
+  {
+    "title": "中信建投：非执行董事杨栋因工作原因辞职",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 939
+  },
+  {
+    "title": "金科股份：股东金科控股2250万股被强制执行，交易金额2797万元",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 2606
+  },
+  {
+    "title": "中信证券：控股子公司华夏基金上半年净利润14.13亿元",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 1162
+  },
+  {
+    "title": "10只个股大宗交易超5000万元",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 2771
+  },
+  {
+    "title": "海外机构调研股名单 乐鑫科技最受关注",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 1951
+  },
+  {
+    "title": "非银金融行业7月31日资金流向日报",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 2249
+  },
+  {
+    "title": "注册制严打带病闯关：渔翁信息欺诈发行被罚八位数",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 854
+  },
+  {
+    "title": "长电科技600584龙虎榜数据07-30",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 941
+  },
+  {
+    "title": "4天3板！600584，拟投巨资建高端封测厂",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 1134
+  },
+  {
+    "title": "通富微电002156龙虎榜数据07-30",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 924
+  },
+  {
+    "title": "通富微电002156龙虎榜数据07-29)",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 734
+  },
+  {
+    "title": "最高预增318081.82%！002466，上半年扣非业绩爆表！",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 1048
+  },
+  {
+    "title": "利好来了！002466、601869、603629、603256等多只热门股业绩大幅预增 最高预增49倍！",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 636
+  },
+  {
+    "title": "600036，市值重回万亿元",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 623
+  },
+  {
+    "title": "招商银行600036.SH)：王小青行长任职资格获核准",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": true,
+    "grade": "Detailed",
+    "length": 391
+  },
+  {
+    "title": "美元兑日元USD/JPY短线下挫70点 现报157",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "韩国综指跌幅扩大至5%",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "英矽智能：ISM8969/HT-001获国家药监局新药临床试验批准 用于治疗帕金森病",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "热评｜长鑫科技上市催生楼市神话？ 别把“股权造富”读成炒房号角",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Empty",
+    "length": 0
+  },
+  {
+    "title": "铠侠股价上涨逾7% 此前一度跌超4%",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Detailed",
+    "length": 1135
+  },
+  {
+    "title": "亚盛医药任命首席业务拓展官和首席商务运营官",
+    "score": 0.0,
+    "recall_freq": 0,
+    "entity": false,
+    "grade": "Empty",
+    "length": 0
+  }
+]

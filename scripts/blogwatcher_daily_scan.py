@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """blogwatcher 每日扫描推送：scan → 未读过滤 → 摘要 → Telegram 推送 → 噪声清理。
 
-设计要点（2026-10-27 与用户拍板口径一致）：
+设计要点（2026-10-27 与用户拍板口径一致，2026-11-02 更新）：
+- 当前 13 源：A股动态/FT中文网/中财证券 (Google News) + 博客园/中新网要闻/财经 + 财联社/财新/金十/东财4研报 (RSSHub)
 - 噪声清理只动「明显非文章」条目（空标题/导航页/栏目页），宁漏勿错；
 - 重复推文只影响展示去重，不做自动已读；
 - --dry-run 供验证：不推送、不标已读。
@@ -21,17 +22,20 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
 from analysis.fib_extension_scan import WATCHLIST  # 关注池 SSOT
 from send_telegram import send_with_retry  # workspace 根，含代理兜底
 
-# 保守噪声判据：仅匹配「明显不是文章」的形态（10-27 人工清理实录）
+# 保守噪声判据：仅匹配「明显不是文章」的形态（10-27 人工清理实录 + 11-02 新增）
 JUNK_EXACT = {"-", "E", "R", ""}
 JUNK_CONTAINS = (
     "每日一詞", "每日一词", "一周新闻小测", "双语电台", "偏好设置",
     "高端订阅", "标准订阅", "文章档案", "双语阅读", "一周热门文章",
-    "精选财经资讯",
+    "精选财经资讯", "新闻联播", "早报", "晚报", "快讯：", "直播：",
 )
 NAV_TITLE_RE = re.compile(r"^(FT ?中文网|FT 金融时报)\s*-\s*(FT Chinese|Financial Times Chinese)$")
 
+# 宏观关键词（11-02 扩充：央行换锚/回购贷款/证监会立案等）
 MACRO_KWS = ("央行", "证监会", "降准", "降息", "IPO", "回购", "吸并", "换股",
-             "减持", "万亿", "北向", "油价", "美联储", "关税", "稀土")
+             "减持", "万亿", "北向", "油价", "美联储", "关税", "稀土",
+             "换锚", "逆回购", "MLF", "LPR", "存款准备金", "回购贷款",
+             "立案", "财务造假", "三季报", "分红", "增持", "注销式回购")
 
 
 def run_cmd(args, stdin_text=None):
@@ -84,7 +88,7 @@ def main():
     raw = run_cmd(["blogwatcher", "articles"])
     articles = parse_articles(raw)
     if not articles:
-        msg = f"📰 blogwatcher {today}：三源无新增未读，一切干净。"
+        msg = f"📰 blogwatcher {today}：无新增未读，一切干净。"
         print(msg)
         if not args.dry_run:
             r = send_with_retry(msg)
@@ -123,7 +127,7 @@ def main():
     if macro_hits:
         lines.append(f"\n【宏观要点 {len(macro_hits)}】")
         lines += macro_hits[:8]
-    lines.append(f"\n其余 {others} 条见 blogwatcher articles（FT 镜像已限 7 天窗）")
+    lines.append(f"\n其余 {others} 条见 blogwatcher articles")
     msg = "\n".join(lines)
     if len(msg) > 3900:
         msg = msg[:3900] + "\n…(截断)"

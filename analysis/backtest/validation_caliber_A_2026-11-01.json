@@ -1,0 +1,5294 @@
+{
+  "600030": {
+    "strategy": "macd",
+    "fill_caliber": "A",
+    "name": "中信证券",
+    "score": 24.24,
+    "avg_return": 35.35,
+    "avg_sharpe": 0.308,
+    "avg_dd": -19.64,
+    "avg_trades": 24.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 24.24,
+        "avg_return": 35.35,
+        "avg_sharpe": 0.308,
+        "avg_dd": -19.64,
+        "avg_trades": 24.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.337,
+          0.511,
+          0.229,
+          0.156
+        ],
+        "base_score": 39.71,
+        "dist_score": 8.77,
+        "dist_used": true,
+        "median_ret": -1.46,
+        "p75_ret": 2.7,
+        "p25_ret": -2.77,
+        "n_trades_pooled": 96
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 14.71,
+        "avg_return": 21.57,
+        "avg_sharpe": 0.195,
+        "avg_dd": -18.72,
+        "avg_trades": 10.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.109,
+          0.619,
+          -0.052,
+          0.105
+        ],
+        "base_score": 24.66,
+        "dist_score": 4.75,
+        "dist_used": true,
+        "median_ret": -2.33,
+        "p75_ret": 2.29,
+        "p25_ret": -3.14,
+        "n_trades_pooled": 42
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 6.06,
+        "avg_return": 17.46,
+        "avg_sharpe": 0.04,
+        "avg_dd": -20.32,
+        "avg_trades": 12.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.046,
+          0.582,
+          -0.388,
+          -0.081
+        ],
+        "base_score": 12.86,
+        "dist_score": -0.74,
+        "dist_used": true,
+        "median_ret": -2.32,
+        "p75_ret": 0.01,
+        "p25_ret": -3.87,
+        "n_trades_pooled": 49
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.337,
+          0.511,
+          0.229,
+          0.156
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.109,
+          0.619,
+          -0.052,
+          0.105
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.046,
+          0.582,
+          -0.388,
+          -0.081
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.028,
+          0.452,
+          0.076,
+          -0.463
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.327,
+          -1.554,
+          -1.321,
+          -1.593
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.411,
+          -0.544,
+          -1.28,
+          -2.755
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -1.46,
+      "p75_ret": 2.7,
+      "p25_ret": -2.77,
+      "base_score": 39.71,
+      "dist_score": 8.77,
+      "dist_used": true,
+      "n_trades_pooled": 96
+    }
+  },
+  "601066": {
+    "strategy": "bollinger",
+    "fill_caliber": "A",
+    "name": "中信建投",
+    "score": 1.73,
+    "avg_return": 2.25,
+    "avg_sharpe": 0.038,
+    "avg_dd": -20.85,
+    "avg_trades": 12.5,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "布林带+ATR",
+        "score": 1.73,
+        "avg_return": 2.25,
+        "avg_sharpe": 0.038,
+        "avg_dd": -20.85,
+        "avg_trades": 12.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.153,
+          -0.003,
+          0.034,
+          0.273
+        ],
+        "base_score": 3.61,
+        "dist_score": -0.16,
+        "dist_used": true,
+        "median_ret": -1.6,
+        "p75_ret": 0.93,
+        "p25_ret": -3.86,
+        "n_trades_pooled": 50
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 0.78,
+        "avg_return": 0.76,
+        "avg_sharpe": 0.052,
+        "avg_dd": -31.6,
+        "avg_trades": 12.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.295,
+          0.186,
+          0.067,
+          0.251
+        ],
+        "base_score": 2.79,
+        "dist_score": -1.22,
+        "dist_used": true,
+        "median_ret": -2.95,
+        "p75_ret": -1.05,
+        "p25_ret": -5.0,
+        "n_trades_pooled": 48
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": -9.34,
+        "avg_return": -4.87,
+        "avg_sharpe": -0.134,
+        "avg_dd": -33.64,
+        "avg_trades": 26.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.217,
+          -0.019,
+          -0.056,
+          -0.243
+        ],
+        "base_score": -12.77,
+        "dist_score": -5.92,
+        "dist_used": true,
+        "median_ret": -2.6,
+        "p75_ret": 1.57,
+        "p25_ret": -5.38,
+        "n_trades_pooled": 106
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.153,
+          -0.003,
+          0.034,
+          0.273
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          -0.295,
+          0.186,
+          0.067,
+          0.251
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.217,
+          -0.019,
+          -0.056,
+          -0.243
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.594,
+          -0.629,
+          -0.268,
+          -0.059
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.317,
+          -0.477,
+          -0.976,
+          -2.152
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -1.175,
+          -1.199,
+          -1.171,
+          -0.786
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -1.6,
+      "p75_ret": 0.93,
+      "p25_ret": -3.86,
+      "base_score": 3.61,
+      "dist_score": -0.16,
+      "dist_used": true,
+      "n_trades_pooled": 50
+    }
+  },
+  "600036": {
+    "strategy": "kdj_cci",
+    "fill_caliber": "A",
+    "name": "招商银行",
+    "score": 18.6,
+    "avg_return": 12.2,
+    "avg_sharpe": 0.332,
+    "avg_dd": -8.17,
+    "avg_trades": 11.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "KDJ+CCI",
+        "score": 18.6,
+        "avg_return": 12.2,
+        "avg_sharpe": 0.332,
+        "avg_dd": -8.17,
+        "avg_trades": 11.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.048,
+          0.56,
+          -0.035,
+          0.754
+        ],
+        "base_score": 27.23,
+        "dist_score": 9.96,
+        "dist_used": true,
+        "median_ret": -0.9,
+        "p75_ret": 2.52,
+        "p25_ret": -1.48,
+        "n_trades_pooled": 44
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 11.76,
+        "avg_return": 9.69,
+        "avg_sharpe": 0.204,
+        "avg_dd": -20.69,
+        "avg_trades": 12.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.089,
+          0.342,
+          0.101,
+          0.461
+        ],
+        "base_score": 18.04,
+        "dist_score": 5.48,
+        "dist_used": true,
+        "median_ret": -2.46,
+        "p75_ret": 4.51,
+        "p25_ret": -3.78,
+        "n_trades_pooled": 49
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 7.06,
+        "avg_return": 24.11,
+        "avg_sharpe": -0.0,
+        "avg_dd": -14.5,
+        "avg_trades": 27.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.364,
+          0.386,
+          -0.485,
+          -0.266
+        ],
+        "base_score": 14.45,
+        "dist_score": -0.34,
+        "dist_used": true,
+        "median_ret": -1.27,
+        "p75_ret": 2.53,
+        "p25_ret": -2.29,
+        "n_trades_pooled": 110
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.048,
+          0.56,
+          -0.035,
+          0.754
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          -0.089,
+          0.342,
+          0.101,
+          0.461
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.364,
+          0.386,
+          -0.485,
+          -0.266
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.006,
+          0.05,
+          -0.4,
+          -0.794
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.529,
+          -0.065,
+          -0.654,
+          0.006
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.425,
+          -0.264,
+          -0.881,
+          -1.46
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -0.9,
+      "p75_ret": 2.52,
+      "p25_ret": -1.48,
+      "base_score": 27.23,
+      "dist_score": 9.96,
+      "dist_used": true,
+      "n_trades_pooled": 44
+    }
+  },
+  "601995": {
+    "strategy": "bollinger",
+    "fill_caliber": "A",
+    "name": "中金公司",
+    "score": -22.27,
+    "avg_return": -10.0,
+    "avg_sharpe": -0.575,
+    "avg_dd": -20.07,
+    "avg_trades": 9.8,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "布林带+ATR",
+        "score": -22.27,
+        "avg_return": -10.0,
+        "avg_sharpe": -0.575,
+        "avg_dd": -20.07,
+        "avg_trades": 9.8,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.234,
+          -0.229,
+          -0.818,
+          -1.018
+        ],
+        "base_score": -40.49,
+        "dist_score": -18.91,
+        "dist_used": true,
+        "median_ret": -1.62,
+        "p75_ret": 0.25,
+        "p25_ret": -4.65,
+        "n_trades_pooled": 39
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": -28.53,
+        "avg_return": -18.48,
+        "avg_sharpe": -0.476,
+        "avg_dd": -26.66,
+        "avg_trades": 11.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.463,
+          -0.352,
+          -0.616,
+          -0.473
+        ],
+        "base_score": -39.65,
+        "dist_score": -17.4,
+        "dist_used": true,
+        "median_ret": -3.98,
+        "p75_ret": -0.62,
+        "p25_ret": -4.72,
+        "n_trades_pooled": 45
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": -45.21,
+        "avg_return": -23.22,
+        "avg_sharpe": -0.809,
+        "avg_dd": -34.76,
+        "avg_trades": 22.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.249,
+          -0.455,
+          -1.158,
+          -1.374
+        ],
+        "base_score": -64.85,
+        "dist_score": -25.57,
+        "dist_used": true,
+        "median_ret": -1.92,
+        "p75_ret": 1.93,
+        "p25_ret": -4.6,
+        "n_trades_pooled": 90
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.234,
+          -0.229,
+          -0.818,
+          -1.018
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          -0.463,
+          -0.352,
+          -0.616,
+          -0.473
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.249,
+          -0.455,
+          -1.158,
+          -1.374
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.235,
+          -0.14,
+          -1.622,
+          -2.211
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.847,
+          -1.137,
+          -0.889,
+          -2.04
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -1.083,
+          -0.475,
+          -1.183,
+          -2.898
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -1.62,
+      "p75_ret": 0.25,
+      "p25_ret": -4.65,
+      "base_score": -40.49,
+      "dist_score": -18.91,
+      "dist_used": true,
+      "n_trades_pooled": 39
+    }
+  },
+  "000987": {
+    "strategy": "bollinger",
+    "fill_caliber": "A",
+    "name": "越秀资本",
+    "score": 51.01,
+    "avg_return": 92.81,
+    "avg_sharpe": 0.864,
+    "avg_dd": -23.72,
+    "avg_trades": 9.2,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "布林带+ATR",
+        "score": 51.01,
+        "avg_return": 92.81,
+        "avg_sharpe": 0.864,
+        "avg_dd": -23.72,
+        "avg_trades": 9.2,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.672,
+          0.834,
+          0.917,
+          1.033
+        ],
+        "base_score": 107.52,
+        "dist_score": 28.51,
+        "dist_used": true,
+        "median_ret": 1.93,
+        "p75_ret": 7.87,
+        "p25_ret": -3.66,
+        "n_trades_pooled": 37
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 22.41,
+        "avg_return": 46.25,
+        "avg_sharpe": 0.203,
+        "avg_dd": -30.05,
+        "avg_trades": 27.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.349,
+          0.297,
+          0.915,
+          -0.749
+        ],
+        "base_score": 39.91,
+        "dist_score": 4.91,
+        "dist_used": true,
+        "median_ret": -1.82,
+        "p75_ret": 1.58,
+        "p25_ret": -3.74,
+        "n_trades_pooled": 108
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 16.98,
+        "avg_return": 36.9,
+        "avg_sharpe": 0.207,
+        "avg_dd": -38.54,
+        "avg_trades": 11.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.27,
+          0.453,
+          0.397,
+          -0.291
+        ],
+        "base_score": 30.31,
+        "dist_score": 3.65,
+        "dist_used": true,
+        "median_ret": -2.74,
+        "p75_ret": 0.45,
+        "p25_ret": -6.66,
+        "n_trades_pooled": 47
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.672,
+          0.834,
+          0.917,
+          1.033
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.349,
+          0.297,
+          0.915,
+          -0.749
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.27,
+          0.453,
+          0.397,
+          -0.291
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.01,
+          -0.865,
+          -0.727,
+          -0.877
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.838,
+          -1.07,
+          -0.873,
+          -1.192
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          0.19,
+          -1.714,
+          -1.419,
+          -2.936
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": 1.93,
+      "p75_ret": 7.87,
+      "p25_ret": -3.66,
+      "base_score": 107.52,
+      "dist_score": 28.51,
+      "dist_used": true,
+      "n_trades_pooled": 37
+    }
+  },
+  "600584": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "长电科技",
+    "score": 67.85,
+    "avg_return": 124.41,
+    "avg_sharpe": 1.165,
+    "avg_dd": -34.61,
+    "avg_trades": 9.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 67.85,
+        "avg_return": 124.41,
+        "avg_sharpe": 1.165,
+        "avg_dd": -34.61,
+        "avg_trades": 9.0,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.326,
+          0.732,
+          1.62,
+          1.981
+        ],
+        "base_score": 142.23,
+        "dist_score": 38.72,
+        "dist_used": true,
+        "median_ret": 1.68,
+        "p75_ret": 13.75,
+        "p25_ret": -5.96,
+        "n_trades_pooled": 36
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 63.16,
+        "avg_return": 71.88,
+        "avg_sharpe": 0.881,
+        "avg_dd": -29.86,
+        "avg_trades": 11.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.184,
+          0.607,
+          1.082,
+          1.649
+        ],
+        "base_score": 95.96,
+        "dist_score": 30.37,
+        "dist_used": true,
+        "median_ret": 1.07,
+        "p75_ret": 14.87,
+        "p25_ret": -5.2,
+        "n_trades_pooled": 45
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 58.94,
+        "avg_return": 98.43,
+        "avg_sharpe": 0.71,
+        "avg_dd": -38.29,
+        "avg_trades": 25.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.491,
+          0.52,
+          1.08,
+          0.749
+        ],
+        "base_score": 97.51,
+        "dist_score": 20.36,
+        "dist_used": true,
+        "median_ret": -2.38,
+        "p75_ret": 4.98,
+        "p25_ret": -6.21,
+        "n_trades_pooled": 101
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.326,
+          0.732,
+          1.62,
+          1.981
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.184,
+          0.607,
+          1.082,
+          1.649
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.491,
+          0.52,
+          1.08,
+          0.749
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.084,
+          0.38,
+          0.012,
+          -0.053
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.244,
+          0.202,
+          0.142,
+          0.153
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.664,
+          -0.81,
+          -0.708,
+          -0.511
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": 1.68,
+      "p75_ret": 13.75,
+      "p25_ret": -5.96,
+      "base_score": 142.23,
+      "dist_score": 38.72,
+      "dist_used": true,
+      "n_trades_pooled": 36
+    }
+  },
+  "688981": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "中芯国际",
+    "score": 28.18,
+    "avg_return": 53.37,
+    "avg_sharpe": 0.433,
+    "avg_dd": -29.47,
+    "avg_trades": 9.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 28.18,
+        "avg_return": 53.37,
+        "avg_sharpe": 0.433,
+        "avg_dd": -29.47,
+        "avg_trades": 9.0,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.093,
+          0.634,
+          0.731,
+          0.273
+        ],
+        "base_score": 57.99,
+        "dist_score": 17.15,
+        "dist_used": true,
+        "median_ret": -2.08,
+        "p75_ret": 21.49,
+        "p25_ret": -6.21,
+        "n_trades_pooled": 36
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 9.28,
+        "avg_return": 22.89,
+        "avg_sharpe": 0.113,
+        "avg_dd": -37.11,
+        "avg_trades": 12.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.015,
+          0.495,
+          0.206,
+          -0.233
+        ],
+        "base_score": 16.98,
+        "dist_score": 1.59,
+        "dist_used": true,
+        "median_ret": -3.67,
+        "p75_ret": 3.4,
+        "p25_ret": -4.98,
+        "n_trades_pooled": 50
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": 4.96,
+        "avg_return": 21.25,
+        "avg_sharpe": -0.022,
+        "avg_dd": -14.44,
+        "avg_trades": 10.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.204,
+          0.515,
+          -0.267,
+          -0.54
+        ],
+        "base_score": 11.43,
+        "dist_score": -1.51,
+        "dist_used": true,
+        "median_ret": -0.98,
+        "p75_ret": 2.17,
+        "p25_ret": -5.03,
+        "n_trades_pooled": 40
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.093,
+          0.634,
+          0.731,
+          0.273
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.015,
+          0.495,
+          0.206,
+          -0.233
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.204,
+          0.515,
+          -0.267,
+          -0.54
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.02,
+          0.245,
+          -0.024,
+          -0.95
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.319,
+          -0.642,
+          -0.391,
+          -0.021
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.617,
+          -0.471,
+          -1.261,
+          -1.339
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -2.08,
+      "p75_ret": 21.49,
+      "p25_ret": -6.21,
+      "base_score": 57.99,
+      "dist_score": 17.15,
+      "dist_used": true,
+      "n_trades_pooled": 36
+    }
+  },
+  "002156": {
+    "strategy": "ema_obv",
+    "fill_caliber": "A",
+    "name": "通富微电",
+    "score": 58.2,
+    "avg_return": 70.64,
+    "avg_sharpe": 0.832,
+    "avg_dd": -29.4,
+    "avg_trades": 24.8,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA+OBV",
+        "score": 58.2,
+        "avg_return": 70.64,
+        "avg_sharpe": 0.832,
+        "avg_dd": -29.4,
+        "avg_trades": 24.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.178,
+          0.734,
+          1.445,
+          0.971
+        ],
+        "base_score": 92.31,
+        "dist_score": 24.1,
+        "dist_used": true,
+        "median_ret": -1.19,
+        "p75_ret": 0.96,
+        "p25_ret": -2.76,
+        "n_trades_pooled": 99
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 46.14,
+        "avg_return": 63.4,
+        "avg_sharpe": 0.645,
+        "avg_dd": -37.08,
+        "avg_trades": 11.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.052,
+          0.836,
+          1.382,
+          0.309
+        ],
+        "base_score": 73.19,
+        "dist_score": 19.1,
+        "dist_used": true,
+        "median_ret": -2.49,
+        "p75_ret": 8.74,
+        "p25_ret": -8.11,
+        "n_trades_pooled": 44
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 43.26,
+        "avg_return": 85.9,
+        "avg_sharpe": 0.654,
+        "avg_dd": -32.26,
+        "avg_trades": 9.8,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.203,
+          0.6,
+          1.185,
+          0.626
+        ],
+        "base_score": 89.62,
+        "dist_score": 25.75,
+        "dist_used": true,
+        "median_ret": 2.65,
+        "p75_ret": 18.77,
+        "p25_ret": -4.06,
+        "n_trades_pooled": 39
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.178,
+          0.734,
+          1.445,
+          0.971
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.052,
+          0.836,
+          1.382,
+          0.309
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.203,
+          0.6,
+          1.185,
+          0.626
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.325,
+          0.615,
+          0.39,
+          -0.315
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          0.129,
+          0.487,
+          1.33,
+          -0.411
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.297,
+          0.141,
+          -1.065,
+          -0.768
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -1.19,
+      "p75_ret": 0.96,
+      "p25_ret": -2.76,
+      "base_score": 92.31,
+      "dist_score": 24.1,
+      "dist_used": true,
+      "n_trades_pooled": 99
+    }
+  },
+  "002413": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "雷科防务",
+    "score": -0.89,
+    "avg_return": 37.31,
+    "avg_sharpe": -0.136,
+    "avg_dd": -48.21,
+    "avg_trades": 11.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": -0.89,
+        "avg_return": 37.31,
+        "avg_sharpe": -0.136,
+        "avg_dd": -48.21,
+        "avg_trades": 11.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.042,
+          0.327,
+          1.059,
+          -1.971
+        ],
+        "base_score": 5.14,
+        "dist_score": -6.91,
+        "dist_used": true,
+        "median_ret": -3.42,
+        "p75_ret": 3.99,
+        "p25_ret": -11.63,
+        "n_trades_pooled": 44
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": -3.74,
+        "avg_return": -1.13,
+        "avg_sharpe": 0.052,
+        "avg_dd": -49.42,
+        "avg_trades": 23.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.537,
+          -0.007,
+          0.275,
+          0.479
+        ],
+        "base_score": -7.24,
+        "dist_score": -0.24,
+        "dist_used": true,
+        "median_ret": -1.95,
+        "p75_ret": -0.53,
+        "p25_ret": -3.38,
+        "n_trades_pooled": 95
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": -18.38,
+        "avg_return": -5.86,
+        "avg_sharpe": -0.155,
+        "avg_dd": -61.57,
+        "avg_trades": 16.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.114,
+          0.02,
+          -0.122,
+          -0.405
+        ],
+        "base_score": -28.62,
+        "dist_score": -8.14,
+        "dist_used": true,
+        "median_ret": -5.36,
+        "p75_ret": 2.55,
+        "p25_ret": -7.86,
+        "n_trades_pooled": 65
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.042,
+          0.327,
+          1.059,
+          -1.971
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.537,
+          -0.007,
+          0.275,
+          0.479
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.114,
+          0.02,
+          -0.122,
+          -0.405
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.058,
+          0.131,
+          0.041,
+          -0.904
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.389,
+          -0.709,
+          -0.769,
+          -0.64
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.906,
+          -0.884,
+          -0.518,
+          -0.633
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -3.42,
+      "p75_ret": 3.99,
+      "p25_ret": -11.63,
+      "base_score": 5.14,
+      "dist_score": -6.91,
+      "dist_used": true,
+      "n_trades_pooled": 44
+    }
+  },
+  "300014": {
+    "strategy": "bull_trend",
+    "fill_caliber": "A",
+    "name": "亿纬锂能",
+    "score": 38.15,
+    "avg_return": 41.77,
+    "avg_sharpe": 0.857,
+    "avg_dd": -8.06,
+    "avg_trades": 8.2,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "牛市趋势跟踪",
+        "score": 38.15,
+        "avg_return": 41.77,
+        "avg_sharpe": 0.857,
+        "avg_dd": -8.06,
+        "avg_trades": 8.2,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.296,
+          1.113,
+          2.018,
+          0.0
+        ],
+        "base_score": 76.47,
+        "dist_score": 25.27,
+        "dist_used": true,
+        "median_ret": -0.47,
+        "p75_ret": 0.84,
+        "p25_ret": -2.24,
+        "n_trades_pooled": 33
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": 25.6,
+        "avg_return": 19.6,
+        "avg_sharpe": 0.425,
+        "avg_dd": -21.08,
+        "avg_trades": 13.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.123,
+          0.67,
+          0.458,
+          0.695
+        ],
+        "base_score": 37.26,
+        "dist_score": 13.95,
+        "dist_used": true,
+        "median_ret": -1.01,
+        "p75_ret": 7.58,
+        "p25_ret": -2.86,
+        "n_trades_pooled": 53
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 22.48,
+        "avg_return": 83.32,
+        "avg_sharpe": 0.106,
+        "avg_dd": -25.14,
+        "avg_trades": 9.8,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.574,
+          0.457,
+          0.453,
+          -1.061
+        ],
+        "base_score": 56.34,
+        "dist_score": 3.6,
+        "dist_used": true,
+        "median_ret": -0.43,
+        "p75_ret": 6.88,
+        "p25_ret": -7.12,
+        "n_trades_pooled": 39
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          0.296,
+          1.113,
+          2.018,
+          0.0
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.123,
+          0.67,
+          0.458,
+          0.695
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.574,
+          0.457,
+          0.453,
+          -1.061
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.077,
+          0.158,
+          0.916,
+          -1.951
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.282,
+          -0.021,
+          0.167,
+          -1.311
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.014,
+          0.035,
+          -0.347,
+          -1.127
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -0.47,
+      "p75_ret": 0.84,
+      "p25_ret": -2.24,
+      "base_score": 76.47,
+      "dist_score": 25.27,
+      "dist_used": true,
+      "n_trades_pooled": 33
+    }
+  },
+  "002466": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "天齐锂业",
+    "score": 40.83,
+    "avg_return": 130.23,
+    "avg_sharpe": 0.347,
+    "avg_dd": -29.52,
+    "avg_trades": 7.2,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 40.83,
+        "avg_return": 130.23,
+        "avg_sharpe": 0.347,
+        "avg_dd": -29.52,
+        "avg_trades": 7.2,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.645,
+          0.583,
+          0.105,
+          0.056
+        ],
+        "base_score": 98.97,
+        "dist_score": 9.91,
+        "dist_used": true,
+        "median_ret": -5.23,
+        "p75_ret": 12.35,
+        "p25_ret": -7.97,
+        "n_trades_pooled": 29
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": 40.19,
+        "avg_return": 99.44,
+        "avg_sharpe": 0.212,
+        "avg_dd": -18.64,
+        "avg_trades": 16.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.673,
+          0.672,
+          1.045,
+          -1.542
+        ],
+        "base_score": 72.39,
+        "dist_score": 7.99,
+        "dist_used": true,
+        "median_ret": -1.04,
+        "p75_ret": 8.96,
+        "p25_ret": -2.69,
+        "n_trades_pooled": 66
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 37.03,
+        "avg_return": 52.32,
+        "avg_sharpe": 0.46,
+        "avg_dd": -30.96,
+        "avg_trades": 12.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.312,
+          0.402,
+          0.399,
+          0.728
+        ],
+        "base_score": 58.53,
+        "dist_score": 15.54,
+        "dist_used": true,
+        "median_ret": -5.87,
+        "p75_ret": 20.34,
+        "p25_ret": -7.17,
+        "n_trades_pooled": 50
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.645,
+          0.583,
+          0.105,
+          0.056
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.673,
+          0.672,
+          1.045,
+          -1.542
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.312,
+          0.402,
+          0.399,
+          0.728
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.03,
+          -0.32,
+          0.369,
+          0.482
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.269,
+          0.05,
+          0.289,
+          0.0
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.601,
+          -1.11,
+          -0.754,
+          -0.853
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -5.23,
+      "p75_ret": 12.35,
+      "p25_ret": -7.97,
+      "base_score": 98.97,
+      "dist_score": 9.91,
+      "dist_used": true,
+      "n_trades_pooled": 29
+    }
+  },
+  "300285": {
+    "strategy": "macd",
+    "fill_caliber": "A",
+    "name": "国瓷材料",
+    "score": 119.06,
+    "avg_return": 185.2,
+    "avg_sharpe": 1.46,
+    "avg_dd": -37.23,
+    "avg_trades": 25.2,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 119.06,
+        "avg_return": 185.2,
+        "avg_sharpe": 1.46,
+        "avg_dd": -37.23,
+        "avg_trades": 25.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.324,
+          1.022,
+          2.067,
+          2.425
+        ],
+        "base_score": 195.08,
+        "dist_score": 43.04,
+        "dist_used": true,
+        "median_ret": -3.13,
+        "p75_ret": 6.46,
+        "p25_ret": -5.59,
+        "n_trades_pooled": 101
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": 64.22,
+        "avg_return": 87.32,
+        "avg_sharpe": 0.884,
+        "avg_dd": -35.42,
+        "avg_trades": 32.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.202,
+          0.65,
+          1.393,
+          1.29
+        ],
+        "base_score": 102.7,
+        "dist_score": 25.74,
+        "dist_used": true,
+        "median_ret": -1.21,
+        "p75_ret": 1.05,
+        "p25_ret": -2.39,
+        "n_trades_pooled": 128
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 60.15,
+        "avg_return": 86.28,
+        "avg_sharpe": 0.824,
+        "avg_dd": -39.26,
+        "avg_trades": 13.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.1,
+          0.606,
+          1.107,
+          1.481
+        ],
+        "base_score": 96.55,
+        "dist_score": 23.75,
+        "dist_used": true,
+        "median_ret": -3.13,
+        "p75_ret": 6.54,
+        "p25_ret": -6.76,
+        "n_trades_pooled": 55
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.324,
+          1.022,
+          2.067,
+          2.425
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.202,
+          0.65,
+          1.393,
+          1.29
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.1,
+          0.606,
+          1.107,
+          1.481
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.248,
+          0.505,
+          1.197,
+          0.886
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.029,
+          0.342,
+          0.813,
+          0.7
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.067,
+          -0.188,
+          -1.264,
+          -1.425
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -3.13,
+      "p75_ret": 6.46,
+      "p25_ret": -5.59,
+      "base_score": 195.08,
+      "dist_score": 43.04,
+      "dist_used": true,
+      "n_trades_pooled": 101
+    }
+  },
+  "603308": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "应流股份",
+    "score": 113.26,
+    "avg_return": 293.14,
+    "avg_sharpe": 1.25,
+    "avg_dd": -23.79,
+    "avg_trades": 7.2,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 113.26,
+        "avg_return": 293.14,
+        "avg_sharpe": 1.25,
+        "avg_dd": -23.79,
+        "avg_trades": 7.2,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.856,
+          1.504,
+          1.141,
+          1.501
+        ],
+        "base_score": 250.92,
+        "dist_score": 51.12,
+        "dist_used": true,
+        "median_ret": 7.66,
+        "p75_ret": 35.4,
+        "p25_ret": -4.23,
+        "n_trades_pooled": 29
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 96.05,
+        "avg_return": 141.16,
+        "avg_sharpe": 1.11,
+        "avg_dd": -21.28,
+        "avg_trades": 11.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.62,
+          1.007,
+          1.3,
+          1.512
+        ],
+        "base_score": 151.28,
+        "dist_score": 40.81,
+        "dist_used": true,
+        "median_ret": 2.51,
+        "p75_ret": 22.26,
+        "p25_ret": -2.06,
+        "n_trades_pooled": 46
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": 28.48,
+        "avg_return": 43.22,
+        "avg_sharpe": 0.36,
+        "avg_dd": -28.34,
+        "avg_trades": 35.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.088,
+          0.617,
+          1.151,
+          -0.417
+        ],
+        "base_score": 47.52,
+        "dist_score": 9.44,
+        "dist_used": true,
+        "median_ret": -1.46,
+        "p75_ret": -0.01,
+        "p25_ret": -3.07,
+        "n_trades_pooled": 140
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.856,
+          1.504,
+          1.141,
+          1.501
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.62,
+          1.007,
+          1.3,
+          1.512
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.088,
+          0.617,
+          1.151,
+          -0.417
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.175,
+          0.805,
+          0.009,
+          -0.489
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.149,
+          0.27,
+          0.555,
+          0.0
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.444,
+          -0.055,
+          -0.589,
+          -0.664
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": 7.66,
+      "p75_ret": 35.4,
+      "p25_ret": -4.23,
+      "base_score": 250.92,
+      "dist_score": 51.12,
+      "dist_used": true,
+      "n_trades_pooled": 29
+    }
+  },
+  "300124": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "汇川技术",
+    "score": 9.64,
+    "avg_return": 43.7,
+    "avg_sharpe": -0.066,
+    "avg_dd": -27.55,
+    "avg_trades": 11.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 9.64,
+        "avg_return": 43.7,
+        "avg_sharpe": -0.066,
+        "avg_dd": -27.55,
+        "avg_trades": 11.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.42,
+          0.201,
+          0.024,
+          -0.909
+        ],
+        "base_score": 22.26,
+        "dist_score": -2.98,
+        "dist_used": true,
+        "median_ret": -2.9,
+        "p75_ret": 5.54,
+        "p25_ret": -6.05,
+        "n_trades_pooled": 44
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 9.45,
+        "avg_return": 13.65,
+        "avg_sharpe": 0.12,
+        "avg_dd": -26.72,
+        "avg_trades": 13.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.045,
+          0.092,
+          0.514,
+          -0.169
+        ],
+        "base_score": 15.42,
+        "dist_score": 3.48,
+        "dist_used": true,
+        "median_ret": -0.5,
+        "p75_ret": 3.78,
+        "p25_ret": -5.1,
+        "n_trades_pooled": 55
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": -5.93,
+        "avg_return": 6.22,
+        "avg_sharpe": -0.159,
+        "avg_dd": -19.64,
+        "avg_trades": 25.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.115,
+          -0.263,
+          -0.265,
+          -0.223
+        ],
+        "base_score": -5.81,
+        "dist_score": -6.05,
+        "dist_used": true,
+        "median_ret": -1.48,
+        "p75_ret": -0.02,
+        "p25_ret": -2.66,
+        "n_trades_pooled": 100
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.42,
+          0.201,
+          0.024,
+          -0.909
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.045,
+          0.092,
+          0.514,
+          -0.169
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.115,
+          -0.263,
+          -0.265,
+          -0.223
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.207,
+          0.017,
+          -0.132,
+          -0.228
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.223,
+          0.006,
+          -0.311,
+          -1.092
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.53,
+          -1.037,
+          -1.63,
+          -1.786
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -2.9,
+      "p75_ret": 5.54,
+      "p25_ret": -6.05,
+      "base_score": 22.26,
+      "dist_score": -2.98,
+      "dist_used": true,
+      "n_trades_pooled": 44
+    }
+  },
+  "601100": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "恒立液压",
+    "score": 20.23,
+    "avg_return": 50.4,
+    "avg_sharpe": 0.12,
+    "avg_dd": -28.97,
+    "avg_trades": 10.2,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 20.23,
+        "avg_return": 50.4,
+        "avg_sharpe": 0.12,
+        "avg_dd": -28.97,
+        "avg_trades": 10.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.454,
+          -0.038,
+          0.468,
+          -0.406
+        ],
+        "base_score": 37.41,
+        "dist_score": 3.04,
+        "dist_used": true,
+        "median_ret": -2.35,
+        "p75_ret": 7.04,
+        "p25_ret": -7.4,
+        "n_trades_pooled": 41
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "score": -1.79,
+        "avg_return": 2.72,
+        "avg_sharpe": -0.077,
+        "avg_dd": -7.62,
+        "avg_trades": 8.8,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.347,
+          -0.015,
+          0.286,
+          -0.232
+        ],
+        "base_score": -2.99,
+        "dist_score": -1.79,
+        "dist_used": true,
+        "median_ret": 0.83,
+        "p75_ret": 1.71,
+        "p25_ret": -2.04,
+        "n_trades_pooled": 35
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": -13.37,
+        "avg_return": 9.39,
+        "avg_sharpe": -0.329,
+        "avg_dd": -31.25,
+        "avg_trades": 13.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.266,
+          -0.123,
+          -0.954,
+          -0.505
+        ],
+        "base_score": -14.73,
+        "dist_score": -12.01,
+        "dist_used": true,
+        "median_ret": -3.81,
+        "p75_ret": 3.17,
+        "p25_ret": -5.92,
+        "n_trades_pooled": 54
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.454,
+          -0.038,
+          0.468,
+          -0.406
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.347,
+          -0.015,
+          0.286,
+          -0.232
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.266,
+          -0.123,
+          -0.954,
+          -0.505
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.419,
+          -0.402,
+          -0.401,
+          -0.423
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.086,
+          -0.531,
+          -0.434,
+          -1.434
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.348,
+          -0.206,
+          -1.229,
+          -1.442
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -2.35,
+      "p75_ret": 7.04,
+      "p25_ret": -7.4,
+      "base_score": 37.41,
+      "dist_score": 3.04,
+      "dist_used": true,
+      "n_trades_pooled": 41
+    }
+  },
+  "002318": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "久立特材",
+    "score": 30.97,
+    "avg_return": 37.1,
+    "avg_sharpe": 0.417,
+    "avg_dd": -19.47,
+    "avg_trades": 10.2,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 30.97,
+        "avg_return": 37.1,
+        "avg_sharpe": 0.417,
+        "avg_dd": -19.47,
+        "avg_trades": 10.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.32,
+          0.171,
+          0.289,
+          0.888
+        ],
+        "base_score": 47.28,
+        "dist_score": 14.66,
+        "dist_used": true,
+        "median_ret": 0.85,
+        "p75_ret": 9.0,
+        "p25_ret": -4.88,
+        "n_trades_pooled": 41
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 27.43,
+        "avg_return": 26.63,
+        "avg_sharpe": 0.44,
+        "avg_dd": -22.21,
+        "avg_trades": 13.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.191,
+          0.256,
+          0.408,
+          0.906
+        ],
+        "base_score": 42.39,
+        "dist_score": 12.48,
+        "dist_used": true,
+        "median_ret": -2.69,
+        "p75_ret": 5.08,
+        "p25_ret": -4.56,
+        "n_trades_pooled": 52
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": -1.87,
+        "avg_return": 0.91,
+        "avg_sharpe": -0.059,
+        "avg_dd": -16.93,
+        "avg_trades": 9.2,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.256,
+          -0.412,
+          0.169,
+          0.264
+        ],
+        "base_score": -2.98,
+        "dist_score": -2.0,
+        "dist_used": true,
+        "median_ret": -1.66,
+        "p75_ret": 4.7,
+        "p25_ret": -4.09,
+        "n_trades_pooled": 37
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.32,
+          0.171,
+          0.289,
+          0.888
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.191,
+          0.256,
+          0.408,
+          0.906
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.256,
+          -0.412,
+          0.169,
+          0.264
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.383,
+          -0.366,
+          -0.872,
+          -1.553
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.171,
+          -0.407,
+          -0.751,
+          -1.749
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.477,
+          -1.082,
+          -1.408,
+          -1.541
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": 0.85,
+      "p75_ret": 9.0,
+      "p25_ret": -4.88,
+      "base_score": 47.28,
+      "dist_score": 14.66,
+      "dist_used": true,
+      "n_trades_pooled": 41
+    }
+  },
+  "300719": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "安达维尔",
+    "score": -9.79,
+    "avg_return": 6.71,
+    "avg_sharpe": -0.187,
+    "avg_dd": -38.24,
+    "avg_trades": 12.8,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": -9.79,
+        "avg_return": 6.71,
+        "avg_sharpe": -0.187,
+        "avg_dd": -38.24,
+        "avg_trades": 12.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.056,
+          0.09,
+          -0.355,
+          -0.538
+        ],
+        "base_score": -11.3,
+        "dist_score": -8.29,
+        "dist_used": true,
+        "median_ret": -3.52,
+        "p75_ret": 0.58,
+        "p25_ret": -5.48,
+        "n_trades_pooled": 51
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": -20.95,
+        "avg_return": -3.49,
+        "avg_sharpe": -0.428,
+        "avg_dd": -25.94,
+        "avg_trades": 15.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.077,
+          -0.414,
+          -0.728,
+          -0.647
+        ],
+        "base_score": -27.78,
+        "dist_score": -14.12,
+        "dist_used": true,
+        "median_ret": -1.96,
+        "p75_ret": 1.56,
+        "p25_ret": -3.83,
+        "n_trades_pooled": 60
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": -26.83,
+        "avg_return": -5.11,
+        "avg_sharpe": -0.504,
+        "avg_dd": -36.01,
+        "avg_trades": 14.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.119,
+          0.127,
+          -0.752,
+          -1.271
+        ],
+        "base_score": -36.29,
+        "dist_score": -17.36,
+        "dist_used": true,
+        "median_ret": -2.33,
+        "p75_ret": 0.62,
+        "p25_ret": -6.32,
+        "n_trades_pooled": 56
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.056,
+          0.09,
+          -0.355,
+          -0.538
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.077,
+          -0.414,
+          -0.728,
+          -0.647
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.119,
+          0.127,
+          -0.752,
+          -1.271
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.143,
+          0.152,
+          -1.336,
+          -1.468
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.459,
+          -1.211,
+          -0.822,
+          -1.609
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.483,
+          -0.473,
+          -1.917,
+          -1.822
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -3.52,
+      "p75_ret": 0.58,
+      "p25_ret": -5.48,
+      "base_score": -11.3,
+      "dist_score": -8.29,
+      "dist_used": true,
+      "n_trades_pooled": 51
+    }
+  },
+  "002335": {
+    "strategy": "bull_trend",
+    "fill_caliber": "A",
+    "name": "科华数据",
+    "score": 12.97,
+    "avg_return": 10.1,
+    "avg_sharpe": 0.323,
+    "avg_dd": -12.62,
+    "avg_trades": 7.5,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "牛市趋势跟踪",
+        "score": 12.97,
+        "avg_return": 10.1,
+        "avg_sharpe": 0.323,
+        "avg_dd": -12.62,
+        "avg_trades": 7.5,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.291,
+          0.56,
+          1.024,
+          0.0
+        ],
+        "base_score": 25.45,
+        "dist_score": 9.13,
+        "dist_used": true,
+        "median_ret": -0.95,
+        "p75_ret": 1.38,
+        "p25_ret": -2.53,
+        "n_trades_pooled": 30
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": -5.34,
+        "avg_return": 60.81,
+        "avg_sharpe": -0.352,
+        "avg_dd": -52.93,
+        "avg_trades": 14.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.466,
+          0.082,
+          -0.506,
+          -1.45
+        ],
+        "base_score": 3.9,
+        "dist_score": -14.57,
+        "dist_used": true,
+        "median_ret": -6.19,
+        "p75_ret": 2.54,
+        "p25_ret": -8.4,
+        "n_trades_pooled": 56
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": -11.85,
+        "avg_return": 1.84,
+        "avg_sharpe": -0.259,
+        "avg_dd": -27.1,
+        "avg_trades": 26.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.068,
+          0.334,
+          -0.696,
+          -0.605
+        ],
+        "base_score": -14.42,
+        "dist_score": -9.28,
+        "dist_used": true,
+        "median_ret": -1.31,
+        "p75_ret": -0.66,
+        "p25_ret": -3.32,
+        "n_trades_pooled": 105
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.291,
+          0.56,
+          1.024,
+          0.0
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.466,
+          0.082,
+          -0.506,
+          -1.45
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.068,
+          0.334,
+          -0.696,
+          -0.605
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.017,
+          0.174,
+          -0.275,
+          -0.785
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.183,
+          0.106,
+          -0.537,
+          -0.574
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.062,
+          0.021,
+          -0.744,
+          -2.0
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -0.95,
+      "p75_ret": 1.38,
+      "p25_ret": -2.53,
+      "base_score": 25.45,
+      "dist_score": 9.13,
+      "dist_used": true,
+      "n_trades_pooled": 30
+    }
+  },
+  "300748": {
+    "strategy": "kdj_cci",
+    "fill_caliber": "A",
+    "name": "金力永磁",
+    "score": 48.79,
+    "avg_return": 42.56,
+    "avg_sharpe": 0.773,
+    "avg_dd": -10.43,
+    "avg_trades": 12.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "KDJ+CCI",
+        "score": 48.79,
+        "avg_return": 42.56,
+        "avg_sharpe": 0.773,
+        "avg_dd": -10.43,
+        "avg_trades": 12.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.525,
+          0.56,
+          0.745,
+          1.262
+        ],
+        "base_score": 71.92,
+        "dist_score": 25.67,
+        "dist_used": true,
+        "median_ret": 0.15,
+        "p75_ret": 10.23,
+        "p25_ret": -3.33,
+        "n_trades_pooled": 48
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": -7.03,
+        "avg_return": 24.22,
+        "avg_sharpe": -0.243,
+        "avg_dd": -35.79,
+        "avg_trades": 11.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.169,
+          0.356,
+          -0.656,
+          -0.842
+        ],
+        "base_score": -2.96,
+        "dist_score": -11.11,
+        "dist_used": true,
+        "median_ret": -4.01,
+        "p75_ret": -1.02,
+        "p25_ret": -7.52,
+        "n_trades_pooled": 44
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": -9.2,
+        "avg_return": 6.28,
+        "avg_sharpe": -0.204,
+        "avg_dd": -34.36,
+        "avg_trades": 12.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.037,
+          0.147,
+          -0.237,
+          -0.763
+        ],
+        "base_score": -10.65,
+        "dist_score": -7.74,
+        "dist_used": true,
+        "median_ret": -3.86,
+        "p75_ret": 4.91,
+        "p25_ret": -5.84,
+        "n_trades_pooled": 50
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.525,
+          0.56,
+          0.745,
+          1.262
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.169,
+          0.356,
+          -0.656,
+          -0.842
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.037,
+          0.147,
+          -0.237,
+          -0.763
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.274,
+          0.17,
+          -0.15,
+          -1.147
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.013,
+          -0.062,
+          -0.401,
+          -1.034
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.479,
+          -0.703,
+          -0.824,
+          -0.983
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": 0.15,
+      "p75_ret": 10.23,
+      "p25_ret": -3.33,
+      "base_score": 71.92,
+      "dist_score": 25.67,
+      "dist_used": true,
+      "n_trades_pooled": 48
+    }
+  },
+  "600160": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "巨化股份",
+    "score": 33.82,
+    "avg_return": 56.32,
+    "avg_sharpe": 0.364,
+    "avg_dd": -31.78,
+    "avg_trades": 12.2,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 33.82,
+        "avg_return": 56.32,
+        "avg_sharpe": 0.364,
+        "avg_dd": -31.78,
+        "avg_trades": 12.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.267,
+          0.74,
+          0.434,
+          0.017
+        ],
+        "base_score": 54.77,
+        "dist_score": 12.86,
+        "dist_used": true,
+        "median_ret": 2.39,
+        "p75_ret": 5.94,
+        "p25_ret": -5.24,
+        "n_trades_pooled": 49
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": 29.59,
+        "avg_return": 42.97,
+        "avg_sharpe": 0.381,
+        "avg_dd": -29.08,
+        "avg_trades": 29.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.29,
+          0.677,
+          0.515,
+          0.041
+        ],
+        "base_score": 48.63,
+        "dist_score": 10.55,
+        "dist_used": true,
+        "median_ret": -1.3,
+        "p75_ret": 0.57,
+        "p25_ret": -1.95,
+        "n_trades_pooled": 116
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 13.36,
+        "avg_return": 30.05,
+        "avg_sharpe": 0.121,
+        "avg_dd": -30.99,
+        "avg_trades": 30.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.214,
+          0.379,
+          0.138,
+          -0.246
+        ],
+        "base_score": 24.81,
+        "dist_score": 1.91,
+        "dist_used": true,
+        "median_ret": -2.86,
+        "p75_ret": 2.17,
+        "p25_ret": -4.76,
+        "n_trades_pooled": 123
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.267,
+          0.74,
+          0.434,
+          0.017
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.29,
+          0.677,
+          0.515,
+          0.041
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.214,
+          0.379,
+          0.138,
+          -0.246
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.099,
+          -0.023,
+          0.284,
+          -0.112
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          0.368,
+          0.184,
+          0.175,
+          -1.708
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.567,
+          0.479,
+          -1.705,
+          -1.935
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": 2.39,
+      "p75_ret": 5.94,
+      "p25_ret": -5.24,
+      "base_score": 54.77,
+      "dist_score": 12.86,
+      "dist_used": true,
+      "n_trades_pooled": 49
+    }
+  },
+  "600346": {
+    "strategy": "macd",
+    "fill_caliber": "A",
+    "name": "恒力石化",
+    "score": 50.67,
+    "avg_return": 59.9,
+    "avg_sharpe": 0.717,
+    "avg_dd": -26.86,
+    "avg_trades": 22.2,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 50.67,
+        "avg_return": 59.9,
+        "avg_sharpe": 0.717,
+        "avg_dd": -26.86,
+        "avg_trades": 22.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.34,
+          0.468,
+          1.078,
+          0.983
+        ],
+        "base_score": 78.98,
+        "dist_score": 22.37,
+        "dist_used": true,
+        "median_ret": -0.08,
+        "p75_ret": 6.03,
+        "p25_ret": -4.57,
+        "n_trades_pooled": 89
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 4.89,
+        "avg_return": 16.65,
+        "avg_sharpe": 0.054,
+        "avg_dd": -35.75,
+        "avg_trades": 11.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.14,
+          0.06,
+          0.21,
+          -0.193
+        ],
+        "base_score": 10.37,
+        "dist_score": -0.58,
+        "dist_used": true,
+        "median_ret": -2.73,
+        "p75_ret": 0.34,
+        "p25_ret": -4.74,
+        "n_trades_pooled": 47
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": -1.41,
+        "avg_return": 0.87,
+        "avg_sharpe": -0.033,
+        "avg_dd": -14.79,
+        "avg_trades": 13.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.209,
+          -0.478,
+          0.204,
+          0.352
+        ],
+        "base_score": -1.44,
+        "dist_score": -1.39,
+        "dist_used": true,
+        "median_ret": -1.31,
+        "p75_ret": 2.36,
+        "p25_ret": -2.28,
+        "n_trades_pooled": 54
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.34,
+          0.468,
+          1.078,
+          0.983
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.14,
+          0.06,
+          0.21,
+          -0.193
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.209,
+          -0.478,
+          0.204,
+          0.352
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.268,
+          -0.287,
+          -1.028,
+          0.646
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.201,
+          -0.315,
+          -0.268,
+          -0.479
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.398,
+          -0.486,
+          -0.285,
+          -1.505
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -0.08,
+      "p75_ret": 6.03,
+      "p25_ret": -4.57,
+      "base_score": 78.98,
+      "dist_score": 22.37,
+      "dist_used": true,
+      "n_trades_pooled": 89
+    }
+  },
+  "000708": {
+    "strategy": "bull_trend",
+    "fill_caliber": "A",
+    "name": "中信特钢",
+    "score": -11.23,
+    "avg_return": 11.1,
+    "avg_sharpe": -0.315,
+    "avg_dd": -18.57,
+    "avg_trades": 23.2,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "牛市趋势跟踪",
+        "score": -11.23,
+        "avg_return": 11.1,
+        "avg_sharpe": -0.315,
+        "avg_dd": -18.57,
+        "avg_trades": 23.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.34,
+          0.048,
+          -0.145,
+          -1.505
+        ],
+        "base_score": -12.27,
+        "dist_score": -10.18,
+        "dist_used": true,
+        "median_ret": -0.88,
+        "p75_ret": 0.03,
+        "p25_ret": -1.43,
+        "n_trades_pooled": 93
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": -16.85,
+        "avg_return": 6.18,
+        "avg_sharpe": -0.403,
+        "avg_dd": -13.81,
+        "avg_trades": 12.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.049,
+          0.037,
+          -0.891,
+          -0.806
+        ],
+        "base_score": -20.46,
+        "dist_score": -13.24,
+        "dist_used": true,
+        "median_ret": -1.26,
+        "p75_ret": 0.17,
+        "p25_ret": -2.87,
+        "n_trades_pooled": 49
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": -25.79,
+        "avg_return": -10.48,
+        "avg_sharpe": -0.45,
+        "avg_dd": -34.42,
+        "avg_trades": 11.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.167,
+          -0.31,
+          -0.105,
+          -1.217
+        ],
+        "base_score": -35.48,
+        "dist_score": -16.09,
+        "dist_used": true,
+        "median_ret": -2.48,
+        "p75_ret": -0.78,
+        "p25_ret": -5.63,
+        "n_trades_pooled": 46
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          0.34,
+          0.048,
+          -0.145,
+          -1.505
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.049,
+          0.037,
+          -0.891,
+          -0.806
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          -0.167,
+          -0.31,
+          -0.105,
+          -1.217
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.265,
+          -0.188,
+          -0.44,
+          -1.267
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.515,
+          -0.579,
+          -0.578,
+          -1.541
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.324,
+          -0.677,
+          -0.978,
+          -1.829
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -0.88,
+      "p75_ret": 0.03,
+      "p25_ret": -1.43,
+      "base_score": -12.27,
+      "dist_score": -10.18,
+      "dist_used": true,
+      "n_trades_pooled": 93
+    }
+  },
+  "600660": {
+    "strategy": "macd",
+    "fill_caliber": "A",
+    "name": "福耀玻璃",
+    "score": 2.28,
+    "avg_return": 36.37,
+    "avg_sharpe": -0.181,
+    "avg_dd": -29.09,
+    "avg_trades": 30.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 2.28,
+        "avg_return": 36.37,
+        "avg_sharpe": -0.181,
+        "avg_dd": -29.09,
+        "avg_trades": 30.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.495,
+          0.632,
+          -0.515,
+          -1.336
+        ],
+        "base_score": 10.96,
+        "dist_score": -6.39,
+        "dist_used": true,
+        "median_ret": -1.53,
+        "p75_ret": 1.72,
+        "p25_ret": -3.58,
+        "n_trades_pooled": 120
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": -4.0,
+        "avg_return": 25.16,
+        "avg_sharpe": -0.238,
+        "avg_dd": -23.25,
+        "avg_trades": 14.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.388,
+          0.163,
+          -0.504,
+          -1.0
+        ],
+        "base_score": 0.8,
+        "dist_score": -8.79,
+        "dist_used": true,
+        "median_ret": -2.41,
+        "p75_ret": 2.05,
+        "p25_ret": -5.27,
+        "n_trades_pooled": 56
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": -8.52,
+        "avg_return": 15.37,
+        "avg_sharpe": -0.282,
+        "avg_dd": -16.18,
+        "avg_trades": 12.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.325,
+          -0.069,
+          -0.104,
+          -1.281
+        ],
+        "base_score": -7.71,
+        "dist_score": -9.32,
+        "dist_used": true,
+        "median_ret": -2.07,
+        "p75_ret": 2.84,
+        "p25_ret": -3.36,
+        "n_trades_pooled": 48
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.495,
+          0.632,
+          -0.515,
+          -1.336
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.388,
+          0.163,
+          -0.504,
+          -1.0
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.325,
+          -0.069,
+          -0.104,
+          -1.281
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.353,
+          -0.411,
+          -0.739,
+          -0.67
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.244,
+          -0.878,
+          -1.31,
+          -2.033
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -1.216,
+          -1.205,
+          -1.754,
+          -1.54
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -1.53,
+      "p75_ret": 1.72,
+      "p25_ret": -3.58,
+      "base_score": 10.96,
+      "dist_score": -6.39,
+      "dist_used": true,
+      "n_trades_pooled": 120
+    }
+  },
+  "600570": {
+    "strategy": "bollinger",
+    "fill_caliber": "A",
+    "name": "恒生电子",
+    "score": -5.68,
+    "avg_return": 5.51,
+    "avg_sharpe": -0.146,
+    "avg_dd": -30.0,
+    "avg_trades": 14.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "布林带+ATR",
+        "score": -5.68,
+        "avg_return": 5.51,
+        "avg_sharpe": -0.146,
+        "avg_dd": -30.0,
+        "avg_trades": 14.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.101,
+          0.344,
+          -0.267,
+          -0.558
+        ],
+        "base_score": -5.42,
+        "dist_score": -5.94,
+        "dist_used": true,
+        "median_ret": -3.56,
+        "p75_ret": 4.69,
+        "p25_ret": -6.03,
+        "n_trades_pooled": 56
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "score": -12.32,
+        "avg_return": 3.52,
+        "avg_sharpe": -0.698,
+        "avg_dd": -5.15,
+        "avg_trades": 5.0,
+        "sample_weight": 0.4,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.013,
+          -2.779,
+          0.0,
+          0.0
+        ],
+        "base_score": -39.77,
+        "dist_score": -21.81,
+        "dist_used": true,
+        "median_ret": -1.19,
+        "p75_ret": 0.97,
+        "p25_ret": -2.83,
+        "n_trades_pooled": 20
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": -14.87,
+        "avg_return": 3.41,
+        "avg_sharpe": -0.38,
+        "avg_dd": -36.97,
+        "avg_trades": 9.5,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.167,
+          0.482,
+          -0.881,
+          -0.953
+        ],
+        "base_score": -24.22,
+        "dist_score": -15.45,
+        "dist_used": true,
+        "median_ret": -4.98,
+        "p75_ret": 0.51,
+        "p25_ret": -8.59,
+        "n_trades_pooled": 38
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.101,
+          0.344,
+          -0.267,
+          -0.558
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.013,
+          -2.779,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          -0.167,
+          0.482,
+          -0.881,
+          -0.953
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.032,
+          0.052,
+          -0.807,
+          -1.781
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.096,
+          0.153,
+          -1.052,
+          -1.106
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.825,
+          -0.378,
+          -0.467,
+          -0.496
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -3.56,
+      "p75_ret": 4.69,
+      "p25_ret": -6.03,
+      "base_score": -5.42,
+      "dist_score": -5.94,
+      "dist_used": true,
+      "n_trades_pooled": 56
+    }
+  },
+  "605566": {
+    "strategy": "macd",
+    "fill_caliber": "A",
+    "name": "福莱蒽特",
+    "score": 32.02,
+    "avg_return": 34.36,
+    "avg_sharpe": 0.465,
+    "avg_dd": -28.37,
+    "avg_trades": 21.8,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 32.02,
+        "avg_return": 34.36,
+        "avg_sharpe": 0.465,
+        "avg_dd": -28.37,
+        "avg_trades": 21.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.095,
+          0.22,
+          0.703,
+          0.842
+        ],
+        "base_score": 48.52,
+        "dist_score": 15.51,
+        "dist_used": true,
+        "median_ret": -0.71,
+        "p75_ret": 9.82,
+        "p25_ret": -5.14,
+        "n_trades_pooled": 87
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": -6.2,
+        "avg_return": 1.93,
+        "avg_sharpe": -0.14,
+        "avg_dd": -17.3,
+        "avg_trades": 10.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.02,
+          0.041,
+          -0.282,
+          -0.298
+        ],
+        "base_score": -7.23,
+        "dist_score": -5.17,
+        "dist_used": true,
+        "median_ret": -2.19,
+        "p75_ret": 3.38,
+        "p25_ret": -4.48,
+        "n_trades_pooled": 40
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": -9.36,
+        "avg_return": -8.46,
+        "avg_sharpe": -0.108,
+        "avg_dd": -31.38,
+        "avg_trades": 11.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.339,
+          -0.296,
+          -0.081,
+          0.282
+        ],
+        "base_score": -12.28,
+        "dist_score": -6.44,
+        "dist_used": true,
+        "median_ret": -5.43,
+        "p75_ret": 3.3,
+        "p25_ret": -7.29,
+        "n_trades_pooled": 47
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.095,
+          0.22,
+          0.703,
+          0.842
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.02,
+          0.041,
+          -0.282,
+          -0.298
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.339,
+          -0.296,
+          -0.081,
+          0.282
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.007,
+          -0.079,
+          -0.097,
+          -0.963
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          -0.514,
+          -0.474,
+          -0.429,
+          -0.666
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.547,
+          -0.603,
+          -0.177,
+          -10.748
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -0.71,
+      "p75_ret": 9.82,
+      "p25_ret": -5.14,
+      "base_score": 48.52,
+      "dist_score": 15.51,
+      "dist_used": true,
+      "n_trades_pooled": 87
+    }
+  },
+  "000157": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "中联重科",
+    "score": 1.28,
+    "avg_return": 5.71,
+    "avg_sharpe": 0.008,
+    "avg_dd": -27.69,
+    "avg_trades": 11.5,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 1.28,
+        "avg_return": 5.71,
+        "avg_sharpe": 0.008,
+        "avg_dd": -27.69,
+        "avg_trades": 11.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.088,
+          0.181,
+          0.128,
+          -0.187
+        ],
+        "base_score": 3.94,
+        "dist_score": -1.39,
+        "dist_used": true,
+        "median_ret": -3.17,
+        "p75_ret": 3.56,
+        "p25_ret": -5.61,
+        "n_trades_pooled": 46
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "score": -7.52,
+        "avg_return": 4.32,
+        "avg_sharpe": -0.19,
+        "avg_dd": -8.62,
+        "avg_trades": 19.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.023,
+          0.107,
+          -0.842,
+          0.0
+        ],
+        "base_score": -8.78,
+        "dist_score": -6.27,
+        "dist_used": true,
+        "median_ret": -0.63,
+        "p75_ret": 0.22,
+        "p25_ret": -1.69,
+        "n_trades_pooled": 79
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": -19.01,
+        "avg_return": 2.6,
+        "avg_sharpe": -0.428,
+        "avg_dd": -26.26,
+        "avg_trades": 24.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.13,
+          -0.123,
+          -0.731,
+          -0.989
+        ],
+        "base_score": -24.14,
+        "dist_score": -13.89,
+        "dist_used": true,
+        "median_ret": -1.05,
+        "p75_ret": 0.0,
+        "p25_ret": -2.6,
+        "n_trades_pooled": 97
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          -0.088,
+          0.181,
+          0.128,
+          -0.187
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.023,
+          0.107,
+          -0.842,
+          0.0
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.13,
+          -0.123,
+          -0.731,
+          -0.989
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.111,
+          -0.214,
+          -0.474,
+          -0.801
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.309,
+          -0.239,
+          -0.915,
+          -1.24
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.001,
+          -0.034,
+          -1.713,
+          -1.921
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -3.17,
+      "p75_ret": 3.56,
+      "p25_ret": -5.61,
+      "base_score": 3.94,
+      "dist_score": -1.39,
+      "dist_used": true,
+      "n_trades_pooled": 46
+    }
+  },
+  "601061": {
+    "strategy": "ema_obv",
+    "fill_caliber": "A",
+    "name": "中信金属",
+    "score": 15.31,
+    "avg_return": 21.6,
+    "avg_sharpe": 0.214,
+    "avg_dd": -21.67,
+    "avg_trades": 18.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA+OBV",
+        "score": 15.31,
+        "avg_return": 21.6,
+        "avg_sharpe": 0.214,
+        "avg_dd": -21.67,
+        "avg_trades": 18.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.116,
+          0.252,
+          1.22,
+          -0.733
+        ],
+        "base_score": 25.78,
+        "dist_score": 4.83,
+        "dist_used": true,
+        "median_ret": -1.5,
+        "p75_ret": -0.93,
+        "p25_ret": -2.75,
+        "n_trades_pooled": 72
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": 10.97,
+        "avg_return": 11.94,
+        "avg_sharpe": 0.242,
+        "avg_dd": -13.48,
+        "avg_trades": 7.5,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.089,
+          0.222,
+          0.268,
+          0.388
+        ],
+        "base_score": 21.67,
+        "dist_score": 7.57,
+        "dist_used": true,
+        "median_ret": 0.85,
+        "p75_ret": 2.46,
+        "p25_ret": -4.21,
+        "n_trades_pooled": 30
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 7.19,
+        "avg_return": 14.94,
+        "avg_sharpe": 0.072,
+        "avg_dd": -31.55,
+        "avg_trades": 18.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.109,
+          0.173,
+          0.644,
+          -0.637
+        ],
+        "base_score": 12.53,
+        "dist_score": 1.86,
+        "dist_used": true,
+        "median_ret": -0.7,
+        "p75_ret": 3.49,
+        "p25_ret": -5.01,
+        "n_trades_pooled": 73
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.116,
+          0.252,
+          1.22,
+          -0.733
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.089,
+          0.222,
+          0.268,
+          0.388
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.109,
+          0.173,
+          0.644,
+          -0.637
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.147,
+          -0.073,
+          0.53,
+          -0.588
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.363,
+          -0.365,
+          -0.057,
+          -2.631
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          -0.192,
+          -0.061,
+          -1.202,
+          -1.473
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -1.5,
+      "p75_ret": -0.93,
+      "p25_ret": -2.75,
+      "base_score": 25.78,
+      "dist_score": 4.83,
+      "dist_used": true,
+      "n_trades_pooled": 72
+    }
+  },
+  "600089": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "特变电工",
+    "score": 71.08,
+    "avg_return": 125.71,
+    "avg_sharpe": 0.756,
+    "avg_dd": -28.3,
+    "avg_trades": 11.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 71.08,
+        "avg_return": 125.71,
+        "avg_sharpe": 0.756,
+        "avg_dd": -28.3,
+        "avg_trades": 11.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.636,
+          0.772,
+          1.746,
+          -0.13
+        ],
+        "base_score": 120.78,
+        "dist_score": 21.38,
+        "dist_used": true,
+        "median_ret": -2.57,
+        "p75_ret": 3.14,
+        "p25_ret": -4.8,
+        "n_trades_pooled": 44
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 38.19,
+        "avg_return": 64.52,
+        "avg_sharpe": 0.406,
+        "avg_dd": -28.88,
+        "avg_trades": 12.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.45,
+          0.445,
+          1.065,
+          -0.335
+        ],
+        "base_score": 63.09,
+        "dist_score": 13.29,
+        "dist_used": true,
+        "median_ret": -3.32,
+        "p75_ret": 13.92,
+        "p25_ret": -7.06,
+        "n_trades_pooled": 51
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 10.84,
+        "avg_return": 34.36,
+        "avg_sharpe": 0.021,
+        "avg_dd": -28.98,
+        "avg_trades": 27.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.321,
+          0.277,
+          0.371,
+          -0.885
+        ],
+        "base_score": 21.88,
+        "dist_score": -0.2,
+        "dist_used": true,
+        "median_ret": -1.78,
+        "p75_ret": 2.75,
+        "p25_ret": -3.82,
+        "n_trades_pooled": 110
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.636,
+          0.772,
+          1.746,
+          -0.13
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.45,
+          0.445,
+          1.065,
+          -0.335
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.321,
+          0.277,
+          0.371,
+          -0.885
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.279,
+          0.348,
+          0.658,
+          -1.785
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          0.051,
+          0.011,
+          -0.522,
+          -2.053
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.319,
+          -0.378,
+          -0.83,
+          -0.935
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -2.57,
+      "p75_ret": 3.14,
+      "p25_ret": -4.8,
+      "base_score": 120.78,
+      "dist_score": 21.38,
+      "dist_used": true,
+      "n_trades_pooled": 44
+    }
+  },
+  "600406": {
+    "strategy": "ema_obv",
+    "fill_caliber": "A",
+    "name": "国电南瑞",
+    "score": 9.84,
+    "avg_return": 1.9,
+    "avg_sharpe": 0.217,
+    "avg_dd": -25.23,
+    "avg_trades": 36.5,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA+OBV",
+        "score": 9.84,
+        "avg_return": 1.9,
+        "avg_sharpe": 0.217,
+        "avg_dd": -25.23,
+        "avg_trades": 36.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.279,
+          -0.203,
+          0.429,
+          0.922
+        ],
+        "base_score": 14.18,
+        "dist_score": 5.51,
+        "dist_used": true,
+        "median_ret": -1.11,
+        "p75_ret": -0.41,
+        "p25_ret": -1.66,
+        "n_trades_pooled": 146
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": -3.42,
+        "avg_return": -4.33,
+        "avg_sharpe": -0.033,
+        "avg_dd": -26.01,
+        "avg_trades": 15.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.399,
+          -0.039,
+          -0.049,
+          0.355
+        ],
+        "base_score": -4.58,
+        "dist_score": -2.26,
+        "dist_used": true,
+        "median_ret": -1.7,
+        "p75_ret": 0.89,
+        "p25_ret": -3.45,
+        "n_trades_pooled": 63
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": -12.71,
+        "avg_return": -1.06,
+        "avg_sharpe": -0.372,
+        "avg_dd": -7.59,
+        "avg_trades": 8.5,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.291,
+          -0.639,
+          -0.198,
+          -0.362
+        ],
+        "base_score": -22.99,
+        "dist_score": -10.91,
+        "dist_used": true,
+        "median_ret": 0.16,
+        "p75_ret": 1.82,
+        "p25_ret": -1.79,
+        "n_trades_pooled": 34
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.279,
+          -0.203,
+          0.429,
+          0.922
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.399,
+          -0.039,
+          -0.049,
+          0.355
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.291,
+          -0.639,
+          -0.198,
+          -0.362
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          -0.095,
+          -0.472,
+          -0.55,
+          -0.25
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.571,
+          -0.512,
+          -0.159,
+          -0.125
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.949,
+          -1.196,
+          -0.563,
+          -1.922
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -1.11,
+      "p75_ret": -0.41,
+      "p25_ret": -1.66,
+      "base_score": 14.18,
+      "dist_score": 5.51,
+      "dist_used": true,
+      "n_trades_pooled": 146
+    }
+  },
+  "000400": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "许继电气",
+    "score": 17.35,
+    "avg_return": 24.54,
+    "avg_sharpe": 0.219,
+    "avg_dd": -27.72,
+    "avg_trades": 11.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 17.35,
+        "avg_return": 24.54,
+        "avg_sharpe": 0.219,
+        "avg_dd": -27.72,
+        "avg_trades": 11.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.107,
+          0.286,
+          0.447,
+          0.037
+        ],
+        "base_score": 27.88,
+        "dist_score": 6.82,
+        "dist_used": true,
+        "median_ret": -2.4,
+        "p75_ret": 7.82,
+        "p25_ret": -4.51,
+        "n_trades_pooled": 44
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "score": -11.84,
+        "avg_return": 8.8,
+        "avg_sharpe": -0.316,
+        "avg_dd": -16.48,
+        "avg_trades": 12.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.299,
+          0.02,
+          -0.751,
+          -0.83
+        ],
+        "base_score": -13.65,
+        "dist_score": -10.02,
+        "dist_used": true,
+        "median_ret": -1.84,
+        "p75_ret": 3.39,
+        "p25_ret": -3.28,
+        "n_trades_pooled": 50
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": -15.15,
+        "avg_return": -6.72,
+        "avg_sharpe": -0.275,
+        "avg_dd": -28.5,
+        "avg_trades": 27.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.234,
+          -0.154,
+          -0.348,
+          -0.365
+        ],
+        "base_score": -20.55,
+        "dist_score": -9.76,
+        "dist_used": true,
+        "median_ret": -1.75,
+        "p75_ret": -0.36,
+        "p25_ret": -2.61,
+        "n_trades_pooled": 111
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.107,
+          0.286,
+          0.447,
+          0.037
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.299,
+          0.02,
+          -0.751,
+          -0.83
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.234,
+          -0.154,
+          -0.348,
+          -0.365
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.538,
+          -0.435,
+          -0.444,
+          -0.106
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.144,
+          -0.455,
+          -0.417,
+          -1.283
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.22,
+          -1.089,
+          -0.918,
+          -1.062
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -2.4,
+      "p75_ret": 7.82,
+      "p25_ret": -4.51,
+      "base_score": 27.88,
+      "dist_score": 6.82,
+      "dist_used": true,
+      "n_trades_pooled": 44
+    }
+  },
+  "601179": {
+    "strategy": "bollinger",
+    "fill_caliber": "A",
+    "name": "中国西电",
+    "score": 66.1,
+    "avg_return": 86.29,
+    "avg_sharpe": 0.902,
+    "avg_dd": -29.12,
+    "avg_trades": 12.5,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "布林带+ATR",
+        "score": 66.1,
+        "avg_return": 86.29,
+        "avg_sharpe": 0.902,
+        "avg_dd": -29.12,
+        "avg_trades": 12.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.418,
+          0.715,
+          1.435,
+          1.041
+        ],
+        "base_score": 105.91,
+        "dist_score": 26.3,
+        "dist_used": true,
+        "median_ret": -3.44,
+        "p75_ret": 6.73,
+        "p25_ret": -5.34,
+        "n_trades_pooled": 50
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 55.76,
+        "avg_return": 116.07,
+        "avg_sharpe": 0.871,
+        "avg_dd": -39.74,
+        "avg_trades": 9.0,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.467,
+          0.897,
+          1.054,
+          1.067
+        ],
+        "base_score": 117.05,
+        "dist_score": 31.65,
+        "dist_used": true,
+        "median_ret": 0.67,
+        "p75_ret": 22.52,
+        "p25_ret": -7.87,
+        "n_trades_pooled": 36
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": 46.65,
+        "avg_return": 60.51,
+        "avg_sharpe": 0.69,
+        "avg_dd": -37.71,
+        "avg_trades": 34.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.3,
+          0.288,
+          1.223,
+          0.947
+        ],
+        "base_score": 73.82,
+        "dist_score": 19.49,
+        "dist_used": true,
+        "median_ret": -1.46,
+        "p75_ret": 0.59,
+        "p25_ret": -3.23,
+        "n_trades_pooled": 136
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.418,
+          0.715,
+          1.435,
+          1.041
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.467,
+          0.897,
+          1.054,
+          1.067
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.3,
+          0.288,
+          1.223,
+          0.947
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.324,
+          -0.349,
+          0.267,
+          0.411
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.004,
+          -0.045,
+          0.225,
+          -1.487
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.51,
+          -0.318,
+          -0.636,
+          -0.911
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -3.44,
+      "p75_ret": 6.73,
+      "p25_ret": -5.34,
+      "base_score": 105.91,
+      "dist_score": 26.3,
+      "dist_used": true,
+      "n_trades_pooled": 50
+    }
+  },
+  "002028": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "思源电气",
+    "score": 25.51,
+    "avg_return": 80.74,
+    "avg_sharpe": 0.089,
+    "avg_dd": -35.55,
+    "avg_trades": 12.5,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 25.51,
+        "avg_return": 80.74,
+        "avg_sharpe": 0.089,
+        "avg_dd": -35.55,
+        "avg_trades": 12.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.465,
+          0.612,
+          1.091,
+          -1.812
+        ],
+        "base_score": 51.01,
+        "dist_score": 0.01,
+        "dist_used": true,
+        "median_ret": -3.61,
+        "p75_ret": 2.49,
+        "p25_ret": -8.04,
+        "n_trades_pooled": 50
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 9.49,
+        "avg_return": 16.11,
+        "avg_sharpe": 0.131,
+        "avg_dd": -29.94,
+        "avg_trades": 16.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.046,
+          0.237,
+          0.802,
+          -0.468
+        ],
+        "base_score": 17.54,
+        "dist_score": 1.44,
+        "dist_used": true,
+        "median_ret": -4.16,
+        "p75_ret": 3.46,
+        "p25_ret": -7.29,
+        "n_trades_pooled": 65
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": -4.66,
+        "avg_return": -2.74,
+        "avg_sharpe": -0.056,
+        "avg_dd": -32.56,
+        "avg_trades": 44.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.251,
+          -0.164,
+          0.487,
+          -0.297
+        ],
+        "base_score": -6.3,
+        "dist_score": -3.03,
+        "dist_used": true,
+        "median_ret": -1.52,
+        "p75_ret": -0.16,
+        "p25_ret": -2.67,
+        "n_trades_pooled": 179
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.465,
+          0.612,
+          1.091,
+          -1.812
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.046,
+          0.237,
+          0.802,
+          -0.468
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.251,
+          -0.164,
+          0.487,
+          -0.297
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          -0.211,
+          -1.067,
+          -1.225,
+          -1.387
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          -0.282,
+          -0.133,
+          -0.145,
+          -1.002
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.074,
+          -0.385,
+          -1.174,
+          -1.1
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -3.61,
+      "p75_ret": 2.49,
+      "p25_ret": -8.04,
+      "base_score": 51.01,
+      "dist_score": 0.01,
+      "dist_used": true,
+      "n_trades_pooled": 50
+    }
+  },
+  "002270": {
+    "strategy": "ema_cross",
+    "fill_caliber": "A",
+    "name": "华明装备",
+    "score": 59.17,
+    "avg_return": 222.94,
+    "avg_sharpe": 0.196,
+    "avg_dd": -26.03,
+    "avg_trades": 6.8,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 59.17,
+        "avg_return": 222.94,
+        "avg_sharpe": 0.196,
+        "avg_dd": -26.03,
+        "avg_trades": 6.8,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          1.022,
+          0.921,
+          -1.115,
+          -0.045
+        ],
+        "base_score": 145.51,
+        "dist_score": 12.29,
+        "dist_used": true,
+        "median_ret": -0.57,
+        "p75_ret": 25.48,
+        "p25_ret": -4.73,
+        "n_trades_pooled": 27
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": 44.44,
+        "avg_return": 56.62,
+        "avg_sharpe": 0.618,
+        "avg_dd": -26.14,
+        "avg_trades": 34.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.23,
+          0.768,
+          1.345,
+          0.13
+        ],
+        "base_score": 71.07,
+        "dist_score": 17.81,
+        "dist_used": true,
+        "median_ret": -0.92,
+        "p75_ret": 1.13,
+        "p25_ret": -3.09,
+        "n_trades_pooled": 137
+      },
+      {
+        "strategy": "布林带+ATR",
+        "score": 25.56,
+        "avg_return": 32.98,
+        "avg_sharpe": 0.345,
+        "avg_dd": -21.46,
+        "avg_trades": 12.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.164,
+          0.316,
+          0.914,
+          -0.014
+        ],
+        "base_score": 40.49,
+        "dist_score": 10.64,
+        "dist_used": true,
+        "median_ret": -1.34,
+        "p75_ret": 6.29,
+        "p25_ret": -4.65,
+        "n_trades_pooled": 51
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          1.022,
+          0.921,
+          -1.115,
+          -0.045
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.23,
+          0.768,
+          1.345,
+          0.13
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.164,
+          0.316,
+          0.914,
+          -0.014
+        ]
+      },
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.085,
+          0.265,
+          0.217,
+          0.321
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          0.086,
+          0.294,
+          0.784,
+          0.0
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.109,
+          -0.146,
+          -0.013,
+          -1.404
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -0.57,
+      "p75_ret": 25.48,
+      "p25_ret": -4.73,
+      "base_score": 145.51,
+      "dist_score": 12.29,
+      "dist_used": true,
+      "n_trades_pooled": 27
+    }
+  },
+  "002130": {
+    "strategy": "kdj_cci",
+    "fill_caliber": "A",
+    "name": "沃尔核材",
+    "score": 5.63,
+    "avg_return": 20.74,
+    "avg_sharpe": -0.021,
+    "avg_dd": -17.96,
+    "avg_trades": 10.8,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "KDJ+CCI",
+        "score": 5.63,
+        "avg_return": 20.74,
+        "avg_sharpe": -0.021,
+        "avg_dd": -17.96,
+        "avg_trades": 10.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.327,
+          0.756,
+          -0.316,
+          -0.851
+        ],
+        "base_score": 11.18,
+        "dist_score": 0.08,
+        "dist_used": true,
+        "median_ret": -2.17,
+        "p75_ret": 8.36,
+        "p25_ret": -3.55,
+        "n_trades_pooled": 43
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": -4.77,
+        "avg_return": 27.89,
+        "avg_sharpe": -0.276,
+        "avg_dd": -27.32,
+        "avg_trades": 22.8,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.203,
+          0.515,
+          -0.516,
+          -1.307
+        ],
+        "base_score": 0.16,
+        "dist_score": -9.71,
+        "dist_used": true,
+        "median_ret": -1.73,
+        "p75_ret": 0.27,
+        "p25_ret": -3.18,
+        "n_trades_pooled": 91
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": -6.92,
+        "avg_return": 15.63,
+        "avg_sharpe": -0.192,
+        "avg_dd": -37.17,
+        "avg_trades": 14.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.067,
+          0.335,
+          -0.563,
+          -0.608
+        ],
+        "base_score": -5.74,
+        "dist_score": -8.1,
+        "dist_used": true,
+        "median_ret": -3.47,
+        "p75_ret": 2.63,
+        "p25_ret": -6.91,
+        "n_trades_pooled": 57
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.327,
+          0.756,
+          -0.316,
+          -0.851
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.203,
+          0.515,
+          -0.516,
+          -1.307
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.067,
+          0.335,
+          -0.563,
+          -0.608
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.521,
+          -0.245,
+          -0.16,
+          0.0
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.106,
+          0.27,
+          -1.156,
+          -0.978
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.129,
+          0.351,
+          -0.891,
+          -1.81
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -2.17,
+      "p75_ret": 8.36,
+      "p25_ret": -3.55,
+      "base_score": 11.18,
+      "dist_score": 0.08,
+      "dist_used": true,
+      "n_trades_pooled": 43
+    }
+  },
+  "600312": {
+    "strategy": "kdj_cci",
+    "fill_caliber": "A",
+    "name": "平高电气",
+    "score": 15.88,
+    "avg_return": 15.36,
+    "avg_sharpe": 0.362,
+    "avg_dd": -10.79,
+    "avg_trades": 8.8,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "KDJ+CCI",
+        "score": 15.88,
+        "avg_return": 15.36,
+        "avg_sharpe": 0.362,
+        "avg_dd": -10.79,
+        "avg_trades": 8.8,
+        "sample_weight": 0.75,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.089,
+          0.413,
+          0.49,
+          0.454
+        ],
+        "base_score": 30.9,
+        "dist_score": 11.43,
+        "dist_used": true,
+        "median_ret": -0.93,
+        "p75_ret": 5.5,
+        "p25_ret": -3.0,
+        "n_trades_pooled": 35
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 11.31,
+        "avg_return": 22.99,
+        "avg_sharpe": 0.096,
+        "avg_dd": -29.62,
+        "avg_trades": 24.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.098,
+          0.498,
+          0.274,
+          -0.487
+        ],
+        "base_score": 19.54,
+        "dist_score": 3.09,
+        "dist_used": true,
+        "median_ret": -0.98,
+        "p75_ret": 4.97,
+        "p25_ret": -3.93,
+        "n_trades_pooled": 98
+      },
+      {
+        "strategy": "EMA+OBV",
+        "score": 5.85,
+        "avg_return": 7.2,
+        "avg_sharpe": 0.094,
+        "avg_dd": -22.93,
+        "avg_trades": 28.5,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          -0.066,
+          0.11,
+          0.042,
+          0.291
+        ],
+        "base_score": 9.98,
+        "dist_score": 1.72,
+        "dist_used": true,
+        "median_ret": -1.05,
+        "p75_ret": -0.33,
+        "p25_ret": -2.43,
+        "n_trades_pooled": 114
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.089,
+          0.413,
+          0.49,
+          0.454
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.098,
+          0.498,
+          0.274,
+          -0.487
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          -0.066,
+          0.11,
+          0.042,
+          0.291
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.156,
+          -0.025,
+          -0.087,
+          0.0
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          -0.242,
+          -0.476,
+          -0.754,
+          -0.889
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.458,
+          -0.737,
+          -0.369,
+          -1.464
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -0.93,
+      "p75_ret": 5.5,
+      "p25_ret": -3.0,
+      "base_score": 30.9,
+      "dist_score": 11.43,
+      "dist_used": true,
+      "n_trades_pooled": 35
+    }
+  },
+  "300199": {
+    "strategy": "kdj_cci",
+    "fill_caliber": "A",
+    "name": "翰宇药业",
+    "score": 21.44,
+    "avg_return": 26.57,
+    "avg_sharpe": 0.302,
+    "avg_dd": -15.34,
+    "avg_trades": 12.0,
+    "windows_used": 4,
+    "details": [
+      {
+        "strategy": "KDJ+CCI",
+        "score": 21.44,
+        "avg_return": 26.57,
+        "avg_sharpe": 0.302,
+        "avg_dd": -15.34,
+        "avg_trades": 12.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.387,
+          0.205,
+          0.234,
+          0.382
+        ],
+        "base_score": 34.06,
+        "dist_score": 8.81,
+        "dist_used": true,
+        "median_ret": -2.04,
+        "p75_ret": 4.71,
+        "p25_ret": -3.21,
+        "n_trades_pooled": 48
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "score": 7.98,
+        "avg_return": 27.68,
+        "avg_sharpe": 0.05,
+        "avg_dd": -36.29,
+        "avg_trades": 26.2,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.127,
+          0.136,
+          0.198,
+          -0.263
+        ],
+        "base_score": 16.43,
+        "dist_score": -0.47,
+        "dist_used": true,
+        "median_ret": -3.33,
+        "p75_ret": 3.73,
+        "p25_ret": -7.03,
+        "n_trades_pooled": 105
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "score": 2.14,
+        "avg_return": 63.26,
+        "avg_sharpe": -0.254,
+        "avg_dd": -41.77,
+        "avg_trades": 12.0,
+        "sample_weight": 1.0,
+        "windows": 4,
+        "sharpes_by_window": [
+          0.385,
+          -0.079,
+          -0.621,
+          -0.702
+        ],
+        "base_score": 16.81,
+        "dist_score": -12.54,
+        "dist_used": true,
+        "median_ret": -7.0,
+        "p75_ret": 1.52,
+        "p25_ret": -9.34,
+        "n_trades_pooled": 48
+      }
+    ],
+    "dsr_trials": [
+      {
+        "strategy": "KDJ+CCI",
+        "sharpes": [
+          0.387,
+          0.205,
+          0.234,
+          0.382
+        ]
+      },
+      {
+        "strategy": "纯MACD(基准B)",
+        "sharpes": [
+          0.127,
+          0.136,
+          0.198,
+          -0.263
+        ]
+      },
+      {
+        "strategy": "EMA12/26金叉(基准C)",
+        "sharpes": [
+          0.385,
+          -0.079,
+          -0.621,
+          -0.702
+        ]
+      },
+      {
+        "strategy": "EMA+OBV",
+        "sharpes": [
+          0.094,
+          -0.297,
+          0.769,
+          -0.831
+        ]
+      },
+      {
+        "strategy": "布林带+ATR",
+        "sharpes": [
+          0.099,
+          -0.049,
+          0.218,
+          -0.904
+        ]
+      },
+      {
+        "strategy": "牛市趋势跟踪",
+        "sharpes": [
+          -0.414,
+          -0.243,
+          -1.084,
+          -1.228
+        ]
+      }
+    ],
+    "distribution": {
+      "median_ret": -2.04,
+      "p75_ret": 4.71,
+      "p25_ret": -3.21,
+      "base_score": 34.06,
+      "dist_score": 8.81,
+      "dist_used": true,
+      "n_trades_pooled": 48
+    }
+  }
+}

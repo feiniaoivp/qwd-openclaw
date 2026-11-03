@@ -1,0 +1,13 @@
+{
+ "date": "2026-10-30",
+ "generated_at": "2026-11-01 06:15:19",
+ "rule_version": "v1.1 (2026-11-01, 10-28 量能三tier校准)",
+ "candidates": [],
+ "auction_file_missing": false,
+ "reversal_confirmed": false,
+ "note": "当日无 fade_risk 名单且无诱多票（无高开回落候选），无需反转判断",
+ "per_stock": [],
+ "confirmed_codes": [],
+ "seesaw": null,
+ "seesaw_parts": {}
+}
