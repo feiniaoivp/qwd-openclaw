@@ -38,11 +38,20 @@ except ImportError:
 
 warnings.filterwarnings("ignore")
 
-WORKSPACE = "/Users/duguke/.openclaw/workspace"
+WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")  # 2026-11-04 模板化：支持沙箱重定向（凌晨 e2e 直写生产事故的机制修复，与全链其它模块对齐）
 STATE_FILE = os.path.join(WORKSPACE, "data", "portfolio_sim_state.json")
 TRADES_FILE = os.path.join(WORKSPACE, "data", "portfolio_sim_trades.json")
 STRATEGY_MAP_FILE = os.path.join(WORKSPACE, "data", "adaptive_strategy_map.json")
 EQUITY_FILE = os.path.join(WORKSPACE, "data", "portfolio_equity.csv")
+
+# 脚本模式导入样板（2026-11-04 补齐，见 TOOLS.md）：工作区根 + analysis/ 双插入
+import sys
+for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
+# B-管道化执行器（2026-11-04 用户拍板 B）：信号→PENDING 意向→次日开盘价成交；AUTO_EXECUTOR=0 回退 legacy
+from analysis import auto_executor
 
 # 回测模式：为 True 时 append_trade / append_equity_snapshot 不落盘，
 # 避免回测污染模拟盘生产状态文件。
@@ -1468,6 +1477,17 @@ def run_portfolio_scan(
 
     print(f"📡 组合扫描开始 ({today_str})...")
     all_msgs = []
+
+    # ── B-管道化（2026-11-04 用户拍板）：信号日排队 / T+1 开盘价成交 ──
+    _EXEC_ENABLED = auto_executor.auto_executor_enabled()
+    _PENDING_INDEX = auto_executor.load_pending_intents(today_str) if _EXEC_ENABLED else {}
+    _EXEC_CTX = {
+        "pending_index": _PENDING_INDEX,
+        "execute_trade": execute_trade,
+        "check_dedup": RiskGuard.check_dedup,
+        "position_plan": position_plan,
+        "max_age_days": int(os.getenv("AUTO_EXEC_MAX_AGE") or 5),
+    }
     trade_count = 0
     errors = []
     results = []
@@ -1596,6 +1616,14 @@ def run_portfolio_scan(
             "status": "SKIPPED"
         }
 
+        # ── B-管道化：先消费往日 PENDING 意向（以今日开盘价成交；滑点用昨缓存 ATR/成交额——开盘时点可知的诚实输入）──
+        if _EXEC_ENABLED:
+            _act, _msg = auto_executor.consume_pending_for_symbol(
+                _EXEC_CTX, sym, name, pos, df, today_str, audit_entry=audit_entry, strat=strat)
+            if _act:
+                trade_count += 1
+                all_msgs.append(_msg)
+
         # 缓存真实 (close, atr14) 供次日 030 买入乘数微调（2026-11-03 接真实 ATR）
         # T2-1: 同步缓存当日成交额 _last_amount（动态滑点流动性分量输入）
         _p = signal.get("price") or 0
@@ -1708,8 +1736,35 @@ def run_portfolio_scan(
         audit_entry["guards"]["stale_data"] = "BLOCK" if data_stale else "OK"
 
         # 仅新交易日执行（成交日期统一用 today_str，绝不回填历史日期）
-        if should_exec and state.get("last_signal_date") is not None and today_str != state.get("last_signal_date"):
-            # ── T1-1: 交易意向存档（T2-3 改内存缓冲，扫描结束一次性落盘）──
+        if _EXEC_ENABLED:
+            # ── B-管道化（2026-11-04 用户拍板）：信号日只排队，T+1 开盘价成交；同 bar 收盘前视退役。──
+            # 注：同日重跑时排队幂等覆盖（不依赖 last_signal_date，防晨间误扫劫持当日排队窗口）
+            if should_exec:
+                if signal["action"] == "卖出" and not pos.get("position"):
+                    audit_entry["final_action"] = signal["action"]
+                    audit_entry["status"] = "SKIP(空仓卖出不入队)"
+                else:
+                    intents_buf[sym] = {
+                        "name": name,
+                        "action": signal["action"],
+                        "reason": signal["reason"],
+                        "price": signal["price"],
+                        "bucket": pos.get("bucket", "satellite"),
+                        "strategy": strat,
+                        "atr": signal.get("atr"),
+                        "atr_stop": signal.get("atr_stop"),
+                        "fib_tp": signal.get("fib_tp", {}),
+                        "created_at": datetime.now().isoformat(),
+                        "status": "PENDING"
+                    }
+                    audit_entry["final_action"] = signal["action"]
+                    audit_entry["status"] = "QUEUED"
+                    all_msgs.append(f"📨 {name}({sym}) {signal['action']}已排队 → 下一交易日开盘价执行")
+            else:
+                audit_entry["final_action"] = signal["action"]
+                audit_entry["status"] = "HOLD"
+        elif should_exec and state.get("last_signal_date") is not None and today_str != state.get("last_signal_date"):
+            # ── legacy 回退路径（AUTO_EXECUTOR=0）：原同 bar 收盘成交 ──
             intents_buf[sym] = {
                 "name": name,
                 "action": signal["action"],
@@ -1797,6 +1852,13 @@ def run_portfolio_scan(
             json.dump(intents_buf, f, indent=2, ensure_ascii=False)
     except Exception as e:
         print(f"⚠️ 交易意向落盘失败: {e}")
+    if _EXEC_ENABLED:
+        # 历史意向状态回写（FILLED/BLOCKED/CANCELLED/EXPIRED/SUPERSEDED；文件级当日 .bak）
+        try:
+            auto_executor.flush_intent_updates(
+                _PENDING_INDEX, visited_syms={s for s, _ in stocks}, today_str=today_str)
+        except Exception as _e:
+            print(f"⚠️ 意向状态回写失败: {_e}")
     try:
         if audit_fh:
             audit_fh.close()

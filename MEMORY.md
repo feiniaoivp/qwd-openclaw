@@ -1595,3 +1595,9 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **硬保险不放宽**：030致命风险仓位归零、tier3禁买、总仓上限仍执法。
 *   **一键回滚**：config `enabled=false` / 删配置文件 / 环境变量 `SIM_AGGRESSIVE=0`。变更日志 `data/sim_aggressive_changelog_2026-11-03.md`；commit `d357fb8`，tag `guard/20261103-sim-aggressive-mode`。
 *   **方法论教训**：改交易约束前必须先跑**合成交易测试**（构造假信号直调 execute_trade）——静态 grep 执法点会漏掉「三因素门控」这类藏在函数体内的网络型拦截器；本次靠它发现第四道门。测试直接调 execute_trade 会写 trades 流水（BACKTEST_MODE 才跳过），测完必须清理污染。
+
+### 2026-11-04 执行管道化（永久记忆）
+*   **用户拍板（16:27）**：B) 管道化 auto-executor——信号→次日开盘价成交+影子双轨，同 bar 收盘前视退役。
+*   **架构**：`analysis/auto_executor.py`（PENDING 意向队列+T+1 开盘消费，状态机 FILLED/BLOCKED/CANCELLED/EXPIRED/SUPERSEDED）+ portfolio_core 6 处接线；`AUTO_EXECUTOR=0` 一键回退 legacy。空仓卖不入队（修 P2#5 噪声源）。
+*   **关键修复**：portfolio_core WORKSPACE 硬编码 → getenv 模板化——凌晨 e2e 直写生产的机制根因：env 沙箱对硬编码路径失效。
+*   **纪律**：零污染 e2e 必须用 value-level（sha256）对照，size 比对对同长度值变更/同行替换失明；e2e 资产固化在 `analysis/test_auto_executor_e2e.py` 可重复跑。
