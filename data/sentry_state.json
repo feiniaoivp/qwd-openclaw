@@ -1,0 +1,27 @@
+{
+  "sources": {
+    "baostock": {
+      "consecutive_fails": 0,
+      "last_ok_ts": "2026-11-04T22:40:13",
+      "incident_alerted": false,
+      "last_detail": "正常 (6 根K线)",
+      "last_probe_ts": "2026-11-04T22:40:13",
+      "last_probe_dur_s": 0.83
+    },
+    "sina_hq": {
+      "consecutive_fails": 0,
+      "last_ok_ts": "2026-11-04T22:40:13",
+      "incident_alerted": false,
+      "last_detail": "正常 (HTTP 200, 有报价)",
+      "last_probe_ts": "2026-11-04T22:40:13",
+      "last_probe_dur_s": 0.16
+    },
+    "sim_state": {
+      "consecutive_fails": 0,
+      "last_ok_ts": null,
+      "incident_alerted": false,
+      "last_detail": "新鲜 (7.0h 前)",
+      "last_probe_ts": "2026-11-04T22:40:13"
+    }
+  }
+}

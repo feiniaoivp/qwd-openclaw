@@ -1,0 +1,96 @@
+{
+  "date": "2026-11-04",
+  "generated_at": "2026-11-04T22:36:35.450072",
+  "audit_entries_scanned": 27,
+  "trades_scanned": 0,
+  "stats": {
+    "blocked_total": 4,
+    "blocked_by_guard": {
+      "tier": 4
+    },
+    "loss_total": 0,
+    "loss_pnl_sum": 0
+  },
+  "cases": [
+    {
+      "type": "blocked_signal",
+      "symbol": "002156",
+      "name": "通富微电",
+      "strategy": "ema_obv",
+      "raw_action": "卖出",
+      "blocked_by": {
+        "tier": "BLOCK(卖出->持有)"
+      },
+      "final_action": "持有",
+      "signal": {
+        "price": 42.33,
+        "atr": 2.9483947871033847,
+        "atr_stop": 33.484815638689845,
+        "reason": "跌破EMA20(¥46.83)",
+        "stop_buffer_pct": 26.42
+      },
+      "regime": {},
+      "timestamp": "2026-11-04T15:40:37.672952"
+    },
+    {
+      "type": "blocked_signal",
+      "symbol": "300014",
+      "name": "亿纬锂能",
+      "strategy": "bull_trend",
+      "raw_action": "卖出",
+      "blocked_by": {
+        "tier": "BLOCK(卖出->持有)"
+      },
+      "final_action": "持有",
+      "signal": {
+        "price": 49.91,
+        "atr": 1.938897594169399,
+        "atr_stop": 44.0933072174918,
+        "reason": "价格跌破EMA60(50.21) 长期趋势支撑失效",
+        "stop_buffer_pct": 13.19
+      },
+      "regime": {},
+      "timestamp": "2026-11-04T15:40:37.679198"
+    },
+    {
+      "type": "blocked_signal",
+      "symbol": "002466",
+      "name": "天齐锂业",
+      "strategy": "ema_obv",
+      "raw_action": "卖出",
+      "blocked_by": {
+        "tier": "BLOCK(卖出->持有)"
+      },
+      "final_action": "持有",
+      "signal": {
+        "price": 36.2,
+        "atr": 1.4283752102239178,
+        "atr_stop": 31.91487436932825,
+        "reason": "跌破EMA20(¥37.01)",
+        "stop_buffer_pct": 13.43
+      },
+      "regime": {},
+      "timestamp": "2026-11-04T15:40:37.682711"
+    },
+    {
+      "type": "blocked_signal",
+      "symbol": "601061",
+      "name": "中信金属",
+      "strategy": "ema_obv",
+      "raw_action": "卖出",
+      "blocked_by": {
+        "tier": "BLOCK(卖出->持有)"
+      },
+      "final_action": "持有",
+      "signal": {
+        "price": 9.61,
+        "atr": 0.37283557193675027,
+        "atr_stop": 8.49149328418975,
+        "reason": "跌破EMA20(¥9.97)",
+        "stop_buffer_pct": 13.17
+      },
+      "regime": {},
+      "timestamp": "2026-11-04T15:40:58.616203"
+    }
+  ]
+}

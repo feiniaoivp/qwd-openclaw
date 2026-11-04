@@ -54,6 +54,17 @@ if [[ -z "$DRY_RUN" ]]; then
     --exclude='*' \
     "$WORKSPACE/" "$TAG_DIR/"
   echo "✅ Backups synced to: $TAG_DIR"
+
+  # 4b. Python 环境锁（2026-11-04 T4 升级：代码+配置之外锁定运行环境）
+  #     还原执行状态 = 代码(git tag) + 配置状态(rsync data/) + Python 依赖版本 + 服务定义
+  python3 --version > "$TAG_DIR/python_version.txt" 2>&1 || echo "python3 --version 失败" > "$TAG_DIR/python_version.txt"
+  python3 -m pip freeze > "$TAG_DIR/requirements_freeze.txt" 2>/dev/null \
+    || echo "[pip freeze 失败，还原时需人工核对依赖]" > "$TAG_DIR/requirements_freeze.txt"
+  # LaunchAgent 服务定义（gateway 版本锁定 plist，路径硬编码版本号）
+  if [[ -f "$HOME/Library/LaunchAgents/ai.openclaw.gateway.plist" ]]; then
+    cp "$HOME/Library/LaunchAgents/ai.openclaw.gateway.plist" "$TAG_DIR/ai.openclaw.gateway.plist"
+  fi
+  echo "✅ Python env lock: $TAG_DIR/python_version.txt + requirements_freeze.txt + plist"
 fi
 
 # 5. 清理旧快照（保留最近 MAX_SNAPSHOTS 个 openclaw-guard-* 快照）

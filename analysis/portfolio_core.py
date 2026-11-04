@@ -1613,7 +1613,14 @@ def run_portfolio_scan(
             "guards": {},
             "timing_ms": {"signal": t_signal_ms},
             "final_action": "UNKNOWN",
-            "status": "SKIPPED"
+            "status": "SKIPPED",
+            # T3-归因：决策时市场环境快照（failure_attribution 消费）
+            "regime": {
+                "fatal": fatal_risk.get("fatal_triggered", False),
+                "high_risk": fatal_risk.get("high_risk_triggered", False),
+                "buy_mult": position_plan.get("buy_signal_multiplier", 1.0),
+                "total_limit_pct": position_plan.get("total_limit_pct", 0),
+            },
         }
 
         # ── B-管道化：先消费往日 PENDING 意向（以今日开盘价成交；滑点用昨缓存 ATR/成交额——开盘时点可知的诚实输入）──

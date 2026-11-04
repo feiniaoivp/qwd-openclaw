@@ -1,0 +1,32 @@
+{
+  "version": "2026-11-04",
+  "_doc": "全门禁统一清单（SSOT）。gate_runner.py 是唯一带开关的执行入口；周流水线 run_script() 读 overrides 决定跳过。tier: P0=安全/数据正确性 P1=质量棘轮。severity: block=失败阻断调用方 warn=失败仅告警。",
+  "disable_policy": "仅允许按 category 整组临时禁用；必须带 TTL(disabled_until) 与 reason；每次变更自动记录到 data/gate_overrides_log.jsonl。TTL 过期自动恢复，永不允许永久禁用。P0 安全级(category=supply_chain/market_data_citation)的禁用 reason 必须含 APPROVE 标记。",
+  "gates": [
+    {"id": "script_path", "path": "scripts/script_path_guard.py", "args": [], "tier": "P0", "category": "code_integrity", "schedule": "weekly_pipeline:step0", "timeout_s": 120, "severity": "warn", "blast_radius": "全部 analysis/*.py + scripts/*.py 的脚本模式可执行性", "ratchet": false, "description": "sys.path 样板缺失扫描（脚本模式 ModuleNotFoundError 预防）"},
+    {"id": "cron_truth", "path": "scripts/cron_truth_guard.py", "args": [], "tier": "P1", "category": "cron_health", "schedule": "weekly_pipeline:step0b", "timeout_s": 120, "severity": "warn", "blast_radius": "全部 cron job 的真实性（命令是否真的执行）", "ratchet": false, "description": "命令型 cron 真实性审计（空转假成功检测）"},
+    {"id": "strategy_map", "path": "scripts/strategy_map_guard.py", "args": ["--quiet"], "tier": "P0", "category": "data_consistency", "schedule": "weekly_pipeline:step0c + monday_audit", "timeout_s": 120, "severity": "warn", "blast_radius": "关注池 6 处消费方口径一致性", "ratchet": false, "description": "WATCHLIST 单一事实来源一致性校验"},
+    {"id": "report_freshness", "path": "scripts/data_freshness_guard.py", "args": ["--quiet"], "tier": "P0", "category": "data_freshness", "schedule": "weekly_pipeline:step0e", "timeout_s": 60, "severity": "warn", "blast_radius": "日报文本的数据日期标注", "ratchet": false, "description": "报告文本新鲜度（滞后数据冒充当日数据检测）"},
+    {"id": "data_lake_freshness", "path": "scripts/data_lake_freshness_guard.py", "args": [], "tier": "P0", "category": "data_freshness", "schedule": "cron:data-freshness-guard@daily-07:00", "timeout_s": 60, "severity": "warn", "blast_radius": "关注池 CSV 数据湖 + 模拟盘 state 文件", "ratchet": false, "description": "数据湖文件 mtime 新鲜度（CSV/state 滞后 24h+ 告警，T1-3）"},
+    {"id": "silent_except", "path": "scripts/silent_except_guard.py", "args": [], "tier": "P1", "category": "code_quality", "schedule": "weekly_pipeline:step0f", "timeout_s": 120, "severity": "warn", "blast_radius": "全部新增 except 静默（棘轮：存量仅报告，新增 exit 1）", "ratchet": true, "description": "静默异常吞噬棘轮门禁"},
+    {"id": "backup_protection", "path": "scripts/backup_guard.py", "args": [], "tier": "P1", "category": "code_quality", "schedule": "weekly_pipeline:step0f2", "timeout_s": 60, "severity": "warn", "blast_radius": "全部重写型写点（json.dump/open w），棘轮基线 data/backup_guard_baseline.json", "ratchet": true, "description": "重写型脚本 .bak 备份保护棘轮门禁"},
+    {"id": "promotion", "path": "scripts/promotion_guard.py", "args": [], "tier": "P1", "category": "memory_health", "schedule": "weekly_pipeline:step0g + monday_audit:6", "timeout_s": 120, "severity": "warn", "blast_radius": "MEMORY.md promote 通道（棘轮：连续>=2次零存活 exit 1）", "ratchet": true, "description": "promote 预算淘汰致自动晋升断裂检测"},
+    {"id": "cron_noop", "path": "scripts/cron_noop_guard.py", "args": [], "tier": "P1", "category": "cron_health", "schedule": "weekly_pipeline:step0h", "timeout_s": 60, "severity": "warn", "blast_radius": "cron 假成功（status=ok 但毫秒级空转），基线 data/cron_noop_baseline.json", "ratchet": true, "description": "cron 空转假成功棘轮门禁"},
+    {"id": "debug_residue", "path": "scripts/debug_residue_guard.py", "args": [], "tier": "P0", "category": "code_integrity", "schedule": "weekly_pipeline:step0i", "timeout_s": 60, "severity": "block", "blast_radius": "全部脚本的 breakpoint/pdb/debugpy 残留", "ratchet": false, "description": "调试残留门禁（HIGH 级阻断）"},
+    {"id": "trading_day_ssot", "path": "scripts/trading_day_ssot_guard.py", "args": [], "tier": "P0", "category": "data_consistency", "schedule": "weekly_pipeline:step0z", "timeout_s": 60, "severity": "warn", "blast_radius": "交易日判定实现唯一性（重复实现/绕过 SSOT 检测）", "ratchet": false, "description": "交易日判定 SSOT 门禁"},
+    {"id": "skill_supply", "path": "scripts/skill_supply_scan.py", "args": ["--offline"], "tier": "P0", "category": "supply_chain", "schedule": "before_skill_install + monday_audit", "timeout_s": 120, "severity": "block", "blast_radius": "新装技能的供应链高危模式", "ratchet": false, "description": "技能供应链静态扫描（装新技能前必跑）"},
+    {"id": "pre_response", "path": "scripts/pre_response_guard.py", "args": ["--stdin"], "tier": "P0", "category": "market_data_citation", "schedule": "before_send", "timeout_s": 60, "severity": "block", "blast_radius": "对外发送文本中的裸市场数字", "ratchet": false, "description": "发送前自检守卫（stdin 模式）"},
+    {"id": "verify_market_data", "path": "scripts/verify_market_data.py", "args": [], "tier": "P0", "category": "market_data_citation", "schedule": "weekly_pipeline:step0d", "timeout_s": 120, "severity": "warn", "blast_radius": "日报/报告中的市场数据引用溯源", "ratchet": false, "description": "市场数据引用验证器"},
+    {"id": "agent_fallback", "path": "scripts/agent_fallback_guard.py", "args": [], "tier": "P1", "category": "code_quality", "schedule": "weekly_pipeline:step0j", "timeout_s": 60, "severity": "warn", "blast_radius": "llm_tool 调第三方库默认参数（AST 禁裸调 stock_news_em 等）", "ratchet": false, "description": "上游库默认参数守卫"}
+  ],
+  "categories": {
+    "code_integrity": "代码可执行性/调试残留",
+    "code_quality": "代码质量棘轮（静默异常/备份保护/默认参数）",
+    "data_consistency": "口径一致性（关注池/交易日 SSOT）",
+    "data_freshness": "数据/报告新鲜度",
+    "cron_health": "cron 任务真实性",
+    "memory_health": "记忆系统健康",
+    "supply_chain": "技能供应链安全",
+    "market_data_citation": "市场数据引用红线"
+  }
+}

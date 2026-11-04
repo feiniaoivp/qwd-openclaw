@@ -1,0 +1,6 @@
+{"ts": "2026-11-04T22:25:42.830534", "action": "disable", "category": "code_quality", "until": "2026-11-04T22:26:54", "hours": 0.02, "reason": "gate_runner 自测"}
+{"ts": "2026-11-04T22:25:43.167932", "action": "enable", "category": "code_quality"}
+{"ts": "2026-11-04T22:26:08.872882", "action": "disable", "category": "supply_chain", "until": "2026-11-04T22:26:44", "hours": 0.01, "reason": "APPROVE: 自测后立即恢复"}
+{"ts": "2026-11-04T22:26:09.010215", "action": "enable", "category": "supply_chain"}
+{"ts": "2026-11-04T22:27:30.604382", "action": "disable", "category": "code_integrity", "until": "2026-11-04T22:28:06", "hours": 0.01, "reason": "自测后立即恢复"}
+{"ts": "2026-11-04T22:27:30.901248", "action": "enable", "category": "code_integrity"}

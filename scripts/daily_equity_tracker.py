@@ -11,7 +11,7 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from analysis.portfolio_core import INITIAL_CAPITAL
+from analysis.portfolio_core import REFERENCE_TOTAL_CAPITAL
 
 # 路径定义
 STATE_FILE = os.path.join(WORKSPACE, "data", "sim_state.json")
@@ -21,7 +21,7 @@ def get_current_equity(state):
     """
     计算当前实时总权益 = 现金 + 所有持仓市值
     """
-    cash = state.get("cash", INITIAL_CAPITAL)
+    cash = state.get("cash", REFERENCE_TOTAL_CAPITAL)
     positions = state.get("positions", {})
     
     total_mv = 0.0
@@ -34,9 +34,7 @@ def get_current_equity(state):
     return cash + total_mv
 
 def mirror_equity():
-    """
-    将当前状态镜像到每日权益追踪表中
-    """
+    """将当前状态镜像到每日权益追踪表中"""
     if not os.path.exists(STATE_FILE):
         print(f"❌ 状态文件缺失: {STATE_FILE}")
         sys.exit(1)
@@ -51,9 +49,9 @@ def mirror_equity():
     record = {
         "date": today_str,
         "total_equity": round(equity, 2),
-        "cash": round(state.get("cash", INITIAL_CAPITAL), 2),
-        "market_value": round(equity - state.get("cash", INITIAL_CAPITAL), 2),
-        "return_pct": round((equity / INITIAL_CAPITAL - 1) * 100, 2)
+        "cash": round(state.get("cash", REFERENCE_TOTAL_CAPITAL), 2),
+        "market_value": round(equity - state.get("cash", REFERENCE_TOTAL_CAPITAL), 2),
+        "return_pct": round((equity / REFERENCE_TOTAL_CAPITAL - 1) * 100, 2)  # 分母=组合参考总本金270万（非单票10万，2026-11-04晚修正）
     }
     
     df_new = pd.DataFrame([record])

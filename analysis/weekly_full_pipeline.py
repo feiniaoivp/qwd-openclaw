@@ -64,7 +64,24 @@ def _emit_dual_output(text: str):
 
 
 def run_script(script: str, args: List[str] = None, timeout: int = 600) -> Dict[str, Any]:
-    """运行脚本并返回结果"""
+    """运行脚本并返回结果
+
+    2026-11-04 接入 gate_runner 开关：脚本在 config/system_manifest.json 登记且其
+    category 被临时禁用（config/gate_overrides.json 带 TTL）时，跳过并显式留痕。
+    未登记脚本不受影响（默认启用）；开关异常 fail-open（不禁用、照跑）。
+    """
+    # ── 门禁开关检查（fail-open：任何异常都不阻断流水线）──
+    rel_script = script if script.startswith("scripts/") else f"scripts/{os.path.basename(script)}"
+    try:
+        from scripts.gate_runner import gate_enabled_for
+        enabled, reason = gate_enabled_for(rel_script)
+        if not enabled:
+            print(f"\n⏸️ {script} 已临时禁用，跳过（{reason}）")
+            return {"success": True, "stdout": f"[gate_runner] SKIPPED: {reason}",
+                    "stderr": "", "elapsed": 0, "skipped_by_gate_runner": True}
+    except Exception as _e:
+        print(f"⚠️ gate_runner 开关检查失败（fail-open 照跑）: {_e}")
+
     cmd = [sys.executable, os.path.join(ANALYSIS_DIR, script)]
     if args:
         cmd.extend(args)

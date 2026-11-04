@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""数据湖文件新鲜度门禁 (Data Lake Freshness Guard)
+
+⚠️ 与 scripts/data_freshness_guard.py 同族不同职（2026-11-04 改名防混淆）：
+- 本脚本：检查关注池 CSV 数据湖 + 模拟盘 state 文件的 mtime 新鲜度（T1-3）
+- data_freshness_guard.py：检查日报文本内的数据日期标注（周流水线 0e）
+"""
 import os
 import sys
 import json
