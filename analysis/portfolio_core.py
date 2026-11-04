@@ -1738,28 +1738,31 @@ def run_portfolio_scan(
         # 仅新交易日执行（成交日期统一用 today_str，绝不回填历史日期）
         if _EXEC_ENABLED:
             # ── B-管道化（2026-11-04 用户拍板）：信号日只排队，T+1 开盘价成交；同 bar 收盘前视退役。──
-            # 注：同日重跑时排队幂等覆盖（不依赖 last_signal_date，防晨间误扫劫持当日排队窗口）
-            if should_exec:
-                if signal["action"] == "卖出" and not pos.get("position"):
-                    audit_entry["final_action"] = signal["action"]
-                    audit_entry["status"] = "SKIP(空仓卖出不入队)"
-                else:
-                    intents_buf[sym] = {
-                        "name": name,
-                        "action": signal["action"],
-                        "reason": signal["reason"],
-                        "price": signal["price"],
-                        "bucket": pos.get("bucket", "satellite"),
-                        "strategy": strat,
-                        "atr": signal.get("atr"),
-                        "atr_stop": signal.get("atr_stop"),
-                        "fib_tp": signal.get("fib_tp", {}),
-                        "created_at": datetime.now().isoformat(),
-                        "status": "PENDING"
-                    }
-                    audit_entry["final_action"] = signal["action"]
-                    audit_entry["status"] = "QUEUED"
-                    all_msgs.append(f"📨 {name}({sym}) {signal['action']}已排队 → 下一交易日开盘价执行")
+            # 注：同日重跑时排队幂等覆盖（不依赖 last_signal_date，防晨间误扫劫持当日排队窗口）；
+            #     仅 买入/卖出 入队——持有等非交易动作不入队（否则产出永不成交的 PENDING 噪声）
+            if should_exec and signal["action"] not in ("买入", "卖出"):
+                audit_entry["final_action"] = signal["action"]
+                audit_entry["status"] = "HOLD"
+            elif should_exec and signal["action"] == "卖出" and not pos.get("position"):
+                audit_entry["final_action"] = signal["action"]
+                audit_entry["status"] = "SKIP(空仓卖出不入队)"
+            elif should_exec:
+                intents_buf[sym] = {
+                    "name": name,
+                    "action": signal["action"],
+                    "reason": signal["reason"],
+                    "price": signal["price"],
+                    "bucket": pos.get("bucket", "satellite"),
+                    "strategy": strat,
+                    "atr": signal.get("atr"),
+                    "atr_stop": signal.get("atr_stop"),
+                    "fib_tp": signal.get("fib_tp", {}),
+                    "created_at": datetime.now().isoformat(),
+                    "status": "PENDING"
+                }
+                audit_entry["final_action"] = signal["action"]
+                audit_entry["status"] = "QUEUED"
+                all_msgs.append(f"📨 {name}({sym}) {signal['action']}已排队 → 下一交易日开盘价执行")
             else:
                 audit_entry["final_action"] = signal["action"]
                 audit_entry["status"] = "HOLD"

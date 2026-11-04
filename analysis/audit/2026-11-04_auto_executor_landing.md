@@ -43,7 +43,9 @@
 
 ## 五、验证
 
-- 零污染 e2e `analysis/test_auto_executor_e2e.py`：7 场景全绿（成交/取消/过期/滞后/去重/回写/开关）+ 生产 4 文件 sha256 零变化
+- 零污染单元 e2e `analysis/test_auto_executor_e2e.py`：7 场景全绿（成交/取消/过期/滞后/去重/回写/开关）+ 生产 4 文件 sha256 零变化
+- **全流程 e2e** `analysis/test_auto_executor_fullflow_e2e.py`（17:5x 深入验证补建）：沙箱内连续两天扫描——Day1 排队 2 PENDING（持有不入队/零同bar成交）→ Day2 开盘价成交 2 FILLED（gap 留痕/dedup 拦截再排队/空仓卖跳过）+ equity 两日行 + audit auto_exec 哨兵 + 生产 sha256 零变化
+- **全流程验证拦下真缺陷 1 枚**：持有信号原本也会走到排队分支（should_exec 对非买非卖恒真）→ 会产出永不成交的 PENDING 噪声意向；已修（仅买入/卖出入队，持有显式 HOLD）
 - 门禁：py_compile ✓ / script_path_guard 0 违规 ✓ / debug_residue ✓ / silent_except 无新增 ✓ / backup_guard 仅凌晨已知存量 2 文件（非本次）
 - 今日 3 买已回填 PENDING（巨化 31.76 / 福耀 54.93 / 恒生 21.56，.bak-20261104-backfill 先行）
 
