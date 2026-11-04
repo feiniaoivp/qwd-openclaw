@@ -167,12 +167,37 @@ def _post(url, *, json=None, files=None, data=None, timeout=10):
     return _curl_subprocess_post(url, json=json, files=files, data=data, timeout=timeout)
 
 
-def send_message(text, parse_mode="", disable_web_page_preview=True):
-    """Send a text message to Telegram
-    
-    默认 parse_mode='' (纯文本)，避免 Markdown 实体解析报错 (如 .token、括号、代码符号触发 400)。
-    需要 Markdown 时显式传入 parse_mode="Markdown" 或 "HTML"。
+TG_MSG_LIMIT = 3900  # Telegram 单条硬限 4096，留余量防解析偏差
+
+def _split_long_text(text, limit=TG_MSG_LIMIT):
+    """按行边界切分超长文本（超 4096 会被 Telegram 400 拒收）
+
+    2026-11-05：intraday-alert-watch-pm 连续 3 次 400 "message is too long"
+    根因修复——在共享层统一分段，保护所有推送点。
     """
+    if text is None or len(text) <= limit:
+        return [text if text is not None else ""]
+    chunks, cur = [], ""
+    for line in text.split("\n"):
+        # 单行超限的极端情况：硬切
+        while len(line) > limit:
+            if cur:
+                chunks.append(cur)
+                cur = ""
+            chunks.append(line[:limit])
+            line = line[limit:]
+        if not line:
+            continue
+        if len(cur) + len(line) + 1 > limit:
+            chunks.append(cur)
+            cur = line
+        else:
+            cur = cur + "\n" + line if cur else line
+    if cur:
+        chunks.append(cur)
+    return chunks or [""]
+
+def _send_message_once(text, parse_mode="", disable_web_page_preview=True):
     url = f"{API_URL}/sendMessage"
     payload = {
         "chat_id": CHAT_ID,
@@ -186,6 +211,24 @@ def send_message(text, parse_mode="", disable_web_page_preview=True):
     except Exception as e:
         print(f"发送消息失败: {e}")
         return {"ok": False, "error": str(e)}
+
+def send_message(text, parse_mode="", disable_web_page_preview=True):
+    """Send a text message to Telegram
+
+    默认 parse_mode='' (纯文本)，避免 Markdown 实体解析报错 (如 .token、括号、代码符号触发 400)。
+    需要 Markdown 时显式传入 parse_mode="Markdown" 或 "HTML"。
+    超长文本（>3900 字符）自动按行边界分段发送；任一分段失败即返回失败结果。
+    """
+    chunks = _split_long_text(text)
+    result = {"ok": True}
+    for i, chunk in enumerate(chunks):
+        r = _send_message_once(chunk, parse_mode=parse_mode,
+                               disable_web_page_preview=disable_web_page_preview)
+        if not r.get("ok"):
+            print(f"分段推送失败(块 {i + 1}/{len(chunks)}): "
+                  f"{r.get('description') or r.get('error')}", file=sys.stderr)
+            result = r
+    return result
 
 import time
 
