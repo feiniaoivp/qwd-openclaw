@@ -35,6 +35,12 @@ SANDBOX = tempfile.mkdtemp(prefix="autoexec_e2e_")
 os.environ["WORKSPACE"] = SANDBOX
 os.environ["AUTO_EXECUTOR"] = "1"
 os.makedirs(os.path.join(SANDBOX, "data", "trade_intents"), exist_ok=True)
+# 2026-11-06 修复：11-05 data/runtime 迁移后 auto_executor.INTENTS_DIR 指向
+# data/runtime/trade_intents（生产经 data/runtime→data 符号链接与 data/trade_intents 同 inode）。
+# 沙箱必须复刻该 symlink，否则 load_pending_intents 读空 → e2e 假失败。
+_rt = os.path.join(SANDBOX, "data", "runtime")
+if not os.path.lexists(_rt):
+    os.symlink(os.path.join(SANDBOX, "data"), _rt)
 _src_cfg = os.path.join(PROD_WS, "data", "sim_aggressive_config.json")
 if os.path.exists(_src_cfg):
     shutil.copy2(_src_cfg, os.path.join(SANDBOX, "data", "sim_aggressive_config.json"))

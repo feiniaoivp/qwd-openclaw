@@ -33,8 +33,14 @@ _before = {p: _sha(p) for p in PROD_GUARDS}
 SANDBOX = tempfile.mkdtemp(prefix="autoexec_full_")
 os.environ["WORKSPACE"] = SANDBOX
 os.environ["AUTO_EXECUTOR"] = "1"
-for _sub in ("data/trade_intents", "audit"):
-    os.makedirs(os.path.join(SANDBOX, _sub), exist_ok=True)
+os.makedirs(os.path.join(SANDBOX, "data", "trade_intents"), exist_ok=True)
+os.makedirs(os.path.join(SANDBOX, "audit"), exist_ok=True)
+# 2026-11-06 修复：11-05 data/runtime 迁移后，portfolio_core 写意向用 data/trade_intents、
+# auto_executor 读 PENDING 用 data/runtime/trade_intents——生产靠 symlink 同 inode；
+# 沙箱不复刻该 symlink 则 Day2 消费永远读空（与单元版同款假失败）。
+_rt = os.path.join(SANDBOX, "data", "runtime")
+if not os.path.lexists(_rt):
+    os.symlink(os.path.join(SANDBOX, "data"), _rt)
 for _fn in ("sim_aggressive_config.json", "corr_clusters.json"):
     _src = os.path.join(PROD_WS, "data", _fn)
     if os.path.exists(_src):
@@ -81,6 +87,19 @@ class _StubGate:
 
 tfh.ResonanceGate = _StubGate
 
+# 2026-11-06 修复：030 FatalRiskDetector.check() 走真实市场条件——HIGH_RISK 窗口期
+# （如 11-05 收盘扫描实测 high_risk=True）会把 TESTB 买入 override 成持有 →
+# Day1 排队断言假失败。e2e 固定中性风控保证确定性（可重复跑）。
+_pc_default_plan = dict(pc.RiskGuard._position_plan)
+
+
+def _e2e_neutral_refresh(cls, cache_key=None, atr_map=None):
+    cls._fatal_risk = {"fatal_triggered": False, "high_risk_triggered": False}
+    cls._position_plan = dict(_pc_default_plan)
+
+
+pc.RiskGuard.refresh = classmethod(_e2e_neutral_refresh)
+
 
 def _mk_sig(action):
     def _f(df):
@@ -124,7 +143,9 @@ assert r1["trade_count"] == 0 if isinstance(r1.get("trade_count"), int) else Tru
 _tr1 = SB("data", "portfolio_sim_trades.json")
 assert (not os.path.exists(_tr1)) or json.load(open(_tr1, encoding="utf-8")) in ([], None), "Day1 禁止任何同bar成交"
 _st1 = json.load(open(SB("data", "portfolio_sim_state.json"), encoding="utf-8"))
-assert _st1["last_signal_date"] == day1
+# 2026-11-06 契约更新：管道化模式不再写 last_signal_date（11-05 上午修复 11-04
+# 晨间误扫占用 → 同日守卫吞单根因，仅 legacy 路径写）；断言它保持 None。
+assert _st1.get("last_signal_date") is None, _st1.get("last_signal_date")
 _audit_lines = [json.loads(l) for l in open(SB("audit", "trades_audit.jsonl"), encoding="utf-8") if l.strip()]
 assert len(_audit_lines) == 3
 _by1 = {e["symbol"]: e for e in _audit_lines[:3]}
