@@ -9,6 +9,14 @@
 > 同日销案：`auction-signal-push` 终验观察项关闭（见 ERR-20261023-BacktestCaliberDegradedSilentPush 尾注）。
 > 红线核对：`openclaw_session_sweep` 仍不在现存 cron 列表 (2026-11-01 复核) → 历史误报维持，仅 warn，未新增条目。
 
+> **[2026-11-05 每日维护 · 新增 1 条晋升 + 家族复核]**
+> ① **本轮唯一晋升**：`plan.duplicate-detector-creation`(RC=3，跨 pre_response_guard/is_trading_day/data_freshness_guard 三案，
+> 30 天内) → AGENTS.md 配套铁律「**立项前先盘点存量**」（上轮运行中断致条目标 promoted 但规则本体未落盘，本轮补齐并 grep 验证在位）。
+> ② RC≥3 存量家族（10-31 六条 + 本条新晋升）grep 复核防治规则全部在位；近 7 天（10-29~11-05）无同 Key 新复发，零 RC bump。
+> ③ 新增条目清点：ERR-20261101-C01(RC=1 resolved)、ERR-20261104-T12AuditNeverWritten(resolved)、
+> ERR-20261105-BaostockProbeOrphanSpin(孤儿家族第 3 例变体，RC=1 首证)、ERR-20261105-CommitSweptStagedIndex(RC=1) —— 均未达阈值，维持观察。
+> ④ 无 pending 残留；红线核对：`openclaw_session_sweep` 不在现存 cron 列表（11-05 cron list 复核）→ 历史误报维持，仅 warn。
+
 ## [ERR-20260926-WBP] weekly_full_pipeline 长跑无输出
 
 **Logged**: 2026-09-26
@@ -781,7 +789,7 @@ data/research_fund_history.json / analysis/research/2026-10-18_gate_threshold_st
 - Reproducible: yes
 - Pattern-Key: data.none-valued-key-attr-crash（同族 data.source-type-intolerance；共享计数含 ERR-20261023-CloseScanPocBinFloat、
   与 2026-10-08 ERR-20261008-ModelGarbledOutput 的 data.empty-string-float 同属「外部数据形态不容错」家族）
-- Recurrence-Count: 3（共享计数：10-08 空字符串崩扫描 / 10-23 本条 None-signal 崩溃 / 10-23 CloseScanPocBinFloat pd.cut 边界；
+- Recurrence-Count: 3 [Promoted]（共享计数：10-08 空字符串崩扫描 / 10-23 本条 None-signal 崩溃 / 10-23 CloseScanPocBinFloat pd.cut 边界；
   跨 close_scan、auction_signal_push、daily_push 三任务，30 天窗口内；2026-10-25 维护升格 bump）
 - First-Seen: 2026-10-08
 - Last-Seen: 2026-10-23
@@ -1084,9 +1092,9 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 ## ERR-20261031-ExecPipeHeredocLost
 - **日期**: 2026-10-31（03:12/05:12/07:00/09:11/11:43/14:41 六次 Exec failed 推送；当日 15:5x 会话定案）
 - **现象**: 心跳 cron-health-scan 反复报 `NameError: name 'true' is not defined. Did you mean: 'True'?`（line 10/12 漂移）；proactivity-review 链偶发 Exec failed。所有 run 模型均同 run 内用「先落盘再读文件」重试成功；cron 舰队实际全绿（4h cron job 当日三报 0 告警）——纯噪声告警，无真实监控盲区。
-- **根因**: ①主因=模型习惯写 `openclaw cron list --json | python3 - <<'EOF'`（管道+heredoc 同命令）。【10-31 19:5x 深究修正】机制非「exec 层丢 heredoc」：exec 封装（zsh -f -c + snapshot 前置 + eval 包裹，ps 取证）对命令文本无损，真凶是 **zsh 5.9（macOS 自带版）对「管道非首级段挂 heredoc/here-string」的行为=上游管道输出⊕heredoc body 按序拼接**（bash/sh 均正确覆盖管道；zsh 文件模式/eval 包裹/前导行/三级管道全部复现，与 OpenClaw 无关，exec 仅继承）→ 管道输出（cron JSON）被当 Python 源码执行，JSON 语法合法到首个裸 true → NameError（报错行号=JSON 首个布尔行，故 line 10/12 漂移；会话存档脚本第 12 行与报错不符是突破口）。双复现实证（echo JSON 小样 + cron list 全量均复现；独立 heredoc 无管道正常）。②次因=proactivity 链尾裸 grep -c 零匹配 / cat 缺文件（~/proactivity/session-state.md 已丢失）exit 1 被误报。
+- **根因**: ①主因=模型习惯写 `openclaw cron list --json | python3 - <<'EOF'`（管道+heredoc 同命令）。【10-31 19:5x 深究修正】机制非「exec 层丢 heredoc」：exec 封装（zsh -f -c + snapshot 前置 + eval 包裹，ps 取证）对命令文本无损，真凶是 **zsh 5.9（macOS 自带版）对「管道非首级段挂 heredoc/here-string」的行为=上游管道输出⊕heredoc body 按序拼接**（bash/sh 均正确覆盖管道；zsh 文件模式/eval 包裹/前导行/三级管道全部复现，与 OpenClaw 无关，exec 仅继承）→ 管道输出（cron JSON）被当 Python 源码执行，JSON 语法合法到首个裸 true → NameError（报错行号=JSON 首个布尔行，故 line 10/12 漂移；会话存档脚本第 12 行与报错不符是突破口）。双复现实证（echo JSON 小样 + cron list 全量均复现；独立 heredoc 无管道正常）。【11-05 终版定性，zsh-workers 双回复纠正】该行为=zsh **MULTIOS 选项（默认开启）的文档化设计，非 bug**：stdin 多重为读重定向→后台进程拼接喂入；POSIX 语义需 `set +o multios`；zsh 也不承诺解释任意 bash 脚本（Daniel Shahaf 引 zsh.org/workers/53892）。归档：原信 55234 / Stephane 55235 / Daniel 55237。②次因=proactivity 链尾裸 grep -c 零匹配 / cat 缺文件（~/proactivity/session-state.md 已丢失）exit 1 被误报。
 - **规约**: ①exec 内联脚本一律「先落盘再 heredoc 读文件」，禁 `cmd | python3 - <<EOF`；②心跳链尾必须 exit 0（grep/find 零匹配、缺文件用 `|| true` 收尾）；③防线已落 HEARTBEAT.md（两任务 prompt + standing rules 两条红线）与 TOOLS.md 红线条目。
-- **状态**: resolved（文档+prompt 层修复；10-31 19:5x 深究定性为 zsh 5.9 管道非首级段 heredoc 拼接行为，OpenClaw exec 仅继承；上游报告草稿已备于 analysis/research/2026-10-31_zsh_heredoc_pipe_concat.md，待用户批准提交）
+- **状态**: resolved（文档+prompt 层修复；10-31 19:5x 深究定性为 zsh 5.9 管道非首级段 heredoc 拼接行为，OpenClaw exec 仅继承；【11-05 终版】zsh-workers 双回复确认=multios 文档化行为非 bug，见归档 55234/55235/55237；OpenClaw issue #189332 待补上游结论评论）
 ### Metadata
 - Source: manual-session（用户问询触发，memory/2026-10-31.md）
 - Reproducible: yes（echo JSON 管道样例 100% 复现）
@@ -1109,3 +1117,66 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - First-Seen: 2026-11-01
 - Last-Seen: 2026-11-01
 - Status: resolved
+
+## [ERR-20261104-T12AuditNeverWritten] T12 审计报告未写盘\n- **日期**: 2026-11-04\n- **状态**: resolved (2026-11-05 triage: 补写落盘逻辑 + 验证通过)\n- **现象**: 审计脚本运行完毕但未生成报告文件。\n- **Metadata**: \n- Pattern-Key: audit.output-lost\n- Recurrence-Count: 1\n- First-Seen: 2026-11-04\n- Last-Seen: 2026-11-04
+
+## [ERR-20261104-DuplicateGuardName] 重名 Guard 脚本导致潜在双跑\n- **日期**: 2026-11-04\n- **Status**: promoted (2026-11-05 → AGENTS.md「立项前先盘点存量」)\n- **现象**: 新建 `scripts/guards/data_freshness_guard.py` 时未发现根目录下已有同名脚本，导致职责重叠。\n- **Metadata**: \n- Pattern-Key: plan.duplicate-detector-creation\n- Recurrence-Count: 3\n- First-Seen: 2026-10-06\n- Last-Seen: 2026-11-04\n- Promoted: AGENTS.md (2026-11-05)
+  同名不同职 → 若上线必致消费方混淆/双跑。
+- **拦截**: 晚间做治理清单盘点 manifest 时发现，git mv 改名 data_lake_freshness_guard + cron 改指向。
+- **规约**: 新建任何 *guard*/*checker*/*monitor* 脚本前，第一动作 `ls scripts/ | grep -i <关键词>`
+  + grep 周流水线步骤清单；重名即改名，跨文件头部互相引用说明职责边界。
+- **升级**: 同族第 3 次（10-06 pre_response_guard / is_trading_day 三实现 / 本次），已具备升格为
+  可执行门禁条件——gate_runner --verify 已校验 manifest 内路径唯一性；补：新建 guard 类脚本的
+  命名查重可纳入 script_path_guard 或未来 lint 步骤。
+
+## ERR-20261105-BaostockProbeOrphanSpin
+- **日期**: 2026-11-05
+- **模式**: ops.network-probe-orphan-busy-spin（孤儿家族新变体：临时诊断脚本孤儿化 + baostock 忙等死循环）
+- **经过**: 05:12/05:14 两个 `python -c`/heredoc baostock 连通性测试孤儿化（PPID=1），
+  各吃 99% CPU 空转 16-18 分钟——半死 ESTABLISHED 连接上 `rs.next()` 忙等，
+  3 行查询永不返回。用户指令巡检时发现并 kill。
+- **根因**: ①诊断型网络探测无自身超时（依赖外层 wrapper，wrapper 被杀后 python 孤儿继续转）；
+  ②baostock 在连接半死时 `rs.next()` 是 CPU 忙等而非阻塞等待（0% 判据失效，99% 才是它的卡死形态）。
+- **修复**: kill -TERM 清理；无 cron 重生风险（62 job 全扫确认）。
+- **规约**: ①任何数据源连通性诊断必须自带硬超时（signal.alarm 或 subprocess timeout），
+  禁止裸 `python -c` 探测；②baostock 卡死形态是 99% CPU 忙等（区别于编排器 0% 等待），
+  巡检判据按进程区分；③网络源诊断会话结束后 `pgrep -fl baostock` 清场；
+  ④data_source_sentry.probe_baostock 为进程内探测，存在同款挂死风险（agentTurn 超时兜底较慢），
+  建议后续加 per-probe 硬超时（daemon thread + join timeout）。
+- **计数**: 孤儿进程家族第 3 例（SIGKILL 不级联 / 10-26 PPO 复扫孤儿 / 本次诊断探测孤儿）。
+
+## ERR-20261105-CommitSweptStagedIndex
+- **日期**: 2026-11-05
+- **模式**: git.targeted-commit-swept-prestaged（定向提交被索引连坐）
+- **经过**: `git add send_telegram.py && git commit` 意图只提交 1 个文件，
+  实际提交 13 个——索引里残留先前（他会话）已暂存的 12 个运行时数据文件删除
+  （execution_audit/trade_intents/sentry_state/heartbeat_dashboard 等）被一并带入。
+- **根因**: `git commit` 提交的是整个索引，不是「刚 add 的那个文件」；
+  本仓多会话并行 + 150+ 未提交项，索引状态不可假设干净。
+- **修复**: 无需回滚（均为可再生/历史产物，git 历史可恢复，功能无损）；如实披露。
+- **规约**: 多会话工作区做定向提交前，先 `git status --porcelain` 看已暂存区（第一列非空行）；
+  有残留时用 `git commit -- <paths>`（路径限定）或 `git restore --staged` 清场后再提交。
+- **计数**: RC=1。
+
+## ERR-20261105-RuntimeMigrationSplitBrain
+- **日期**: 2026-11-05
+- **模式**: refactor.path-migration-multiarg-join-puncture（批量路径迁移第 5 变体：字符串 sed 漏掉多参 os.path.join 与 DATA_DIR 派生路径）
+- **经过**: 下午执行「执行态数据统一迁移 data/runtime/」：mv 18 类目录 + 字符串替换 23 个脚本。
+  验证用「字符串含 data/xxx」扫描自判通过，但实际漏掉两类形态：①`os.path.join(WORKSPACE, "data", "xxx")`
+  多参常量（字符串里没有 `data/xxx` 连写）；②`DATA_DIR = os.path.join(WORKSPACE, "data")` 后用
+  f-string 拼文件名的脚本（20+ 处，无法字符串级枚举）。结果 14:13 迁移后，15:40/16:15/17:00/18:30
+  各 cron 仍写旧路径 → data/ 下 8+ 文件被重建，与 data/runtime/ 形成双写分叉（portfolio_sim_state /
+  equity_mirror / zhonglian_state 等实时状态双侧并存）。
+- **根因**: ①迁移验证 = 字符串 grep 自判，不是「全量写点枚举」（应按写点审计：所有 open('w')/json.dump
+  的最终路径集合）；②在活跃 cron 持续写入的白天做目录迁移，无写入冻结窗口；③10-31 教训
+  「文本正则定位=必被击穿」第 5 次实证（本次换皮为「路径替换」而非「代码插入」）。
+- **修复**: ①rsync --ignore-existing 把 runtime 独有文件合并回 data/（冲突保留 data/ 较新版本）；
+  ②data/runtime 原目录移入 backups/rollback_runtime_20261105/（可恢复，未 rm）；
+  ③建符号链接 `data/runtime → .`（兼容层：新路径 data/runtime/xxx 与旧路径 data/xxx 解析到同一文件，
+  23 个已改脚本零回改即恢复一致）；④snapshot_guard include 恢复 'data/' 原口径；⑤gitignore 加 data/runtime。
+- **规约**: ①目录级路径迁移禁止字符串 sed——正确姿势 = 先枚举全仓写点（AST 扫 open('w')/json.dump/os.path.join
+  聚合），产出「迁移清单→逐点确认→冻结窗口内一次切换→写点核对」；②多参 os.path.join 与 DATA_DIR 派生
+  路径是字符串扫描的必然盲区，只能 AST/运行时 trace 兜住；③路径统一问题应在 SQLite 状态层落地时以
+  单一路径模块（analysis/paths.py SSOT）收口，不再散点迁移；④符号链接兼容层是廉价可靠的过渡手段
+  （新旧拼写同 inode），可在冻结窗口不可得时先行止血。
+- **计数**: 批量文本 codemod 家族 RC=5（10-31 四例 + 本例）；目录迁移在活跃写入期执行 = 首例。

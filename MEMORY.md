@@ -72,6 +72,8 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **注意:** 机电B股(900925)在baostock上无数据，已知待处理。
 
 ### Lessons Learned
+- [2026-11-04] 🔴 完工断言必须以文件读回验证为准，不能以上一轮回复声称的完成状态为准（假 ok 第 5 变体）。T1-2 审计日志「已完成」但落盘 write 代码根本不存在，e2e 测试才暴露。配套：改生产链路必须跑零污染 e2e（本轮同场拦下误删 data_date 幽灵回填守卫输入的 NameError）。源: memory/2026-11-04.md。
+- [2026-11-02] 🔴 next_day_sim 独立入口的输入是死引用（`{date}_dual.json`/`adaptive.json` 全仓无任何脚本写入），生产走 adaptive_dual 内存直传——手动重跑独立入口时 scan_results={} → 方向 13→9 静默消失。已加空输入护栏（commit b3a6a9d）。规约：模块有「生产路径/独立入口」双路径时，独立入口的输入假设必须逐一验证存在写入方。源: memory/2026-11-02.md。
 - [2026-11-01] 跨日对比指标 × 回退取数 = 自比假信号（首次 RC=1）。晋级率（T vs T−1 涨停池）在非交易日因 fallback 双双回退最近交易日 → 自比假 100%（47/47）；量能同病（spot=周五数据 vs 含周五的 5 日均值）。规约：跨日对比前先 `is_trading_day(now)` 校验「今日数据真实属于今日」，非交易日一律显式中性拦截/降级，禁止静默沿用回退数据参与差分。同日两枚小坑：①`pgrep -f <脚本名>` 匹配轮询 shell 自身命令行 → [running] 假象，真伪判定用 `ps -p <真pid>` + 日志标记块；②改前快照路径写死 /tmp 被改后重跑覆盖基准 → 改前快照与改后验证必须用不同文件名，恒等式基准视同产物保护。
 - [2026-10-31] 批量 codemod/代码插入：文本正则定位插入点 = 必被击穿（第 4 次同族实证）。from-import 续行块截断、helper 误插 f-string 三引号字符串内（compile 竟能过——「语法止但语义已错」新成员）、with 逗号续行双 open、json.dump 内联 open。正解 = AST 语义定位（最内层语句）+ 顶层结构保序对照 + 行数算术验证（吸收类损伤高性价比探测器）；函数级 helper 一律锚定模块级 def 行插入，写后 AST 验证 helper 在 top-level。py_compile 通过 ≠ 语义正确。
 - [2026-10-30] 🔴 「未披露」结论不能由单轮新闻检索推出（假 ok 第五变体：以核对动作完成替代事实确认）。覆盖板兜底核对报「7 只全部未披露」，实为特变 10-29 20:03 已披露（特钢漏采后 24h 内同族复发，RC=2）。规约：①披露收官周逐只用公告口径直查（「{名称} 三季度报告」），新闻流检索只作补充；②落地前预锚（2025 双源基数+算术自检公式）使漏采在落地日必被暴露（恒力/特变两轮实证）。源: .learnings/ERRORS.md#ERR-20261030-CoverageBoardDisclosureFalseNegative
@@ -134,7 +136,32 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **[2026-09-09]:** backtest_strategies.py `preload_index_benchmarks` 传递日期格式 `20240101` 而非 `2024-01-01` 导致指数预加载失败 —— 修复日期格式转换。
 *   **[2026-09-09]:** portfolio_sim 每次 fetch_data 重复 login/logout baostock 导致连接池耗尽 `[Errno 9] Bad file descriptor` —— 改为单次登录复用会话，脚本结束时统一 logout。
 
-## User's Stock Watchlist (Definitive - 36 stocks)
+## 2026-11-05 蒸馏补充 (10-31 ~ 11-04)
+### 体系决策与研究
+- **B口径切换与验证 (2026-11-01):** 验证层正式切换至 B 口径（收盘+涨跌停检查）。研究证明口径切换对映射结论影响极小，仅 2/36 票翻转（思源/巨化），结论稳健。
+- **ML 策略边界 (2026-11-01):** 完成 ML v2 特征研究（RF 方向分类）。结论：日线方向分类在当前样本量下特征工程已到顶，夏普为负，不立项产线，仅保留注册挂点。
+- **Crash-Recovery 拒绝实现 (2026-10-31):** 审计证伪「+5 Rebound」启发式信号。发现高超额实为单一宏观日（2025-04-07）聚集，非个股信号，决定不实现。
+- **成交真实性层 P0 (2026-11-01):** 落地 `fill_rules.py` 涨跌停分档判定，并完成 `fill_impact_study`。趋势臂收益缩水 4.8~6.0pp，排名稳健但幅度须下修。
+- **自动执行管道化 (2026-11-04):** 落地 `auto_executor.py`，实现「信号日排队 $\rightarrow$ 次日开盘执行」双轨机制，彻底退役同 bar 收盘前视路径。
+- **模拟盘激进模式 (2026-11-03):** 落地 `sim_aggressive.py`（配置 SSOT），放宽总仓×1.5、core 15%→30%/sat 5%→12%、簇 25%→45%、tier2 放行、门控 55→45、冷却 15→5 天、ATR 倍数 2.0→3.0，解决「分析热闹、模拟成交可怜」的四道静默拦截；030 致命风险归零/tier3 禁买等硬保险保留，`d357fb8` + tag guard/20261103-sim-aggressive-mode。
+- **模拟盘三项修复 (2026-11-03):** ①存量止损冷却随配置收缩（`_clamp_legacy_stop_cooldowns`，000987 13→5）②SELL 台账 shares 落真实股数（原恒 0）③假 ATR（硬编码 price=10/ATR=3%→乘数永久 ×0.8）接真实 atr_map。commit `9cfcfde`。同日深度审计另列 P0×4（止盈全缺/数据源单点/现金对不上/回测生产 ATR 分叉）+ P1×6，路线图待拍板。
+
+### 防线闭环与工程治理
+- **.bak 铁律全仓归零 (2026-10-31):** `backup_guard` 棘轮化落地并完成 batch1/batch2 清偿，全仓 240 个脚本违规点清零。
+- **Exec 管道+Heredoc 红线 (2026-10-31):** 定性 zsh 5.9 本体行为：管道中非首级段的 heredoc 会与上游输出拼接。禁写 `cmd | python3 - <<'EOF'` $\rightarrow$ 改为先落盘再读文件。
+- **健康度真实化 (2026-11-01):** `market_health_score.py` 引入全市场量能、炸板率、晋级率真实数据，消除中性占位。
+- **Decision Trace 落地 (2026-11-01):** 仲裁器实现 `decision_trace` 逐层数字证据链，解决 Logic Drift 静默漂移问题。
+- **KB 治理全链 (2026-11-01):** 落地 `kb_append_guard` (源头去重) $\rightarrow$ `kb_variant_merge` (存量合并) $\rightarrow$ `kb_related_dedup` (行级去重) $\rightarrow$ `linker` 升级。
+- **情绪反转与执行审计 (2026-11-01):** 落地 `emotion_reversal.py` (首日识别) 与 `execution_audit.py` (事故复现与审计)。
+- **模拟盘空输入护栏 (2026-11-03):** `next_day_simulator.load_all_inputs` 加护栏——扫描输入为空即 stderr 告警 + exit 1 拒跑，根除 11-02 死引用（dual.json/adaptive.json 全仓无写入方）导致的「方向 13→9 静默消失」。commit `b3a6a9d`。
+- **完工断言必须文件读回验证 (2026-11-04):** T1-2 审计日志「声称完成」但落盘语句根本不存在（假 ok 第 5 变体），零污染 e2e 测试才暴露；同场 e2e 拦下 T2-3 误删幽灵回填守卫输入。规约：完成状态以上一轮回复声称 ≠ 真完成，必须 grep 落盘点/断言产物存在。
+
+### 模拟盘与监控
+- **模拟盘周报体系 (2026-10-31):** 落地 `portfolio_weekly.py` 及独立 cron，整合主盘与中联盘净值/成交/漏斗。
+- **动态滑点+执行流水线 (2026-11-04):** `calc_slippage()`（base 0.001 + 0.5×ATR/price + 0.1×√(订单/当日成交额)，cap 0.02，`SLIP_DYNAMIC=0` 回退）+ 并行预取流水线（36 票 150 次文件 IO→3 次）；凌晨污染机制实锤并修复（portfolio_core:41 硬编码 WORKSPACE 对 env 沙箱失效）。
+- **管道化首跑前夜 (2026-11-04):** 今日 0 执行根因=晨间误扫置 last_signal_date=11-04 被同日执行守卫吞单；3 买（巨化/福耀/恒生）已回填 PENDING，11-05 15:40 管道化首跑待验收。
+- **治理四件套 (2026-11-04):** 落地 `system_manifest.json` (门禁分级) / `data_source_sentry` (源探测) / `error_attribution` (归因台账) / `snapshot_guard` 升级。
+
 *   **证券/金融:** 中信证券(600030), 中信建投(601066), 招商银行(600036), 中金公司(601995), 越秀资本(000987)
 *   **半导体/TMT:** 长电科技(600584), 中芯国际(688981), 通富微电(002156), 雷科防务(002413)
 *   **新能源/储能:** 亿纬锂能(300014), 天齐锂业(002466)
@@ -1528,7 +1555,7 @@ This file serves as your curated long-term memory, storing significant events, d
 
 **防线与工程闭环（10-30~11-01）**
 - **backup_guard 三日三级跳收官**：10-31 晨流水线审计 FAIL（300 存量点）→ 用户批准棘轮化（判定失败绝不写基线，防 06:2x「复跑洗白」同款基线吞没）→ batch1（17 高频脚本，302→254）→ batch2 全仓归零（c5123a2，240 脚本/0 违规 exit 0）。「.bak 铁律落实数 0」（10-21 体检）→ 全仓清偿，三层防线闭环（AGENTS.md 门禁清单步骤 0f2）。
-- **exec 管道+heredoc 六连发定案**（10-31）：4 条假故障 = `cmd | python3 - <<'EOF'`——zsh 5.9 本体行为：管道非首级段的 heredoc stdin = 上游管道输出 ⊕ heredoc body 拼接，cron JSON 被当 Python 源码执行到首个裸 `true` 必炸 NameError；2 条 = 链尾裸 `grep -c`（零匹配 exit 1）/ cat 缺文件误报。红线已固化 TOOLS.md（heredoc 只准挂管道首级或独立使用）；上游双投完成：OpenClaw issue #189332 + zsh-workers 邮件已发出（Gmail 孤客署名，待列表归档可见）。
+- **exec 管道+heredoc 六连发定案**（10-31，11-05 终版定性）：4 条假故障 = `cmd | python3 - <<'EOF'`——zsh **MULTIOS 选项（默认开启）的文档化行为**：管道非首级段的 heredoc stdin = 上游管道输出 ⊕ heredoc body 拼接，cron JSON 被当 Python 源码执行到首个裸 `true` 必炸 NameError；2 条 = 链尾裸 `grep -c`（零匹配 exit 1）/ cat 缺文件误报。红线已固化 TOOLS.md（heredoc 只准挂管道首级或独立使用）；上游双投完成且已获回音：OpenClaw issue #189332 + zsh-workers 邮件（孤客署名，归档 55234）；zsh 核心成员 Stephane Chazelas（55235）+ Daniel Shahaf（55237）回复：**非 bug，multios 文档化设计**，POSIX 行为需 `set +o multios`，zsh 不承诺解释任意 bash 脚本；本仓实操规约不变。
 - **Tier1 卖出拦截审计盲区**（10-30, e5cbc73）：越秀 10-27 死叉卖出被 Tier1 无痕改写为持有（signal_audit 报 0 冲突 = 盲区直接证据）→ `_mark_suppressed` 补挂 tier1 卖出分支。同日全链路还原坐实：**越秀处于「无自动止损」状态**（ATR stop 6.56 仅观察位+冷却打标；MACD 事件型信号交叉当日才触发；Tier1 禁用择时卖出；唯一自动卖出 = 030 高风险防御竞价 ≤−3% 全仓卖出）——**持仓风险语义必须分清「观察位」与「触发位」**。10-30 越秀 6.53 卖出 −5.72%（−276.78），主盘周净值 −0.010%。
 - **健康度评分三项真实化 + Logic Drift Audit**（11-01）：b9da1ca = 量能维（相对 5 日均值，静态阈值降为显式降级）/炸板率（真实炸板池+日期对齐）/晋级率（昨日∩今日涨停池），10-28 口径回归 ✅；37fe631 = 6 处静默漂移全修（DEFAULT_HOLD 无证据降级、反转覆盖 fail-closed 仅 stdout、三因素门控拦截不可见、gate 异常静默 fail-open、健康度压缩 0.2 不可见、DEBUG print 噪声）+ 新契约 **decision_trace**（仲裁 JSON 逐层数字证据，真实数据 11 层轨迹端到端验证）。
 - **情绪反转首日识别 + 执行审计上线**（11-01）：`emotion_reversal.py`（fade_risk「高开未回落」+量能三选一+跷跷板，缺数据 fail-closed）10-28 历史实证 4/4 确认、中芯真回落正确排除——若当时在岗可覆盖 10-29 技术卖出；`execution_audit.py` 10-28 事故日完美复现（执行率 0/4 + 越秀透明行）。cron `emotion-reversal-execution-audit`（6c0dca13）交易日 19:40、delivery=none 已复核，**11-02 19:40 首跑待核对产物**。

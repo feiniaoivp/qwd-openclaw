@@ -643,10 +643,15 @@ python3 scripts/test_isolation_guard.py --selftest  # 8 例对抗自测
 
 **禁写** `cmd | python3 - <<'EOF'`（管道与 heredoc 挂同一命令，且 heredoc 在非首级管道段）。
 
-**精确机制（19:5x 深究定案，修正初判「exec 层丢 heredoc」）**：exec 实际执行 `/bin/zsh -f -c "<snapshot前置>; export PATH=…; eval '原命令'"`（ps 取证；shQuote 包裹+真换行，命令文本无损）。真凶是 **zsh 5.9（macOS 15.8.2 自带版）本体行为**：管道中**非首级**段的 heredoc/here-string，其 stdin = **上游管道输出 ⊕ heredoc body 按序拼接**，违反 POSIX/bash「显式重定向覆盖隐式管道」语义。于是管道输出（如 cron JSON）成为 python 的程序源码，合法字面量一路执行到首个裸 `true/false/null` 必炸 `NameError`（报错行号=JSON 首个布尔行，故 line 10/12 漂移；与心跳报错逐字吻合）。
+**精确机制（19:5x 深究定案，修正初判「exec 层丢 heredoc」）**：exec 实际执行 `/bin/zsh -f -c "<snapshot前置>; export PATH=…; eval '原命令'"`（ps 取证；shQuote 包裹+真换行，命令文本无损）。真凶是 **zsh 5.9（macOS 15.8.2 自带版）的 MULTIOS 选项（默认开启，文档化行为，非 bug）**：管道中**非首级**段挂 heredoc/here-string = stdin 被多重为读重定向 → zsh 把 stdin 变成后台进程喂入的管道，内容 = **上游管道输出 ⊕ heredoc body 按序拼接**（bash/sh 无 multios，表现为显式重定向覆盖隐式管道；10-31 初版「违反 POSIX」的定性已于 11-05 被 zsh-workers 上游纠正，见本条目末尾）。于是管道输出（如 cron JSON）成为 python 的程序源码，合法字面量一路执行到首个裸 `true/false/null` 必炸 `NameError`（报错行号=JSON 首个布尔行，故 line 10/12 漂移；与心跳报错逐字吻合）。
 
 **对照矩阵（subprocess 精确 argv 控制，11 探针）**：zsh -c 直接多行 / 前导 export 行 / eval 包裹 / zsh 文件模式 / 三级管道末级 / 中间级 / here-string（`<<<`）→ 全部中招；heredoc 挂**首级**（`cat <<EOF | cmd`）✅ 正常；独立 heredoc（无管道）✅ 正常；空管道输出→仅 body（证明是拼接非重复）；`bash -c` / bash 文件 / `/bin/sh` → 全部正常（heredoc 覆盖管道）。公开检索（Prismfy×2 + web_search）无同名已知报告。
 
 - **正确写法**：`cmd > /tmp/x.json 2>/dev/null; python3 - <<'EOF'`（heredoc 内读文件）。独立 `python3 - <<'EOF'`（无管道）不受影响，实测正常。
 - **复现**：`echo '{"enabled": true}' | python3 - <<'EOF'` + 任意脚本 → NameError（同一文本交给 bash 正常执行 heredoc 脚本）。异常已隔离到 zsh 本体（与 OpenClaw 封装无关，exec 仅继承）；上游报告草稿见 analysis/research/2026-10-31_zsh_heredoc_pipe_concat.md，待用户批准提交。
 - **连带**：链尾裸 `grep -c`（零匹配 exit 1）、`cat 缺文件` 同样被误报 Exec failed——心跳/脚本链尾一律 `|| true` 收尾。详见 .learnings/ERRORS.md ERR-20261031-ExecPipeHeredocLost。
+
+**【11-05 上游回音，定性终版】zsh-workers 双回复已归档**：
+- Stephane Chazelas（zsh-workers 55235）："That's as documented" —— 这是 **MULTIOS 选项**（默认开启，除非 emulate 其他 shell）的文档化设计：stdin 多重为读重定向 → 后台进程拼接喂入；输出侧同理（tee-like）。文档 zsh.sourceforge.io/Doc/Release/Redirection.html#Multios；POSIX 行为用 `set +o multios`；他本人也在 ~/.zshrc 关掉该选项（"gets in the way as often as it's useful"）。
+- Daniel Shahaf（55237）：附议，并指出 zsh 不承诺正确解释任意 bash 脚本（见 zsh.org/workers/53892）。
+- **本仓实操规约不变且依然正确**：「先落盘再 heredoc 读文件」对 multios 开关免疫；`zsh -f -c`（OpenClaw exec 封装）不读 .zshrc，用户级 setopt 救不了 exec 场景，故不改操作层。**11-05 已实测逃生口（7 探针，subprocess 精确 argv）**：命令开头加 `setopt nomultios;`（或 `set +o multios;`，eval 内/外皆生效）恢复 POSIX 重定向语义；Stephane 单点修法 `cat <&- <<< y` 亦验；首选仍是先落盘。OpenClaw issue #189332 已补上游结论评论（comment 6660103120，/approve 后发出）。

@@ -84,3 +84,23 @@ NameError: name 'true' is not defined. Did you mean: 'True'?
 1. **文档/告警**：exec 工具在 shell=zsh 下，检测到「管道 + 非首级段 heredoc」组合时打 warning（bash-tools 已有 heredoc 审批探测代码路径，可挂同一解析器）。
 2. **规避**：对含 heredoc 的命令可选改用 bash 兼容执行（bash -c），或在文档中明示「heredoc 只能挂管道首级或独立使用」。
 3. **上游**：建议同时向 zsh 上游（zsh-workers / zsh-users mirror）报告——附上第三节最小复现与第四节矩阵；OpenClaw 侧仅是继承者。
+
+
+---
+
+## 2026-11-05 终版：上游回音 + exec 形态实测 + issue 评论
+
+**zsh-workers 线程（归档）**：原信 55234 → Stephane Chazelas 55235（"That's as documented"，MULTIOS 默认开启的文档化设计；`set +o multios` 恢复 POSIX；本人 .zshrc 也关掉）→ Daniel Shahaf 55237（附议；zsh 不承诺解释任意 bash 脚本，引 53892）。文档：zsh.sourceforge.io/Doc/Release/Redirection.html#Multios。
+
+**exec 同款封装实测（/tmp/multios_probe.py，subprocess 精确 argv，zsh 5.9 Apple build）**：
+
+| # | 场景 | 结果 |
+|---|------|------|
+| 1 | 复现：zsh -f -c + 前置行 + eval 包裹 管道+heredoc | 拼接 ❌（与 exec 现场一致） |
+| 2 | `setopt nomultios;` 在 eval 外 | 仅 body ✅ |
+| 3 | `set +o multios;` 在 eval 外 | 仅 body ✅ |
+| 4 | `setopt nomultios;` 在 eval 内（命令首行） | 仅 body ✅ |
+| 5 | `printf P \| cat <&- <<< H`（Chazelas 单点修法） | 仅 H ✅ |
+| 6/7 | bash -c / /bin/sh -c 对照 | 仅 body ✅ |
+
+**结论**：10-31 初版「违反 POSIX」定性撤回；行为 = multios 文档化设计。OpenClaw issue #189332 已补终版评论（2026-11-05，comment 6660103120，/approve 后发出）：建议 exec 前置加 `setopt nomultios`，或 heredoc 命令归一化到 bash，或文档警示。本仓实操规约（先落盘再读）不变。
