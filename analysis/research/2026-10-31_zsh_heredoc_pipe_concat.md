@@ -104,3 +104,13 @@ NameError: name 'true' is not defined. Did you mean: 'True'?
 | 6/7 | bash -c / /bin/sh -c 对照 | 仅 body ✅ |
 
 **结论**：10-31 初版「违反 POSIX」定性撤回；行为 = multios 文档化设计。OpenClaw issue #189332 已补终版评论（2026-11-05，comment 6660103120，/approve 后发出）：建议 exec 前置加 `setopt nomultios`，或 heredoc 命令归一化到 bash，或文档警示。本仓实操规约（先落盘再读）不变。
+
+## 2026-11-05 22:2x 深究补遗：exec shell 选择机制 + 全仓 multios 审计
+
+**exec shell 选择（docs/tools/exec.md + 源码）**：非 Windows 主机 exec 跟随网关进程 `SHELL`（fish 特例偏好 bash）；**无 per-call shell 参数、无 tools.exec.shell 配置键**（`config get tools` 仅 profile/web.search；551 行的 `terminal.shell` 属 Control UI 终端，无关）。整类消灭的唯一本地途径 = 网关 SHELL→bash，影响面大（zsh-isms 断、快照行为差异），未采。
+
+**封装构造单点（dist/bash-tools.exec-runtime-u4DiNcL4.js）**：`buildSnapshotWrappedCommand(command, snapshotPath, runtimeEnvRestoreScript)` = `[if -r snapshot: source; runtimeEnvRestoreScript(含 export PATH=OPENCLAW_PREPEND_PATH…), eval shQuote(command)].join("\n")`；zsh 快照捕获参数 `["-f","-i","-c"]`。issue #189332 评论建议「preamble 加 setopt nomultios」正落在 runtimeEnvRestoreScript，单点一行可修，评论表述无需修正。
+
+**全仓审计（双重定向两类火药桶）**：①input 侧 `| cmd <<EOF`（*.sh/*.py）零命中（scipy `flags << 8` 位运算误报）；②output 侧 `cmd >f1 | cmd2` 同 fd 双重定向零命中——5 个 `> x |` 命中全为 `2>/dev/null |`（stderr 单 fd，multios 不触发）。仓库在 multios 语义下无静默行为差异点。
+
+**交互态提示**：~/.zshrc 无 multios 设置 → 用户本人交互 zsh 同样 multios ON，终端里 `cmd | python3 - <<EOF` 会同样拼接；如需交互侧免疫，可考虑 .zshrc 加 `setopt no_multios`（改 shell rc 属请示项，待拍板）。
