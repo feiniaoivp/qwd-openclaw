@@ -11,6 +11,7 @@ import argparse
 import datetime
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -76,6 +77,20 @@ def norm_title(title):
     return re.sub(r"[\s，。：:、,]", "", base)[:20]
 
 
+def persist_digest(today, msg):
+    """摘要落盘（推送前执行，推送失败也有源可补推；2026-11-07 新增）。
+
+    背景：每日摘要此前只进 logs/blogwatcher_scan.log，日志轮转/丢失后补推无源。
+    同日重跑先 .bak 再覆盖。"""
+    out_path = os.path.join(WORKSPACE, "data", "news", f"blogwatcher_digest_{today}.md")
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    if os.path.exists(out_path):
+        shutil.copy2(out_path, out_path + ".bak")
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(msg + "\n")
+    print(f"[blogwatcher-daily] 摘要已落盘: {out_path}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="只产摘要，不推送不标读")
@@ -91,6 +106,7 @@ def main():
         msg = f"📰 blogwatcher {today}：无新增未读，一切干净。"
         print(msg)
         if not args.dry_run:
+            persist_digest(today, msg)
             r = send_with_retry(msg)
             if not r.get("ok"):
                 print(f"[blogwatcher-daily] 推送失败: {r.get('error')}")
@@ -136,6 +152,7 @@ def main():
     if args.dry_run:
         print("[dry-run] 未推送、未标读")
         return
+    persist_digest(today, msg)
     r = send_with_retry(msg)
     if not r.get("ok"):
         print(f"[blogwatcher-daily] 推送失败: {r.get('error')}")
