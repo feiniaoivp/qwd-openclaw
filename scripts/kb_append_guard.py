@@ -62,7 +62,10 @@ def kb_title_set(kb_path: str) -> set:
 
 
 def strip_candidate(lines, existing: set):
-    """返回 (new_lines, stripped_report)。stripped_report = [(行号1-based, 标题, 原因)]"""
+    """返回 (new_lines, stripped_report)。stripped_report = [(行号1-based, 标题, 原因)]
+    2026-11-08: existing 内部拷贝 + 新保留标题回填 —— 同块内同串重复也剥（原先只查 KB 存量，
+    同一候选内两次出现的同串会双写）"""
+    existing = set(existing)
     out, report = [], []
     i, n = 0, len(lines)
     while i < n:
@@ -83,6 +86,7 @@ def strip_candidate(lines, existing: set):
                     i += 1
                 continue
             out.append(ln)
+            existing.add(nt)  # 块内累积：同块后现同串也会被剥
             i += 1
             continue
         out.append(ln)

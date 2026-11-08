@@ -142,8 +142,9 @@ def main():
         print("❌ 门禁未过，拒绝落盘。")
         return 1
     bak = KB_PATH + ".bak-variantmerge"
-    if not os.path.exists(bak):
-        shutil.copy2(KB_PATH, bak); print(f"✅ 备份 {bak}")
+    # 2026-11-08 修复：原「已存在则跳过」会留陈旧快照（实测：今天 96 组清账时 .bak 仍是旧 20 组状态，
+    # 真实写前状态未留档）。备份语义 = 本次写前状态，无条件刷新（dry-run 不走到这里，重跑安全）。
+    shutil.copy2(KB_PATH, bak); print(f"✅ 备份 {bak}（写前状态刷新）")
     tmp = KB_PATH + ".merged"
     with open(tmp, "w", encoding="utf-8") as f:
         f.write("\n".join(new_lines) + "\n")

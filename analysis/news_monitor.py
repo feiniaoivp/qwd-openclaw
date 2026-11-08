@@ -336,29 +336,24 @@ def main():
             log.warning(f"研报抽取失败: {e}")
             research_summary = f"研报抽取失败: {e}"
 
-    # 保存可读知识库片段（2026-10-30 防重钩子：• 条目行若 KB 已存在同文本则跳过。
-    # 根治两类粘性重复：a) 同日双窗口双收（手抓+19:06 cron，10-28 两盘后块 12 条重复）；
-    # b) 挂架公告跨日重收（特变业绩说明会 ×3 等）。简报头统计行不参与防重。）
+    # 保存可读知识库片段（防重钩子 v2，2026-11-08：复用 kb_append_guard.strip_candidate 单一口径。
+    # v1（2026-10-30）只查 • 行 → 个股新闻速览的 `    - 标题` 行零防重，且 seen_titles 仅存 2000 条
+    # 旧闻滑出窗口后再次入队 → 一周积 96 组同串重复（当日清账实测）。守卫口径：剥 KB 已存在
+    # 标题（•/-/*）+ Raw 续行 + 空分组头整组；统计行/段头豁免；公告/宏观 • 行为原有行为的超集。）
     kb_file = os.path.join(NEWS_DIR, "knowledge_base.md")
     brief_to_write = brief + ("\n\n" + research_summary if research_summary else "")
     try:
-        with open(kb_file, encoding="utf-8") as f:
-            _kb_existing = f.read()
-        _existing = {_ln.strip()[1:].strip() for _ln in _kb_existing.splitlines() if _ln.strip().startswith("•")}
-        _kept, _skipped = [], 0
-        for _ln in brief.splitlines():
-            _s = _ln.strip()
-            if _s.startswith("•") and not _s.startswith("• 宏观/政策:") \
-                    and not _s.startswith("• 关注股公告:") and not _s.startswith("• 个股新闻:"):
-                _t = _s[1:].strip()
-                if _t in _existing:
-                    _skipped += 1
-                    continue
-                _existing.add(_t)
-            _kept.append(_ln)
+        _scripts_dir = os.path.join(WORKSPACE, "scripts")
+        if _scripts_dir not in sys.path:
+            sys.path.insert(0, _scripts_dir)
+        from kb_append_guard import strip_candidate as _kb_strip, kb_title_set as _kb_titles
+        _existing = _kb_titles(kb_file)
+        _cand = brief_to_write.splitlines()
+        _new, _report = _kb_strip(_cand, _existing)
+        _skipped = len(_cand) - len(_new)
         if _skipped:
-            print(f"🧹 KB 防重: 跳过已存在条目 {_skipped} 行")
-        brief_to_write = "\n".join(_kept)
+            print(f"🧹 KB 防重(v2): 剥离已存在条目/空组头 {_skipped} 行")
+        brief_to_write = "\n".join(_new)
     except Exception as e:
         print(f"⚠️ KB 防重检查失败({e})，按原文追加")
     with open(kb_file, "a") as f:
