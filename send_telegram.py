@@ -61,7 +61,9 @@ def _proxy_available(host="127.0.0.1", port=7890, timeout=1.5):
 
 
 def _curl_subprocess_post(url, *, json=None, files=None, data=None, timeout=10):
-    """系统 curl 回退：--resolve 固定已知可用 Telegram IP，绕开污染 DNS。"""
+    """系统 curl 回退：--resolve 固定已知可用 Telegram IP，绕开污染 DNS。
+    ⚠️ 2026-11-08 实测：env 带 http_proxy（网关注入 7890）时 curl 走代理、--resolve 失效
+    → 本级与代理级同隧道，并非独立路径。"""
     import subprocess
     import shutil
     import urllib.parse
@@ -144,13 +146,19 @@ def _post_once(url, *, json=None, files=None, data=None, timeout=10, proxies=Non
 
 
 def _post(url, *, json=None, files=None, data=None, timeout=10):
-    """统一 POST 三级回退链（2026-10-16 定，覆盖全部投递点）：
+    """统一 POST 回退链（2026-10-16 定，覆盖全部投递点）。
 
-       ① 直连（curl_cffi → requests）
-       ② 本机 7890 代理 —— 日区潮汐 TLS 拦截兜底（10-15 实测代理路径多轮成功）
-       ③ 系统 curl + 固定 IP —— DNS 污染 / curl_cffi BoringSSL 损坏场景
+       ⚠️ 2026-11-08 实测定性（memory/2026-11-08.md）：三级实为「同一 Clash 隧道的三次
+       尝试」，不是独立冗余——
+         ① curl_cffi 默认信任 http_proxy/https_proxy env（网关注入 7890）→ 实走代理；
+         ② 显式 7890；
+         ③ 系统 curl 同样读 env 代理，--resolve 固定 IP 在代理模式下失效 → 仍走 7890。
+       且本机 TUN 全劫持 + GFW 拦截 TG 直连（--interface en0 实测超时）→ 不存在绕开
+       Clash 的独立路径。保留三级的价值 = 换库换错误形态、单库故障不全灭；小时级断流
+       靠 proxy-watchdog 自动切换 + 恢复窗口补推，短时抖动靠 send_message 内部延迟重试。
 
        任何一级抛异常即降级下一级；代理端口不可用时自动跳过 ②。
+    
     """
     try:
         return _post_once(url, json=json, files=files, data=data, timeout=timeout)
@@ -212,55 +220,42 @@ def _send_message_once(text, parse_mode="", disable_web_page_preview=True):
         print(f"发送消息失败: {e}")
         return {"ok": False, "error": str(e)}
 
-def send_message(text, parse_mode="", disable_web_page_preview=True):
+def send_message(text, parse_mode="", disable_web_page_preview=True, retry_wait=30):
     """Send a text message to Telegram
 
     默认 parse_mode='' (纯文本)，避免 Markdown 实体解析报错 (如 .token、括号、代码符号触发 400)。
     需要 Markdown 时显式传入 parse_mode="Markdown" 或 "HTML"。
-    超长文本（>3900 字符）自动按行边界分段发送；任一分段失败即返回失败结果。
+    超长文本（>3900 字符）自动按行边界分段发送。
+    2026-11-08: 任一分段失败 → 等 retry_wait 秒后仅重试失败分段（默认 1 轮；0=禁用）。
+    _post 三级回退实为同一 Clash 隧道（见 _post docstring），分钟级 TLS 潮汐抖动靠本层
+    兜底；只重试失败分段、不重发已成功分段，无重复消息风险。小时级断流仍需
+    proxy-watchdog 自动切换 + 恢复窗口补推。
     """
     chunks = _split_long_text(text)
-    result = {"ok": True}
-    for i, chunk in enumerate(chunks):
-        r = _send_message_once(chunk, parse_mode=parse_mode,
-                               disable_web_page_preview=disable_web_page_preview)
-        if not r.get("ok"):
+    last_fail = None
+    pending = list(range(len(chunks)))
+    rounds = 2 if retry_wait and retry_wait > 0 else 1
+    for attempt_no in range(rounds):
+        if attempt_no and pending:
+            time.sleep(retry_wait)
+        still_pending = []
+        for i in pending:
+            r = _send_message_once(chunks[i], parse_mode=parse_mode,
+                                   disable_web_page_preview=disable_web_page_preview)
+            if r.get("ok"):
+                continue
             print(f"分段推送失败(块 {i + 1}/{len(chunks)}): "
                   f"{r.get('description') or r.get('error')}", file=sys.stderr)
-            result = r
-    return result
+            last_fail = r
+            still_pending.append(i)
+        pending = still_pending
+        if not pending:
+            break
+    if pending:
+        return last_fail or {"ok": False, "error": "all chunks failed"}
+    return {"ok": True}
 
 import time
-
-def send_document(file_path, caption=None, parse_mode=""):
-    """Send a document/file to Telegram"""
-    url = f"{API_URL}/sendDocument"
-    try:
-        data = {'chat_id': CHAT_ID}
-        if caption:
-            data['caption'] = caption
-            data['parse_mode'] = parse_mode
-        resp = _post(url, files={'document': (os.path.basename(file_path), file_path)},
-                     data=data, timeout=60)
-        return resp.json()
-    except Exception as e:
-        print(f"发送文件失败: {e}")
-        return {"ok": False, "error": str(e)}
-
-def send_photo(file_path, caption=None, parse_mode=""):
-    """Send a photo/image to Telegram"""
-    url = f"{API_URL}/sendPhoto"
-    try:
-        data = {'chat_id': CHAT_ID}
-        if caption:
-            data['caption'] = caption
-            data['parse_mode'] = parse_mode
-        resp = _post(url, files={'photo': (os.path.basename(file_path), file_path)},
-                     data=data, timeout=60)
-        return resp.json()
-    except Exception as e:
-        print(f"发送图片失败: {e}")
-        return {"ok": False, "error": str(e)}
 
 def send_with_retry(text, parse_mode="", max_retries=3, retry_delay=2):
     """发送消息带重试，用于关键定时任务推送"""

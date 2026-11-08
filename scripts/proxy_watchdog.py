@@ -19,7 +19,11 @@ proxy_watchdog.py — FlClash 代理断流看门狗：健康巡检 + 自动切�
   python3 scripts/proxy_watchdog.py --status     # 打印内部状态与控制器信息
 
 设计要点：
-- 健康判定：两个探测 URL 都失败才算断流（单站故障不误切；中途睡 4s 再测第二个）。
+- 健康判定（2026-11-08 v2）：墙外站(gstatic/cloudflare, 物理直连也可达)任一通 且
+  出口站(google/TG, 物理直连必死)任一通 → ok；墙外全败 → down(断流)；
+  墙外通+出口全败 → exit-degraded(直连伪恢复/出口被针对)，连续 2 轮才触发切换。
+  依据：11-08 en0 对照实验 + 当天 10:26「切到直连后双探针照样 204」伪恢复事故。
+- 选点测速 URL 用出口站(google 204)：直连类节点测速超时自然出局，不会当选。
 - 切换目标：从「未被其他组引用的顶层组」沿 now 链下钻，取链上最深的 Selector 组；
   对该组全体成员跑延迟测试，选延迟最低的存活节点，PUT /proxies/<组>。
 - 防误切：当前节点仍在延迟表里 → 节点活着，不切；候选为空 → 不切。
@@ -56,10 +60,18 @@ LOCK_FILE = "/tmp/proxy_watchdog.lock"
 
 PROXY = "http://127.0.0.1:7890"
 PROXIES = {"http": PROXY, "https": PROXY}
+# 墙外可达站：物理直连(en0)也能通 → 只能证明「有网」，不能证明「代理出口健康」（11-08 实测）
 TEST_URLS = [
     "https://www.gstatic.com/generate_204",
     "https://cp.cloudflare.com/generate_204",
 ]
+# 代理出口必要站：物理直连必死(GFW)，通 = 真·代理出口（11-08 en0 对照实验定）
+EXIT_PROBE_URLS = [
+    "https://www.google.com/generate_204",
+    "https://api.telegram.org/",
+]
+DELAY_TEST_URL = EXIT_PROBE_URLS[0]  # 选点测速 URL：直连类节点在此超时出局
+EXIT_DEGRADE_THRESHOLD = 2           # 出口站连续 N 轮全败才触发切换（防 google 偶发失败误切）
 PROBE_TIMEOUT = 8          # 单次探测超时（秒）
 RETRY_GAP = 4              # 两个探测 URL 之间的间隔（秒）
 DELAY_TIMEOUT_MS = 3000    # 节点延迟测试超时
@@ -171,24 +183,42 @@ def load_controller():
 
 def probe_once(url):
     t0 = time.time()
-    r = SESSION.get(url, proxies=PROXIES, timeout=PROBE_TIMEOUT)
+    # allow_redirects=False: TG 根路径 302 也算可达；gstatic/cloudflare 204 无跳转不受影响
+    r = SESSION.get(url, proxies=PROXIES, timeout=PROBE_TIMEOUT, allow_redirects=False)
     return r.status_code, round(time.time() - t0, 2)
 
 
+def probe_url(url):
+    """单 URL 探测：拿到任意 2xx-4xx 响应即视为可达（TLS+HTTP 通，含 302）。"""
+    try:
+        code, _ = probe_once(url)
+        return (200 <= code < 500), f"{url} -> HTTP {code}"
+    except Exception as e:
+        return False, f"{url} -> {type(e).__name__}: {e}"
+
+
 def is_healthy():
-    """两个 URL 都失败才判断流。返回 (healthy, detail)。"""
+    """三级健康判定（2026-11-08 v2）。返回 (level, detail)，level ∈ ok/exit-degraded/down。"""
     details = []
+    tunnel_ok = False
     for i, url in enumerate(TEST_URLS):
         if i:
             time.sleep(RETRY_GAP)
-        try:
-            code, _ = probe_once(url)
-            if code == 204:
-                return True, f"{url} -> 204"
-            details.append(f"{url} -> HTTP {code}")
-        except Exception as e:
-            details.append(f"{url} -> {type(e).__name__}: {e}")
-    return False, "; ".join(details)
+        ok, d = probe_url(url)
+        details.append(d)
+        if ok:
+            tunnel_ok = True
+            break
+    if not tunnel_ok:
+        return "down", "; ".join(details)
+    for i, url in enumerate(EXIT_PROBE_URLS):
+        if i:
+            time.sleep(RETRY_GAP)
+        ok, d = probe_url(url)
+        details.append(d)
+        if ok:
+            return "ok", "; ".join(details)
+    return "exit-degraded", "; ".join(details)
 
 
 def api(base, secret, method, path, timeout=API_TIMEOUT, **kw):
@@ -278,7 +308,7 @@ def try_fix(base, secret, ch, dry_run, proxies_map, extra_exclude=frozenset()):
     历史说当前节点活着时，用单节点实测复核定夺（探测优先于旧历史）。"""
     target, current = ch["target"], ch["current"]
     exclude = set(extra_exclude) | EXCLUDE_NODES | {current}
-    test = urllib.parse.quote(TEST_URLS[0], safe="")
+    test = urllib.parse.quote(DELAY_TEST_URL, safe="")  # 出口站测速: 直连类节点超时出局
     cur_delay = _fresh_delay(proxies_map, current)
     if cur_delay is not None:
         try:
@@ -443,29 +473,44 @@ def main():
         log.info("演练%s: %s", "成功" if ok else "失败", detail)
         return 0 if ok else 1
 
-    healthy, detail = is_healthy()
+    level, detail = is_healthy()
     if check_only:
-        log.info("check: %s", detail)
-        return 0 if healthy else 1
+        log.info("check[%s]: %s", level, detail)
+        return 0 if level == "ok" else 1
 
-    if healthy:
-        if state.get("status") == "bad":
+    if level == "ok":
+        prev = state.get("status")
+        if prev == "bad":
             log.info("已恢复: %s", detail)
             notify("代理已恢复 ✅" + (f"（{state.get('last_action', '')}）" if state.get("last_action") else ""), state, force=True)
-        else:
-            state["ok_runs"] = state.get("ok_runs", 0) + 1
-            if state["ok_runs"] % 100 == 0:
-                log.info("连续 ok x%d（%s）", state["ok_runs"], detail)
+        elif prev == "degraded":
+            log.info("出口已恢复: %s", detail)
+        state["ok_runs"] = state.get("ok_runs", 0) + 1
+        if state["ok_runs"] % 100 == 0:
+            log.info("累计 ok x%d（%s）", state["ok_runs"], detail)
         state["status"] = "ok"
         state["fail_streak"] = 0
+        state["exit_fail_streak"] = 0
         state["unresolved"] = False
         save_state(state)
         return 0
 
-    # ---- 断流 ----
+    # ---- 断流 / 出口退化 ----
     state["fail_streak"] = state.get("fail_streak", 0) + 1
-    state["status"] = "bad"
-    log.warning("断流(%d): %s", state["fail_streak"], detail)
+    if level == "down":
+        state["exit_fail_streak"] = 0
+        state["status"] = "bad"
+        log.warning("断流(%d): %s", state["fail_streak"], detail)
+    else:  # exit-degraded: 墙外站通、出口站全败 → 直连伪恢复或出口被针对
+        state["exit_fail_streak"] = state.get("exit_fail_streak", 0) + 1
+        if state["exit_fail_streak"] < EXIT_DEGRADE_THRESHOLD:
+            state["status"] = "degraded"
+            log.warning("出口退化(%d/%d): 墙外站通但出口站全败, 疑似直连伪恢复——暂不切换, 下轮复测: %s",
+                        state["exit_fail_streak"], EXIT_DEGRADE_THRESHOLD, detail)
+            save_state(state)
+            return 0
+        state["status"] = "bad"
+        log.warning("出口连续 %d 轮不可达, 按断流处理: %s", state["exit_fail_streak"], detail)
 
     if not base:
         state["unresolved"] = True
@@ -507,7 +552,7 @@ def main():
         state["unresolved"] = True
         notify("代理断流（dry-run 不切换）: " + "; ".join(a["msg"] for a in actions), state)
     elif switched:
-        ok2, detail2 = is_healthy()
+        lvl2, detail2 = is_healthy()
         summary = "; ".join(a["msg"] for a in switched)
         if switched_info:
             state["last_tried"] = {
@@ -516,14 +561,15 @@ def main():
             }
         state["last_action"] = summary
         state["last_switch_ts"] = time.time()
-        if ok2:
+        if lvl2 == "ok":
             state["unresolved"] = False
+            state["exit_fail_streak"] = 0
             log.info("切换后复测健康: %s", detail2)
             notify(f"代理断流已自动修复 ✅ {summary}", state, force=True)
         else:
             state["unresolved"] = True
-            log.warning("切换后复测仍断流: %s", detail2)
-            notify(f"已切换节点（{summary}）但仍断流，下轮继续尝试/请留意", state, force=True)
+            log.warning("切换后复测仍不健康[%s]: %s", lvl2, detail2)
+            notify(f"已切换节点（{summary}）但仍不健康[{lvl2}]，下轮继续尝试/请留意", state, force=True)
     else:
         state["unresolved"] = True
         notify("代理断流，未执行切换: " + "; ".join(a["msg"] for a in actions), state)
