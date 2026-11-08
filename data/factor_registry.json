@@ -1,0 +1,1489 @@
+{
+  "version": "1.0",
+  "updated_at": "2026-11-08T20:53:22.285111",
+  "factors": [
+    {
+      "name": "EMA_12",
+      "category": "trend",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 12,
+      "freq": "D",
+      "compute_fn": "ema",
+      "params": {
+        "span": 12
+      },
+      "version": "1.0.0",
+      "description": "12 日指数移动平均",
+      "tags": [
+        "trend_following",
+        "fast"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304162",
+      "updated_at": "2026-11-08T19:25:16.304176"
+    },
+    {
+      "name": "EMA_26",
+      "category": "trend",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 26,
+      "freq": "D",
+      "compute_fn": "ema",
+      "params": {
+        "span": 26
+      },
+      "version": "1.0.0",
+      "description": "26 日指数移动平均",
+      "tags": [
+        "trend_following",
+        "slow"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304181",
+      "updated_at": "2026-11-08T19:25:16.304183"
+    },
+    {
+      "name": "EMA_60",
+      "category": "trend",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 60,
+      "freq": "D",
+      "compute_fn": "ema",
+      "params": {
+        "span": 60
+      },
+      "version": "1.0.0",
+      "description": "60 日指数移动平均（长期趋势）",
+      "tags": [
+        "trend_following",
+        "long_term"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304186",
+      "updated_at": "2026-11-08T19:25:16.304188"
+    },
+    {
+      "name": "EMA_cross_12_26",
+      "category": "trend",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 26,
+      "freq": "D",
+      "compute_fn": "ema_cross",
+      "params": {
+        "fast": 12,
+        "slow": 26
+      },
+      "version": "1.1.0",
+      "description": "EMA12 上穿 EMA26 金叉信号（+1）/ 死叉（-1）",
+      "tags": [
+        "signal",
+        "trend_following"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304191",
+      "updated_at": "2026-11-08T19:25:16.304192"
+    },
+    {
+      "name": "MACD_hist",
+      "category": "trend",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 35,
+      "freq": "D",
+      "compute_fn": "macd",
+      "params": {
+        "fast": 12,
+        "slow": 26,
+        "signal": 9
+      },
+      "version": "1.0.0",
+      "description": "MACD 柱状图（MACD - Signal）",
+      "tags": [
+        "momentum",
+        "trend_following"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304195",
+      "updated_at": "2026-11-08T19:25:16.304197"
+    },
+    {
+      "name": "MACD_signal",
+      "category": "trend",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 35,
+      "freq": "D",
+      "compute_fn": "macd_signal",
+      "params": {
+        "fast": 12,
+        "slow": 26,
+        "signal": 9
+      },
+      "version": "1.0.0",
+      "description": "MACD 信号线",
+      "tags": [
+        "momentum",
+        "trend_following"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304199",
+      "updated_at": "2026-11-08T19:25:16.304200"
+    },
+    {
+      "name": "ADX_14",
+      "category": "trend",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 14,
+      "freq": "D",
+      "compute_fn": "adx",
+      "params": {
+        "period": 14
+      },
+      "version": "1.0.0",
+      "description": "平均趋向指数（趋势强度）",
+      "tags": [
+        "trend_strength"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304203",
+      "updated_at": "2026-11-08T19:25:16.304204"
+    },
+    {
+      "name": "RSI_14",
+      "category": "momentum",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 14,
+      "freq": "D",
+      "compute_fn": "rsi",
+      "params": {
+        "period": 14
+      },
+      "version": "1.0.0",
+      "description": "14 日相对强弱指数",
+      "tags": [
+        "mean_reversion",
+        "oversold_overbought"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304206",
+      "updated_at": "2026-11-08T19:25:16.304208"
+    },
+    {
+      "name": "RSI_6",
+      "category": "momentum",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 6,
+      "freq": "D",
+      "compute_fn": "rsi",
+      "params": {
+        "period": 6
+      },
+      "version": "1.0.0",
+      "description": "6 日 RSI（短期超买超卖）",
+      "tags": [
+        "mean_reversion",
+        "fast"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304210",
+      "updated_at": "2026-11-08T19:25:16.304211"
+    },
+    {
+      "name": "KDJ_K",
+      "category": "momentum",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 9,
+      "freq": "D",
+      "compute_fn": "kdj",
+      "params": {
+        "n": 9,
+        "m1": 3,
+        "m2": 3
+      },
+      "version": "1.0.0",
+      "description": "KDJ 随机指标 K 值",
+      "tags": [
+        "mean_reversion",
+        "signal"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304213",
+      "updated_at": "2026-11-08T19:25:16.304215"
+    },
+    {
+      "name": "KDJ_D",
+      "category": "momentum",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 9,
+      "freq": "D",
+      "compute_fn": "kdj_d",
+      "params": {
+        "n": 9,
+        "m1": 3,
+        "m2": 3
+      },
+      "version": "1.0.0",
+      "description": "KDJ D 值（K 的平滑）",
+      "tags": [
+        "mean_reversion",
+        "signal"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304217",
+      "updated_at": "2026-11-08T19:25:16.304218"
+    },
+    {
+      "name": "CCI_20",
+      "category": "momentum",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "cci",
+      "params": {
+        "period": 20
+      },
+      "version": "1.0.0",
+      "description": "顺势指标（偏离度）",
+      "tags": [
+        "mean_reversion",
+        "cyclical"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304221",
+      "updated_at": "2026-11-08T19:25:16.304222"
+    },
+    {
+      "name": "ROC_10",
+      "category": "momentum",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 10,
+      "freq": "D",
+      "compute_fn": "roc",
+      "params": {
+        "period": 10
+      },
+      "version": "1.0.0",
+      "description": "10 日变动率（动量）",
+      "tags": [
+        "momentum",
+        "trend_following"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304224",
+      "updated_at": "2026-11-08T19:25:16.304225"
+    },
+    {
+      "name": "MOM_20",
+      "category": "momentum",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "momentum",
+      "params": {
+        "period": 20
+      },
+      "version": "1.0.0",
+      "description": "20 日动量（价格差）",
+      "tags": [
+        "momentum"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304228",
+      "updated_at": "2026-11-08T19:25:16.304229"
+    },
+    {
+      "name": "ATR_14",
+      "category": "volatility",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 14,
+      "freq": "D",
+      "compute_fn": "atr",
+      "params": {
+        "period": 14
+      },
+      "version": "1.0.0",
+      "description": "平均真实波幅（止损/仓位用）",
+      "tags": [
+        "risk",
+        "position_sizing"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304231",
+      "updated_at": "2026-11-08T19:25:16.304232"
+    },
+    {
+      "name": "ATR_20",
+      "category": "volatility",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "atr",
+      "params": {
+        "period": 20
+      },
+      "version": "1.0.0",
+      "description": "20 日 ATR",
+      "tags": [
+        "risk",
+        "position_sizing"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304234",
+      "updated_at": "2026-11-08T19:25:16.304236"
+    },
+    {
+      "name": "BB_width_20",
+      "category": "volatility",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "bb_width",
+      "params": {
+        "period": 20,
+        "std": 2
+      },
+      "version": "1.0.0",
+      "description": "布林带宽度（波动率代理）",
+      "tags": [
+        "volatility",
+        "squeeze"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304238",
+      "updated_at": "2026-11-08T19:25:16.304239"
+    },
+    {
+      "name": "BB_pos_20",
+      "category": "volatility",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "bb_position",
+      "params": {
+        "period": 20,
+        "std": 2
+      },
+      "version": "1.0.0",
+      "description": "价格在布林带中的相对位置（0~1）",
+      "tags": [
+        "mean_reversion",
+        "volatility"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304241",
+      "updated_at": "2026-11-08T19:25:16.304243"
+    },
+    {
+      "name": "HV_20",
+      "category": "volatility",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "historical_vol",
+      "params": {
+        "period": 20
+      },
+      "version": "1.0.0",
+      "description": "20 日历史波动率（年化）",
+      "tags": [
+        "volatility",
+        "risk"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304245",
+      "updated_at": "2026-11-08T19:25:16.304246"
+    },
+    {
+      "name": "HV_60",
+      "category": "volatility",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 60,
+      "freq": "D",
+      "compute_fn": "historical_vol",
+      "params": {
+        "period": 60
+      },
+      "version": "1.0.0",
+      "description": "60 日历史波动率",
+      "tags": [
+        "volatility",
+        "risk",
+        "long_term"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304248",
+      "updated_at": "2026-11-08T19:25:16.304249"
+    },
+    {
+      "name": "volume_zscore_20",
+      "category": "volume",
+      "data_deps": [
+        "volume"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "zscore",
+      "params": {
+        "period": 20
+      },
+      "version": "1.0.0",
+      "description": "成交量 Z-score（异常放量识别）",
+      "tags": [
+        "anomaly",
+        "volume_surge"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304252",
+      "updated_at": "2026-11-08T19:25:16.304253"
+    },
+    {
+      "name": "volume_ratio_5_20",
+      "category": "volume",
+      "data_deps": [
+        "volume"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "volume_ratio",
+      "params": {
+        "short": 5,
+        "long": 20
+      },
+      "version": "1.0.0",
+      "description": "5 日/20 日量比",
+      "tags": [
+        "volume_trend"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304255",
+      "updated_at": "2026-11-08T19:25:16.304256"
+    },
+    {
+      "name": "turnover_20",
+      "category": "volume",
+      "data_deps": [
+        "turnover"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "sma",
+      "params": {
+        "period": 20
+      },
+      "version": "1.0.0",
+      "description": "20 日换手率均值",
+      "tags": [
+        "liquidity",
+        "activity"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304259",
+      "updated_at": "2026-11-08T19:25:16.304260"
+    },
+    {
+      "name": "OBV",
+      "category": "volume",
+      "data_deps": [
+        "close",
+        "volume"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "obv",
+      "params": {},
+      "version": "1.0.0",
+      "description": "能量潮指标（累积量价）",
+      "tags": [
+        "volume_price",
+        "divergence"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304262",
+      "updated_at": "2026-11-08T19:25:16.304263"
+    },
+    {
+      "name": "VWAP_dev",
+      "category": "volume",
+      "data_deps": [
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "vwap_deviation",
+      "params": {},
+      "version": "1.0.0",
+      "description": "收盘价偏离 VWAP 程度",
+      "tags": [
+        "intraday",
+        "fair_value"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304269",
+      "updated_at": "2026-11-08T19:25:16.304270"
+    },
+    {
+      "name": "money_flow_index_14",
+      "category": "volume",
+      "data_deps": [
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "lookback": 14,
+      "freq": "D",
+      "compute_fn": "mfi",
+      "params": {
+        "period": 14
+      },
+      "version": "1.0.0",
+      "description": "资金流量指数（量价 RSI）",
+      "tags": [
+        "money_flow",
+        "mean_reversion"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304272",
+      "updated_at": "2026-11-08T19:25:16.304274"
+    },
+    {
+      "name": "PE_TTM",
+      "category": "fundamental",
+      "data_deps": [
+        "pe_ttm"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "滚动市盈率（TTM）",
+      "tags": [
+        "valuation",
+        "value"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304276",
+      "updated_at": "2026-11-08T19:25:16.304278"
+    },
+    {
+      "name": "PB_MRQ",
+      "category": "fundamental",
+      "data_deps": [
+        "pb_mrq"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "最新市净率",
+      "tags": [
+        "valuation",
+        "value"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304280",
+      "updated_at": "2026-11-08T19:25:16.304281"
+    },
+    {
+      "name": "ROE_TTM",
+      "category": "fundamental",
+      "data_deps": [
+        "roe_ttm"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "净资产收益率（TTM）",
+      "tags": [
+        "quality",
+        "profitability"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304284",
+      "updated_at": "2026-11-08T19:25:16.304285"
+    },
+    {
+      "name": "net_profit_margin",
+      "category": "fundamental",
+      "data_deps": [
+        "net_profit_margin"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "销售净利率",
+      "tags": [
+        "quality",
+        "profitability"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304287",
+      "updated_at": "2026-11-08T19:25:16.304288"
+    },
+    {
+      "name": "revenue_yoy",
+      "category": "fundamental",
+      "data_deps": [
+        "revenue_yoy"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "营收同比增速",
+      "tags": [
+        "growth"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304291",
+      "updated_at": "2026-11-08T19:25:16.304292"
+    },
+    {
+      "name": "debt_to_equity",
+      "category": "fundamental",
+      "data_deps": [
+        "debt_to_equity"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "资产负债率",
+      "tags": [
+        "leverage",
+        "risk"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304294",
+      "updated_at": "2026-11-08T19:25:16.304295"
+    },
+    {
+      "name": "current_ratio",
+      "category": "fundamental",
+      "data_deps": [
+        "current_ratio"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "流动比率",
+      "tags": [
+        "liquidity",
+        "risk"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304297",
+      "updated_at": "2026-11-08T19:25:16.304298"
+    },
+    {
+      "name": "quick_ratio",
+      "category": "fundamental",
+      "data_deps": [
+        "quick_ratio"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "速动比率",
+      "tags": [
+        "liquidity",
+        "risk"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304300",
+      "updated_at": "2026-11-08T19:25:16.304302"
+    },
+    {
+      "name": "net_profit_yoy",
+      "category": "fundamental",
+      "data_deps": [
+        "net_profit_yoy"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "净利润同比增速",
+      "tags": [
+        "growth",
+        "profitability"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304304",
+      "updated_at": "2026-11-08T19:25:16.304305"
+    },
+    {
+      "name": "eps_basic",
+      "category": "fundamental",
+      "data_deps": [
+        "eps_basic"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "基本每股收益",
+      "tags": [
+        "valuation",
+        "profitability"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304307",
+      "updated_at": "2026-11-08T19:25:16.304308"
+    },
+    {
+      "name": "book_value_per_share",
+      "category": "fundamental",
+      "data_deps": [
+        "book_value_per_share"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "每股净资产",
+      "tags": [
+        "valuation",
+        "quality"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304310",
+      "updated_at": "2026-11-08T19:25:16.304311"
+    },
+    {
+      "name": "operating_cash_flow_per_share",
+      "category": "fundamental",
+      "data_deps": [
+        "operating_cash_flow_per_share"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "每股经营现金流",
+      "tags": [
+        "cash_flow",
+        "quality"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304314",
+      "updated_at": "2026-11-08T19:25:16.304315"
+    },
+    {
+      "name": "ROE_DILUTED",
+      "category": "fundamental",
+      "data_deps": [
+        "ROE_DILUTED"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "pass_through",
+      "params": {},
+      "version": "1.0.0",
+      "description": "净资产收益率-摊薄",
+      "tags": [
+        "quality",
+        "profitability"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T19:25:16.304317",
+      "updated_at": "2026-11-08T19:25:16.304318"
+    },
+    {
+      "name": "amplitude",
+      "category": "microstructure",
+      "data_deps": [
+        "high",
+        "low",
+        "open"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "amplitude",
+      "params": {},
+      "version": "1.0.0",
+      "description": "振幅 (High-Low)/Open",
+      "tags": [
+        "intraday",
+        "volatility"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304320",
+      "updated_at": "2026-11-08T19:25:16.304322"
+    },
+    {
+      "name": "gap_pct",
+      "category": "microstructure",
+      "data_deps": [
+        "open",
+        "close"
+      ],
+      "lookback": 2,
+      "freq": "D",
+      "compute_fn": "gap_pct",
+      "params": {},
+      "version": "1.0.0",
+      "description": "跳空缺口 (Open - PrevClose) / PrevClose",
+      "tags": [
+        "overnight",
+        "gap"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304324",
+      "updated_at": "2026-11-08T19:25:16.304325"
+    },
+    {
+      "name": "close_to_high",
+      "category": "microstructure",
+      "data_deps": [
+        "high",
+        "close"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "close_to_high",
+      "params": {},
+      "version": "1.0.0",
+      "description": "收盘价接近最高价程度",
+      "tags": [
+        "intraday",
+        "strength"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304329",
+      "updated_at": "2026-11-08T19:25:16.304331"
+    },
+    {
+      "name": "upper_shadow",
+      "category": "microstructure",
+      "data_deps": [
+        "high",
+        "close",
+        "open"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "upper_shadow",
+      "params": {},
+      "version": "1.0.0",
+      "description": "上影线长度",
+      "tags": [
+        "intraday",
+        "rejection"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304333",
+      "updated_at": "2026-11-08T19:25:16.304335"
+    },
+    {
+      "name": "lower_shadow",
+      "category": "microstructure",
+      "data_deps": [
+        "low",
+        "close",
+        "open"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "lower_shadow",
+      "params": {},
+      "version": "1.0.0",
+      "description": "下影线长度",
+      "tags": [
+        "intraday",
+        "support"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304337",
+      "updated_at": "2026-11-08T19:25:16.304338"
+    },
+    {
+      "name": "williams_r",
+      "category": "momentum",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 14,
+      "freq": "D",
+      "compute_fn": "williams_r",
+      "params": {
+        "period": 14
+      },
+      "version": "1.0.0",
+      "description": "Williams %R（超买超卖）",
+      "tags": [
+        "mean_reversion",
+        "oversold_overbought"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304340",
+      "updated_at": "2026-11-08T19:25:16.304341"
+    },
+    {
+      "name": "stoch_rsi",
+      "category": "momentum",
+      "data_deps": [
+        "close"
+      ],
+      "lookback": 14,
+      "freq": "D",
+      "compute_fn": "stoch_rsi",
+      "params": {
+        "period": 14,
+        "smooth_k": 3,
+        "smooth_d": 3
+      },
+      "version": "1.0.0",
+      "description": "Stochastic RSI（RSI 的随机指标）",
+      "tags": [
+        "mean_reversion",
+        "momentum"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304343",
+      "updated_at": "2026-11-08T19:25:16.304345"
+    },
+    {
+      "name": "chaikin_money_flow",
+      "category": "volume",
+      "data_deps": [
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "chaikin_money_flow",
+      "params": {
+        "period": 20
+      },
+      "version": "1.0.0",
+      "description": "Chaikin 资金流量（量价共振）",
+      "tags": [
+        "money_flow",
+        "volume_price"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304347",
+      "updated_at": "2026-11-08T19:25:16.304348"
+    },
+    {
+      "name": "force_index",
+      "category": "volume",
+      "data_deps": [
+        "close",
+        "volume"
+      ],
+      "lookback": 13,
+      "freq": "D",
+      "compute_fn": "force_index",
+      "params": {
+        "period": 13
+      },
+      "version": "1.0.0",
+      "description": "Force Index（艾尔德力度指标）",
+      "tags": [
+        "volume_price",
+        "trend_strength"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304350",
+      "updated_at": "2026-11-08T19:25:16.304351"
+    },
+    {
+      "name": "keltner_upper",
+      "category": "volatility",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "keltner_channel",
+      "params": {
+        "period": 20,
+        "mult": 2,
+        "which": "upper"
+      },
+      "version": "1.0.0",
+      "description": "肯特纳通道上轨",
+      "tags": [
+        "channel",
+        "breakout"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304354",
+      "updated_at": "2026-11-08T19:25:16.304355"
+    },
+    {
+      "name": "keltner_lower",
+      "category": "volatility",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "keltner_channel",
+      "params": {
+        "period": 20,
+        "mult": 2,
+        "which": "lower"
+      },
+      "version": "1.0.0",
+      "description": "肯特纳通道下轨",
+      "tags": [
+        "channel",
+        "breakout"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304359",
+      "updated_at": "2026-11-08T19:25:16.304360"
+    },
+    {
+      "name": "donchian_upper",
+      "category": "volatility",
+      "data_deps": [
+        "high",
+        "low"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "donchian_channel",
+      "params": {
+        "period": 20,
+        "which": "upper"
+      },
+      "version": "1.0.0",
+      "description": "唐奇安通道上轨（20日最高价）",
+      "tags": [
+        "channel",
+        "breakout",
+        "trend_following"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304362",
+      "updated_at": "2026-11-08T19:25:16.304363"
+    },
+    {
+      "name": "donchian_lower",
+      "category": "volatility",
+      "data_deps": [
+        "high",
+        "low"
+      ],
+      "lookback": 20,
+      "freq": "D",
+      "compute_fn": "donchian_channel",
+      "params": {
+        "period": 20,
+        "which": "lower"
+      },
+      "version": "1.0.0",
+      "description": "唐奇安通道下轨（20日最低价）",
+      "tags": [
+        "channel",
+        "breakout",
+        "trend_following"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304365",
+      "updated_at": "2026-11-08T19:25:16.304367"
+    },
+    {
+      "name": "supertrend",
+      "category": "trend",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 10,
+      "freq": "D",
+      "compute_fn": "supertrend",
+      "params": {
+        "period": 10,
+        "mult": 3
+      },
+      "version": "1.0.0",
+      "description": "Supertrend 趋势跟踪指标",
+      "tags": [
+        "trend_following",
+        "trailing_stop"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304369",
+      "updated_at": "2026-11-08T19:25:16.304370"
+    },
+    {
+      "name": "ichimoku_tenkan",
+      "category": "trend",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 9,
+      "freq": "D",
+      "compute_fn": "ichimoku",
+      "params": {
+        "which": "tenkan"
+      },
+      "version": "1.0.0",
+      "description": "一目均衡表转换线",
+      "tags": [
+        "ichimoku",
+        "trend_following"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304373",
+      "updated_at": "2026-11-08T19:25:16.304374"
+    },
+    {
+      "name": "ichimoku_kijun",
+      "category": "trend",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 26,
+      "freq": "D",
+      "compute_fn": "ichimoku",
+      "params": {
+        "which": "kijun"
+      },
+      "version": "1.0.0",
+      "description": "一目均衡表基准线",
+      "tags": [
+        "ichimoku",
+        "trend_following"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304376",
+      "updated_at": "2026-11-08T19:25:16.304377"
+    },
+    {
+      "name": "ichimoku_span_a",
+      "category": "trend",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 52,
+      "freq": "D",
+      "compute_fn": "ichimoku",
+      "params": {
+        "which": "span_a"
+      },
+      "version": "1.0.0",
+      "description": "一目均衡表先行带 A",
+      "tags": [
+        "ichimoku",
+        "trend_following"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304380",
+      "updated_at": "2026-11-08T19:25:16.304381"
+    },
+    {
+      "name": "ichimoku_span_b",
+      "category": "trend",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 52,
+      "freq": "D",
+      "compute_fn": "ichimoku",
+      "params": {
+        "which": "span_b"
+      },
+      "version": "1.0.0",
+      "description": "一目均衡表先行带 B",
+      "tags": [
+        "ichimoku",
+        "trend_following"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304383",
+      "updated_at": "2026-11-08T19:25:16.304384"
+    },
+    {
+      "name": "elder_ray_bull",
+      "category": "trend",
+      "data_deps": [
+        "high",
+        "close"
+      ],
+      "lookback": 13,
+      "freq": "D",
+      "compute_fn": "elder_ray",
+      "params": {
+        "period": 13,
+        "which": "bull"
+      },
+      "version": "1.0.0",
+      "description": "艾尔德雷牛力（高价 - EMA）",
+      "tags": [
+        "elder_ray",
+        "trend_strength"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304387",
+      "updated_at": "2026-11-08T19:25:16.304388"
+    },
+    {
+      "name": "elder_ray_bear",
+      "category": "trend",
+      "data_deps": [
+        "low",
+        "close"
+      ],
+      "lookback": 13,
+      "freq": "D",
+      "compute_fn": "elder_ray",
+      "params": {
+        "period": 13,
+        "which": "bear"
+      },
+      "version": "1.0.0",
+      "description": "艾尔德雷熊力（低价 - EMA）",
+      "tags": [
+        "elder_ray",
+        "trend_strength"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304390",
+      "updated_at": "2026-11-08T19:25:16.304391"
+    },
+    {
+      "name": "vwap",
+      "category": "microstructure",
+      "data_deps": [
+        "high",
+        "low",
+        "close",
+        "volume"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "vwap",
+      "params": {},
+      "version": "1.0.0",
+      "description": "成交量加权平均价（日内）",
+      "tags": [
+        "intraday",
+        "fair_value"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304394",
+      "updated_at": "2026-11-08T19:25:16.304395"
+    },
+    {
+      "name": "pivot_point",
+      "category": "microstructure",
+      "data_deps": [
+        "high",
+        "low",
+        "close"
+      ],
+      "lookback": 2,
+      "freq": "D",
+      "compute_fn": "pivot_point",
+      "params": {
+        "which": "pp"
+      },
+      "version": "1.0.0",
+      "description": "枢轴点（支撑/阻力参考）",
+      "tags": [
+        "support_resistance",
+        "intraday"
+      ],
+      "neutralize": false,
+      "universe": "watchlist",
+      "created_at": "2026-11-08T19:25:16.304397",
+      "updated_at": "2026-11-08T19:25:16.304399"
+    },
+    {
+      "name": "PS_TTM",
+      "category": "valuation",
+      "data_deps": [
+        "close",
+        "revenue_per_share"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "valuation_ps_ttm",
+      "params": {},
+      "version": "1.0.0",
+      "description": "滚动市销率（TTM）",
+      "tags": [
+        "valuation",
+        "value"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T20:53:22.283007",
+      "updated_at": "2026-11-08T20:53:22.283020"
+    },
+    {
+      "name": "PCF_TTM",
+      "category": "valuation",
+      "data_deps": [
+        "close",
+        "operating_cash_flow_per_share"
+      ],
+      "lookback": 1,
+      "freq": "D",
+      "compute_fn": "valuation_pcf_ttm",
+      "params": {},
+      "version": "1.0.0",
+      "description": "滚动市现率（TTM）",
+      "tags": [
+        "valuation",
+        "value"
+      ],
+      "neutralize": false,
+      "universe": "all",
+      "created_at": "2026-11-08T20:53:22.283011",
+      "updated_at": "2026-11-08T20:53:22.285067"
+    }
+  ]
+}

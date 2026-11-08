@@ -1,0 +1,73 @@
+{
+  "name": "ema_obv",
+  "version": "1.0.0",
+  "description": "EMA20 站上 + OBV 上穿均线（原策略：量价共振）",
+  "created_at": "2026-11-08T16:20:50.809391",
+  "updated_at": "2026-11-08T16:20:50.809392",
+  "scoring_rules": [
+    {
+      "factor": "EMA_cross_12_26",
+      "weight": 0.4,
+      "transform": "linear",
+      "params": {},
+      "direction": 1
+    },
+    {
+      "factor": "OBV",
+      "weight": 0.3,
+      "transform": "zscore",
+      "params": {},
+      "direction": 1
+    },
+    {
+      "factor": "volume_zscore_20",
+      "weight": 0.2,
+      "transform": "linear",
+      "params": {},
+      "direction": 1
+    },
+    {
+      "factor": "close_to_high",
+      "weight": 0.1,
+      "transform": "linear",
+      "params": {},
+      "direction": 1
+    }
+  ],
+  "normalize": "zscore",
+  "neutralize": [],
+  "gate_rules": [
+    {
+      "name": "ema_bullish",
+      "factor": "EMA_cross_12_26",
+      "operator": ">=",
+      "threshold": 1,
+      "action": "pass",
+      "message": "EMA 金叉",
+      "params": {}
+    },
+    {
+      "name": "volume_surge",
+      "factor": "volume_zscore_20",
+      "operator": ">",
+      "threshold": 2,
+      "action": "warn",
+      "message": "异常放量",
+      "params": {}
+    }
+  ],
+  "position_sizing": "score_weighted",
+  "max_position_pct": 0.12,
+  "stop_loss_pct": 0.05,
+  "take_profit_pct": 0.15,
+  "min_score": 0.0,
+  "rebalance_freq": "D",
+  "allow_short": false,
+  "tags": [
+    "volume_price",
+    "momentum"
+  ],
+  "universe": "watchlist",
+  "author": "",
+  "parent_strategy": ""
+}

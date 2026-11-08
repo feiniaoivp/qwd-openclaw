@@ -1,0 +1,106 @@
+{
+  "name": "adaptive_multi",
+  "version": "1.0.0",
+  "description": "多因子自适应：趋势+动量+波动+量价综合评分",
+  "created_at": "2026-11-08T16:20:50.809415",
+  "updated_at": "2026-11-08T16:20:50.809417",
+  "scoring_rules": [
+    {
+      "factor": "EMA_cross_12_26",
+      "weight": 0.25,
+      "transform": "linear",
+      "params": {},
+      "direction": 1
+    },
+    {
+      "factor": "MACD_hist",
+      "weight": 0.2,
+      "transform": "linear",
+      "params": {},
+      "direction": 1
+    },
+    {
+      "factor": "RSI_14",
+      "weight": 0.15,
+      "transform": "linear",
+      "params": {},
+      "direction": -1
+    },
+    {
+      "factor": "BB_pos_20",
+      "weight": 0.15,
+      "transform": "linear",
+      "params": {},
+      "direction": 1
+    },
+    {
+      "factor": "volume_zscore_20",
+      "weight": 0.1,
+      "transform": "zscore",
+      "params": {},
+      "direction": 1
+    },
+    {
+      "factor": "ATR_14",
+      "weight": 0.1,
+      "transform": "zscore",
+      "params": {},
+      "direction": -1
+    },
+    {
+      "factor": "OBV",
+      "weight": 0.05,
+      "transform": "zscore",
+      "params": {},
+      "direction": 1
+    }
+  ],
+  "normalize": "zscore",
+  "neutralize": [
+    "industry",
+    "market_cap"
+  ],
+  "gate_rules": [
+    {
+      "name": "trend_ok",
+      "factor": "EMA_cross_12_26",
+      "operator": ">=",
+      "threshold": 0,
+      "action": "pass",
+      "message": "趋势向上",
+      "params": {}
+    },
+    {
+      "name": "not_overbought",
+      "factor": "RSI_14",
+      "operator": "<",
+      "threshold": 75,
+      "action": "pass",
+      "message": "未超买",
+      "params": {}
+    },
+    {
+      "name": "vol_normal",
+      "factor": "ATR_14",
+      "operator": "<",
+      "threshold": 2.5,
+      "action": "warn",
+      "message": "波动率正常",
+      "params": {}
+    }
+  ],
+  "position_sizing": "vol_target",
+  "max_position_pct": 0.08,
+  "stop_loss_pct": 0.05,
+  "take_profit_pct": 0.15,
+  "min_score": 0.0,
+  "rebalance_freq": "D",
+  "allow_short": false,
+  "tags": [
+    "multi_factor",
+    "adaptive"
+  ],
+  "universe": "watchlist",
+  "author": "",
+  "parent_strategy": ""
+}

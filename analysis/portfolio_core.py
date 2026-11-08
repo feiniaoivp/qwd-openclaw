@@ -1481,12 +1481,19 @@ def run_portfolio_scan(
     # ── B-管道化（2026-11-04 用户拍板）：信号日排队 / T+1 开盘价成交 ──
     _EXEC_ENABLED = auto_executor.auto_executor_enabled()
     _PENDING_INDEX = auto_executor.load_pending_intents(today_str) if _EXEC_ENABLED else {}
+    # 政权分配器接入（2026-11-08 任务1）：读取最近一份 signal_date < today 的政权配置，
+    # 作为 T+1 成交时「无章旧意向」的 day 级兜底（有章新意向优先用自身携带的信号日政权章）
+    _T1_REGIME_DAY = auto_executor.load_regime_t1_config(today_str) if _EXEC_ENABLED else None
+    if _T1_REGIME_DAY:
+        print(f"  🌦️ [regime] day 兜底配置: {_T1_REGIME_DAY.get('regime')} "
+              f"(signal_date={_T1_REGIME_DAY.get('signal_date')})")
     _EXEC_CTX = {
         "pending_index": _PENDING_INDEX,
         "execute_trade": execute_trade,
         "check_dedup": RiskGuard.check_dedup,
         "position_plan": position_plan,
         "max_age_days": int(os.getenv("AUTO_EXEC_MAX_AGE") or 5),
+        "regime_t1_day": _T1_REGIME_DAY,
     }
     trade_count = 0
     errors = []
@@ -1547,6 +1554,22 @@ def run_portfolio_scan(
                 dfs[sym] = fetch_data_func(sym)
             except Exception as e:
                 dfs[sym] = e
+
+    # ── 政权分配器接入（2026-11-08 任务1）：T 日收盘扫描，预取完成后、意向创建前 ──
+    # 调 regime_allocator.generate_next_day_config() 生成 T+1 政权权重配置：
+    #   a) 落盘 data/runtime/regime_t1_config.json（T+1 日作 day 级兜底）
+    #   b) 返回精简章，盖章到本日新建 PENDING 意向（T+1 开盘成交按其调整单票上限）
+    # fail-open：样本不足/异常 → None（意向无章，成交时回退 day 兜底或原样），不阻断扫描
+    _REGIME_T1_STAMP = None
+    if _EXEC_ENABLED:
+        try:
+            _REGIME_T1_STAMP = auto_executor.prepare_regime_t1(dfs, signal_date=today_str)
+            if _REGIME_T1_STAMP:
+                print(f"  🌦️ [regime] T+1 政权配置: {_REGIME_T1_STAMP.get('regime')} "
+                      f"(max_pos={_REGIME_T1_STAMP.get('max_position_pct')}, "
+                      f"conf={_REGIME_T1_STAMP.get('regime_probability')})")
+        except Exception as _e:
+            print(f"⚠️ [regime] T+1 政权配置生成失败（fail-open，意向将无政权章）: {_e}")
 
     for sym, name in stocks:
         pos = state["positions"].get(sym)
@@ -1620,6 +1643,7 @@ def run_portfolio_scan(
                 "high_risk": fatal_risk.get("high_risk_triggered", False),
                 "buy_mult": position_plan.get("buy_signal_multiplier", 1.0),
                 "total_limit_pct": position_plan.get("total_limit_pct", 0),
+                "market_regime": (_REGIME_T1_STAMP or {}).get("regime"),
             },
         }
 
@@ -1754,19 +1778,10 @@ def run_portfolio_scan(
                 audit_entry["final_action"] = signal["action"]
                 audit_entry["status"] = "SKIP(空仓卖出不入队)"
             elif should_exec:
-                intents_buf[sym] = {
-                    "name": name,
-                    "action": signal["action"],
-                    "reason": signal["reason"],
-                    "price": signal["price"],
-                    "bucket": pos.get("bucket", "satellite"),
-                    "strategy": strat,
-                    "atr": signal.get("atr"),
-                    "atr_stop": signal.get("atr_stop"),
-                    "fib_tp": signal.get("fib_tp", {}),
-                    "created_at": datetime.now().isoformat(),
-                    "status": "PENDING"
-                }
+                # 政权分配器接入（2026-11-08 任务1）：意向盖章信号日 T 的 T+1 政权配置
+                intents_buf[sym] = auto_executor.build_pending_intent(
+                    name, signal, pos, strat, datetime.now().isoformat(),
+                    regime_t1=_REGIME_T1_STAMP)
                 audit_entry["final_action"] = signal["action"]
                 audit_entry["status"] = "QUEUED"
                 all_msgs.append(f"📨 {name}({sym}) {signal['action']}已排队 → 下一交易日开盘价执行")

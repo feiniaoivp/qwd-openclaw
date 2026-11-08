@@ -1,0 +1,73 @@
+{
+  "name": "bollinger_atr",
+  "version": "1.0.0",
+  "description": "布林带突破 + ATR 动态止损（原策略：趋势跟踪）",
+  "created_at": "2026-11-08T16:20:50.809362",
+  "updated_at": "2026-11-08T16:20:50.809370",
+  "scoring_rules": [
+    {
+      "factor": "BB_pos_20",
+      "weight": 0.4,
+      "transform": "linear",
+      "params": {},
+      "direction": 1
+    },
+    {
+      "factor": "BB_width_20",
+      "weight": 0.2,
+      "transform": "linear",
+      "params": {},
+      "direction": 1
+    },
+    {
+      "factor": "ATR_14",
+      "weight": 0.2,
+      "transform": "zscore",
+      "params": {},
+      "direction": -1
+    },
+    {
+      "factor": "EMA_cross_12_26",
+      "weight": 0.2,
+      "transform": "linear",
+      "params": {},
+      "direction": 1
+    }
+  ],
+  "normalize": "zscore",
+  "neutralize": [],
+  "gate_rules": [
+    {
+      "name": "bb_breakout",
+      "factor": "BB_pos_20",
+      "operator": ">=",
+      "threshold": 0.8,
+      "action": "block",
+      "message": "价格突破布林带上轨",
+      "params": {}
+    },
+    {
+      "name": "atr_expansion",
+      "factor": "ATR_14",
+      "operator": ">",
+      "threshold": 2.0,
+      "action": "warn",
+      "message": "ATR 异常放大",
+      "params": {}
+    }
+  ],
+  "position_sizing": "vol_target",
+  "max_position_pct": 0.15,
+  "stop_loss_pct": 0.08,
+  "take_profit_pct": 0.15,
+  "min_score": 0.0,
+  "rebalance_freq": "D",
+  "allow_short": false,
+  "tags": [
+    "trend_following",
+    "bollinger"
+  ],
+  "universe": "watchlist",
+  "author": "",
+  "parent_strategy": ""
+}
