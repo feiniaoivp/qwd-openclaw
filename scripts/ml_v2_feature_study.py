@@ -60,7 +60,7 @@ def build_panel_ranks(stock_dfs):
     返回 {symbol: DataFrame(date, f_xs_rank_ret20, f_xs_rank_vol20)}"""
     ret20, vol20 = {}, {}
     for sym, df in stock_dfs.items():
-        c = df["close"].astype(float)
+        c = pd.to_numeric(df["close"], errors="coerce")
         ret20[sym] = pd.Series(c.pct_change(20).values, index=df["date"].dt.normalize())
         vol20[sym] = pd.Series(c.pct_change().rolling(20).std().values, index=df["date"].dt.normalize())
     ret_panel = pd.DataFrame(ret20)     # index=date, columns=symbol

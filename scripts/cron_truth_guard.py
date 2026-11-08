@@ -42,19 +42,19 @@ WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 TRUTH_MAP = {
     # 交易日链（需先通过 is_trading_day 校验）
     "3950d3cc-0230-4241-a8ff-c0fdea3b33f2": ("file", "analysis/daily/{{date}}_dual.md"),       # daily-a-share-telegram-push
-    "4ecdf11f-7b93-4d53-83f2-4536c007e8a5": ("file", "data/auction/{{date}}_9_25.json"),       # auction-analyze-0926
-    "cc1e9a93-1c47-4483-932a-2bdea2695be5": ("file", "data/auction/signal_push_{{date}}.json"), # auction-signal-push
+    "4ecdf11f-7b93-4d53-83f2-4536c007e8a5": ("file", "data/runtime/auction/{{date}}_9_25.json"),       # auction-analyze-0926
+    "cc1e9a93-1c47-4483-932a-2bdea2695be5": ("file", "data/runtime/auction/signal_push_{{date}}.json"), # auction-signal-push
     "ed92007e-67ab-4113-9059-008151f417e1": ("static", "data/market_breadth_output.json"),      # market-breadth-open-scan
-    "c57f99fb-b3bc-4957-8c4b-c123dcec3ab3": ("static", "data/intraday_alert_output.json"),      # intraday-alert-watch
-    "3ca4931a-b31f-4dfe-9a10-c70159c8096c": ("static", "data/intraday_alert_output.json"),      # intraday-alert-watch-pm (same output file)
-    "b954c808-fde1-46de-b2b4-8f83bb59d07d": ("static", "data/portfolio_equity.csv"),           # portfolio-sim-daily
+    "c57f99fb-b3bc-4957-8c4b-c123dcec3ab3": ("static", "data/runtime/intraday_alert_output.json"),      # intraday-alert-watch
+    "3ca4931a-b31f-4dfe-9a10-c70159c8096c": ("static", "data/runtime/intraday_alert_output.json"),      # intraday-alert-watch-pm (same output file)
+    "b954c808-fde1-46de-b2b4-8f83bb59d07d": ("static", "data/runtime/portfolio_equity.csv"),           # portfolio-sim-daily
     "fbba023a-8caf-4194-abf8-7fb097599c61": ("file", "analysis/daily/{{date}}_dual.md"),       # evening-dual-refresh-and-shadow
     "bd9843f1-2a6f-44e6-8bf2-8f3aa5b9bca3": ("file", "analysis/backtest/{{date}}.md"),   # quant-backtest-daily
     
     # 非交易日/全天候链（无需 is_trading_day 校验）
     "a07898c0-c659-45d0-823b-93e744f9a417": ("file", "memory/dreaming/daily-report-{{date}}.md"),  # Memory Dreaming Promotion
     "a8c18aed-8916-4afa-82e7-2b6501dcbfcf": ("file", "memory/dreaming/daily-report-{{date}}.md"),  # Dreaming Daily Report
-    "2fe5c58d-adaa-4a3e-b262-e1ae37e51b69": ("static", "data/premarket_outlook_output.json"),     # premarket-outlook-daily
+    "2fe5c58d-adaa-4a3e-b262-e1ae37e51b69": ("static", "data/runtime/premarket_outlook_output.json"),     # premarket-outlook-daily
     "40731f98-d532-4c18-b33f-99f386f7f8be": ("file", "data/news/daily_{{date}}.md"),             # news-monitor-morning
     "7e0dc37b-b79a-4eee-a845-ba9cf79ccb26": ("static", "data/news/knowledge_base.md"),           # news-monitor-afternoon
     "537eb1ff-9268-4bbb-a0fa-3c58c249cf2c": ("file", "data/news/daily_{{date}}.md"),               # daily-news-reading-push
@@ -72,7 +72,7 @@ TRUTH_MAP = {
     "44616767-f4d0-4c1a-afd3-39a6f2f19777": ("file", "analysis/daily/{{date}}_portfolio_weekly.md"), # portfolio-weekly-report
     # "14e04f9b-fc75-4468-b2a3-c0f373a24466": power-overseas-backtest-monthly (产物命名为 YYYYMMDD_HHMMSS，时间戳不固定，跳过精确审计)
     "e3604f95-09d4-4dd7-ab26-bd50b7f80480": ("static", "data/corr_clusters.json"),                # corr-clusters-monthly-refresh
-    "824d1039-a6e0-445d-a6ea-ce20a4d38b51": ("static", "data/param_exec_reconcile.json"),         # param-exec-reconciliation-monthly
+    "824d1039-a6e0-445d-a6ea-ce20a4d38b51": ("file", "analysis/monthly/param_exec_reconciliation_{{month}}.md"),  # param-exec-reconciliation-monthly (产物为月度md，2026-11-08 修正：旧期望 data/param_exec_reconcile.json 从非脚本产物路径)
     # "53fb14c9-2ea3-4837-a909-ccee477c9161": sector-overseas-tender-monitor (事件驱动监控，仅有事件时推送，无持久化产物文件)
     "1410e346-127e-4c9b-b593-f0dcb60df9e6": ("file", "data/commodity_fx_{{date}}.json"),             # sector-overseas-commodity-fx
     # "7fac42a1-e98f-4316-a342-a32a3d4a541a": power-overseas-eod (Telegram 推送脚本，无持久化文件产物)
@@ -233,8 +233,13 @@ def verify_truth(job, workspace=None):
         # 取运行时间的 YYYYMMDD_HHMMSS 格式
         date_short_str = dt.strftime("%Y%m%d_%H%M%S")
     
+    # 处理 {{month}}：YYYY-MM 格式（用于 monthly job 的月度命名产物，如 param_exec_reconciliation_2026-11.md）
+    month_str = None
+    if "{{month}}" in template:
+        month_str = dt.strftime("%Y-%m")
+    
     if mode == "file":
-        actual_path = os.path.join(ws, template.replace("{{date}}", date_str).replace("{{prev_date}}", prev_date_str or date_str).replace("{{friday_date}}", friday_date_str or date_str).replace("{{date_short}}", date_short_str or date_str))
+        actual_path = os.path.join(ws, template.replace("{{date}}", date_str).replace("{{prev_date}}", prev_date_str or date_str).replace("{{friday_date}}", friday_date_str or date_str).replace("{{date_short}}", date_short_str or date_str).replace("{{month}}", month_str or date_str[:7]))
     else:  # static
         actual_path = os.path.join(ws, template)
     
@@ -313,7 +318,7 @@ def selftest():
         c2 = ("C2 追加型产物晚于运行3h→放行(防上限回潮)", False, r)
 
         # C3 陈旧产物：早 1h（超出 -10min 容差）→ 必须报 Fake OK
-        mkfile("data/auction/2026-01-15_9_25.json", run_ms - 3600 * 1000, "{}")
+        mkfile("data/runtime/auction/2026-01-15_9_25.json", run_ms - 3600 * 1000, "{}")
         r = verify_truth(job("4ecdf11f-7b93-4d53-83f2-4536c007e8a5"), workspace=td)
         c3 = ("C3 产物早于运行1h→Fake OK", True, r)
 

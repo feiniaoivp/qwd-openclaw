@@ -84,12 +84,20 @@ st = {"positions": {"600030": mk_pos("600030", mv=50_000),
                     "300285": mk_pos("300285", mv=800_000)}}
 run("场景4 簇占20%放行", s, mk_pos("601211"), st, PLAN, expect_block=False)
 
-# ── 场景5: 簇市值40万/总资产150万, est=5k → (400+5)/(1500+5)=26.7% >25% 拦 ──
+# ── 场景5: 簇市值40万/总资产150万, est=5k → (400+5)/(1500+5)=26.7%
+#    期望随生效上限动态判定（2026-11-08 激进模式同步: 0.25→0.45 时本场景应为放行）
 s = buy(); s["_sym"] = "601211"
 st = {"positions": {"600030": mk_pos("600030", mv=200_000),
                     "601066": mk_pos("601066", mv=200_000),
                     "300285": mk_pos("300285", mv=1_000_000)}}
-run("场景5 簇占26.7%拦截", s, mk_pos("601211"), st, PLAN, expect_block=True)
+expo5 = (400 + 5) / (1500 + 5)
+run(f"场景5 簇占26.7% (vs 上限{pc.CLUSTER_EXPO_CAP:.0%})", s, mk_pos("601211"), st, PLAN,
+    expect_block=expo5 > pc.CLUSTER_EXPO_CAP)
+# 场景5b: 超限对偶（簇70万/总150万 → 46.8%，标准/激进模式均必拦）──
+st5b = {"positions": {"600030": mk_pos("600030", mv=350_000),
+                      "601066": mk_pos("601066", mv=350_000),
+                      "300285": mk_pos("300285", mv=800_000)}}
+run("场景5b 簇占46.8%>上限拦截(对偶必拦)", s, mk_pos("601211"), st5b, PLAN, expect_block=True)
 
 # ── 场景6: 只数口径会拦(簇内已持2只)但占比低 → 新口径放行(证明语义真的换了) ──
 s = buy(); s["_sym"] = "601211"
@@ -100,12 +108,18 @@ st = {"positions": {"600030": mk_pos("600030", mv=100_000),
 run("场景6 同簇2只但占比3.8%→放行(只数口径会拦)", s, mk_pos("601211"), st, PLAN,
     expect_block=False)
 
-# ── 场景7: 齐涨漂移 → 簇内仅1只但市值50万/总资产150万 → (500+5)/(1500+5)=33.4% 拦 ──
+# ── 场景7: 齐涨漂移 → 簇内仅1只但市值50万/总资产150万 → (500+5)/(1500+5)=33.4%
+#    期望随生效上限动态判定（激进 0.45 → 放行）──
 s = buy(); s["_sym"] = "601211"
 st = {"positions": {"600030": mk_pos("600030", mv=500_000),
                     "300285": mk_pos("300285", mv=1_000_000)}}
-run("场景7 簇内1只但齐涨漂移33.4%→拦截(旧口径会漏)", s, mk_pos("601211"), st, PLAN,
-    expect_block=True)
+expo7 = (500 + 5) / (1500 + 5)
+run(f"场景7 簇内1只齐涨漂移33.4% (vs 上限{pc.CLUSTER_EXPO_CAP:.0%})", s, mk_pos("601211"), st, PLAN,
+    expect_block=expo7 > pc.CLUSTER_EXPO_CAP)
+# 场景7b: 超限对偶（簇70万/总150万 → 46.8%，两模式均必拦）──
+st7b = {"positions": {"600030": mk_pos("600030", mv=700_000),
+                      "300285": mk_pos("300285", mv=800_000)}}
+run("场景7b 齐涨漂移46.8%>上限拦截(对偶必拦)", s, mk_pos("601211"), st7b, PLAN, expect_block=True)
 
 # ── 场景8: mv_map 当日市值覆盖过期的 _last_mv ──
 s = buy(); s["_sym"] = "601211"
@@ -114,20 +128,33 @@ p30["_last_mv"] = 200_000          # 昨日市值
 st = {"positions": {"600030": p30,
                     "300285": mk_pos("300285", mv=1_000_000)}}
 mv_map = {"600030": 600_000}       # 当日已暴涨: 20万→60万
-# 不用 mv_map: (200+5)/(1200+5)=16.9% 放行; 用 mv_map 当日60万: (600+5)/(1600+5)=37.6% 拦
+# 不用 mv_map: (200+5)/(1200+5)=16.9% 放行; 用 mv_map 当日60万: (600+5)/(1600+5)=37.6%
+# 期望随生效上限动态判定（激进 0.45 → 放行）
 run("场景8a 无mv_map用_last_mv→放行", buy_ := buy() | {"_sym": "601211"}, mk_pos("601211"),
     st, PLAN, mv_map=None, expect_block=False)
-run("场景8b 有mv_map当日市值→拦截", buy_ := buy() | {"_sym": "601211"}, mk_pos("601211"),
-    st, PLAN, mv_map=mv_map, expect_block=True)
+expo8b = (600 + 5) / (1600 + 5)
+run(f"场景8b 有mv_map当日市值37.6% (vs 上限{pc.CLUSTER_EXPO_CAP:.0%})", buy_ := buy() | {"_sym": "601211"},
+    mk_pos("601211"), st, PLAN, mv_map=mv_map, expect_block=expo8b > pc.CLUSTER_EXPO_CAP)
+# 场景8c: 超限对偶（mv_map 当日90万 → (900+5)/(1900+5)=47.5%，两模式均必拦）──
+run("场景8c mv_map当日90万→47.5%>上限拦截(对偶必拦)", buy_ := buy() | {"_sym": "601211"},
+    mk_pos("601211"), st, PLAN, mv_map={"600030": 900_000}, expect_block=True)
 
 # ── 场景9: 预估买入额敏感性（core single_cap=15000 vs satellite=5000）──
 st2 = {"positions": {"600030": mk_pos("600030", mv=358_000),
                      "300285": mk_pos("300285", mv=1_092_000)}}
-# satellite: (358+5)/(1450+5)=25.03%→拦? 363/1455=24.95% 放; core: (358+15)/(1450+15)=25.48% 拦
+# satellite: (358+5)/(1450+5)=25.03%→拦? 363/1455=24.95% 放; core: (358+15)/(1450+15)=25.48%
+# 期望随生效上限动态判定（激进 0.45 → 均放行）
 run("场景9a satellite est5k → 24.95% 放行", buy() | {"_sym": "601211"},
     mk_pos("601211"), st2, PLAN, expect_block=False)
-run("场景9b core est15k → 25.48% 拦截", buy() | {"_sym": "601211"},
-    mk_pos("601211", cash=100_000) | {"bucket": "core"}, st2, PLAN, expect_block=True)
+expo9b = (358 + 15) / (1450 + 15)
+run(f"场景9b core est15k → 25.48% (vs 上限{pc.CLUSTER_EXPO_CAP:.0%})", buy() | {"_sym": "601211"},
+    mk_pos("601211", cash=100_000) | {"bucket": "core"}, st2, PLAN,
+    expect_block=expo9b > pc.CLUSTER_EXPO_CAP)
+# 场景9c: 超限对偶（core + 簇市值70万/总150万；est 随模式变 15k/30k，两模式均超上限必拦）──
+st9c = {"positions": {"600030": mk_pos("600030", mv=700_000),
+                      "300285": mk_pos("300285", mv=800_000)}}
+run("场景9c core + 簇占>上限拦截(对偶必拦)", buy() | {"_sym": "601211"},
+    mk_pos("601211", cash=100_000) | {"bucket": "core"}, st9c, PLAN, expect_block=True)
 
 # ── 场景10: 映射整体缺失(fail-open) → 放行 ──
 s = buy(); s["_sym"] = "600030"

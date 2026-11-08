@@ -1,5 +1,8 @@
 {
+ "analysis/ml_strategy.py": 4,
  "analysis/five_stock_scan.py": 1,
+ "analysis/weekly_deep_dive.py": 3,
+ "analysis/turtle_strategy.py": 1,
  "analysis/backtest_dual_stop.py": 2,
  "analysis/adaptive_dual.py": 2,
  "analysis/picks_20261008_repair.py": 1,

@@ -84,10 +84,11 @@ def build_features(df, feature_set=None):
     """
     feature_set = feature_set or FEATURE_SET
     df = df.copy().reset_index(drop=True)
-    close = df["close"].astype(float)
-    high = df["high"].astype(float)
-    low = df["low"].astype(float)
-    vol = df["volume"].astype(float)
+    # 外部行情列统一 to_numeric（空串/脏值 coerce 为 NaN，防 ValueError 崩批）
+    close = pd.to_numeric(df["close"], errors="coerce")
+    high = pd.to_numeric(df["high"], errors="coerce")
+    low = pd.to_numeric(df["low"], errors="coerce")
+    vol = pd.to_numeric(df["volume"], errors="coerce")
 
     f = pd.DataFrame(index=df.index)
     for n in (1, 5, 10, 20):

@@ -69,8 +69,9 @@ def main():
             failed.append(f"{name}({sym})")
             continue
         fetched += 1
-        closes = df["close"].astype(float).values
-        opens = df["open"].astype(float).values
+        # 外部行情列统一 to_numeric（空串 coerce NaN，防 ValueError 崩批）
+        closes = pd.to_numeric(df["close"], errors="coerce").values
+        opens = pd.to_numeric(df["open"], errors="coerce").values
         dates = pd.to_datetime(df["date"])
         years = max((dates.max() - dates.min()).days / 365.25, 0.5)
         date_idx = {str(d.date()): i for i, d in enumerate(dates)}

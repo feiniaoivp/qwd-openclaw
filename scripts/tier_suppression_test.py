@@ -57,10 +57,18 @@ def sig(action="买入", reason="MACD金叉", sym="600030", name="中信证券")
 
 
 try:
-    # 1 Tier2 空仓买入 → 拦 + 标记
+    # 激进模式感知（2026-11-08）：tier2 买入在激进模式下有意放行（aggressive_allowed 留痕，
+    # 11-03 用户批准），期望随 _AGGR_CFG 动态判定；tier3 禁买是硬保险、两模式一致
+    _T2_BUY_ALLOWED = bool(pc._AGGR_CFG.get("enabled")) and bool(pc._AGGR_CFG.get("allow_tier2_buy", False))
+
+    # 1 Tier2 空仓买入 → 放行(激进留痕) 或 拦+标记(标准)
     out = pc._apply_tier_filter(sig(), {"position": False}, "tier2")
-    check(out["action"] == "持有" and out.get("suppressed_by") == "tier2",
-          "场景1 Tier2空仓买入→持有+标记tier2")
+    if _T2_BUY_ALLOWED:
+        check(out["action"] == "买入" and out.get("aggressive_allowed") == "tier2_buy",
+              "场景1 Tier2空仓买入→激进放行+aggressive_allowed留痕")
+    else:
+        check(out["action"] == "持有" and out.get("suppressed_by") == "tier2",
+              "场景1 Tier2空仓买入→持有+标记tier2")
 
     # 2 【核心回归】Tier3 空仓买入必须拦（原实现漏拦）
     out = pc._apply_tier_filter(sig(sym="601995", name="中金公司"), {"position": False}, "tier3")
@@ -72,16 +80,26 @@ try:
     check(out["action"] == "买入" and "suppressed_by" not in out,
           "场景3 Tier1买入不受影响")
 
-    # 4 保真字段
+    # 4 保真字段（仅标准模式 suppress 时适用；激进模式 tier2 放行无 suppress 字段）
     out = pc._apply_tier_filter(sig(reason="EMA金叉+量能放大"), {"position": False}, "tier2")
-    check(out.get("suppressed_from") == "买入" and "EMA金叉+量能放大" in out.get("suppressed_reason", ""),
-          "场景4 suppressed_from/reason 保真")
+    if _T2_BUY_ALLOWED:
+        check("suppressed_by" not in out and out.get("aggressive_allowed") == "tier2_buy",
+              "场景4 激进模式tier2放行→无suppress字段+留痕")
+    else:
+        check(out.get("suppressed_from") == "买入" and "EMA金叉+量能放大" in out.get("suppressed_reason", ""),
+              "场景4 suppressed_from/reason 保真")
 
-    # 5 落盘条数
+    # 5 落盘条数：tier3 必有 1 条；tier2 仅标准模式追加 2 条（场景1/4 各一条）
     recs = lines()
-    check(len(recs) == 3, f"场景5 每次屏蔽追加 jsonl (实测 {len(recs)} 条, 期望 3)")
-    check(recs and recs[0]["tier"] == "tier2" and recs[0]["symbol"] == "600030",
-          "场景6 jsonl 字段完整(tier/symbol)")
+    _exp_n = 1 if _T2_BUY_ALLOWED else 3
+    check(len(recs) == _exp_n, f"场景5 每次屏蔽追加 jsonl (实测 {len(recs)} 条, 期望 {_exp_n})")
+    # 6 首条字段完整：标准模式首条=tier2/600030；激进模式唯一条=tier3/601995（中金）
+    if _T2_BUY_ALLOWED:
+        check(recs and recs[0]["tier"] == "tier3" and recs[0]["symbol"] == "601995",
+              "场景6 jsonl 字段完整(tier/symbol, 激进模式仅tier3条)")
+    else:
+        check(recs and recs[0]["tier"] == "tier2" and recs[0]["symbol"] == "600030",
+              "场景6 jsonl 字段完整(tier/symbol)")
 
     # 6 Tier3 有持仓 → 强制卖出
     out = pc._apply_tier_filter(sig(action="持有"), {"position": True}, "tier3")

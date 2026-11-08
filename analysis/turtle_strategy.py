@@ -37,8 +37,9 @@ def strategy_turtle_donchian(df, n_entry=N_ENTRY, n_exit=N_EXIT):
     """海龟突破臂：唐奇安 20/10，全进全出（仓位在组合层）。"""
     df = df.copy().reset_index(drop=True)
     # shift(1)：通道由「前 N 根」构成，不含当根 —— 突破判定无前视
-    hh = df["high"].astype(float).rolling(n_entry).max().shift(1)
-    ll = df["low"].astype(float).rolling(n_exit).min().shift(1)
+    # 外部行情列统一 to_numeric（空串 coerce NaN，NaN 参与 rolling 自动跳过）
+    hh = pd.to_numeric(df["high"], errors="coerce").rolling(n_entry).max().shift(1)
+    ll = pd.to_numeric(df["low"], errors="coerce").rolling(n_exit).min().shift(1)
 
     actions = []
     position = False

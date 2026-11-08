@@ -1094,7 +1094,9 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - **现象**: 心跳 cron-health-scan 反复报 `NameError: name 'true' is not defined. Did you mean: 'True'?`（line 10/12 漂移）；proactivity-review 链偶发 Exec failed。所有 run 模型均同 run 内用「先落盘再读文件」重试成功；cron 舰队实际全绿（4h cron job 当日三报 0 告警）——纯噪声告警，无真实监控盲区。
 - **根因**: ①主因=模型习惯写 `openclaw cron list --json | python3 - <<'EOF'`（管道+heredoc 同命令）。【10-31 19:5x 深究修正】机制非「exec 层丢 heredoc」：exec 封装（zsh -f -c + snapshot 前置 + eval 包裹，ps 取证）对命令文本无损，真凶是 **zsh 5.9（macOS 自带版）对「管道非首级段挂 heredoc/here-string」的行为=上游管道输出⊕heredoc body 按序拼接**（bash/sh 均正确覆盖管道；zsh 文件模式/eval 包裹/前导行/三级管道全部复现，与 OpenClaw 无关，exec 仅继承）→ 管道输出（cron JSON）被当 Python 源码执行，JSON 语法合法到首个裸 true → NameError（报错行号=JSON 首个布尔行，故 line 10/12 漂移；会话存档脚本第 12 行与报错不符是突破口）。双复现实证（echo JSON 小样 + cron list 全量均复现；独立 heredoc 无管道正常）。【11-05 终版定性，zsh-workers 双回复纠正】该行为=zsh **MULTIOS 选项（默认开启）的文档化设计，非 bug**：stdin 多重为读重定向→后台进程拼接喂入；POSIX 语义需 `set +o multios`；zsh 也不承诺解释任意 bash 脚本（Daniel Shahaf 引 zsh.org/workers/53892）。归档：原信 55234 / Stephane 55235 / Daniel 55237。②次因=proactivity 链尾裸 grep -c 零匹配 / cat 缺文件（~/proactivity/session-state.md 已丢失）exit 1 被误报。
 - **规约**: ①exec 内联脚本一律「先落盘再 heredoc 读文件」，禁 `cmd | python3 - <<EOF`；②心跳链尾必须 exit 0（grep/find 零匹配、缺文件用 `|| true` 收尾）；③防线已落 HEARTBEAT.md（两任务 prompt + standing rules 两条红线）与 TOOLS.md 红线条目。
-- **状态**: resolved（文档+prompt 层修复；10-31 19:5x 深究定性为 zsh 5.9 管道非首级段 heredoc 拼接行为，OpenClaw exec 仅继承；【11-05 终版】zsh-workers 双回复确认=multios 文档化行为非 bug，见归档 55234/55235/55237；OpenClaw issue #189332 待补上游结论评论）
+- **规约**: ①exec 内联脚本一律「先落盘再 heredoc 读文件」，禁 `cmd | python3 - <<EOF`；②心跳链尾必须 exit 0（grep/find 零匹配、缺文件用 `|| true` 收尾）；③防线已落 HEARTBEAT.md（两任务 prompt + standing rules 两条红线）与 TOOLS.md 红线条目。
+- **状态**: promoted (2026-11-08 → TOOLS.md「🔴 exec 管道+heredoc 丢失红线」)
+- **Promoted**: TOOLS.md (2026-11-08)
 ### Metadata
 - Source: manual-session（用户问询触发，memory/2026-10-31.md）
 - Reproducible: yes（echo JSON 管道样例 100% 复现）
@@ -1118,7 +1120,15 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Last-Seen: 2026-11-01
 - Status: resolved
 
-## [ERR-20261104-T12AuditNeverWritten] T12 审计报告未写盘\n- **日期**: 2026-11-04\n- **状态**: resolved (2026-11-05 triage: 补写落盘逻辑 + 验证通过)\n- **现象**: 审计脚本运行完毕但未生成报告文件。\n- **Metadata**: \n- Pattern-Key: audit.output-lost\n- Recurrence-Count: 1\n- First-Seen: 2026-11-04\n- Last-Seen: 2026-11-04
+## [ERR-20261104-T12AuditNeverWritten] T12 审计报告未写盘
+- **日期**: 2026-11-04
+- **状态**: resolved (2026-11-05 triage: 补写落盘逻辑 + 验证通过)
+- **现象**: 审计脚本运行完毕但未生成报告文件。
+- **Metadata**: 
+- Pattern-Key: audit.output-lost
+- Recurrence-Count: 1
+- First-Seen: 2026-11-04
+- Last-Seen: 2026-11-04
 
 ## [ERR-20261104-DuplicateGuardName] 重名 Guard 脚本导致潜在双跑\n- **日期**: 2026-11-04\n- **Status**: promoted (2026-11-05 → AGENTS.md「立项前先盘点存量」)\n- **现象**: 新建 `scripts/guards/data_freshness_guard.py` 时未发现根目录下已有同名脚本，导致职责重叠。\n- **Metadata**: \n- Pattern-Key: plan.duplicate-detector-creation\n- Recurrence-Count: 3\n- First-Seen: 2026-10-06\n- Last-Seen: 2026-11-04\n- Promoted: AGENTS.md (2026-11-05)
   同名不同职 → 若上线必致消费方混淆/双跑。
@@ -1180,3 +1190,20 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
   单一路径模块（analysis/paths.py SSOT）收口，不再散点迁移；④符号链接兼容层是廉价可靠的过渡手段
   （新旧拼写同 inode），可在冻结窗口不可得时先行止血。
 - **计数**: 批量文本 codemod 家族 RC=5（10-31 四例 + 本例）；目录迁移在活跃写入期执行 = 首例。
+
+## ERR-20261106-E2ERegressionAfterRuntimeMigration（e2e 资产被同日生产变更击穿，回归验证缺位）
+- **日期**: 2026-11-06
+- **模式**: test.e2e-regression-after-prod-path-change（假 ok 家族旁支：验收清单声称「可重复跑」，次日实测双双失败）
+- **经过**: 11-05 14:16 固化的 auto-executor 双 e2e（单元版+全流程版）当时全绿；同日下午执行 data/runtime 路径迁移 + 030 市场条件变化后，两版均未重跑。11-06 06:45 用户要求复核时实测：单元版沙箱只建 data/trade_intents、auto_executor.INTENTS_DIR 已改 data/runtime/trade_intents → load_pending_intents 读空 AssertionError；全流程版同款路径分裂 + FatalRiskDetector.check() 走真实市场条件返回 HIGH_RISK → TESTB 买入被 override 成持有 → Day1 排队断言假失败（环境依赖型 flaky）。
+- **根因**: ①生产代码路径变更后无「重跑全部既有 e2e 资产」步骤——11-05 迁移验证只看了生产链路，没把测试沙箱视为受影响面；②e2e 沙箱与生产路径结构强耦合（符号链接/目录布局），却无任何机制在布局变更时提醒；③全流程版依赖真实市场风控状态（030），同一测试在不同市场日结果不同，违反「固化资产必须确定性」。
+- **修复**: commit da488a6——两版沙箱复刻 data/runtime→data 符号链接；全流程版 stub RiskGuard.refresh 固定中性风控（确定性）；last_signal_date 断言更新为管道化契约。实测双双回绿，生产 sha256 零变化。
+- **规约**: ①改生产路径/目录布局/模块导入结构的当天，必须重跑全部既有 e2e/test 资产（列清单执行，不是「想起来再跑」）；②e2e 固化资产禁止依赖真实市场状态（030/行情/日历），环境依赖输入一律 stub 固定值；③沙箱必须显式复刻生产的关键布局约定（符号链接），并在 e2e 文件头注释里声明该耦合，改布局的人才会想起同步。
+- **计数**: 假 ok 家族第 6 变体（回归验证缺位型首例）。
+
+## ERR-20261108-DollarQResetByCommandSubstitution
+- **Date**: 2026-11-08
+- **Symptom**: 批量验证 5 个门禁脚本时写 `python3 $g >/dev/null 2>&1; echo "$(basename $g): exit=$?"`，cron_truth_guard 实际 exit 1（c768b322 历史缺口）但输出显示 `exit=0`，差点误判「全绿」。
+- **Root cause**: `$(basename $g)` 命令替换先于 `$?` 展开求值，命令替换的退出码（0）覆盖了 python3 的真实退出码。
+- **Fix**: 退出码先落变量再拼输出：`rc=$?; echo "$(basename $g): exit=$rc"`；或每条命令退出码重定向落文件后单独读。
+- **规约**: 凡 `echo "...$?..."` 内含命令替换 `$(...)`，`$?` 一定是替换命令的退出码，不是前一条的。退出码验证禁止与命令替换同表达式。
+- **计数**: 假 ok 家族第 7 变体（退出码读取被污染型首例；同族：`cmd | tail; $?` 取的是 tail）。

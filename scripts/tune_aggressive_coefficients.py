@@ -2,7 +2,7 @@
 """
 T2-2: 激进模式系数调参器（2026-11-04）
 =========================================
-基于 data/daily_equity_mirror.csv（T1-4 每日权益镜像）+ audit/trades_audit.jsonl（T1-2 全链审计）
+基于 data/runtime/daily_equity_mirror.csv（T1-4 每日权益镜像）+ data/runtime/trades_audit.jsonl（T1-2 全链审计）
 对激进模式系数出「调参建议」。
 
 🔴 铁律：本脚本只产出建议报告，绝不自动修改 data/sim_aggressive_config.json。
@@ -68,7 +68,7 @@ def analyze_mirror(df):
     """权益镜像 → 绩效观测"""
     if df is None or len(df) < 2:
         return {"days": 0 if df is None else len(df)}
-    rets = df["return_pct"].astype(float).diff().dropna()  # 日度收益变化（pct 点）
+    rets = pd.to_numeric(df["return_pct"], errors="coerce").diff().dropna()  # 日度收益变化（pct 点）
     out = {
         "days": len(df),
         "start_date": df["date"].iloc[0],
@@ -79,7 +79,7 @@ def analyze_mirror(df):
         "worst_day_pct": round(float(rets.min()), 3) if len(rets) else None,
     }
     # 简易回撤（基于权益序列）
-    eq = df["total_equity"].astype(float)
+    eq = pd.to_numeric(df["total_equity"], errors="coerce").dropna()
     dd = (eq / eq.cummax() - 1).min()
     out["max_drawdown_pct"] = round(float(dd) * 100, 3)
     return out
