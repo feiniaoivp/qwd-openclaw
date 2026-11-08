@@ -145,3 +145,13 @@ analysis/backtest/2026-*.md
 analysis/validation_*.json
 analysis/dsr_audit_*.json
 analysis/dsr_audit_*.md
+
+# 2026-11-09: 量化栈运行时数据出库（可重建/持续变更，不入版本库）
+data/analytics.db*
+data/factor_cache/
+data/factor_orthogonal/
+data/fundamental/
+data/valuation/
+analysis/alpha_reports/*.parquet
+analysis/alpha_reports/*.corrupt-partial-*
+logs/sim3day_last_run.json*
