@@ -1,0 +1,33 @@
+{
+  "600030": {
+    "name": "ema_cross",
+    "action": "买入",
+    "reason": "EMA金叉",
+    "price": 25.72,
+    "bucket": "core",
+    "strategy": "ema_cross",
+    "atr": 0.5,
+    "atr_stop": 24.5,
+    "fib_tp": {
+      "1.0": 28.0
+    },
+    "created_at": "2026-11-08T15:30:00",
+    "status": "PENDING",
+    "regime": {
+      "name": "sideways",
+      "signal_date": "2026-11-08",
+      "max_position_pct": 0.08,
+      "stop_loss_pct": 0.03,
+      "take_profit_pct": 0.08,
+      "position_sizing": "vol_target",
+      "factor_weights": {
+        "BB_pos_20": 0.3,
+        "RSI_14": -0.25,
+        "KDJ_K": 0.2,
+        "CCI_20": 0.15,
+        "volume_ratio_5_20": 0.1,
+        "MACD_hist": 0.0
+      }
+    }
+  }
+}

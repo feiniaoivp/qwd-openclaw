@@ -30,6 +30,7 @@ import os
 import sys
 import json
 import time
+import shutil
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
@@ -104,6 +105,8 @@ def main():
         results.append({"header": header[:60], "first_line": head, "ok": bool(r.get("ok")), "result": r})
         print(("OK  " if r.get("ok") else "FAIL") + " | " + header[:50], flush=True)
         time.sleep(1.5)
+    if os.path.exists(RESULT_PATH):
+        shutil.copy2(RESULT_PATH, RESULT_PATH + ".bak")  # 写前备份（backup_guard 铁律）
     with open(RESULT_PATH, "w", encoding="utf-8") as f:
         json.dump({"ran_at": time.strftime("%F %T"), "results": results}, f, ensure_ascii=False, indent=2)
     fails = [r for r in results if not r["ok"]]
