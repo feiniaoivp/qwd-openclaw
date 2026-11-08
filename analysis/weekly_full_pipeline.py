@@ -363,6 +363,13 @@ def main():
     if not r["success"]:
         print("⚠️ flagged 簇成员已有实际持仓（见上方），需拍板簇联动折算/停用（不阻断流水线）...")
 
+    # 步骤 0k: 逻辑审计门禁（2026-11-08 新增；RC≥3 同签名失败自动生成结构性修复工单）
+    print("\n🚦 步骤 0k/9: 逻辑审计门禁 (logic_audit_guard.py)")
+    r = run_script("../scripts/logic_audit_guard.py", timeout=120)
+    results["logic_audit"] = r
+    if not r["success"]:
+        print("⚠️ 发现待办结构性修复工单（见上方），需按周一审计闭环（不阻断流水线）...")
+
     # 步骤 0l: 外部数据 astype(float) 裸转棘轮门禁（2026-10-22 第六轮新增；缘起 10-08
     # 外部源空串 '' 非裸转 ValueError 崩批；68 处存量冻结，新增拦截，修复自动降基线）
     print("\n🚦 步骤 0l/9: astype 裸转棘轮门禁 (astype_ratchet_guard.py)")

@@ -151,6 +151,14 @@ Starting point — add your own conventions as you learn what works.
 | `promotion_guard.py` | `scripts/` | promote 预算淘汰致自动晋升断（棘轮：连续 ≥2 次零存活 exit 1） | 周流水线步骤 0g + 周一审计第 6 项（2026-10-05 新增） |
 | `cron_noop_guard.py` | `scripts/` | cron 任务 status=ok 但毫秒级返回（空转假成功，脚本从未执行；直读 sqlite，棘轮基线 `data/cron_noop_baseline.json`） | 周流水线步骤 0h（2026-10-06 新增；源起 3950d3cc 假 ok 事故，存量 9 个待逐个改造） |
 | `backup_guard.py` | `scripts/` | 重写型脚本 json.dump/open('w') 缺备份保护（棘轮基线 `data/backup_guard_baseline.json`，302 点/128 文件存量冻结；宽启发：源码含 .bak/shutil.copy/backup 即豁免；判定失败绝不写基线防吞没） | 周流水线步骤 0f2（2026-10-31 用户批准接入；缘起 10-21 防线体检「.bak 铁律全仓落实数 0」） |
+| `logic_audit_guard.py` | `scripts/` | RC≥3 同签名失败自动生成结构性修复工单（棘轮：存量仅报告、新增 exit 1） | 周流水线步骤 0k + 周一审计（2026-11-08 新增） |
+| `migrate_to_sqlite.py` + `sqlite_analytics.py` | `scripts/` + `analysis/` | JSON/JSONL → SQLite 统一存储层（工单/案例/审计/意向/哨兵），索引加速、事务支持、类型安全 | 迁移脚本一次性运行；查询层替代所有分散文件读写（2026-11-08 新增） |
+| `analytics_api.py` | `analysis/` | FastAPI 服务暴露统一查询接口（工单/案例/统计/审计/意向/哨兵/仪表盘） | uvicorn 8081 端口常驻，健康检查 /health（2026-11-08 新增） |
+| `factor_registry.py` | `analysis/` | 因子注册表（36 个种子因子，分类/依赖/回看/参数/版本/标签/中性化/股票池） | 单一事实来源，StrategyComposer/Engine 依赖（2026-11-08 新增） |
+| `factor_engine.py` | `analysis/` | 因子计算引擎（向量化面板、Parquet 缓存、增量更新、NaN 容错） | 替代分散计算逻辑，MultiIndex(symbol×date) 输出（2026-11-08 新增） |
+| `strategy_composer.py` | `analysis/` | 策略组合器（评分规则+门控规则+仓位规则，全 JSON 可序列化） | 6 个种子策略落盘 data/strategies/，取代硬编码策略（2026-11-08 新增） |
+| `alpha_validator.py` | `analysis/` | α 验证框架（IC/ICIR/换手调整收益/DSR/因子正交性/PCA/VIF） | 输出 JSON+MD 报告到 analysis/alpha_reports/（2026-11-08 新增） |
+| `regime_allocator.py` | `analysis/` | 政权检测+动态权重（阈值法/HMM 双模式、4 態政权、平滑过渡 5 日） | generate_next_day_config() 一站式输出下日配置（2026-11-08 新增） |
 
 ### 新增门禁时必做
 
