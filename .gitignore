@@ -158,3 +158,6 @@ logs/sim3day_last_run.json*
 
 # 2026-11-09: 运行态 .bak 残余出库（89c0794 同模式补漏）
 data/adaptive_strategy_map.json.bak
+
+# 2026-11-09: 全栈回测运行日志出库
+logs/full_backtest_run*.log
