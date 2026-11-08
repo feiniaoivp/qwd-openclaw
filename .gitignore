@@ -155,3 +155,6 @@ data/valuation/
 analysis/alpha_reports/*.parquet
 analysis/alpha_reports/*.corrupt-partial-*
 logs/sim3day_last_run.json*
+
+# 2026-11-09: 运行态 .bak 残余出库（89c0794 同模式补漏）
+data/adaptive_strategy_map.json.bak
