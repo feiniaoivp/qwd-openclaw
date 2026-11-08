@@ -82,3 +82,41 @@ wiki/sources/investment-philosophy-*.md
 
 # 研究用价格缓存（可随时重建，不进版本库）
 data/research_price_cache/
+
+# ── 执行态数据（每日追加/覆盖，不进版本库，由 snapshot_guard 全量归档）──
+data/trade_intents/
+data/failure_cases/
+data/sentry_state.json
+data/execution_audit/
+analysis/dashboards/
+execution_audit_*.md
+data/runtime
+
+
+# ── 运行态状态/审计数据（2026-11-08 批量清理：被跟踪但持续变更的运行态，快照由 snapshot_guard 归档）──
+data/*.json.bak
+data/news/last_run.json*
+data/news/backfill_priority.json
+data/news/announcement_watcher_state.json
+data/param_change_log.json
+data/lowopen_shadow_ledger.json*
+data/market_breadth_output.json*
+data/market_breadth_history.json
+data/market_activity_legu_history.json
+data/portfolio_sim_trades.json
+data/portfolio_trade_notified.json
+data/power_overseas_*.json*
+data/review_030_snapshot.json*
+data/signal_lifecycle.json
+data/silent_except_baseline.json*
+data/stop_loss_map.json*
+data/strategy_pending.json
+data/tier_suppressed_signals.jsonl
+data/clash_sample_monitor.jsonl
+data/fib_tracking_state.json*
+data/adaptive_strategy_map.json
+data/intraday_alert_*_state.json*
+data/premarket_outlook_output.json*
+data/_price_cache_challenge.json*
+data/_price_provenance_challenge.json*
+workspace/memory/heartbeat-state.json
