@@ -79,6 +79,8 @@ def format_summary(data: dict, mode: str) -> str:
     if notices:
         lines.append("📢 关注股公告:")
         for n in notices[:10]:
+            if not n.get('is_new', True):
+                continue  # 双保险：上游旧结构缺 is_new 时保持原行为
             symbol = n.get('symbol', '')
             title = n.get('title', '')
             ntype = n.get('type', '')
@@ -106,6 +108,9 @@ def format_summary(data: dict, mode: str) -> str:
         for r in stock_news:
             news = r.get('news', [])
             if news:
+                news = [n for n in news if n.get('is_new', True)]  # 双保险：只推新增
+                if not news:
+                    continue
                 name = r.get('name', '')
                 symbol = r.get('symbol', '')
                 lines.append(f"  {name}({symbol}):")

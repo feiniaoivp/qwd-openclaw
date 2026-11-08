@@ -124,6 +124,7 @@ def fetch_stock_news(symbol, name, seen_titles):
                 "time": str(row.get("发布时间", "")),
                 "source": str(row.get("文章来源", "")),
                 "url": str(row.get("新闻链接", "")),
+                "is_new": bool(is_new),  # 2026-11-08: 简报/KB 生成只列新增（防窗口内旧闻每日重写）
             }
             result["news"].append(entry)
             if is_new:
@@ -160,6 +161,7 @@ def fetch_macro_news(seen_titles):
                 "summary": str(row.get("摘要", "")),
                 "time": str(row.get("发布时间", "")),
                 "url": str(row.get("链接", "")),
+                "is_new": bool(is_new),  # 2026-11-08: 同上
             }
             result["news"].append(entry)
             if is_new:
@@ -205,6 +207,7 @@ def fetch_notices(seen_titles):
                 "type": str(row.get("公告类型", "")),
                 "date": str(row.get("公告日期", "")),
                 "url": str(row.get("网址", "")),
+                "is_new": bool(is_new),  # 2026-11-08: 同上
             }
             result["notices"].append(entry)
             if is_new:
@@ -277,16 +280,21 @@ def main():
     lines.append(f"   • 个股新闻: {new_stock} 条")
     lines.append("")
 
-    # 公告优先（业绩预告/减持/立案这类最重要）
-    if notices.get("notices"):
+    # 公告优先（业绩预告/减持/立案这类最重要）。
+    # 2026-11-08 治本：只列 is_new——旧实现把全部过窗(≤72h)公告写入简报/KB，
+    # 同一批公告每日重写（96 组同串重复的直接来源之一；落盘侧 v2 钩子已兜底，
+    # 此处修语义：简报=增量视图，与统计行 new_count 口径一致）。
+    new_notices_all = [n for n in notices.get("notices", []) if n.get("is_new")]
+    if new_notices_all:
         lines.append("📢 **关注股公告**")
-        for n in notices["notices"]:
+        for n in new_notices_all:
             nm = next((nm for s, nm in STOCKS if s == n["symbol"]), n["symbol"])
             lines.append(f"  • **{nm}** {n['title']} [{n['type']}]")
         lines.append("")
 
     # 宏观政策（取新增的前10条）
-    macro_news = [n for n in macro.get("news", [])]
+    # 2026-11-08 同上：只列新增。
+    macro_news = [n for n in macro.get("news", []) if n.get("is_new")]
     if macro_news:
         lines.append("🏛 **宏观/行业政策**")
         for n in macro_news[:10]:
@@ -294,11 +302,13 @@ def main():
         lines.append("")
 
     # 个股新闻（只列新增的，每只最多2条）
+    # 2026-11-08 治本：注释一直说「只列新增的」，旧实现却列全部过窗条目（含已入库旧闻）
+    # → 同批旧闻每日重写。修正为按 is_new 过滤（96 组 dash 行重复的主来源）。
     lines.append("📌 **个股新闻速览**")
     shown = 0
     for r in stock_news:
-        new_items = [n for n in r.get("news", [])]
-        if new_items and r.get("new_count", 0) > 0:
+        new_items = [n for n in r.get("news", []) if n.get("is_new")]
+        if new_items:
             lines.append(f"  **{r['name']}({r['symbol']})**:")
             for n in new_items[:2]:
                 lines.append(f"    - {n['title']}")
@@ -316,7 +326,9 @@ def main():
         "total_new": total_new,
         "macro_new": new_macro, "notices_new": new_notices, "stock_new": new_stock,
         "raw_file": raw_path,
-        "notices": notices.get("notices", []),
+        # 2026-11-08: NEWS_MONITOR_RESULT = 增量视图（推送/下游统一口径，与 macro_top 一致）；
+        # 全量过窗快照在 data/news/raw/*.json（含 is_new 标记），watcher 消费不受影响
+        "notices": [n for n in notices.get("notices", []) if n.get("is_new")],
         "macro_top": macro_news[:10],
         "stock_news": [{"symbol": r["symbol"], "name": r["name"], "news": r.get("news", [])} for r in stock_news],
     }, ensure_ascii=False, indent=2, default=str))
