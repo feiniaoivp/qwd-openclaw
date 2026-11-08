@@ -28,6 +28,7 @@ from analysis.data_layer.providers.baostock import get_provider as get_baostock
 from analysis.data_layer.providers.akshare_finance import get_provider as get_akshare_finance
 from analysis.data_layer.cache import get_cache
 from analysis.data_layer.preprocessor import clean_daily
+from analysis.data_layer.local_store import read_local_daily, write_local_daily, sync_incremental
 
 log = logging.getLogger(__name__)
 
@@ -267,6 +268,19 @@ class DataRouter:
                     return df
             except Exception as e:
                 log.warning(f"  ⚠️ {name} 新浪日K失败: {e}")
+
+            # ── Level 4: 本地 CSV 缓存回退（D2: 最后兜底）──
+            try:
+                df = read_local_daily(symbol, start_date, adjust)
+                if df is not None and len(df) >= 2:
+                    log.warning(f"  ⚠️ {name}({symbol}): 网络源全失败，回退本地 CSV {len(df)} 条 [fallback]")
+                    self._mark(cache_key, "本地CSV", adjust, adjust in ("qfq", "hfq"))
+                    df = clean_daily(df, symbol=symbol, name=name)
+                    self.cache.set(cache_key, df, CACHE_TTL["daily"])
+                    return df
+            except Exception as e:
+                log.warning(f"  ⚠️ {name} 本地 CSV 回退失败: {e}")
+
             return None
 
         # ── 路径 B：请求不复权数据（新浪优先，稳定且原生不复权）──
@@ -291,6 +305,18 @@ class DataRouter:
                 return df
         except Exception as e:
             log.warning(f"  ⚠️ {name} baostock失败: {e}")
+
+        # ── Level 4: 本地 CSV 缓存回退（D2: 最后兜底）──
+        try:
+            df = read_local_daily(symbol, start_date, adjust)
+            if df is not None and len(df) >= 2:
+                log.warning(f"  ⚠️ {name}({symbol}): 网络源全失败，回退本地 CSV {len(df)} 条 [fallback]")
+                self._mark(cache_key, "本地CSV", adjust, adjust in ("qfq", "hfq"))
+                df = clean_daily(df, symbol=symbol, name=name)
+                self.cache.set(cache_key, df, CACHE_TTL["daily"])
+                return df
+        except Exception as e:
+            log.warning(f"  ⚠️ {name} 本地 CSV 回退失败: {e}")
 
         return None
     

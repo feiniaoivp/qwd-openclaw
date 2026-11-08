@@ -1846,8 +1846,15 @@ def run_portfolio_scan(
             "bucket": bucket,
         })
 
-    state["last_signal_date"] = today_str
-    save_state(state)
+    # 仅在 legacy 模式（AUTO_EXECUTOR=0）下更新 last_signal_date
+    # 管道化模式（_EXEC_ENABLED=True）下，执行日由 auto_executor.consume_pending_for_symbol
+    # 在消费成功后标记成交，不在此处预占当日（否则次日执行守卫会误判吞单）
+    if not _EXEC_ENABLED:
+        state["last_signal_date"] = today_str
+        save_state(state)
+    else:
+        # 管道化模式：仅保存 state（仓位/资金等），不写 last_signal_date
+        save_state(state)
 
     # ── T2-3: 扫描结束批量落盘（信号存档 + 交易意向）──
     try:

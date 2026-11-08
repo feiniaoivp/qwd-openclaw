@@ -25,7 +25,7 @@ STATE_FILE = os.path.join(WORKSPACE, "data", "sim_state.json")
 ALERT_THRESHOLD_HOURS = 24  # 超过24小时未更新则告警
 
 def check_csv_freshness():
-    """检查关注池所有股票的 CSV 文件更新时间"""
+    """检查关注池所有股票的 CSV 文件内容最新日期（读取 date 列）"""
     stale_stocks = []
     now = datetime.now()
     
@@ -37,11 +37,27 @@ def check_csv_freshness():
             stale_stocks.append(f"{name}({sym}) [缺失文件]")
             continue
         
-        # 检查文件修改时间 (mtime)
-        mtime = datetime.fromtimestamp(os.path.getmtime(file_path))
-        diff = now - mtime
-        if diff.total_seconds() > ALERT_THRESHOLD_HOURS * 3600:
-            stale_stocks.append(f"{name}({sym}) [滞后 {diff.days}d {diff.seconds//3600}h]")
+        # 读取 CSV 最后一行的 date 列作为内容最新日期
+        try:
+            df = pd.read_csv(file_path)
+            if df.empty or "date" not in df.columns:
+                stale_stocks.append(f"{name}({sym}) [无数据或缺 date 列]")
+                continue
+            # 取最后一行 date（假设按日期升序）
+            last_date_str = str(df["date"].iloc[-1])
+            # 兼容 YYYY-MM-DD 或 YYYYMMDD
+            if len(last_date_str) == 8 and last_date_str.isdigit():
+                last_date = datetime.strptime(last_date_str, "%Y%m%d")
+            else:
+                last_date = datetime.strptime(last_date_str[:10], "%Y-%m-%d")
+        except Exception as e:
+            stale_stocks.append(f"{name}({sym}) [读取失败: {type(e).__name__}]")
+            continue
+        
+        # 计算与当前的天数差（仅交易日差估算用自然日，精确版留给交易日历）
+        diff_days = (now.date() - last_date.date()).days
+        if diff_days > ALERT_THRESHOLD_HOURS // 24:
+            stale_stocks.append(f"{name}({sym}) [内容滞后 {diff_days}d, 最新 {last_date.strftime('%Y-%m-%d')}]")
             
     return stale_stocks
 

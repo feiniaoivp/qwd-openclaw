@@ -209,7 +209,11 @@ def fetch_strategy_reports(date: str = None) -> List[Dict]:
             date_val = row.get("日期")
             if date_val is None:
                 continue
-            pub_date = str(date_val)[:10]
+            # 统一转为字符串比较
+            if hasattr(date_val, 'isoformat'):
+                pub_date = date_val.isoformat()[:10]
+            else:
+                pub_date = str(date_val)[:10]
             if date and pub_date != date:
                 continue
             
@@ -261,7 +265,11 @@ def fetch_industry_reports(date: str = None) -> List[Dict]:
             date_val = row.get("日期")
             if date_val is None:
                 continue
-            pub_date = str(date_val)[:10]
+            # 统一转为字符串比较
+            if hasattr(date_val, 'isoformat'):
+                pub_date = date_val.isoformat()[:10]
+            else:
+                pub_date = str(date_val)[:10]
             if date and pub_date != date:
                 continue
             
@@ -315,7 +323,11 @@ def fetch_broker_reports(date: str = None) -> List[Dict]:
             date_val = row.get("日期")
             if date_val is None:
                 continue
-            pub_date = str(date_val)[:10]
+            # 统一转为字符串比较
+            if hasattr(date_val, 'isoformat'):
+                pub_date = date_val.isoformat()[:10]
+            else:
+                pub_date = str(date_val)[:10]
             if date and pub_date != date:
                 continue
             
@@ -369,7 +381,11 @@ def fetch_macro_reports(date: str = None) -> List[Dict]:
             date_val = row.get("日期")
             if date_val is None:
                 continue
-            pub_date = str(date_val)[:10]
+            # 统一转为字符串比较
+            if hasattr(date_val, 'isoformat'):
+                pub_date = date_val.isoformat()[:10]
+            else:
+                pub_date = str(date_val)[:10]
             if date and pub_date != date:
                 continue
             
@@ -443,9 +459,17 @@ def save_reports_by_date(reports: List[Dict], date: str = None):
                 existing.append(item)
                 existing_keys.add(key)
         
-        # 保存
-        with open(filename, "w", encoding="utf-8") as f:
+        # 保存（重写型写点：备份保护 backup_guard 铁律）
+        if filename.exists():
+            import shutil
+            try:
+                shutil.copy2(filename, str(filename) + ".bak")
+            except Exception as e:
+                log.warning(f"⚠️ 备份失败(继续写入): {filename}: {e}")
+        tmp = str(filename) + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
             json.dump(existing, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, filename)
         
         log.info(f"📄 保存研报: {filename.name} ({len(existing)} 条)")
 

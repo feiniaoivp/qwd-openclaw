@@ -14,7 +14,7 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
 from analysis.portfolio_core import REFERENCE_TOTAL_CAPITAL
 
 # 路径定义
-STATE_FILE = os.path.join(WORKSPACE, "data", "sim_state.json")
+STATE_FILE = os.path.join(WORKSPACE, "data", "portfolio_sim_state.json")
 EQUITY_LOG_FILE = os.path.join(WORKSPACE, "data", "daily_equity_mirror.csv")
 
 def get_current_equity(state):

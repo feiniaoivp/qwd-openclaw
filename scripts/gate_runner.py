@@ -10,6 +10,7 @@ SSOT: config/system_manifest.json（15 门禁 / 8 分类）
     python3 scripts/gate_runner.py --run --tier P0       # 只跑 P0
     python3 scripts/gate_runner.py --list                # 清单表
     python3 scripts/gate_runner.py --verify              # 清单完整性校验（路径/schema）
+    python3 scripts/gate_runner.py --generate-cron       # 根据 auto_schedule 自动生成/更新 cron jobs
     python3 scripts/gate_runner.py --disable code_quality 4 "深度调试中"   # 临时禁 4 小时
     python3 scripts/gate_runner.py --enable code_quality  # 提前恢复
 
@@ -230,6 +231,54 @@ def cmd_verify():
     return 0
 
 
+def cmd_generate_cron():
+    """根据 manifest 中的 auto_schedule 自动生成/更新 cron jobs"""
+    m = load_manifest()
+    print("🔧 根据 auto_schedule 生成 cron jobs...")
+    
+    cron_jobs = []
+    for g in m["gates"]:
+        auto_sched = g.get("auto_schedule")
+        if not auto_sched:
+            continue
+        kind = auto_sched.get("kind")
+        if kind != "cron":
+            print(f"  ⚠️ {g['id']}: auto_schedule.kind={kind} 暂不支持，跳过")
+            continue
+        expr = auto_sched.get("expr")
+        tz = auto_sched.get("tz", "Asia/Shanghai")
+        tier = g.get("tier", "P1")
+        
+        # 构建 cron job 定义
+        job_name = f"gate-{g['id']}"
+        job = {
+            "name": job_name,
+            "displayName": f"Gate Runner: {g['id']} ({tier})",
+            "schedule": {"kind": "cron", "expr": expr, "tz": tz},
+            "sessionTarget": "isolated",
+            "payload": {
+                "kind": "agentTurn",
+                "message": f"python3 /Users/duguke/.openclaw/workspace/scripts/gate_runner.py --run --tier {tier} --quiet",
+                "timeoutSeconds": g.get("timeout_s", 120),
+                "toolsAllow": ["read", "edit", "write", "apply_patch", "exec", "process", "cron", "filesystem__read_text_file", "filesystem__write_file", "filesystem__list_directory", "filesystem__search_files", "memory_search", "memory_get", "web_search", "web_fetch"]
+            },
+            "delivery": {"mode": "none"},
+            "enabled": True,
+            "description": f"Auto-generated from system_manifest.json: {g['description']}"
+        }
+        cron_jobs.append(job)
+        print(f"  📋 {job_name}: {expr} ({tz}) tier={tier} -> {g['path']}")
+    
+    # 输出 cron jobs JSON 供人工审核/注册
+    import json as _json
+    print(f"\n✅ 生成 {len(cron_jobs)} 个 cron job 定义")
+    print("\n=== 可直接注册的 cron jobs (JSON) ===")
+    for job in cron_jobs:
+        print(_json.dumps(job, ensure_ascii=False))
+    
+    return 0
+
+
 def cmd_disable(category: str, hours: float, reason: str):
     m = load_manifest()
     if category not in m.get("categories", {}):
@@ -272,6 +321,7 @@ def main():
     ap.add_argument("--run", action="store_true")
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--verify", action="store_true")
+    ap.add_argument("--generate-cron", action="store_true")
     ap.add_argument("--tier", choices=["P0", "P1", "P2"], default=None)
     ap.add_argument("--disable", metavar="CATEGORY", default=None)
     ap.add_argument("--hours", type=float, default=4.0)
@@ -290,6 +340,8 @@ def main():
         return 0
     if args.verify:
         return cmd_verify()
+    if args.generate_cron:
+        return cmd_generate_cron()
     if args.run:
         return cmd_run(args)
     ap.print_help()

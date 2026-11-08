@@ -138,6 +138,27 @@ def logout() -> None:
             _bs_logged_in = False
 
 
+def force_relogin() -> bool:
+    """强制重登（2026-11-05 新增）：TTL 内连接半死时 ensure_login 会误报已登录，
+    批量拉取方遇连续失败应调此函数重建会话（logout + 重新 login，忽略负缓存冷却）。"""
+    global _last_login_time, _LAST_LOGIN_FAIL_TIME
+    with _bs_lock:
+        try:
+            if _bs_logged_in:
+                try:
+                    bs.logout()
+                except Exception:
+                    pass
+                _bs_logged_in = False
+        finally:
+            pass
+    _LAST_LOGIN_FAIL_TIME = 0.0   # 清负缓存，允许立即重试登录
+    ok = _do_login()
+    if ok:
+        _last_login_time = time.time()
+    return ok
+
+
 def query_history_k_data_plus(*args, **kwargs):
     """
     代理 bs.query_history_k_data_plus，自动保证登录态。

@@ -200,15 +200,23 @@ def load_state():
 
 
 def save_state():
-    """保存去重状态"""
+    """保存去重状态（重写型写点：备份保护 backup_guard 铁律）"""
     try:
         STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-        with open(STATE_FILE, "w", encoding="utf-8") as f:
+        if STATE_FILE.exists():
+            import shutil
+            try:
+                shutil.copy2(STATE_FILE, str(STATE_FILE) + ".bak")
+            except Exception as e:
+                log.warning(f"⚠️ 备份失败(继续写入): {STATE_FILE}: {e}")
+        tmp = str(STATE_FILE) + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
             json.dump({
                 "dedup": dedup_state,
                 "positions": file_positions,
                 "updated": datetime.now().isoformat()
             }, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, STATE_FILE)
     except Exception as e:
         log.error(f"保存状态失败: {e}")
 
