@@ -17,10 +17,12 @@
 """
 
 import os
+import shutil
 import sys
 import json
 import pickle
 import hashlib
+import inspect
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Set, Tuple
 from functools import lru_cache
@@ -437,12 +439,21 @@ def ichimoku(df: pd.DataFrame, **params) -> pd.Series:
     close = _ensure_numeric(df["close"])
     if which == "tenkan":
         period = 9
-    elif which == "kijun":
+        high_max = high.rolling(period, min_periods=1).max()
+        low_min = low.rolling(period, min_periods=1).min()
+        return (high_max + low_min) / 2
+    if which == "kijun":
         period = 26
-    elif which == "span_a":
-        period = 52
-    else:  # span_b
-        period = 52
+        high_max = high.rolling(period, min_periods=1).max()
+        low_min = low.rolling(period, min_periods=1).min()
+        return (high_max + low_min) / 2
+    if which == "span_a":
+        # Senkou Span A = (先行十日均线 + 先行廿六日均线) / 2（不位移；位移是绘图约定）
+        tenkan = ichimoku(df, which="tenkan")
+        kijun = ichimoku(df, which="kijun")
+        return (tenkan + kijun) / 2
+    # span_b
+    period = 52
     high_max = high.rolling(period, min_periods=1).max()
     low_min = low.rolling(period, min_periods=1).min()
     return (high_max + low_min) / 2
@@ -511,28 +522,32 @@ def valuation_pe_ttm(df: pd.DataFrame, **params) -> pd.Series:
     """PE_TTM = close / eps_basic (eps > 0)"""
     close = _ensure_numeric(df["close"])
     eps = _ensure_numeric(df.get("eps_basic", pd.Series(np.nan, index=df.index)))
-    return np.where(eps > 0, close / eps, np.nan)
+    result = np.where(eps > 0, close / eps, np.nan)
+    return pd.Series(result, index=df.index, name="PE_TTM")
 
 
 def valuation_pb_mrq(df: pd.DataFrame, **params) -> pd.Series:
     """PB_MRQ = close / book_value_per_share (bv > 0)"""
     close = _ensure_numeric(df["close"])
     bv = _ensure_numeric(df.get("book_value_per_share", pd.Series(np.nan, index=df.index)))
-    return np.where(bv > 0, close / bv, np.nan)
+    result = np.where(bv > 0, close / bv, np.nan)
+    return pd.Series(result, index=df.index, name="PB_MRQ")
 
 
 def valuation_ps_ttm(df: pd.DataFrame, **params) -> pd.Series:
     """PS_TTM = close / revenue_per_share (rev > 0)"""
     close = _ensure_numeric(df["close"])
     rev = _ensure_numeric(df.get("revenue_per_share", pd.Series(np.nan, index=df.index)))
-    return np.where(rev > 0, close / rev, np.nan)
+    result = np.where(rev > 0, close / rev, np.nan)
+    return pd.Series(result, index=df.index, name="PS_TTM")
 
 
 def valuation_pcf_ttm(df: pd.DataFrame, **params) -> pd.Series:
     """PCF_TTM = close / operating_cash_flow_per_share (ocf > 0)"""
     close = _ensure_numeric(df["close"])
     ocf = _ensure_numeric(df.get("operating_cash_flow_per_share", pd.Series(np.nan, index=df.index)))
-    return np.where(ocf > 0, close / ocf, np.nan)
+    result = np.where(ocf > 0, close / ocf, np.nan)
+    return pd.Series(result, index=df.index, name="PCF_TTM")
 
 
 def lower_shadow(df: pd.DataFrame, **params) -> pd.Series:
@@ -623,12 +638,47 @@ class FactorEngine:
         for name, fn in COMPUTE_FNS.items():
             self.registry.register_compute_fn(name, fn)
 
-    # ── 缓存键生成 ──
-    def _cache_key(self, factor_name: str, symbol: str, params_hash: str, data_version: str) -> str:
-        return f"{factor_name}_{symbol}_{params_hash[:8]}_{data_version[:8]}"
-
     def _params_hash(self, params: Dict) -> str:
         return hashlib.md5(json.dumps(params, sort_keys=True).encode()).hexdigest()
+
+    def _code_hash(self, compute_fn_name: str) -> str:
+        """计算函数源码指纹 —— 修复后旧缓存静默服役的根治（2026-11-09）。
+        事故背景：ADX≡ATR 修复(11-08)后缓存键不含代码版本，若重算不发生会继续产坏值。"""
+        fn = COMPUTE_FNS.get(compute_fn_name)
+        try:
+            src = inspect.getsource(fn) if fn else ""
+        except Exception:
+            src = ""
+        return hashlib.md5(src.encode()).hexdigest()[:8]
+
+    def _versions_path(self, factor_name: str) -> str:
+        return os.path.join(self.cache_dir, f"{factor_name}.versions.json")
+
+    def _load_versions(self, factor_name: str) -> Dict:
+        """读取旁车版本表 {symbol: version}（parquet attrs 不落盘，故用 JSON 旁车）"""
+        try:
+            with open(self._versions_path(factor_name), encoding="utf-8") as f:
+                return json.load(f)
+        except FileNotFoundError:
+            return {}  # 首跑正常态
+        except Exception as e:
+            print(f"⚠️ 版本表读取异常 {factor_name}: {e}（按无版本处理，全部重算，不影响正确性）")
+            return {}
+
+    def _save_version(self, factor_name: str, symbol: str, version: str):
+        """写旁车版本表（写前 .bak，backup_guard 铁律）"""
+        vp = self._versions_path(factor_name)
+        try:
+            versions = self._load_versions(factor_name)
+            versions[symbol] = version
+            if os.path.exists(vp):
+                shutil.copy2(vp, vp + ".bak")
+            tmp = vp + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(versions, f, ensure_ascii=False, indent=1, sort_keys=True)
+            os.replace(tmp, vp)
+        except Exception as e:
+            print(f"⚠️ 版本表写入失败 {factor_name}/{symbol}: {e}（下轮将重算该 symbol，不影响正确性）")
 
     def _data_version_hash(self, df: pd.DataFrame) -> str:
         """计算源数据版本哈希：基于日期范围、行数、列哈希"""
@@ -647,9 +697,6 @@ class FactorEngine:
 
     def _cache_path(self, factor_name: str) -> str:
         return os.path.join(self.cache_dir, f"{factor_name}.parquet")
-
-    def _cache_key(self, factor_name: str, symbol: str, params_hash: str, data_version: str) -> str:
-        return f"{factor_name}_{symbol}_{params_hash[:8]}_{data_version[:8]}"
 
     # ── 单因子计算（单股票）──
     def compute_one(self, df: pd.DataFrame, factor: FactorMeta) -> pd.Series:
@@ -703,18 +750,19 @@ class FactorEngine:
             
             for factor in factors:
                 params_hash = self._params_hash(factor.params)
-                cache_key = self._cache_key(factor.name, symbol, params_hash, data_version)
+                # 版本三重指纹：数据 + 参数 + 计算函数源码（2026-11-09 修复：
+                # 旧版 cache_key 算出后从未比对，改代码/换数据后旧缓存静默服役且新日期恒 NaN）
+                version = f"{data_version}_{params_hash[:8]}_{self._code_hash(factor.compute_fn)}"
                 cache_path = self._cache_path(factor.name)
+                stored_versions = self._load_versions(factor.name) if (use_cache and not incremental) else {}
 
-                if use_cache and not incremental and os.path.exists(cache_path):
-                    # 读取缓存 - 验证数据版本
+                if use_cache and not incremental and os.path.exists(cache_path) \
+                        and stored_versions.get(symbol) == version:
+                    # 读取缓存 —— 版本逐 symbol 比对，不匹配落到重算路径
                     try:
                         cached = pd.read_parquet(cache_path)
-                        # 检查缓存中的数据版本是否匹配
                         if symbol in cached.columns.get_level_values(0):
-                            # 检查缓存的数据版本（如果有元数据的话）
                             series = cached[symbol][factor.name]
-                            # 对齐索引
                             series = series.reindex(df.index)
                             symbol_results[factor.name] = series
                             continue
@@ -725,9 +773,10 @@ class FactorEngine:
                 series = self.compute_one(df, factor)
                 symbol_results[factor.name] = series
 
-                # 写入缓存（增量追加）
+                # 写入缓存（增量追加）+ 版本表
                 if use_cache:
                     self._save_to_cache(factor.name, symbol, series)
+                    self._save_version(factor.name, symbol, version)
 
             all_results[symbol] = pd.DataFrame(symbol_results, index=df.index)
 
