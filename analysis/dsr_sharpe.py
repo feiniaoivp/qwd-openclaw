@@ -25,7 +25,7 @@ Deflated Sharpe Ratio（Bailey & López de Prado）—— 适配自 frank-quant/
   python3 analysis/dsr_sharpe.py --validation analysis/validation_2026-10-03.json
 
   # 单次:给一份 trials 列表 JSON(如 [0.3, 0.5, -0.1, ...]) + 可选日收益 CSV(date,close 或 date,total_value)
-  python3 analysis/dsr_sharpe.py --trials-file data/my_trials.json --returns-csv data/portfolio_equity.csv
+  python3 analysis/dsr_sharpe.py --trials-file data/runtime/my_trials.json --returns-csv data/runtime/portfolio_equity.csv
 """
 import argparse
 import json

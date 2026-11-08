@@ -4,11 +4,11 @@
 ========================================
 聚合两个账户型模拟盘的周度账本：
   ① 全组合模拟盘 (portfolio_sim, 参考本金 270 万)
-     - 期初/期末净值 (data/portfolio_equity.csv)
+     - 期初/期末净值 (data/runtime/portfolio_equity.csv)
      - 本周成交 (data/portfolio_sim_trades.json)
      - 信号→执行漏斗 (analysis/daily/{date}_portfolio_sim.md 解析)
   ② 中联重科双策略盘 (zhonglian_monitor, 10 万 × 2)
-     - 持仓/账户现值 (data/zhonglian_state.json)
+     - 持仓/账户现值 (data/runtime/zhonglian_state.json)
      - 周内价格 (analysis/daily/{date}_dual.md 解析)
      - 本周成交 (data/zhonglian_trades.json, 2026-10-31 起有台账)
 

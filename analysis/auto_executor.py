@@ -32,7 +32,7 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-INTENTS_DIR = os.path.join(WORKSPACE, "data", "trade_intents")
+INTENTS_DIR = os.path.join(WORKSPACE, "data", "runtime", "trade_intents")
 
 
 def auto_executor_enabled() -> bool:

@@ -12,7 +12,7 @@
     python3 analysis/buy_tier_overlay.py [--date 2026-10-15]
 
 来源标注:
-    - 信号: data/pipeline_cache/close_scan_{date}.json（18:31 cron 落盘）
+    - 信号: data/runtime/pipeline_cache/close_scan_{date}.json（18:31 cron 落盘）
     - 资金流: datacenter-web RPT_DMSK_TS_STOCKNEW（eastmoney_dc）
     - 自适应: analysis/daily/{date}_adaptive.md + adaptive_trader.signal_macd
 """

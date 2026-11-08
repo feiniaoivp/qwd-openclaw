@@ -2,7 +2,7 @@
 """
 auction_signal_push.py — 竞价×盘前信号交集推送（2026-10-11 #5）
 ================================================================
-数据：data/auction/{today}_9_25.json（auction_feed 09:25 快照）
+数据：data/runtime/auction/{today}_9_25.json（auction_feed 09:25 快照）
     × analysis/daily/{最新}_close_scan.json（daily_push 18:30 落盘的信号档案）
 规则：
     🟢 强烈买入/关注 + 高开≥3%   → 共振关注
@@ -10,7 +10,7 @@ auction_signal_push.py — 竞价×盘前信号交集推送（2026-10-11 #5）
     🔴 强烈卖出/谨慎 + 低开≤-3%   → 共振风险（加速）
     🔴 强烈卖出/谨慎 + 高开≥3%   → 反常（警惕诱多）
     任意 |竞价涨跌|≥5%           → 巨幅异动（无论信号）
-无交集 → 静默退出（不推送、不噪音）。产出落盘 data/auction/signal_push_{date}.json。
+无交集 → 静默退出（不推送、不噪音）。产出落盘 data/runtime/auction/signal_push_{date}.json。
 """
 
 import os

@@ -78,8 +78,8 @@ PRODUCT_ARTIFACT_CHECKS = [
     # (显示名, 相对 WORKSPACE 路径模板, 生效门时 HH:MM) — 路径带 {today} 日期戳
     ("盘前深度分析报告", "analysis/daily/{today}_premarket_report.md", "06:45"),
     ("收盘双策略日报", "analysis/daily/{today}_dual.md", "19:00"),
-    ("竞价快照", "data/auction/{today}_9_25.json", "09:30"),
-    ("竞价裁决", "data/auction/decision_{today}.json", "09:35"),
+    ("竞价快照", "data/runtime/auction/{today}_9_25.json", "09:30"),
+    ("竞价裁决", "data/runtime/auction/decision_{today}.json", "09:35"),
     ("量化日报", "analysis/backtest/{today}.md", "21:30"),
 ]
 
@@ -87,9 +87,9 @@ PRODUCT_ARTIFACT_CHECKS = [
 # gate = 何时开始检查；fresh_after = 当日 mtime 下限（略早于 job 预期写入时刻）。
 PRODUCT_MTIME_CHECKS = [
     # (显示名, 相对 WORKSPACE 路径, 生效门时 HH:MM, 当日新鲜下限 HH:MM)
-    ("盘前展望", "data/premarket_outlook_output.json", "08:45", "08:00"),
-    ("中联盯盘(早)", "data/zhonglian_state.json", "09:20", "08:50"),
-    ("中联盯盘(收盘)", "data/zhonglian_state.json", "19:00", "18:00"),
+    ("盘前展望", "data/runtime/premarket_outlook_output.json", "08:45", "08:00"),
+    ("中联盯盘(早)", "data/runtime/zhonglian_state.json", "09:20", "08:50"),
+    ("中联盯盘(收盘)", "data/runtime/zhonglian_state.json", "19:00", "18:00"),
 ]
 
 
@@ -564,7 +564,7 @@ def main():
                    f"期望路径: {item['expected']}\n"
                    f"门时 {item['gate']} 后应存在；cron 层可能显示 ok\n"
                    f"（假 ok 第三变体：agentTurn 模型未执行命令即结束，10-17/10-21 实证）\n"
-                   f"处置: 查该 job isolated session transcript + data/agent_runs/ 当日 run 文件")
+                   f"处置: 查该 job isolated session transcript + data/runtime/agent_runs/ 当日 run 文件")
             alerts.append({"job_id": key, "message": msg, "level": "critical"})
             send_alert(msg)
     log.info(f"产物存在性: {'缺失 ' + str(len(products_missing)) + ' 项' if products_missing else 'OK'}")

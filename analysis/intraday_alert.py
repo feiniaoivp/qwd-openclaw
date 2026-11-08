@@ -2,14 +2,14 @@
 """
 盘中实时策略预警 + ATR 止损触发
 ====================================================
-用途: 在交易时段定时扫描关注股，对照 data/intraday_alert_config.json 的
+用途: 在交易时段定时扫描关注股，对照 data/runtime/intraday_alert_config.json 的
       手动策略规则 + 自动检查持仓 ATR 止损，生成预警消息。
 
 数据源: 新浪 hq.sinajs.cn 实时行情 (稳定，无需历史K线，极快，可高频跑)
 
 运行:
   python3 analysis/intraday_alert.py            # 扫描并打印全部预警(JSON stdout + 可读 stderr)
-  python3 analysis/intraday_alert.py --push     # 输出到 data/intraday_alert_output.json 供 cron 读取推送
+  python3 analysis/intraday_alert.py --push     # 输出到 data/runtime/intraday_alert_output.json 供 cron 读取推送
 
 设计要点:
   - 只做快照式预警判定，不做交易执行、不重历史，保证盘中每几分钟可跑一次不超时

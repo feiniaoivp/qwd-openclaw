@@ -512,7 +512,7 @@ def check_zhonglian_vs_advice(state):
 def _zhonglian_strat2_holding() -> bool:
     """读取中联重科策略2(综合最优)的真实持仓状态。
 
-    run json 不保存持仓，需从 data/zhonglian_state.json 读取。
+    run json 不保存持仓，需从 data/runtime/zhonglian_state.json 读取。
     读取失败时保守返回 True (沿用旧的告警行为，不静默掩盖)。
     """
     state_file = os.path.join(WORKSPACE, "data", "zhonglian_state.json")

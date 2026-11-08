@@ -16,7 +16,7 @@
 
 输出:
   - stdout JSON (供 agent 解析推送到 telegram)
-  - 落盘 data/market_health_YYYY-MM-DD.json
+  - 落盘 data/runtime/market_health_YYYY-MM-DD.json
 
 用法:
   python3 analysis/market_health_score.py [可选: 昨日得分history.json路径]

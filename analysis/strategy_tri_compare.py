@@ -9,7 +9,7 @@
   - data/adaptive_strategy_map.json          当前生效策略
   - analysis/validation_YYYY-MM-DD.json      跨周期验证结果（W1全量/W2近3年/W3近1.5年/W4近1年）
   - data/adaptive_params.json                param_tune 调优候选
-  - data/strategy_map_versions/*.json        策略版本历史（可选，用于回溯写入）
+  - data/runtime/strategy_map_versions/*.json        策略版本历史（可选，用于回溯写入）
 
 护栏口径（与 validate_strategies.py 一致）：
   得分 >= 25 且 夏普 >= 0.25（交易笔数 < 6 时需 >= 0.4）

@@ -10,7 +10,7 @@
 - sina_hq:  实时行情 HTTP 探测（带 Referer）
 - sim_state: 模拟盘状态文件新鲜度（>48h 告警，不参与连续计数——非交易日本来就不更新）
 
-状态: data/sentry_state.json（连续失败计数 + 告警幂等标记）
+状态: data/runtime/sentry_state.json（连续失败计数 + 告警幂等标记）
 面板: analysis/dashboards/heartbeat_dashboard.md
 
 用法:
@@ -29,13 +29,17 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "scripts"), os.path.join(WORKSPACE
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
+# 交易日判定 SSOT（2026-10-01 立项，单一事实来源）
+from analysis.service import is_trading_day
+
 SENTRY_STATE = os.path.join(WORKSPACE, "data", "sentry_state.json")
 DASHBOARD_MD = os.path.join(WORKSPACE, "analysis", "dashboards", "heartbeat_dashboard.md")
 SIM_STATE = os.path.join(WORKSPACE, "data", "portfolio_sim_state.json")
-MIRROR_CSV = os.path.join(WORKSPACE, "data", "daily_equity_mirror.csv")
+MIRROR_CSV = os.path.join(WORKSPACE, "data", "runtime", "daily_equity_mirror.csv")
 
 ALERT_THRESHOLD = int(os.getenv("SENTRY_FAIL_THRESHOLD", "3"))
 NO_PUSH = "--no-push" in sys.argv
+CONCURRENT_TEST = "--concurrent-test" in sys.argv
 
 
 def _load_state():
@@ -119,14 +123,76 @@ def probe_sina():
         return False, f"{type(e).__name__}: {str(e)[:100]}"
 
 
+def probe_baostock_concurrent(workers: int = 6, symbols: int = 6):
+    """baostock 并发压测：模拟 T2-3 并行流水线（6 workers × 6 只并发查询）。
+    
+    仅周流水线/手动触发（--concurrent-test），不进常规 30min tick。
+    返回 (ok, detail)。
+    """
+    import concurrent.futures
+    import time
+    try:
+        from analysis.bs_session import ensure_login
+        import baostock as bs
+        if not ensure_login():
+            return False, "登录失败（ensure_login=False）"
+        
+        # 选 6 只代表性股票（关注池前 6 只）
+        test_symbols = ["sh.600030", "sh.601066", "sh.600036", "sh.601995", "sz.000987", "sh.600584"][:symbols]
+        
+        def query_one(sym):
+            t0 = time.time()
+            rs = bs.query_history_k_data_plus(
+                sym, "date,close",
+                start_date="2026-10-28", end_date="2026-11-04",
+                frequency="d", adjustflag="2")
+            dur = round(time.time() - t0, 2)
+            if rs is None or rs.error_code != "0":
+                return False, f"{sym}: {getattr(rs, 'error_msg', 'None') if rs else 'rs=None'}"
+            rows = []
+            while rs.next() and len(rows) < 10:
+                rows.append(rs.get_row_data())
+            if len(rows) >= 1:
+                return True, f"{sym} OK ({dur}s, {len(rows)}行)"
+            return False, f"{sym}: 0行"
+        
+        failed = []
+        t0 = time.time()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
+            futures = [ex.submit(query_one, sym) for sym in test_symbols]
+            for fut in concurrent.futures.as_completed(futures):
+                ok, detail = fut.result()
+                if not ok:
+                    failed.append(detail)
+        total_dur = round(time.time() - t0, 2)
+        
+        if failed:
+            return False, f"并发 {workers}w × {symbols}sym 耗时 {total_dur}s，失败: {'; '.join(failed[:3])}"
+        return True, f"并发 {workers}w × {symbols}sym 全通过，耗时 {total_dur}s"
+    except Exception as e:
+        return False, f"{type(e).__name__}: {str(e)[:100]}"
+
+
 def check_sim_state():
-    """模拟盘状态新鲜度（软检查，不参与连续失败计数）"""
+    """模拟盘状态新鲜度（软检查，不参与连续失败计数）
+    
+    告警分级（2026-11-05 新增）：
+    - 交易日 + age > 24h：升级为 Warning 级推送（模拟盘在交易日应每日更新）
+    - 非交易日 + age > 48h：仅面板黄标，不推送（非交易日本来就不更新）
+    """
     if not os.path.exists(SIM_STATE):
         return False, "state 文件缺失"
     age_h = (time.time() - os.path.getmtime(SIM_STATE)) / 3600
-    if age_h > 48:
-        return False, f"state 滞后 {age_h:.0f}h"
-    return True, f"新鲜 ({age_h:.1f}h 前)"
+    today = datetime.now().strftime("%Y-%m-%d")
+    is_tday = is_trading_day(today)
+    if is_tday:
+        if age_h > 24:
+            return False, f"⚠️ [交易日] state 滞后 {age_h:.1f}h (>24h 阈值)"
+        return True, f"新鲜 ({age_h:.1f}h 前)"
+    else:
+        if age_h > 48:
+            return False, f"state 滞后 {age_h:.0f}h（非交易日，阈值 48h）"
+        return True, f"新鲜 ({age_h:.1f}h 前，非交易日)"
 
 
 PROBES = {"baostock": probe_baostock, "sina_hq": probe_sina}
@@ -163,7 +229,7 @@ def run_tick():
                 rec["incident_alerted"] = True
                 rec["first_alert_ts"] = rec["last_probe_ts"]
 
-    # 软检查（不计数，仅面板 + 超 48h 告警一次）
+    # 软检查（不计数，面板展示；交易日 >24h 升级为 Warning 推送）
     for name, chk in SOFT_CHECKS.items():
         try:
             ok, detail = chk()
@@ -174,8 +240,12 @@ def run_tick():
         prev = rec.get("last_detail", "")
         rec["last_detail"] = detail
         rec["last_probe_ts"] = datetime.now().isoformat(timespec="seconds")
-        if not ok and detail != prev and "滞后" in detail:
-            alerts.append(f"🟡 {name}: {detail}")
+        if not ok and detail != prev:
+            # 交易日 + 含 ⚠️ 标记 = 升级为 Warning 推送
+            if "⚠️" in detail:
+                alerts.append(f"⚠️ {name}: {detail}")
+            else:
+                alerts.append(f"🟡 {name}: {detail}")
 
     _save_state(state)
 
@@ -260,6 +330,12 @@ def write_dashboard(state):
 
 
 def main():
+    if CONCURRENT_TEST:
+        # 并发压测模式（仅周流水线/手动）
+        ok, detail = probe_baostock_concurrent()
+        print(f"{'✅' if ok else '❌'} baostock 并发压测: {detail}")
+        return 0 if ok else 1
+    
     alerts, recoveries = run_tick()
     if alerts:
         print(f"🔴 {len(alerts)} 条告警")

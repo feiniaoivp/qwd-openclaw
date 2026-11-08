@@ -2,7 +2,7 @@
 """
 集合竞价数据订阅器 (新浪实时为主 + pytdx 备用)
 - 9:15-9:25 订阅自选池实时竞价行情
-- 9:25:00 快照落盘到 data/auction/YYYY-MM-DD_9_25.json
+- 9:25:00 快照落盘到 data/runtime/auction/YYYY-MM-DD_9_25.json
 - 支持断线重连、非交易日跳过、停牌过滤、硬超时保护
 - 数据源路由：新浪实时(hq.sinajs.cn)为主 → pytdx备用
 """

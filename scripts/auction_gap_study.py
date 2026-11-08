@@ -2,7 +2,7 @@
 """竞价快照预测力研究（2026-10-17，议程第 4 项：闲置数据资产开发）。
 
 问题: 9:25 竞价快照（高开幅度/量比）对当日与次日收益有无预测力？
-数据: data/auction/*_9_25.json（2026-08-13~，55 快照 × 27~36 票），
+数据: data/runtime/auction/*_9_25.json（2026-08-13~，55 快照 × 27~36 票），
       当日/次日收盘取 dual_signal_eval_days.json（同窗口含 Aug-Oct 2026）。
 指标: gap=开盘涨幅(竞价价/昨收-1)；intraday=收盘/开盘-1；next=次日收盘/当日收盘-1。
 口径: 分 gap 桶 × 量比档；统计纪律报 n/胜率。
@@ -46,7 +46,7 @@ def next_close(sym, d):
     return None
 
 rows_out = []
-files = sorted(glob.glob(os.path.join(WORKSPACE, "data/auction/*_9_25.json")))
+files = sorted(glob.glob(os.path.join(WORKSPACE, "data/runtime/auction/*_9_25.json")))
 used_files = 0
 for f in files:
     date = os.path.basename(f).split("_")[0]

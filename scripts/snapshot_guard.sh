@@ -48,6 +48,8 @@ if [[ -z "$DRY_RUN" ]]; then
   TAG_DIR="$BACKUPS_DIR/${TAG#guard/}"
   mkdir -p "$TAG_DIR"
   # 同步核心配置与状态文件（排除 .git, __pycache__, data_cache, node_modules 等）
+  # 2026-11-05 晚回滚：data/runtime/ 改为符号链接兼容层（→ data/），恢复 --include='data/' 原口径；
+  # 路径统一待 SQLite 状态层落地时以单一路径模块收口，不再散点 sed
   rsync -a --delete \
     --exclude='.git' --exclude='__pycache__' --exclude='data_cache' --exclude='node_modules' --exclude='.venv' --exclude='venv' --exclude='backups' \
     --include='analysis/' --include='scripts/' --include='data/' --include='*.py' --include='*.sh' --include='*.md' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.toml' --include='*.txt' \

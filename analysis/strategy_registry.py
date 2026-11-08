@@ -5,7 +5,7 @@
 
 功能：
 - 统一加载/保存策略映射
-- 自动版本归档 (data/strategy_map_versions/)
+- 自动版本归档 (data/runtime/strategy_map_versions/)
 - 回滚到任意历史版本
 - 列出所有版本历史
 - 元数据记录 (git commit, 来源, 验证得分等)

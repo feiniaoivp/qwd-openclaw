@@ -9,7 +9,7 @@
 
 规则口径（v1）：
   - 单票确认: close > open 且 close > prev_close（高开高走）且 vol >= 1.2 x 前5日均量
-  - 候选集: data/auction/signal_push_{date}.json 的 fade_risk 名单 ∪ 「卖出信号遇高开(诱多)」hits
+  - 候选集: data/runtime/auction/signal_push_{date}.json 的 fade_risk 名单 ∪ 「卖出信号遇高开(诱多)」hits
   - 跷跷板（任一成立即算，缺数据按 None 传播，绝不静默填默认）:
       a) 宽度: legu 口径 up_ratio(D) - up_ratio(D-1) >= +0.10 且 up_ratio(D) >= 0.45
       b) 指数: 沪深300 D 日收涨 且 D-1 日收跌（该弱不弱）

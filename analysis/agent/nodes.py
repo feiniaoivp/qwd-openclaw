@@ -433,7 +433,7 @@ def rule_risk_advice(state):
     advice_list = []
 
     # ── 2026-08-18 修复#3：双链路口径一致性校验 ──
-    # adaptive_dual.py 的 030 裁决（含减仓/卖出）已落盘 data/arbitration_YYYY-MM-DD.json。
+    # adaptive_dual.py 的 030 裁决（含减仓/卖出）已落盘 data/runtime/arbitration_YYYY-MM-DD.json。
     # run_agent 的规则建议若与仲裁方向冲突（本链判 BUY/关注，仲裁判 减仓/卖出），
     # 一律降级为 HOLD 并注明来源，避免同一股票同日给相反信号。
     arb_by_symbol = {}

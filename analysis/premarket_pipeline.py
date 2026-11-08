@@ -96,7 +96,7 @@ STAGES = [
         "required": True,
         "marker_start": "=====AGENT_RESULT=====",
         "marker_end": "=====AGENT_END=====",
-        "fallback_file": "data/agent_runs/last_success.json",
+        "fallback_file": "data/runtime/agent_runs/last_success.json",
     },
     {
         "name": "audit",
@@ -113,7 +113,7 @@ STAGES = [
         # 2026-10-26 新增：关注池 PPO/CCI 量化预筛（a-share-analyst Workflow C）
         # 数据日自动探测（盘前=上一交易日收盘），非关键阶段，失败不阻断主链。
         # fallback_file 仅文档口径（非 required 阶段不走降级分支），成功产出由
-        # save_success_output 自动落 data/pipeline_cache/ppo_cci_last.json。
+        # save_success_output 自动落 data/runtime/pipeline_cache/ppo_cci_last.json。
         "name": "ppo_cci",
         "script": "analysis/po_ppo_cci_screen.py",
         "args_tmpl": ["--json"],
@@ -122,7 +122,7 @@ STAGES = [
         "required": False,
         "marker_start": "=====PPO_CCI_RESULT=====",
         "marker_end": "=====PPO_CCI_END=====",
-        "fallback_file": "data/pipeline_cache/ppo_cci_last.json",
+        "fallback_file": "data/runtime/pipeline_cache/ppo_cci_last.json",
     },
 ]
 
@@ -165,7 +165,7 @@ def load_fallback(fallback_path: str, date: str):
 
 def _load_agent_fallback(date: str):
     """agent 阶段降级数据（2026-10-14 修复）：
-    优先取 data/agent_runs/ 下**最新**的 run_*.json（当日 run 往往是好的，只是
+    优先取 data/runtime/agent_runs/ 下**最新**的 run_*.json（当日 run 往往是好的，只是
     pipeline 侧超时/解析失败被判死），其次才 last_success.json。
     根因：last_success.json 停留在 2026-09-20，导致盘前报告连日静默输出
     24 天前的僵尸缓存（来伊份旧闻循环 + 「交易日:否」假标签）且无日期提示。
@@ -268,7 +268,7 @@ def run_stage(stage: dict, date: str) -> dict:
 
 
 def _try_scan_archive(date: str):
-    """昨夜 18:30 收盘扫描全量档案（data/pipeline_cache/close_scan_{最近交易日}.json）。
+    """昨夜 18:30 收盘扫描全量档案（data/runtime/pipeline_cache/close_scan_{最近交易日}.json）。
     盘前 06:00 的 spot/K线与昨夜收盘扫描等价（都截至上一交易日收盘），直接复用可
     省一次全池重扫并消除盘前数据源抖动；无档案（昨夜 job 失败/首日）返回 None 走现扫。
     2026-10-11(#1) 新增。"""

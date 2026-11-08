@@ -20,7 +20,7 @@
     - 持仓股在前交易日 dual 日报/当日日报有「🔴卖出」信号，但仲裁未转卖出
       （10-28 越秀事故形态: 10-27 日报纯MACD卖出 → 10-28 未减仓）
     - 系统拦截买入（mult=0）
-产出: data/execution_audit/execution_audit_{D}.json + analysis/daily/{D}_execution_audit.md
+产出: data/runtime/execution_audit/execution_audit_{D}.json + analysis/daily/{D}_execution_audit.md
 """
 
 import os

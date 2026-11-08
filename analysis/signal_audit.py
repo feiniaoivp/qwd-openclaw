@@ -13,8 +13,8 @@
 数据来源(全部读本地盘后已生成文件，不重新拉网，快且可靠):
   - analysis/daily/YYYY-MM-DD_dual.md           (双策略扫描)
   - analysis/daily/YYYY-MM-DD_portfolio_sim.md  (模拟盘)
-  - data/market_health_YYYY-MM-DD.json          (030健康度)
-  - data/portfolio_sim_state.json               (持仓状态, 权威)
+  - data/runtime/market_health_YYYY-MM-DD.json          (030健康度)
+  - data/runtime/portfolio_sim_state.json               (持仓状态, 权威)
 
 用法:
   python3 analysis/signal_audit.py [--date 2026-08-06]

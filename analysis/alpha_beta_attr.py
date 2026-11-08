@@ -20,8 +20,8 @@ alpha/beta/净敞口归因 —— 适配自 frank-quant/ai-trading-videos EP007 
 ⚠️ 数据要求:T≥30 个共同交易日才有统计意义;当前资金曲线过短时会明确拒绝。
 
 用法:
-  python3 analysis/alpha_beta_attr.py --equity-csv data/portfolio_equity.csv
-  python3 analysis/alpha_beta_attr.py --equity-csv data/portfolio_equity.csv \
+  python3 analysis/alpha_beta_attr.py --equity-csv data/runtime/portfolio_equity.csv
+  python3 analysis/alpha_beta_attr.py --equity-csv data/runtime/portfolio_equity.csv \
       --benchmark-csv data/benchmark_000300.csv --out data/alpha_beta_sim.json
 """
 import argparse

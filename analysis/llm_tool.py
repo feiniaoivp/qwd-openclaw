@@ -194,7 +194,7 @@ def get_market_health() -> Optional[int]:
 
     2026-08-07 修复：原先调用 market_health_score.compute_health 会 ImportError，
  且其底层 akshare(东财/全A) 接口在本机被拦截。改为直接读取
-    close_scan_v2 每日生成的 data/market_health_<日期>.json 的 summary.total_score（新浪数据，可靠）。
+    close_scan_v2 每日生成的 data/runtime/market_health_<日期>.json 的 summary.total_score（新浪数据，可靠）。
  若读取失败返回 None，上层会走规则兜底。
     """
     import glob
