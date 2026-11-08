@@ -49,6 +49,7 @@ SESSION.trust_env = False
 
 FLCLASH_DIR = os.path.expanduser("~/Library/Application Support/com.follow.clash")
 FLCLASH_CONFIG = os.path.join(FLCLASH_DIR, "config.yaml")
+FLCLASH_PLIST = os.path.expanduser("~/Library/Preferences/com.follow.clash.plist")
 STATE_FILE = os.path.join(WORKSPACE, "data", "proxy_watchdog_state.json")
 LOG_FILE = os.path.join(WORKSPACE, "logs", "proxy_watchdog.log")
 LOCK_FILE = "/tmp/proxy_watchdog.lock"
@@ -64,6 +65,8 @@ RETRY_GAP = 4              # 两个探测 URL 之间的间隔（秒）
 DELAY_TIMEOUT_MS = 3000    # 节点延迟测试超时
 API_TIMEOUT = 12
 GROUP_DELAY_TIMEOUT = 60   # 整组延迟测试的总超时（秒）
+HISTORY_FRESH_SECONDS = 900  # 节点健康历史新鲜度（15 分钟）：优先用历史选点，避免 500+ 节点整组探测
+EXCLUDE_NODES = {"COMPATIBLE", "DIRECT", "REJECT", "PASS"}  # mihomo 占位/特殊节点不作切换目标
 NOTIFY_REPEAT_SECONDS = 1800
 LOG_MAX_BYTES = 2 * 1024 * 1024
 LOG_KEEP_BYTES = 256 * 1024
@@ -100,33 +103,68 @@ def setup_logging() -> None:
 
 # ---------------- FlClash 控制器配置 ----------------
 
-def load_controller():
-    """从 FlClash config.yaml 读 external-controller 与 secret。
-    返回 (base_url or None, secret, note)。yaml 缺失时正则兜底。"""
+def _normalize_controller(addr, secret):
+    if isinstance(addr, str):
+        addr = addr.strip().strip('"').strip("'")
+    if not addr or addr in ("close", ""):
+        return None, secret or ""
+    if not addr.startswith("http"):
+        addr = "http://" + addr
+    return addr, secret or ""
+
+
+def _controller_from_plist():
+    """FlClash 0.9.x 设置实体在 plist 的 flutter.config(JSON 字符串) blob；
+    config.yaml 只是核心启动时写入的快照，热更新开关不一定回写。"""
+    import plistlib
+    with open(FLCLASH_PLIST, "rb") as f:
+        data = plistlib.load(f)
+    raw = data.get("flutter.config")
+    cfg = json.loads(raw) if isinstance(raw, str) else (raw or {})
+    patch = cfg.get("patchClashConfig") or {}
+    return _normalize_controller(
+        patch.get("external-controller"), patch.get("secret") or ""
+    )
+
+
+def _controller_from_config_yaml():
+    """启动快照兜底：读 config.yaml 的 external-controller 与 secret。"""
     try:
         with open(FLCLASH_CONFIG, "r", encoding="utf-8") as f:
             text = f.read()
     except OSError as e:
-        return None, "", f"读不到 FlClash 配置: {e}"
-    addr = secret = None
+        log.warning("读不到 FlClash config.yaml: %s", e)
+        return None, ""
     try:
-        import yaml  # noqa
+        import yaml
         data = yaml.safe_load(text) or {}
         addr = data.get("external-controller")
         secret = data.get("secret") or ""
     except Exception as e:  # yaml 缺失/解析失败 → 正则兜底（可见告警）
         log.warning("yaml 解析失败(%s)，用正则兜底", e)
-        m = __import__("re").search(r'^external-controller:\s*"?([^"\r\n]*)"?', text, __import__("re").M)
+        import re
+        m = re.search(r'^external-controller:\s*"?([^"\r\n]*)"?', text, re.M)
         addr = m.group(1).strip() if m else None
-        m2 = __import__("re").search(r'^secret:\s*"?([^"\r\n]*)"?', text, __import__("re").M)
+        m2 = re.search(r'^secret:\s*"?([^"\r\n]*)"?', text, re.M)
         secret = (m2.group(1).strip() if m2 else "")
-    if isinstance(addr, str):
-        addr = addr.strip().strip('"').strip("'")
-    if not addr or addr in ("close", ""):
-        return None, secret or "", "外部控制未开启"
-    if not addr.startswith("http"):
-        addr = "http://" + addr
-    return addr, secret or "", "ok"
+    return _normalize_controller(addr, secret)
+
+
+def load_controller():
+    """读 external-controller 与 secret。优先级：plist(实时设置) → config.yaml(启动快照)。
+    返回 (base_url or None, secret, note)。"""
+    try:
+        addr, secret = _controller_from_plist()
+        if addr:
+            return addr, secret, "ok(plist)"
+    except FileNotFoundError:
+        log.warning("plist 不存在: %s", FLCLASH_PLIST)
+    except Exception as e:
+        log.warning("plist 解析失败，退回 config.yaml: %s", e)
+    addr, secret = _controller_from_config_yaml()
+    if addr:
+        return addr, secret, "ok(config.yaml 快照)"
+    return None, secret or "", "外部控制未开启"
 
 
 # ---------------- 探测与 API ----------------
@@ -162,15 +200,49 @@ def api(base, secret, method, path, timeout=API_TIMEOUT, **kw):
     )
 
 
-def get_selector_chains(base, secret):
-    """返回去重后的 [{top, chain, target, current}]。
-    target = 当前选中链上最深的 Selector 组；current = 链末端的实际节点名。"""
+def _parse_iso(s):
+    """mihomo history 的 time 字段（RFC3339）→ unix 秒；解析失败 → None。"""
+    if not s:
+        return None
+    try:
+        from datetime import datetime, timezone
+        s2 = s[:-1] + "+00:00" if s.endswith("Z") else s
+        dt = datetime.fromisoformat(s2)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.timestamp()
+    except Exception:
+        return None
+
+
+def _fresh_delay(proxies_map, name):
+    """节点最近一次健康检查延迟；无记录/超龄/失败 → None。"""
+    info = proxies_map.get(name) or {}
+    hist = info.get("history") or []
+    if not hist:
+        return None
+    entry = hist[-1] or {}
+    d = entry.get("delay")
+    ts = _parse_iso(entry.get("time") or "")
+    if not isinstance(d, (int, float)) or d <= 0 or ts is None:
+        return None
+    if time.time() - ts > HISTORY_FRESH_SECONDS:
+        return None
+    return float(d)
+
+
+def get_graph(base, secret):
+    """返回 (proxies_map, chains)。chains 去重：[{top, chain, target, current}]。
+    target = 当前选中链上最深的 Selector 组；current = 链末端的实际节点名。
+    注意：GLOBAL 的 all 含所有组，算 referenced 时必须跳过，否则顶层组恒空。"""
     r = api(base, secret, "GET", "/proxies")
     r.raise_for_status()
-    data = (r.json() or {}).get("proxies") or {}
-    groups = {n: i for n, i in data.items() if i.get("type") in GROUP_TYPES}
+    proxies_map = (r.json() or {}).get("proxies") or {}
+    groups = {n: i for n, i in proxies_map.items() if i.get("type") in GROUP_TYPES}
     referenced = set()
-    for info in groups.values():
+    for name, info in groups.items():
+        if name == "GLOBAL":
+            continue
         for m in (info.get("all") or []):
             referenced.add(m)
     tops = [n for n in groups if n != "GLOBAL" and n not in referenced]
@@ -197,53 +269,88 @@ def get_selector_chains(base, secret):
             continue
         seen.add(key)
         out.append({"top": t, "chain": chain, "target": target, "current": leaf})
-    return out
+    return proxies_map, out
 
 
-def try_fix(base, secret, ch, dry_run):
-    """对一个链路做延迟测试与切换。返回 (action, detail)。"""
+def try_fix(base, secret, ch, dry_run, proxies_map, extra_exclude=frozenset()):
+    """对一个链路做存活判定与切换。返回 (action, msg, info)。
+    选点策略：历史延迟优先（15 分钟内），历史不可用才整组测延迟。
+    历史说当前节点活着时，用单节点实测复核定夺（探测优先于旧历史）。"""
     target, current = ch["target"], ch["current"]
-    q = urllib.parse.quote(target, safe="")
+    exclude = set(extra_exclude) | EXCLUDE_NODES | {current}
     test = urllib.parse.quote(TEST_URLS[0], safe="")
-    try:
-        r = api(base, secret, "GET",
-                f"/group/{q}/delay?url={test}&timeout={DELAY_TIMEOUT_MS}",
-                timeout=GROUP_DELAY_TIMEOUT)
-    except Exception as e:
-        return "delay-test-error", f"{target}: {type(e).__name__}: {e}"
-    if r.status_code != 200:
-        return "delay-test-failed", f"{target}: HTTP {r.status_code} {r.text[:120]}"
-    delays = r.json() or {}
-    if current in delays:
-        return "node-alive", (
-            f"{target} 当前节点「{current}」延迟 {delays[current]}ms 仍存活，"
-            "断流在别处（DNS/订阅/上游），不切换"
-        )
-    candidates = {k: v for k, v in delays.items() if v and v > 0 and k != current}
+    cur_delay = _fresh_delay(proxies_map, current)
+    if cur_delay is not None:
+        try:
+            qcur = urllib.parse.quote(current, safe="")
+            rc = api(base, secret, "GET",
+                     f"/proxies/{qcur}/delay?url={test}&timeout={DELAY_TIMEOUT_MS}",
+                     timeout=20)
+            body = rc.json() if rc.status_code == 200 else {}
+            if isinstance(body, dict) and body.get("delay", 0) and body["delay"] > 0:
+                return "node-alive", (
+                    f"{target} 当前节点「{current}」实测 {body['delay']}ms 存活，"
+                    "断流在别处（DNS/订阅/上游），不切换"
+                ), {}
+        except Exception as e:
+            log.warning("单节点复测失败（按已死处理）: %s", e)
+    members = (proxies_map.get(target) or {}).get("all") or []
+    # 1) 历史存活候选
+    candidates = {}
+    for name in members:
+        if name in exclude:
+            continue
+        d = _fresh_delay(proxies_map, name)
+        if d is not None:
+            candidates[name] = d
+    # 2) 历史不可用 → 整组延迟测试（mihomo 内部并发，结果同时刷新各节点历史）
     if not candidates:
-        return "no-candidate", f"{target} 组内无存活候选节点（共 {len(delays)} 个结果）"
+        q = urllib.parse.quote(target, safe="")
+        try:
+            r = api(base, secret, "GET",
+                    f"/group/{q}/delay?url={test}&timeout={DELAY_TIMEOUT_MS}",
+                    timeout=GROUP_DELAY_TIMEOUT)
+        except Exception as e:
+            return "delay-test-error", f"{target}: {type(e).__name__}: {e}", {}
+        if r.status_code != 200:
+            return "delay-test-failed", f"{target}: HTTP {r.status_code} {r.text[:120]}", {}
+        delays = r.json() or {}
+        if isinstance(delays, dict) and current in delays:
+            return "node-alive", (
+                f"{target} 当前节点「{current}」延迟 {delays[current]}ms 仍存活，"
+                "断流在别处（DNS/订阅/上游），不切换"
+            ), {}
+        candidates = {
+            k: float(v) for k, v in delays.items()
+            if isinstance(v, (int, float)) and v > 0 and k not in exclude
+        }
+    if not candidates:
+        return "no-candidate", f"{target} 组内无存活候选节点（排除占位节点后）", {}
     best_name, best_ms = min(candidates.items(), key=lambda kv: kv[1])
     if dry_run:
-        return "dry-run", f"{target}: 「{current}」已死 → 将切到「{best_name}」({best_ms}ms)"
+        return "dry-run", f"{target}: 「{current}」已死 → 将切到「{best_name}」({int(best_ms)}ms)", {}
+    q = urllib.parse.quote(target, safe="")
     try:
         r2 = api(base, secret, "PUT", f"/proxies/{q}", json={"name": best_name})
     except Exception as e:
-        return "switch-error", f"{target} PUT {best_name}: {type(e).__name__}: {e}"
+        return "switch-error", f"{target} PUT {best_name}: {type(e).__name__}: {e}", {}
     if r2.status_code not in (200, 204):
-        return "switch-failed", f"{target} PUT {best_name}: HTTP {r2.status_code} {r2.text[:120]}"
-    return "switched", f"{target}: 「{current}」→「{best_name}」({best_ms}ms)"
+        return "switch-failed", f"{target} PUT {best_name}: HTTP {r2.status_code} {r2.text[:120]}", {}
+    return ("switched",
+            f"{target}: 「{current}」→「{best_name}」({int(best_ms)}ms)",
+            {"target": target, "node": best_name})
 
 
 def rehearse(base, secret):
     """零变更演练：对第一个链路的 target 组原样回写当前选中值。"""
-    chains = get_selector_chains(base, secret)
+    proxies_map, chains = get_graph(base, secret)
     if not chains:
         return False, "未找到可演练的 Selector 链路"
     ch = chains[0]
     q = urllib.parse.quote(ch["target"], safe="")
     r = api(base, secret, "PUT", f"/proxies/{q}", json={"name": ch["current"]})
     ok = r.status_code in (200, 204)
-    return ok, (f"PUT {ch['target']} <- 「{ch['current']}」(原样回写) HTTP {r.status_code}")
+    return ok, (f"PUT {ch['target']} <- 「{ch['current']}」(原样回写) HTTP {r.status_code} | 发现链路 {len(chains)} 条")
 
 
 # ---------------- 状态 / 通知 ----------------
@@ -367,7 +474,7 @@ def main():
         return 0
 
     try:
-        chains = get_selector_chains(base, secret)
+        proxies_map, chains = get_graph(base, secret)
     except Exception as e:
         state["unresolved"] = True
         log.warning("获取代理链失败: %s", e)
@@ -381,14 +488,19 @@ def main():
         save_state(state)
         return 0
 
+    last_tried = (state.get("last_tried") or {}) if state.get("fail_streak", 0) > 1 else {}
     actions = []
+    switched_info = []
     for ch in chains:
+        extra = {last_tried[ch["target"]]} if last_tried.get(ch["target"]) else set()
         try:
-            action, msg = try_fix(base, secret, ch, dry_run)
+            action, msg, info = try_fix(base, secret, ch, dry_run, proxies_map, extra)
         except Exception as e:
-            action, msg = "exception", f"{ch.get('target')}: {type(e).__name__}: {e}"
+            action, msg, info = "exception", f"{ch.get('target')}: {type(e).__name__}: {e}", {}
         log.warning("%s: %s", action, msg)
         actions.append({"action": action, "msg": msg})
+        if action == "switched" and info:
+            switched_info.append(info)
 
     switched = [a for a in actions if a["action"] == "switched"]
     if dry_run:
@@ -397,6 +509,11 @@ def main():
     elif switched:
         ok2, detail2 = is_healthy()
         summary = "; ".join(a["msg"] for a in switched)
+        if switched_info:
+            state["last_tried"] = {
+                **(state.get("last_tried") or {}),
+                **{i["target"]: i["node"] for i in switched_info},
+            }
         state["last_action"] = summary
         state["last_switch_ts"] = time.time()
         if ok2:
