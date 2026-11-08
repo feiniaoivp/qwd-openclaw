@@ -1207,3 +1207,11 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - **Fix**: 退出码先落变量再拼输出：`rc=$?; echo "$(basename $g): exit=$rc"`；或每条命令退出码重定向落文件后单独读。
 - **规约**: 凡 `echo "...$?..."` 内含命令替换 `$(...)`，`$?` 一定是替换命令的退出码，不是前一条的。退出码验证禁止与命令替换同表达式。
 - **计数**: 假 ok 家族第 7 变体（退出码读取被污染型首例；同族：`cmd | tail; $?` 取的是 tail）。
+
+## ERR-20261108-KBDedupeHookPrefixBlindspot
+- **Date**: 2026-11-08（同族第 3 次：10-30 粘性重复 / 11-01 存量 182 组 / 11-08 增量 96 组 → 达成 RC≥3 结构性修复）
+- **Symptom**: 11-01 清 182 组存根后一周又积 96 组同串重复；周六 0ae 监测到但 warn-only，无人 --apply。
+- **Root cause**: ①news_monitor.py KB 写入防重钩子按行前缀 `startswith("•")` 圈覆盖面，简报 4 种行形态（统计行/• 内容行/`**股(码)**:` 分组头/`    - 标题` dash 子行）只覆盖 1 种 → 个股新闻速览 dash 行零防重；②seen_titles 增量状态仅存 2000 条，旧闻滑出 LRU 后再当「新增」（东财按相关度推旧文）；③kb_append_guard 有效但未接入 cron 自动写入路径（工具存在、流程未绑定=三层防线缺第 2 层）。
+- **Fix**: commit b28af5b——news_monitor 钩子 v2 复用 kb_append_guard.strip_candidate 全块处理（单一口径，覆盖全部标题形态+空组头清理+块内去重）；variant_merge .bak 改写前无条件刷新（陈旧快照 bug 连带修复）。
+- **规约**: ①防重/过滤钩子按行前缀圈覆盖面时，必须先枚举全部写入形态（枚举表进钩子注释）；②「增量状态(LRU)+高频抓取源」组合必须有落盘侧第二道防重，不能只信抓取侧状态；③防线工具（守卫）建好后必须绑定到**全部**写入路径，只绑手工路径 = cron 自动路径裸奔。
+- **Status**: resolved (2026-11-08, source+pipeline 双执法；下交易日 cron 自然验证 + 周六 0ae 存量复核)

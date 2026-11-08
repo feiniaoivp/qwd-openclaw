@@ -118,12 +118,15 @@ Starting point — add your own conventions as you learn what works.
 - [ ] `python3 scripts/script_path_guard.py` 确认无缺失 sys.path 样板的脚本
 - [ ] `python3 scripts/promotion_guard.py` 确认 promote 通道未断（2026-10-05 新增；退出码 1 = 自动晋升失效，需人工并入人写区）
 - [ ] `python3 scripts/cron_noop_guard.py` 确认无基线外新增空转假成功 cron（2026-10-06 新增；退出码 1 = 有 job 注入即 ok、脚本未跑，需改 command+isolated）
+- [ ] `python3 scripts/sensitive_file_tripwire.py` 确认敏感文件无基线外变更（2026-11-06 新增；exit 1 = shell rc/crontab/plist/openclaw.json 基线外变更，核对 /approve 或 guard/ 记录后 `--baseline` 重建。背景：exec 审批层实测 YOLO 态 security=full+ask=off，「必须请示」类文件工具层零执法，靠此绊线兑底知情）
 
 ---
 
 ## 🧠 教训固化原则（Lessons → 三层防线）
 
 > **核心定律：教训写在记忆/文档里 ≠ 防线。**
+>
+> **RC≥3 自动开票（2026-11-05）：** 同签名拦截/失败在滚动 90 天内 RC≥3 → `error_attribution.py` 自动生成结构性修复工单（`data/failure_cases/structural_fix_tickets.json` + 看板 `analysis/audit/structural_fix_tickets.md`，强制交付物：门禁脚本/流水线接入点/根因归档）。工单随 16:15 failure-attribution-daily cron 自动刷新；关闭 = 编辑工单 status=CLOSED + fix_note。未闭环工单进周一审计。
 
 同一个坑踩到**第二次**时，禁止只再写一遍记忆 —— 必须把教训转化为**三层防线**，缺一不可：
 
@@ -195,6 +198,11 @@ Starting point — add your own conventions as you learn what works.
     大计算（>1min）的主结果 `json.dump` 必须放在打印/二次处理之前，避免崩溃白跑。
     （实证：2026-10-17 rsi30_event_study 统计全 None + dual_signal_event_study 写盘前 KeyError）
     Source: .learnings/ERRORS.md#ERR-20261017-C02
+*   **立项前先盘点存量**。新建任何 `*guard*`/`*checker*`/`*monitor*`/`*_guard.py` 类脚本前，
+    第一动作 `ls scripts/ scripts/guards/ | grep -i <关键词>` + grep 周流水线步骤清单：
+    同名/同职责已存在即改名或复用，跨文件头部互相引用职责边界；禁止并行造第二份同职工具。
+    （实证：同族 3 次——10-06 pre_response_guard 重名 / is_trading_day 三实现 / 11-04
+    data_freshness_guard 在 scripts/ 与 scripts/guards/ 双落点；Source: .learnings/ERRORS.md#ERR-20261104-DuplicateGuardName）
 *   **写「全量/快速」双模式构建脚本时，`quick` 必须写独立文件名**（如 `*.quick.json`），
     永不复用全量产物路径；同理**任何「重写型」数据脚本必须有写前 `.bak` 备份 + 行数防倒退检查**，
     且首跑 `✅` 之后要**抽样核对产物形态**（行数/日期范围/条目数），不能只看退出码。
@@ -289,7 +297,7 @@ If Prismfy results are weak, empty, or ambiguous:
 1. retry with a better query or another supported engine first;
 2. only then use fallback, and explicitly state Prismfy query, why insufficient, and fallback path used.
 
-**Chinese finance/stock queries (hard cap, user-approved 2026-10-27):** persistent Prismfy weakness (10-24~26: 5 tries, 4 empty, 1 rate-limited). At most 1 retry (2 attempts total); if still empty/rate-limited, declare `Prismfy query used: "..." (empty/rate-limited)` and switch to built-in web_search - no third attempt.
+**Chinese finance/stock queries (hard cap, user-approved 2026-10-27):** persistent Prismfy weakness (10-24~26: 5 tries, 4 empty, 1 rate-limited). At most 1 retry (2 attempts total); if still empty/rate-limited, declare `Prismfy query used: "..." (empty/rate-limited)` and switch to built-in web_search - no third attempt. (Fallback backend on this host = Tavily: plugins.entries.tavily.enabled=true + gateway env carries TAVILY_API_KEY, so built-in web_search is Tavily-powered; clarified 2026-11-06.)
 
 ## Search Mode
 

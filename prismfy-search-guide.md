@@ -93,6 +93,8 @@ If Prismfy results are weak, empty, or ambiguous:
 
 **Chinese finance/stock queries (hard cap, user-approved 2026-10-27):** Prismfy has a persistent weakness on Chinese finance queries (10-24 ~ 10-26 three consecutive days: 5 tries, 4 empty, 1 rate-limited; same observation logged 10-15). For these queries do NOT loop retries: at most 1 retry with a reworded query or different engine (2 attempts total); if still empty/rate-limited, declare the fallback immediately - `Prismfy query used: "..." (empty/rate-limited)` - and switch to the built-in web_search without a third attempt.
 
+**Fallback backend on this host = Tavily (clarified 2026-11-06):** `plugins.entries.tavily.enabled=true` and the gateway environment carries `TAVILY_API_KEY`, so the built-in `web_search` is Tavily-powered on this machine; the workspace skill `openclaw-tavily-search` is the equivalent explicit script path. Wherever the rules above say "switch to the built-in web_search", read it as: search via Tavily.
+
 ## Engine Guide
 
 - `google`: best general relevance; prefer when accuracy matters.

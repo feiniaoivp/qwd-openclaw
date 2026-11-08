@@ -162,6 +162,7 @@ This file serves as your curated long-term memory, storing significant events, d
 - **管道化首跑前夜 (2026-11-04):** 今日 0 执行根因=晨间误扫置 last_signal_date=11-04 被同日执行守卫吞单；3 买（巨化/福耀/恒生）已回填 PENDING，11-05 15:40 管道化首跑待验收。
 - **治理四件套 (2026-11-04):** 落地 `system_manifest.json` (门禁分级) / `data_source_sentry` (源探测) / `error_attribution` (归因台账) / `snapshot_guard` 升级。
 
+## User's Stock Watchlist (Definitive - 36 stocks)
 *   **证券/金融:** 中信证券(600030), 中信建投(601066), 招商银行(600036), 中金公司(601995), 越秀资本(000987)
 *   **半导体/TMT:** 长电科技(600584), 中芯国际(688981), 通富微电(002156), 雷科防务(002413)
 *   **新能源/储能:** 亿纬锂能(300014), 天齐锂业(002466)
