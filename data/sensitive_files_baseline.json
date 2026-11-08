@@ -1,10 +1,11 @@
 {
- "generatedAt": "2026-11-05T21:49:24+00:00",
+ "generatedAt": "2026-11-08T22:00:53+00:00",
  "hashes": {
   "/Users/duguke/.zshrc": "f0626b0a4074355ecacea85e9941d0affffdf11c0885f4d3d521af5cf7ca140f",
   "/Users/duguke/.zprofile": "512ce3fe95a60e555bc971bcd0322580c0f436488c3170bdcae8dad3a21a5520",
   "/Users/duguke/.openclaw/openclaw.json": "acd4abf5d2e20efc58df01af1a28932b796b06c7f1d19809a2a4c41a54f27c78",
   "/Users/duguke/.openclaw/workspace/data/.crontab_snapshot_for_tripwire": "ee080ee06f0184879064b68b303902739a26d7c7706867b7fb395224255d9d9f",
+  "/Users/duguke/Library/LaunchAgents/ai.openclaw.analytics-api.plist": "fae1e069e485c359479267fb1c779778d090cd53980b66cdd977b00732301491",
   "/Users/duguke/Library/LaunchAgents/ai.openclaw.gateway.plist": "54bd2555161c134b3fba23ee903be1d771130e2e3cd47e5b4b9cc0d99dda3a2f",
   "/Users/duguke/Library/LaunchAgents/com.duguke.embedding-service.plist": "1b4d38cf03f823260f5e5afb9748a08aa777d59905e954b5fb457e11542a1919",
   "/Users/duguke/Library/LaunchAgents/com.duguke.obsidian-wiki-sync.plist": "ecac2350d973dac931271fd02adce9c0132ed00b23a10ffdd2286cec5d2634e6",
