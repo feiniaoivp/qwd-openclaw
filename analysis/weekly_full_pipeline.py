@@ -275,6 +275,15 @@ def main():
     if not r["success"]:
         print("⚠️ 基线外新增「重写型写点无备份保护」（见上方），写前 .bak 教训复发（不阻断流水线）...")
 
+    # 步骤 0f3: baostock 并发压测（2026-11-05 新增）
+    # 背景：T2-3 并行流水线引入 ThreadPoolExecutor(6 workers) 并发预取 baostock，
+    # 未压测并发限制/掉线风险。周流水线跑一次，作为前置预警（不阻断）。
+    print("\n🚦 步骤 0f3/9: baostock 并发压测 (data_source_sentry.py --concurrent-test)")
+    r = run_script("../scripts/data_source_sentry.py", ["--concurrent-test"], timeout=120)
+    results["baostock_concurrent"] = r
+    if not r["success"]:
+        print("⚠️ baostock 并发压测失败（见上方），并行流水线可能触发限流/掉线，需人工排查（不阻断流水线）...")
+
     # 步骤 0g: promote 预算淘汰门禁（2026-10-05 新增）
     # 背景：memory-core 插件 compactMemoryForBudget() 默认 1e4 字符预算，
     # 超预算时按日期静默丢弃最老 promote 区块且 journal 无 dropped 字段。
