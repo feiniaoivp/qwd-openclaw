@@ -30,9 +30,18 @@ from analysis.regime_allocator import generate_next_day_config
 
 
 def load_stock_data(symbols: List[str], start_date: str = "2023-01-01") -> Dict[str, pd.DataFrame]:
-    """从 CSV 加载股票数据，统一格式"""
+    """从 CSV 加载股票数据，统一格式（2026-11-09 补缺：join 基本面面板，
+    否则估值因子 PE/PB/PCF 拿不到 eps/bvps/ocf 列 → 恒 NaN → IC=0 假象）"""
     data = {}
     data_dir = os.path.join(WORKSPACE, "data", "stock_data")
+    fund_path = os.path.join(WORKSPACE, "data", "fundamental", "fundamental_panel.parquet")
+    fund_panel = None
+    if os.path.exists(fund_path):
+        fund_panel = pd.read_parquet(fund_path)
+        fund_panel["symbol"] = fund_panel["symbol"].astype(str).str.zfill(6)
+    fund_cols = [c for c in ["eps_basic", "book_value_per_share", "operating_cash_flow_per_share",
+                             "revenue_yoy", "ROE_TTM", "net_profit_margin"]
+                 if fund_panel is not None and c in fund_panel.columns]
     
     for sym in symbols:
         csv_path = os.path.join(data_dir, f"{sym}.csv")
@@ -75,6 +84,20 @@ def load_stock_data(symbols: List[str], start_date: str = "2023-01-01") -> Dict[
             # 过滤开始日期
             df = df[df.index >= start_date]
             
+            # join 基本面（report_date → 日度 ffill 延展到 K 线末日；列缺失安全跳过）
+            if fund_panel is not None and fund_cols and sym in set(fund_panel["symbol"]):
+                sym_fund = fund_panel[fund_panel["symbol"] == sym].drop_duplicates("report_date")
+                sym_fund = sym_fund.set_index("report_date")[fund_cols].sort_index()
+                sym_fund = sym_fund.resample("D").ffill()
+                if len(sym_fund) and sym_fund.index.max() < df.index.max():
+                    extra = pd.date_range(sym_fund.index.max() + pd.Timedelta(days=1),
+                                          df.index.max(), freq="D")
+                    if len(extra):
+                        pad = pd.DataFrame(index=extra,
+                                           data={c: sym_fund.iloc[-1][c] for c in sym_fund.columns})
+                        sym_fund = pd.concat([sym_fund, pad])
+                df = df.join(sym_fund, how="left")
+
             if len(df) > 30:  # 最少数据量
                 data[sym] = df
             else:
