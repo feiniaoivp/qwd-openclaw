@@ -125,7 +125,10 @@ def _mkdf(date_str, open_price, close_price, n=70):
     rows.append({"date": d0, "open": open_price, "high": max(open_price, close_price) + 0.1,
                  "low": min(open_price, close_price) - 0.1, "close": close_price,
                  "volume": 2e6, "amount": 2e7})
-    return pd.DataFrame(rows)
+    df = pd.DataFrame(rows)
+    df = df.set_index("date")
+    df.index.name = "date"
+    return df
 
 
 STOCKS = [("TESTB", "测试买"), ("TESTS", "测试卖"), ("TESTH", "测试持")]

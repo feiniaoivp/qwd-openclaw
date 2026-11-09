@@ -1744,7 +1744,13 @@ def run_portfolio_scan(
         # 8. Dedup
         # 去重（统一用真实交易日 today_str；data_date 仅用于诊断/滞后检测）
         # 🔴 2026-11-04 T2-3 改造中曾误删此行，零污染端到端测试拦下（NameError）——已恢复
-        data_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
+        # 支持 date 为列或索引
+        if "date" in df.columns:
+            data_date = df["date"].iloc[-1].strftime("%Y-%m-%d")
+        elif df.index.name == "date":
+            data_date = df.index[-1].strftime("%Y-%m-%d")
+        else:
+            data_date = today_str  # fail-open
         sig_before = signal.copy()
         if not RiskGuard.check_dedup(signal, pos, today_str):
             should_exec = False

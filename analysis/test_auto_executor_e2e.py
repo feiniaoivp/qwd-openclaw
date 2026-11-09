@@ -101,7 +101,9 @@ def _mk_df(open_price, close_price, date_str, n=70):
     rows.append({"date": dt, "open": open_price, "high": max(open_price, close_price) + 0.1,
                  "low": min(open_price, close_price) - 0.1, "close": close_price,
                  "volume": 2e6, "amount": 2e7})
-    return pd.DataFrame(rows)
+    df = pd.DataFrame(rows)
+    df = df.set_index("date")
+    return df
 
 
 def _mk_pos(sym, position=False, cash=100000.0):

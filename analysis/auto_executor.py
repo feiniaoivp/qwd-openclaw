@@ -177,7 +177,9 @@ def consume_pending_for_symbol(ctx: dict, sym: str, name: str, pos: dict,
 
     # 政权权重仓位调整（2026-11-08 任务1）：desired_positions 单票上限按政权缩放。
     # 优先级：意向上的信号日政权章 > ctx.regime_t1_day（T 日落盘 day 兜底）> 无（fail-open 原样）
-    _plan = ctx.get("position_plan") or {}
+    # 每个标的独立缩放：基于原始 position_plan（ctx 不被修改，避免多标的链式缩放）
+    _base_plan = ctx.get("position_plan") or {}
+    _plan = dict(_base_plan)  # 浅拷贝，避免污染原计划
     _intent_regime = intent.get("regime")
     if isinstance(_intent_regime, dict) and _intent_regime.get("max_position_pct"):
         _regime_cfg, _regime_src = _intent_regime, "intent"
