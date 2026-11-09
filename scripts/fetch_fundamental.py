@@ -136,6 +136,93 @@ def fetch_single_symbol(symbol: str, max_retries: int = 3) -> Optional[pd.DataFr
     return None
 
 
+def _sina_stock_code(symbol: str) -> str:
+    """6位代码 → 新浪带交易所前缀代码（6/9 开头=沪，其余=深）"""
+    return f"sh{symbol}" if symbol.startswith(("6", "9")) else f"sz{symbol}"
+
+
+def _fetch_sina_report(symbol: str, report: str, value_cols, metric: str,
+                       max_retries: int = 3) -> Optional[pd.DataFrame]:
+    """新浪三大报表通用抓取（数值型全历史，与同花顺摘要互补）
+    例：report='利润表', value_cols=['营业收入'], metric='total_revenue'
+    value_cols 支持候选列表（不同行业报表模板列名不同：一般企业='实收资本净额'，
+    银行类='股本'，2026-11-10 实测），取第一个存在的列。
+    """
+    import akshare as ak
+    if isinstance(value_cols, str):
+        value_cols = [value_cols]
+    code = _sina_stock_code(symbol)
+    for attempt in range(max_retries):
+        try:
+            df = ak.stock_financial_report_sina(stock=code, symbol=report)
+            if df is None or df.empty:
+                print(f"  ⚠️ {symbol}: {report} 空返回")
+                return None
+            value_col = next((c for c in value_cols if c in df.columns), None)
+            if value_col is None:
+                print(f"  ⚠️ {symbol}: {report} 缺候选列 {value_cols}")
+                return None
+            date_col = df.columns[0]  # '报告日'
+            out = pd.DataFrame({
+                "symbol": symbol,
+                "report_date": pd.to_datetime(df[date_col].astype(str), format="%Y%m%d", errors="coerce"),
+                "report_type": f"sina_{report}",
+                "metric": metric,
+                "value": pd.to_numeric(df[value_col], errors="coerce"),
+                "fetched_at": datetime.now().isoformat(),
+            }).dropna(subset=["report_date", "value"])
+            if out.empty:
+                print(f"  ⚠️ {symbol}: {report} 解析后无有效行")
+                return None
+            print(f"  ✅ {symbol} {report}/{metric}: {len(out)} 期 ({out['report_date'].min().date()} ~ {out['report_date'].max().date()})")
+            return out
+        except Exception as e:
+            print(f"  ❌ {symbol} {report} 尝试 {attempt+1}/{max_retries}: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(2 ** attempt)
+    return None
+
+
+def _cum_to_quarterly(cum: pd.Series) -> pd.Series:
+    """累计营收 → 单季营收：Q1(3月末)=累计值；H1/Q3/FY=同年内差分
+    跨年边界自动正确（Q1 恒为新年度首期）；缺 Q1 时下半年差分得 NaN（宁缺勿错）
+    """
+    q = cum.sort_index()
+    prev_same_year = q.groupby(q.index.year).shift(1)
+    out = q.where(q.index.month == 3, q - prev_same_year)
+    return out
+
+
+def build_revenue_per_share(combined: pd.DataFrame) -> pd.DataFrame:
+    """从 total_revenue(累计) + total_shares 合成 TTM 口径 revenue_per_share
+
+    累计营收 → 单季差分 → TTM(严格 4 期滚动和，缺季 NaN) → / 当期股本
+    为什么必须 TTM：直接用累计值会产生季节性锯齿 PS（Q1=3个月 vs FY=12个月），
+    因子 IC 会被报告期季节性伪信号污染。
+    """
+    rev = (combined[combined["metric"] == "total_revenue"]
+           .drop_duplicates("report_date").set_index("report_date")["value"])
+    sh = (combined[combined["metric"] == "total_shares"]
+          .drop_duplicates("report_date").set_index("report_date")["value"])
+    if rev.empty or sh.empty:
+        return pd.DataFrame()
+    quarterly = _cum_to_quarterly(rev)
+    ttm = quarterly.rolling(4, min_periods=4).sum()
+    m = pd.DataFrame({"ttm_rev": ttm}).join(sh.rename("shares"), how="left")
+    m = m[m["shares"] > 0]
+    if m.empty or m["ttm_rev"].notna().sum() == 0:
+        return pd.DataFrame()
+    out = pd.DataFrame({
+        "symbol": combined["symbol"].iloc[0],
+        "report_date": m.index,
+        "report_type": "derived",
+        "metric": "revenue_per_share",
+        "value": m["ttm_rev"] / m["shares"],
+        "fetched_at": datetime.now().isoformat(),
+    }).dropna(subset=["value"]).reset_index(drop=True)
+    return out
+
+
 def save_fundamental_data(symbol: str, new_df: pd.DataFrame) -> bool:
     """保存基本面数据（增量合并，去重）"""
     csv_path = os.path.join(FUNDAMENTAL_DIR, f"{symbol}.csv")
@@ -181,10 +268,28 @@ def fetch_all_symbols(symbols: List[str] = None, delay: float = 0.5) -> Dict[str
     
     for i, sym in enumerate(symbols, 1):
         print(f"\n[{i}/{total}] 处理 {sym} ({WATCHLIST.get(sym, '')})")
-        df = fetch_single_symbol(sym)
-        if df is not None and not df.empty:
-            save_fundamental_data(sym, df)
-            results[sym] = len(df)
+        # 三源：同花顺摘要（现有 10 指标）+ 新浪利润表（total_revenue）+ 新浪负债表（total_shares）
+        parts = []
+        df_ths = fetch_single_symbol(sym)
+        if df_ths is not None and not df_ths.empty:
+            parts.append(df_ths)
+        df_rev = _fetch_sina_report(sym, "利润表", "营业收入", "total_revenue")
+        if df_rev is not None:
+            parts.append(df_rev)
+        df_sh = _fetch_sina_report(sym, "资产负债表", ["实收资本净额", "实收资本(或股本)", "股本"], "total_shares")
+        if df_sh is not None:
+            parts.append(df_sh)
+
+        if parts:
+            combined = pd.concat(parts, ignore_index=True)
+            rps = build_revenue_per_share(combined)
+            if not rps.empty:
+                combined = pd.concat([combined, rps], ignore_index=True)
+                print(f"  ✅ {sym} revenue_per_share(TTM): {len(rps)} 期")
+            else:
+                print(f"  ⚠️ {sym}: revenue_per_share 无法合成（缺营收或股本）")
+            save_fundamental_data(sym, combined)
+            results[sym] = len(combined)
         else:
             results[sym] = 0
         

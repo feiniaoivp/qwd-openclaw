@@ -99,6 +99,8 @@ class OrthogonalityReport:
     pca_explained_var: List[float]  # 主成分解释方差比
     n_factors_eff: float            # 有效因子数
     condition_number: float         # 条件数
+    method: str = "cross_sectional_rank"  # VIF/PCA 口径自述（2026-11-10：旧口径 price_level_raw
+                                          # 被价格水平类因子淹没，条件数 9e17/n_eff=0 无意义，已废弃）
 
     def to_dict(self) -> Dict:
         return asdict(self)
@@ -164,7 +166,7 @@ class AlphaValidationReport:
         for d in self.dsr_results:
             lines.append(f"| {d.strategy} | {d.sharpe:.3f} | {d.dsr:.3f} | {d.prob_sharpe_luck:.3f} | {d.n_trials} | {d.skew:.3f} | {d.kurt:.3f} |")
 
-        lines += ["", "## 🔗 因子正交性", "", f"- 最大绝对相关性: {self.orthogonality.max_abs_corr:.3f}", f"- 平均绝对相关性: {self.orthogonality.mean_abs_corr:.3f}", f"- 有效因子数: {self.orthogonality.n_factors_eff:.1f}", f"- 条件数: {self.orthogonality.condition_number:.1f}", "", "### VIF (方差膨胀因子)", "| 因子 | VIF |", "|------|-----|"]
+        lines += ["", "## 🔗 因子正交性（VIF/PCA 口径：横截面秩 cross_sectional_rank，2026-11-10）", "", f"- 最大绝对相关性: {self.orthogonality.max_abs_corr:.3f}", f"- 平均绝对相关性: {self.orthogonality.mean_abs_corr:.3f}", f"- 有效因子数: {self.orthogonality.n_factors_eff:.1f}", f"- 条件数: {self.orthogonality.condition_number:.1f}", "", "### VIF (方差膨胀因子)", "| 因子 | VIF |", "|------|-----|"]
         for f, vif in self.orthogonality.vif.items():
             lines.append(f"| {f} | {vif:.2f} |")
         
@@ -342,15 +344,19 @@ def compute_dsr(
 
 
 def compute_orthogonality(factor_panel: pd.DataFrame) -> OrthogonalityReport:
-    """因子正交性检查"""
-    # 计算因子相关性矩阵（截面平均）
+    """因子正交性检查（横截面秩口径，2026-11-10）
+
+    旧口径直接在原始值面板上算 VIF/PCA/条件数，被价格水平类因子淹没
+    （OBV 量级 1e8+、ATR 价格单位 vs HV_20 比率型），导致条件数 9e17、n_eff=0 无意义。
+    新口径：逐日横截面百分位秩（0~1）后再算 VIF/PCA —— 消除量纲与共同价格水平漂移，
+    只保留横截面选股信息的相关结构。corr 矩阵维持逐日 spearman（本就是秩口径）。
+    高缺失列（notna 占比 <= 40%，如当时未接通的基本面因子）降级剔除不进 VIF/PCA，
+    避免 dropna 全灭导致 n_eff=0；被剔除列 vif 记 inf（无法估计）。
+    """
     factors = factor_panel.columns.tolist()
     corr_matrix = pd.DataFrame(index=factors, columns=factors, dtype=float)
 
-    # 性能优化（行为等价，2026-11-08 任务3）：逐日一次性计算整块截面 spearman 相关矩阵，
-    # 替代原「每对因子 × 每日」双重循环的 xs 取数——30 因子 × ~1658 日为 O(F²·T) 次
-    # MultiIndex xs（小时级），优化后 O(T) 次矩阵运算（分钟内）。
-    # 语义保持：逐日成对 spearman → 对非 NaN 日值取均值（DataFrame.corr 默认 pairwise complete）。
+    # 性能优化（行为等价，2026-11-08 任务3）：逐日一次性计算整块截面 spearman 相关矩阵。
     corr_sum = pd.DataFrame(0.0, index=factors, columns=factors)
     corr_cnt = pd.DataFrame(0, index=factors, columns=factors)
     for date in factor_panel.index.get_level_values("date").unique():
@@ -362,25 +368,40 @@ def compute_orthogonality(factor_panel: pd.DataFrame) -> OrthogonalityReport:
         corr_cnt = corr_cnt + day_corr.notna().astype(int)
     cnt = corr_cnt.replace(0, np.nan)
     corr_matrix = (corr_sum / cnt).astype(float)
-    
+
     # 上三角（不含对角线）统计
     mask = np.triu(np.ones(corr_matrix.shape), k=1).astype(bool)
     upper_vals = corr_matrix.where(mask).stack().abs().dropna()
-    max_abs = upper_vals.max() if len(upper_vals) > 0 else 0
-    mean_abs = upper_vals.mean() if len(upper_vals) > 0 else 0
-    
-    # VIF
+    max_abs = float(upper_vals.max()) if len(upper_vals) > 0 else 0.0
+    mean_abs = float(upper_vals.mean()) if len(upper_vals) > 0 else 0.0
+
+    # ── 横截面秩变换（VIF/PCA 统一输入）──
+    def _rank_group(g):
+        return g.rank(pct=True, axis=0)
+    ranked = factor_panel.groupby(level="date", group_keys=False).apply(_rank_group)
+
+    # 高缺失列剔除（降级而非全灭）
+    keep_cols = [c for c in ranked.columns if float(ranked[c].notna().mean()) > 0.4]
+    dropped_cols = [c for c in ranked.columns if c not in keep_cols]
+    if dropped_cols:
+        print(f"  ⚠️ 正交性降级: {len(dropped_cols)} 个高缺失因子不进 VIF/PCA: {dropped_cols}")
+    rk = ranked[keep_cols]
+
+    # VIF（横截面秩面板）
     vif = {}
     for f in factors:
-        others = [x for x in factors if x != f]
-        if not others:
-            vif[f] = 1
+        if f not in keep_cols:
+            vif[f] = float(np.inf)   # 高缺失列无法估计
             continue
-        X = factor_panel[others].dropna()
-        y = factor_panel[f].reindex(X.index).dropna()
+        others = [x for x in keep_cols if x != f]
+        if not others:
+            vif[f] = 1.0
+            continue
+        X = rk[others].dropna()
+        y = rk[f].reindex(X.index).dropna()
         common = X.index.intersection(y.index)
         if len(common) < 10:
-            vif[f] = np.inf
+            vif[f] = float(np.inf)
             continue
         Xc = X.loc[common]
         yc = y.loc[common]
@@ -388,26 +409,28 @@ def compute_orthogonality(factor_panel: pd.DataFrame) -> OrthogonalityReport:
             from sklearn.linear_model import LinearRegression
             reg = LinearRegression().fit(Xc, yc)
             r2 = reg.score(Xc, yc)
-            vif[f] = 1 / (1 - r2) if r2 < 1 else np.inf
-        except Exception:
-            vif[f] = np.inf
-    
-    # PCA
+            vif[f] = float(1 / (1 - r2)) if r2 < 1 else float(np.inf)
+        except Exception as e:
+            print(f"  ⚠️ VIF {f} 计算失败（可见告警，非静默）: {e}")
+            vif[f] = float(np.inf)
+
+    # PCA（横截面秩面板）
     from sklearn.decomposition import PCA
     from sklearn.preprocessing import StandardScaler
     scaler = StandardScaler()
-    data = factor_panel.dropna()
+    data = rk.dropna()
     if len(data) > 10:
         X_scaled = scaler.fit_transform(data)
         pca = PCA().fit(X_scaled)
-        explained_var = pca.explained_variance_ratio_.tolist()
-        n_eff = int(np.sum(np.cumsum(explained_var) < 0.95) + 1)  # 解释 95% 方差所需因子数（int 强转：np.int64 非 JSON 可序列化，2026-11-08 事故）
+        explained_var = [float(v) for v in pca.explained_variance_ratio_]
+        # 解释 95% 方差所需因子数（int 强转：np.int64 非 JSON 可序列化，2026-11-08 事故）
+        n_eff = float(int(np.sum(np.cumsum(explained_var) < 0.95) + 1))
         cond_num = float(np.linalg.cond(X_scaled))
     else:
         explained_var = []
-        n_eff = 0
-        cond_num = np.inf
-    
+        n_eff = 0.0
+        cond_num = float(np.inf)
+
     return OrthogonalityReport(
         factor_corr=corr_matrix.to_dict(),
         max_abs_corr=max_abs,
@@ -484,7 +507,8 @@ def run_alpha_validation(
         scores = composer.compute_scores(factor_panel, strategy)
         
         # 计算目标仓位（简化：每日等权）
-        valid_scores = scores[scores["gate_status"] == "pass"]
+        # warn/reduce 放行留痕，仅 block 拦截（与 composer.compute_positions 同口径，2026-11-10）
+        valid_scores = scores[scores["gate_status"] != "block"]
         if valid_scores.empty:
             print(f"  无有效信号，跳过")
             continue

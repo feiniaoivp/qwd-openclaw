@@ -36,7 +36,17 @@ from analysis.factor_engine import get_engine
 
 @dataclass
 class GateRule:
-    """门控规则：评分通过/拦截的条件"""
+    """门控规则：评分通过/拦截的条件
+
+    action 语义（2026-11-10 修复，require 语法定案）：
+      - "pass"   = require 必要条件：规则描述"何时允许开仓"；不满足 → block
+                   （旧实现下不满足时样本保持初始 pass，require 门零约束力）
+      - "block"  = 满足条件时拦截
+      - "warn"   = 满足条件时告警但放行（留痕 gate_details）
+      - "reduce" = 满足条件时降仓位（当前实现同 warn 放行，未实现降权）
+    门控评估在【原始因子值】上进行，与阈值设计值域一致；
+    NaN 在 require 门下视为不满足（fail-closed，缺数据拦截）。
+    """
     name: str                           # 规则名
     factor: str                         # 因子名
     operator: str                       # ">=" | "<=" | ">" | "<" | "==" | "!=" | "between"
@@ -155,6 +165,8 @@ class Strategy:
             reg = get_registry()
             if reg.get(gr.factor) is None:
                 errors.append(f"门控因子不存在于注册表: {gr.factor}")
+            if gr.action not in ("block", "warn", "reduce", "pass"):
+                errors.append(f"门控 action 非法: {gr.name} -> {gr.action}")
         return errors
 
     def save(self, path: Optional[str] = None) -> str:
@@ -279,17 +291,34 @@ class StrategyComposer:
                 # TODO: 接入市值数据，残差回归
                 pass
 
-        # 5. 门控检查
+        # 5. 门控检查 —— 在【原始因子值】上评估（标准化只影响评分，不影响门控阈值；
+        #    2026-11-10 修复：此前在 zscore/rank 后的 X 上评估，按原始值域设计的阈值全部漂移，
+        #    如 RSI<=30 在 zscore 口径下永不触发 → require 门整体失效）
         gate_status = pd.Series("pass", index=X.index)
         gate_details = pd.Series("", index=X.index)
-        
+
         for gr in strategy.gate_rules:
-            if gr.factor not in X.columns:
+            if gr.factor not in factor_panel.columns:
                 continue
-            factor_vals = X[gr.factor]
+            factor_vals = factor_panel[gr.factor].reindex(X.index)
             triggered = factor_vals.apply(gr.evaluate)
-            gate_status[triggered] = gr.action
-            gate_details[triggered] += f"[{gr.name}:{gr.action}] "
+
+            if gr.action == "pass":
+                # require 语义：不满足 → block（NaN 比较得 False → 视为不满足，fail-closed）
+                failed = ~triggered.fillna(False)
+                gate_status[failed] = "block"
+                gate_details[failed] += f"[{gr.name}:require_fail] "
+            elif gr.action == "block":
+                trig = triggered.fillna(False)
+                gate_status[trig] = "block"
+                gate_details[trig] += f"[{gr.name}:block] "
+            else:
+                # warn / reduce：触发时留痕，但不得覆盖已有 block（拦截优先于告警，
+                # 2026-11-10 修复：旧顺序覆盖会洗掉 require 门刚设的 block）
+                trig = triggered.fillna(False)
+                apply_mask = trig & (gate_status != "block")
+                gate_status[apply_mask] = gr.action
+                gate_details[trig] += f"[{gr.name}:{gr.action}] "
 
         return pd.DataFrame({
             "score": scores,
@@ -309,8 +338,9 @@ class StrategyComposer:
         根据评分计算目标仓位
         :return: DataFrame(symbol, date, target_weight, target_shares, stop_loss, take_profit)
         """
-        # 只保留通过门控且分数达标的
-        valid = (scores["gate_status"] == "pass") & (scores["score"] >= strategy.min_score)
+        # 只保留未被拦截且分数达标的（warn/reduce 放行留痕，仅 block 拦截；
+        # 2026-11-10 修复：旧 == "pass" 条件把 warn 告警样本也当无效信号丢弃）
+        valid = (scores["gate_status"] != "block") & (scores["score"] >= strategy.min_score)
         filtered = scores[valid].copy()
 
         if filtered.empty:
@@ -338,10 +368,14 @@ class StrategyComposer:
             weights = weights / weights.sum()  # 重新归一化
 
             for sym in symbols:
-                price = prices.loc[date, sym] if (date, sym) in prices.index else np.nan
+                # 宽表约定：index=date, columns=symbol（旧代码 (date, sym) in prices.index
+                # 对单层 DatetimeIndex 永远 False → 价格恒 NaN → 恒返回空仓，2026-11-10 修复）
+                if date not in prices.index or sym not in prices.columns:
+                    continue
+                price = float(prices.loc[date, sym])
                 if np.isnan(price) or price <= 0:
                     continue
-                weight = weights.get(sym, 0)
+                weight = weights.get((sym, date), 0)  # MultiIndex 必须用完整元组 key（部分索引会返回子 Series）
                 target_value = equity * weight
                 shares = int(target_value / price / 100) * 100  # 整手
                 if shares == 0:
@@ -383,7 +417,9 @@ def create_seed_strategies() -> Dict[str, Strategy]:
             ScoringRule(factor="EMA_cross_12_26", weight=0.2, transform="linear", direction=1),
         ],
         gate_rules=[
-            GateRule(name="bb_breakout", factor="BB_pos_20", operator=">=", threshold=0.8, action="block", message="价格突破布林带上轨"),
+            # require：BB 位置 >= 0.8（触及上轨）才允许开仓 —— 原写 action="block" 把突破门写反
+            # （变成"突破时拦截"，与原策略"突破上轨买入"相反），2026-11-10 修复
+            GateRule(name="bb_breakout", factor="BB_pos_20", operator=">=", threshold=0.8, action="pass", message="价格触及布林带上轨（require）"),
             GateRule(name="atr_expansion", factor="ATR_14", operator=">", threshold=2.0, action="warn", message="ATR 异常放大"),
         ],
         normalize="zscore",
@@ -427,7 +463,9 @@ def create_seed_strategies() -> Dict[str, Strategy]:
             ScoringRule(factor="close_to_high", weight=0.1, transform="linear", direction=1),
         ],
         gate_rules=[
-            GateRule(name="ema_bullish", factor="EMA_cross_12_26", operator=">=", threshold=1, action="pass", message="EMA 金叉"),
+            # require：多头动能状态（MACD hist >= 0）—— 原用事件型 EMA_cross_12_26>=1 做 require 门
+            # 会退化为"仅金叉当日可开仓"（该因子 96.7% 为 0），2026-11-10 改用状态型因子
+            GateRule(name="ema_bullish", factor="MACD_hist", operator=">=", threshold=0, action="pass", message="多头动能（MACD hist >= 0）"),
             GateRule(name="volume_surge", factor="volume_zscore_20", operator=">", threshold=2, action="warn", message="异常放量"),
         ],
         normalize="zscore",
@@ -488,9 +526,13 @@ def create_seed_strategies() -> Dict[str, Strategy]:
             ScoringRule(factor="OBV", weight=0.05, transform="zscore", direction=1),
         ],
         gate_rules=[
-            GateRule(name="trend_ok", factor="EMA_cross_12_26", operator=">=", threshold=0, action="pass", message="趋势向上"),
+            # require：多头动能状态 —— 原 EMA_cross_12_26>=0 事件型门在 96.7% 零值下仅拦死叉当日，
+            # 趋势过滤形同虚设，2026-11-10 改用状态型 MACD_hist
+            GateRule(name="trend_ok", factor="MACD_hist", operator=">=", threshold=0, action="pass", message="趋势向上"),
             GateRule(name="not_overbought", factor="RSI_14", operator="<", threshold=75, action="pass", message="未超买"),
-            GateRule(name="vol_normal", factor="ATR_14", operator="<", threshold=2.5, action="warn", message="波动率正常"),
+            # 反向修正：原 ATR_14<2.5 触发 warn（把"波动正常"当告警条件，绝对阈值跨价格不可比，
+            # zscore 口径下曾反向筛入高波动股），2026-11-10 改为年化波动率 HV_20>0.6 告警（量纲无关）
+            GateRule(name="vol_normal", factor="HV_20", operator=">", threshold=0.6, action="warn", message="波动率偏高告警"),
         ],
         normalize="zscore",
         neutralize=["industry", "market_cap"],

@@ -2,8 +2,8 @@
   "name": "kdj_rsi",
   "version": "1.0.0",
   "description": "KDJ 金叉 + RSI 超卖（原策略：均值回归 v2）",
-  "created_at": "2026-11-08T16:20:50.809381",
-  "updated_at": "2026-11-08T16:20:50.809383",
+  "created_at": "2026-11-10T05:50:22.905563",
+  "updated_at": "2026-11-10T05:50:22.905565",
   "scoring_rules": [
     {
       "factor": "KDJ_K",

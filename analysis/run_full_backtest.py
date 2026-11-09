@@ -40,7 +40,7 @@ def load_stock_data(symbols: List[str], start_date: str = "2023-01-01") -> Dict[
         fund_panel = pd.read_parquet(fund_path)
         fund_panel["symbol"] = fund_panel["symbol"].astype(str).str.zfill(6)
     fund_cols = [c for c in ["eps_basic", "book_value_per_share", "operating_cash_flow_per_share",
-                             "revenue_yoy", "ROE_TTM", "net_profit_margin"]
+                             "revenue_yoy", "ROE_TTM", "net_profit_margin", "revenue_per_share"]
                  if fund_panel is not None and c in fund_panel.columns]
     
     for sym in symbols:

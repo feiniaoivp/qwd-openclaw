@@ -2,8 +2,8 @@
   "name": "bollinger_atr",
   "version": "1.0.0",
   "description": "布林带突破 + ATR 动态止损（原策略：趋势跟踪）",
-  "created_at": "2026-11-08T16:20:50.809362",
-  "updated_at": "2026-11-08T16:20:50.809370",
+  "created_at": "2026-11-10T05:50:22.905541",
+  "updated_at": "2026-11-10T05:50:22.905552",
   "scoring_rules": [
     {
       "factor": "BB_pos_20",
@@ -42,8 +42,8 @@
       "factor": "BB_pos_20",
       "operator": ">=",
       "threshold": 0.8,
-      "action": "block",
-      "message": "价格突破布林带上轨",
+      "action": "pass",
+      "message": "价格触及布林带上轨（require）",
       "params": {}
     },
     {
