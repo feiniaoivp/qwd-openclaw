@@ -96,6 +96,13 @@ class L3RegimeOverrideConfig:
     regime_top_k: Dict[str, int] = field(default_factory=lambda: {
         "trend_up": 15, "sideways": 10, "trend_down": 5, "high_vol": 5,
     })
+    # regime → Top-1 绝对地板（2026-11-10 晚采纳外部建议，判据
+    # advice1_sideways_floor.json: sideways 段 Top-1≥90 日 top15 超额 +0.1bp
+    # vs 80-90 带 -21.0bp CI[-41.6,-0.5]）。Top-1 < 阈值 → 当日候选归零
+    # （震荡市仅个别票走出独立趋势时才出手）。0 = 不启用。
+    regime_top1_floor: Dict[str, float] = field(default_factory=lambda: {
+        "sideways": 90.0,
+    })
     # regime → 维度权重覆盖（空 dict = 用全局 dim_weights；改变排序）
     regime_dim_weights: Dict[str, Dict[str, float]] = field(default_factory=lambda: {
         "trend_up": {}, "sideways": {}, "trend_down": {}, "high_vol": {},

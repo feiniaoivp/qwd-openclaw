@@ -275,7 +275,12 @@ def score_stock(snap: dict, weights=None) -> tuple:
 
 
 def detect_regime(data) -> dict:
-    """阈值法政权检测（复用 regime_allocator 思路，独立轻量版防缓存坑）"""
+    """阈值法政权检测（复用 regime_allocator 思路，独立轻量版防缓存坑）
+
+    2026-11-10 晚加 2 日确认迟滞（外部建议采纳，判据: 1416 日实测闪烁
+    19.1 次/年、短段≤2日占 11.8%）：新 regime 需连续 2 日一致才切档，
+    不一致保持昨日档（保守方向）。避免日级噪声触发 TOP_K 档位跳动。
+    """
     try:
         closes = pd.DataFrame({s: d["close"] for s, d in data.items()}).dropna(how="all")
         ew = closes.pct_change().mean(axis=1).add(1).cumprod()
@@ -285,15 +290,22 @@ def detect_regime(data) -> dict:
         sp20_60 = (ma20 - ma60) / ma60
         vol20 = ret.rolling(20).std() * np.sqrt(252)
         vol60 = ret.rolling(60).std() * np.sqrt(252)
+
+        def _cls(j):
+            if vol20.iloc[j] > vol60.iloc[j] * 1.5:
+                return "high_vol"
+            if sp5_20.iloc[j] > 0.01 and sp20_60.iloc[j] > 0:
+                return "trend_up"
+            if sp5_20.iloc[j] < -0.01 and sp20_60.iloc[j] < 0:
+                return "trend_down"
+            return "sideways"
+
         i = -1
-        if vol20.iloc[i] > vol60.iloc[i] * 1.5:
-            r = "high_vol"
-        elif sp5_20.iloc[i] > 0.01 and sp20_60.iloc[i] > 0:
-            r = "trend_up"
-        elif sp5_20.iloc[i] < -0.01 and sp20_60.iloc[i] < 0:
-            r = "trend_down"
-        else:
-            r = "sideways"
+        r_today = _cls(i)
+        r_yest = _cls(i - 1) if len(sp5_20) > 2 else r_today
+        r = r_today if r_today == r_yest else r_yest   # 2 日确认，否则保持昨日档
+        if r != r_today:
+            print(f"🌦️ regime 迟滞: 今日{_cls(i)}与昨日不一致 → 保持昨日档 {r}（2日确认）")
         return {"regime": r, "boost": REGIME_BOOST.get(r, 1.0),
                 "sp5_20": float(sp5_20.iloc[i]), "vol_ratio": float(vol20.iloc[i] / vol60.iloc[i]) if vol60.iloc[i] else None}
     except Exception as e:
@@ -373,9 +385,22 @@ def main():
         scored.append(rec)
     scored.sort(key=lambda x: x["total_score"], reverse=True)
 
+    # regime Top-1 绝对地板（2026-11-10 晚采纳外部建议）：
+    # Top-1 < 阈值 → 当日候选归零（判据: sideways 段 Top-1≥90 日超额 +0.1bp vs 80-90 带 -21.0bp）
+    _floor = float(_ov.regime_top1_floor.get(_rname, 0) or 0)
+    if _floor > 0 and scored and scored[0]["total_score"] < _floor:
+        print(f"🌦️ regime 地板: {_rname} 段 Top-1={scored[0]['total_score']} < {_floor} → 当日候选归零（无独立趋势票）")
+        scored_gate_note = f"top1_floor({_floor}) 未达"
+    else:
+        scored_gate_note = None
+
     # 硬门槛（共振条件）: 只对进候选的执行
     candidates = []
+    if scored_gate_note:
+        pass  # Top-1 未达地板 → 候选保持空（种子库 update_daily 仅依赖 all_scores，已确认容错）
     for c in scored:
+        if scored_gate_note:
+            break
         snap = snaps[c["symbol"]]
         bb = snap.get("bb_pos")
         if bb is not None and not (HARD_GATES["bb_pos_low"] <= bb <= HARD_GATES["bb_pos_high"]):
