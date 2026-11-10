@@ -1,0 +1,76 @@
+{
+  "l1": {
+    "min_daily_amount": 50000000.0,
+    "min_circ_mcap": 3000000000.0,
+    "max_circ_mcap": 200000000000.0,
+    "min_listing_days": 180,
+    "exclude_st": true,
+    "exclude_delisting": true,
+    "exclude_bse": true,
+    "exclude_star_unprofitable": true,
+    "target_min": 800,
+    "target_max": 1800
+  },
+  "l2": {
+    "index_universe": [
+      "hs300",
+      "zz500",
+      "zz1000",
+      "sz50"
+    ],
+    "industry_top_n": 5,
+    "min_institutional_pct": 0.02,
+    "require_profit_ttm": true,
+    "target_min": 250,
+    "target_max": 600
+  },
+  "l3": {
+    "dim_weights": {
+      "trend": 0.3,
+      "volume": 0.25,
+      "chip": 0.2,
+      "volatility": 0.15,
+      "valuation": 0.1
+    },
+    "hard_gates": {
+      "bb_pos_low": 0.15,
+      "bb_pos_high": 0.92,
+      "volume_zscore_min": 0.3
+    },
+    "top_k": 15,
+    "min_score": 45.0,
+    "regime_boost": {
+      "trend_up": 1.1,
+      "sideways": 1.0,
+      "trend_down": 0.85,
+      "high_vol": 0.9
+    }
+  },
+  "l3_regime": {
+    "regime_top_k": {
+      "trend_up": 15,
+      "sideways": 10,
+      "trend_down": 5,
+      "high_vol": 5
+    },
+    "regime_dim_weights": {
+      "trend_up": {},
+      "sideways": {},
+      "trend_down": {},
+      "high_vol": {}
+    },
+    "chip_enabled_regimes": []
+  },
+  "seed": {
+    "core_protected": true,
+    "promotion_days": 3,
+    "promotion_top_pct": 0.15,
+    "confirmation_days": 7,
+    "demotion_days": 10,
+    "demotion_score": 35.0,
+    "watch_cap": 50,
+    "history_window": 20
+  },
+  "version": "1.0.0",
+  "updated_at": "2026-11-10"
+}

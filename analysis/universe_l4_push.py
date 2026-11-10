@@ -53,14 +53,17 @@ def build_message():
     lines.append("── 候选名单（按 L3 综合分） ──")
     for i, c in enumerate(cands, 1):
         dims = c.get("dims", {})
-        chip_part = ""
-        if "chip" in dims:
-            chip_part = f" 筹码{dims['chip']:.0f}"
+        cd = c.get("chip_display") or {}
+        if cd.get("winner_pct") is not None:
+            chip_part = f" 筹码(获利{cd['winner_pct']:.0%}/偏离{cd.get('cost_bias') or 0:+.1%})"
+        else:
+            chip_part = ""
         lines.append(
             f"{i:>2}. {c['symbol']} {c.get('name','')[:8]} "
             f"{c['total_score']:.1f}分 "
             f"[趋{dims.get('trend','-'):.0f} 量{dims.get('volume','-'):.0f}"
-            f" 波{dims.get('volatility','-'):.0f}{chip_part}] "
+            f" 波{dims.get('volatility','-'):.0f}]"
+            f"{chip_part} "
             f"价{c.get('close','-')} 额{_fmt_pct(c.get('amount_20d'))}"
         )
     # 种子库动态（若有）

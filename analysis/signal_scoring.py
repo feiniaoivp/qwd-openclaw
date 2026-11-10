@@ -185,12 +185,14 @@ def compute_factor_snapshot(data):
     return out
 
 
-def score_stock(snap: dict) -> tuple:
+def score_stock(snap: dict, weights=None) -> tuple:
     """单票打分。返回 (total_score 0-100, dim_detail, active_dims)
 
     各维度归一 0-100；缺数据子项 = 0 分（可见）；
-    chip 无数据源 → 维度整体缺席，权重按其余维度重分配。
+    缺席维度（chip/valuation）不参与 + 权重重分配。
+    weights: regime 联动覆盖（None = 全局 BASE_WEIGHTS；相对比例即可，内部归一）。
     """
+    w_map = weights if weights else BASE_WEIGHTS
     dims = {}
 
     # ── trend (0-100) ──
@@ -266,10 +268,9 @@ def score_stock(snap: dict) -> tuple:
         dims["chip"] = ch
 
     # ── valuation: 数据源缺位（eps/bv 面板仅 33 只覆盖且滞后）→ 本版整体缺席 ──
-    # ── chip: 筹码数据源缺位 → 整体缺席 ──
-    active = [d for d, w in BASE_WEIGHTS.items() if d in dims]
-    wsum = sum(BASE_WEIGHTS[d] for d in active)
-    total = sum(dims[d] * (BASE_WEIGHTS[d] / wsum) for d in active)
+    active = [d for d in w_map if d in dims]
+    wsum = sum(w_map[d] for d in active)
+    total = sum(dims[d] * (w_map[d] / wsum) for d in active)
     return round(total, 2), dims, active
 
 
@@ -340,16 +341,36 @@ def main():
     regime = detect_regime(data)
     print(f"🌦️ 政权: {regime['regime']} (boost ×{regime['boost']})")
 
+    # regime 联动覆盖（universe_config.l3_regime；默认零行为变化，参数由归因填充）
+    _ov = _UCFG.l3_regime
+    _rname = regime["regime"]
+    eff_top_k = int(_ov.regime_top_k.get(_rname, 0) or TOP_K)
+    eff_weights = {**BASE_WEIGHTS, **(_ov.regime_dim_weights.get(_rname) or {})}
+    chip_on = _rname in (_ov.chip_enabled_regimes or list(BASE_WEIGHTS))
+    if not chip_on:
+        print(f"🌦️ regime 联动: {_rname} 段 chip 维缺席（chip_enabled_regimes 配置）")
+    if eff_top_k != TOP_K:
+        print(f"🌦️ regime 联动: {_rname} 段 TOP_K {TOP_K}→{eff_top_k}")
+
     scored = []
     for sym, snap in snaps.items():
-        total, dims, active = score_stock(snap)
+        # 打分入参: chip 关闭的 regime 下抹掉 chip 键（维度缺席重分配）；
+        # 展示用 snap 保留 chip 数据供 chip_display
+        score_snap = snap if chip_on else {k: v for k, v in snap.items()
+                                            if k not in ("winner_pct", "cost_bias", "conc90")}
+        total, dims, active = score_stock(score_snap, weights=eff_weights)
         total = round(total * regime["boost"], 2)
-        scored.append({
+        rec = {
             "symbol": sym, "name": names.get(sym) or seed_names.get(sym) or "",
             "total_score": total,
             "dims": dims, "active_dims": active,
             "close": snap.get("close"), "amount_20d": snap.get("amount_20d"),
-        })
+        }
+        # chip 展示字段（打分不参与后，筹码数据仍供 L4 推送/人工核验展示）
+        if snap.get("winner_pct") is not None:
+            rec["chip_display"] = {"winner_pct": snap.get("winner_pct"),
+                                   "cost_bias": snap.get("cost_bias"), "conc90": snap.get("conc90")}
+        scored.append(rec)
     scored.sort(key=lambda x: x["total_score"], reverse=True)
 
     # 硬门槛（共振条件）: 只对进候选的执行
@@ -364,7 +385,7 @@ def main():
             c["gate_blocked"] = f"score<{MIN_SCORE}"
             continue
         candidates.append(c)
-        if len(candidates) >= TOP_K:
+        if len(candidates) >= eff_top_k:
             break
 
     today = datetime.now().strftime("%Y-%m-%d")
@@ -372,7 +393,7 @@ def main():
         "built_at": datetime.now().isoformat(), "as_of": today,
         "mode": mode,
         "regime": regime, "n_scored": len(scored),
-        "active_dims_note": "valuation 数据源缺位，权重重分配；chip 已接入（本地 turn 自算筹码）",
+        "active_dims_note": "valuation 缺席重分配；chip 数据已接入但按归因证据不参与打分（chip边际全负），筹码指标在 chip_display 字段/L4 推送展示",
         "candidates": candidates,
         "all_scores": scored[:80],
     }

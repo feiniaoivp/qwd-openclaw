@@ -81,6 +81,32 @@ class L3SignalResonanceConfig:
 
 
 @dataclass
+class L3RegimeOverrideConfig:
+    """regime 联动覆盖（2026-11-10 用户批准立项）。
+
+    背景: REGIME_BOOST 乘法缩放不改变排名，在 TOP_K 截断主导下对候选零影响
+    （死配置）。真联动 = 动「排序」（维度权重）或「截断数」（TOP_K）。
+    默认值 = 全局口径（零行为变化）；参数由 data/universe/regime_attribution.json
+    全历史归因填充，证据不支持不启用。
+    """
+    # regime → TOP_K（0/缺 = 用全局 top_k）。
+    # 参数源: data/universe/regime_attribution.json 全历史归因（1351 交易日，2026-11-10）
+    #   trend_up +17.8bp（保持 15）/ sideways -11.3bp（减暴露 10）
+    #   trend_down -32.7bp（5）/ high_vol -1.1bp 但 D9-D0 -142（防御 5）
+    regime_top_k: Dict[str, int] = field(default_factory=lambda: {
+        "trend_up": 15, "sideways": 10, "trend_down": 5, "high_vol": 5,
+    })
+    # regime → 维度权重覆盖（空 dict = 用全局 dim_weights；改变排序）
+    regime_dim_weights: Dict[str, Dict[str, float]] = field(default_factory=lambda: {
+        "trend_up": {}, "sideways": {}, "trend_down": {}, "high_vol": {},
+    })
+    # chip 维 regime 启用清单（从清单剔除的 regime，chip 维缺席 + 权重重分配）。
+    # 2026-11-10 归因: chip 边际全负/零（trend_up -0.2 / sideways -4.4 / trend_down -2.9
+    # / high_vol +2.2 但仅 31 日）→ 按证据全部移出打分，筹码数据保留在 L4 推送/快照展示。
+    chip_enabled_regimes: List[str] = field(default_factory=list)
+
+
+@dataclass
 class SeedPoolConfig:
     """种子库动态进化"""
     core_protected: bool = True        # core 层不自动降级（人工管理）
@@ -98,6 +124,7 @@ class UniverseFilterConfig:
     l1: L1HardFilterConfig = field(default_factory=L1HardFilterConfig)
     l2: L2QualityAnchorConfig = field(default_factory=L2QualityAnchorConfig)
     l3: L3SignalResonanceConfig = field(default_factory=L3SignalResonanceConfig)
+    l3_regime: L3RegimeOverrideConfig = field(default_factory=L3RegimeOverrideConfig)
     seed: SeedPoolConfig = field(default_factory=SeedPoolConfig)
     version: str = "1.0.0"
     updated_at: str = ""
@@ -132,6 +159,7 @@ class UniverseFilterConfig:
                     l1=L1HardFilterConfig(**data.get("l1", {})),
                     l2=L2QualityAnchorConfig(**data.get("l2", {})),
                     l3=L3SignalResonanceConfig(**data.get("l3", {})),
+                    l3_regime=L3RegimeOverrideConfig(**data.get("l3_regime", {})),
                     seed=SeedPoolConfig(**data.get("seed", {})),
                     version=data.get("version", "1.0.0"),
                     updated_at=data.get("updated_at", ""),
