@@ -48,10 +48,13 @@
   },
   "l3_regime": {
     "regime_top_k": {
-      "trend_up": 15,
-      "sideways": 10,
-      "trend_down": 5,
+      "trend_up": 30,
+      "sideways": 15,
+      "trend_down": 15,
       "high_vol": 5
+    },
+    "regime_top1_floor": {
+      "sideways": 90.0
     },
     "regime_dim_weights": {
       "trend_up": {},
@@ -72,5 +75,5 @@
     "history_window": 20
   },
   "version": "1.0.0",
-  "updated_at": "2026-11-10"
+  "updated_at": "2026-11-10b"
 }

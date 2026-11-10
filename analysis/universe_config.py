@@ -90,11 +90,13 @@ class L3RegimeOverrideConfig:
     全历史归因填充，证据不支持不启用。
     """
     # regime → TOP_K（0/缺 = 用全局 top_k）。
-    # 参数源: data/universe/regime_attribution.json 全历史归因（1351 交易日，2026-11-10）
-    #   trend_up +17.8bp（保持 15）/ sideways -11.3bp（减暴露 10）
-    #   trend_down -32.7bp（5）/ high_vol -1.1bp 但 D9-D0 -142（防御 5）
+    # 参数源: data/universe/score_rows_3d.pkl top-K 敏感性（1351 日，2026-11-10 晚）:
+    #   trend_up K30 +9.5 > K15 +4.0（趋势段动能扩散，第16-30名仍有正超额）→ 30
+    #   sideways 稀释效应 K30 -6.6 < K15 -8.4 < K10 -13.0（负选择力被稀释）→ 15（兼顾名单长度）
+    #   trend_down K15 -31.5 > K5 -51.3（稀释改善 20bp）→ 15
+    #   high_vol 样本仅 31 日不可信 → 保守 5
     regime_top_k: Dict[str, int] = field(default_factory=lambda: {
-        "trend_up": 15, "sideways": 10, "trend_down": 5, "high_vol": 5,
+        "trend_up": 30, "sideways": 15, "trend_down": 15, "high_vol": 5,
     })
     # regime → Top-1 绝对地板（2026-11-10 晚采纳外部建议，判据
     # advice1_sideways_floor.json: sideways 段 Top-1≥90 日 top15 超额 +0.1bp
