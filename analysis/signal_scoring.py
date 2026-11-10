@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-L3 Signal Resonance — 多维信号打分（2026-11-09 用户拍板方案落地）
+L3 Signal Resonance — 多维信号打分（2026-11-11 迭代：清理 REGIME_BOOST 死配置、双条件地板、不对称迟滞）
 =================================================================
 输入: L2 scan_universe (core+extended+seed) + 本地 K 线 CSV
 维度: trend(趋势) / volume(量能) / volatility(波动) / chip(筹码)
@@ -13,12 +13,12 @@ chip 数据源（2026-11-10 接入，用户批准）:
       * cost_bias 三年 Spearman 全负(-0.056/-0.039/-0.025) → 追高惩罚有据（最一致）
       * winner_pct 中段(40-70%) h5 超额最高、两端差 → 带状给分
       * conc90 证据最弱(2026 Spearman 0.001) → 只展示不打分
-政权: regime_allocator 阈值法 → boost 乘数
+政权: regime_allocator 阈值法
 
-铁律:
-  - 缺数据维度 = 该维度不参与 + 权重归一化重分配（绝不塞中性 50 分）
-    对齐 ERR-20261018-C03: 缺数据 ≠ 中性分
+铁律（2026-11-11 更新）:
+  - 缺数据维度 = 该维度不参与 + 权重归一化重分配（绝不塞中性 50 分，对齐 ERR-20261018-C03）
   - 因子缺失值 → 该子项 0 分（可见），不做 ffill 伪造
+  - 政权乘法缩放已移除（死配置），改用 TOP_K/权重/地板三条真联动路径
   - 产出 candidates_daily.json + 全池评分（供 seed_pool 晋升降级）
 
 运行: python3 analysis/signal_scoring.py            # 每日 15:40 cron
@@ -51,7 +51,8 @@ from analysis.universe_config import CFG as _UCFG
 TOP_K = int(_UCFG.l3.top_k)
 MIN_SCORE = float(_UCFG.l3.min_score)
 HARD_GATES = dict(_UCFG.l3.hard_gates)
-REGIME_BOOST = {"trend_up": 1.10, "sideways": 1.00, "trend_down": 0.85, "high_vol": 0.90}
+# REGIME_BOOST 乘法缩放已移除（2026-11-11）：不改排名、零影响，属死配置
+# 真联动走 TOP_K/权重/地板三条路径
 
 # 维度基础权重（valuation 数据缺位时重分配；chip 2026-11-10 起在场）
 BASE_WEIGHTS = {"trend": 0.30, "volume": 0.25, "chip": 0.20, "volatility": 0.15, "valuation": 0.10}
@@ -159,7 +160,11 @@ def compute_factor_snapshot(data):
         vol_z = (vol - vol.rolling(20).mean()) / vol.rolling(20).std().replace(0, np.nan)
         direction = np.sign(close.diff().fillna(0))
         obv = (direction * vol).cumsum()
+        obv_ema20 = obv.ewm(span=20, adjust=False).mean()
         obv_up = bool(obv.iloc[-1] > obv.iloc[-6]) if len(obv) > 6 else None  # 5日 OBV 斜率
+        obv_above_ema = bool(obv.iloc[-1] > obv_ema20.iloc[-1]) if pd.notna(obv_ema20.iloc[-1]) else None
+        obv_cross_up = bool(obv.iloc[-2] <= obv_ema20.iloc[-2] and obv.iloc[-1] > obv_ema20.iloc[-1]) if len(obv) > 1 and pd.notna(obv_ema20.iloc[-2]) else None
+        obv_cross_down = bool(obv.iloc[-2] >= obv_ema20.iloc[-2] and obv.iloc[-1] < obv_ema20.iloc[-1]) if len(obv) > 1 and pd.notna(obv_ema20.iloc[-2]) else None
         # volatility
         ma20 = close.rolling(20).mean()
         sd20 = close.rolling(20).std()
@@ -173,6 +178,9 @@ def compute_factor_snapshot(data):
             "adx": float(adx.iloc[-1]) if pd.notna(adx.iloc[-1]) else None,
             "vol_zscore": float(vol_z.iloc[-1]) if pd.notna(vol_z.iloc[-1]) else None,
             "obv_rising_5d": obv_up,
+            "obv_above_ema": obv_above_ema,
+            "obv_cross_up": obv_cross_up,
+            "obv_cross_down": obv_cross_down,
             "bb_pos": float(bb_pos) if pd.notna(bb_pos) else None,
             "hv20": float(hv20) if pd.notna(hv20) else None,
             "close": float(close.iloc[-1]),
@@ -220,8 +228,15 @@ def score_stock(snap: dict, weights=None) -> tuple:
             v += 40
         elif vz > 0.5:
             v += 25
-    if snap.get("obv_rising_5d"):
+    # OBV EMA 条件（2026-11-11 与 adaptive_dual 对齐）：
+    #   OBV 上穿 EMA -> +30（买入确认）
+    #   OBV 在 EMA 上方 -> +20（趋势持续）
+    #   OBV 下穿 EMA -> +0（不加分，规避追高）
+    if snap.get("obv_cross_up"):
         v += 30
+    elif snap.get("obv_above_ema"):
+        v += 20
+    # obv_cross_down: 不加分（隐含惩罚）
     amt = snap.get("amount_20d")
     if amt is not None and amt >= 1e8:  # 量级加分: 日均成交额过亿
         v += 30
@@ -278,8 +293,9 @@ def detect_regime(data) -> dict:
     """阈值法政权检测（复用 regime_allocator 思路，独立轻量版防缓存坑）
 
     2026-11-10 晚加 2 日确认迟滞（外部建议采纳，判据: 1416 日实测闪烁
-    19.1 次/年、短段≤2日占 11.8%）：新 regime 需连续 2 日一致才切档，
-    不一致保持昨日档（保守方向）。避免日级噪声触发 TOP_K 档位跳动。
+    19.1 次/年、短段≤2日占 11.8%）。
+    2026-11-11 升级：不对称迟滞 —— 向下切（trend_up→sideways/down, high_vol→其他）
+    即时生效，向上切（sideways→trend_up 等）需 2 日确认。避免趋势末期多跑 1 天宽松参数。
     """
     try:
         closes = pd.DataFrame({s: d["close"] for s, d in data.items()}).dropna(how="all")
@@ -303,14 +319,46 @@ def detect_regime(data) -> dict:
         i = -1
         r_today = _cls(i)
         r_yest = _cls(i - 1) if len(sp5_20) > 2 else r_today
-        r = r_today if r_today == r_yest else r_yest   # 2 日确认，否则保持昨日档
-        if r != r_today:
-            print(f"🌦️ regime 迟滞: 今日{_cls(i)}与昨日不一致 → 保持昨日档 {r}（2日确认）")
-        return {"regime": r, "boost": REGIME_BOOST.get(r, 1.0),
+
+        # 2026-11-11 不对称迟滞：向下切即时、向上切 2 日确认
+        UPGRADES = {"sideways": "trend_up", "trend_down": "sideways", "high_vol": "sideways"}
+        if r_today == UPGRADES.get(r_yest):
+            # 向上切：需 2 日确认
+            r = r_today if r_today == r_yest else r_yest
+            if r != r_today:
+                print(f"🌦️ regime 迟滞(向上切): 今日{_cls(i)}与昨日不一致 → 保持昨日档 {r}（2日确认）")
+        else:
+            # 向下切/同级：即时生效
+            r = r_today
+            if r != r_yest:
+                print(f"🌦️ regime 切换(向下/即时): {r_yest} → {r}")
+
+        return {"regime": r,
                 "sp5_20": float(sp5_20.iloc[i]), "vol_ratio": float(vol20.iloc[i] / vol60.iloc[i]) if vol60.iloc[i] else None}
     except Exception as e:
         print(f"⚠️ 政权检测失败 fail-open(sideways): {e}")
-        return {"regime": "sideways", "boost": 1.0}
+        return {"regime": "sideways"}
+
+
+def score_distribution_stats(scored: list) -> dict:
+    """全池分数分布观测（2026-11-11 采纳外部评审建议）:
+    在 candidates_daily.json 记录 Top-1 分数与分布分位数，供地板/K 调参的
+    日度轨迹跟踪（如「大量 88~89 被噙嚓」的预警）。纯观测，零行为影响。
+    前提: scored 已按 total_score 降序（main 中排序后调用）。"""
+    scores = [s["total_score"] for s in scored
+              if isinstance(s.get("total_score"), (int, float))]
+    if not scores:
+        return {}
+    a = np.asarray(scores, dtype=float)
+    p10, p25, p50, p75, p90 = np.percentile(a, [10, 25, 50, 75, 90])
+    return {
+        "count": int(a.size),
+        "min": float(a.min()), "max": float(a.max()),
+        "p10": float(p10), "p25": float(p25), "p50": float(p50),
+        "p75": float(p75), "p90": float(p90),
+        "top1_score": float(a[0]),
+        "top5_mean": float(np.mean(a[:5])),
+    }
 
 
 def main():
@@ -351,7 +399,7 @@ def main():
 
     snaps = compute_factor_snapshot(data)
     regime = detect_regime(data)
-    print(f"🌦️ 政权: {regime['regime']} (boost ×{regime['boost']})")
+    print(f"🌦️ 政权: {regime['regime']}")
 
     # regime 联动覆盖（universe_config.l3_regime；默认零行为变化，参数由归因填充）
     _ov = _UCFG.l3_regime
@@ -371,7 +419,8 @@ def main():
         score_snap = snap if chip_on else {k: v for k, v in snap.items()
                                             if k not in ("winner_pct", "cost_bias", "conc90")}
         total, dims, active = score_stock(score_snap, weights=eff_weights)
-        total = round(total * regime["boost"], 2)
+        # REGIME_BOOST 乘法缩放已移除（2026-11-11）：不改排名、零影响，属死配置
+        # 真联动走 TOP_K/权重/地板三条路径
         rec = {
             "symbol": sym, "name": names.get(sym) or seed_names.get(sym) or "",
             "total_score": total,
@@ -385,12 +434,35 @@ def main():
         scored.append(rec)
     scored.sort(key=lambda x: x["total_score"], reverse=True)
 
-    # regime Top-1 绝对地板（2026-11-10 晚采纳外部建议）：
+    # regime Top-1 绝对地板（2026-11-10 晚采纳外部建议，2026-11-11 升级双条件）：
     # Top-1 < 阈值 → 当日候选归零（判据: sideways 段 Top-1≥90 日超额 +0.1bp vs 80-90 带 -21.0bp）
-    _floor = float(_ov.regime_top1_floor.get(_rname, 0) or 0)
-    if _floor > 0 and scored and scored[0]["total_score"] < _floor:
-        print(f"🌦️ regime 地板: {_rname} 段 Top-1={scored[0]['total_score']} < {_floor} → 当日候选归零（无独立趋势票）")
-        scored_gate_note = f"top1_floor({_floor}) 未达"
+    # 升级：Top-5 均值也需达标，防「孤胆英雄」误导
+    _floor_cfg = _ov.regime_top1_floor.get(_rname)
+    if _floor_cfg:
+        # 2026-11-11 升级：双条件地板（top1 + top5_mean），防「孤胆英雄」误导
+        if isinstance(_floor_cfg, dict):
+            top1_floor = float(_floor_cfg.get("top1", 0) or 0)
+            top5_floor = float(_floor_cfg.get("top5_mean", 0) or 0)
+        else:
+            # 兼容旧标量写法
+            top1_floor = float(_floor_cfg)
+            top5_floor = 0.0
+        top1_ok = scored and scored[0]["total_score"] >= top1_floor
+        top5_ok = True
+        if top5_floor > 0 and len(scored) >= 5:
+            top5_mean = sum(s["total_score"] for s in scored[:5]) / 5
+            top5_ok = top5_mean >= top5_floor
+        if not (top1_ok and top5_ok):
+            reason = []
+            if not top1_ok:
+                reason.append(f"Top-1={scored[0]['total_score'] if scored else 'N/A'} < {top1_floor}")
+            if not top5_ok:
+                top5_mean = sum(s["total_score"] for s in scored[:5]) / 5
+                reason.append(f"Top-5均值={top5_mean:.1f} < {top5_floor}")
+            print(f"🌦️ regime 地板: {_rname} 段 {'、'.join(reason)} → 当日候选归零（无独立趋势票/群体强度不足）")
+            scored_gate_note = f"top1_floor({top1_floor})/top5_mean({top5_floor}) 未达"
+        else:
+            scored_gate_note = None
     else:
         scored_gate_note = None
 
@@ -418,7 +490,9 @@ def main():
         "built_at": datetime.now().isoformat(), "as_of": today,
         "mode": mode,
         "regime": regime, "n_scored": len(scored),
-        "active_dims_note": "valuation 缺席重分配；chip 数据已接入但按归因证据不参与打分（chip边际全负），筹码指标在 chip_display 字段/L4 推送展示",
+        "score_distribution": score_distribution_stats(scored),
+        "floor_gate": scored_gate_note,
+        "active_dims_note": "valuation 缺席重分配；chip 数据已接入但按归因证据不参与打分（chip边际全负），筹码指标在 chip_display 字段/L4 推送展示；REGIME_BOOST 乘法缩放已移除（死配置）",
         "candidates": candidates,
         "all_scores": scored[:80],
     }
