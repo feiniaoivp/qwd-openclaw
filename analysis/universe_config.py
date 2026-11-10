@@ -63,9 +63,11 @@ class L3SignalResonanceConfig:
     })
     # 硬门槛：同时达标才算共振（缺数据 = 该维度 0 分，不默认中性 50 —
     # 对齐 ERR-20261018-C03：缺数据 ≠ 中性分）
+    # 2026-11-10: 默认值以 signal_scoring.py 生产实跑值为准修正（0.20/0.90 → 0.15/0.92），
+    # 消除「CFG 回落默认 vs 脚本硬编码」fork；signal_scoring 已改读本配置。
     hard_gates: Dict[str, float] = field(default_factory=lambda: {
-        "bb_pos_low": 0.20,       # BB_pos_20 ≥ 0.2（不在破位下轨）
-        "bb_pos_high": 0.90,      # BB_pos_20 ≤ 0.9（不极端超买）
+        "bb_pos_low": 0.15,       # BB_pos_20 ≥ 0.15（不在破位下轨）
+        "bb_pos_high": 0.92,      # BB_pos_20 ≤ 0.92（不极端超买）
         "volume_zscore_min": 0.3, # 温和放量以上
     })
     top_k: int = 15                # 候选上限

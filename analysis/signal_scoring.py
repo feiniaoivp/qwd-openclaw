@@ -3,8 +3,16 @@
 L3 Signal Resonance — 多维信号打分（2026-11-09 用户拍板方案落地）
 =================================================================
 输入: L2 scan_universe (core+extended+seed) + 本地 K 线 CSV
-维度: trend(趋势) / volume(量能) / volatility(波动) / valuation(估值)
-      chip(筹码) — 数据源缺位，当前不参与（权重重分配至其它维度，输出留痕）
+维度: trend(趋势) / volume(量能) / volatility(波动) / chip(筹码)
+      valuation — 数据源缺位，当前不参与（权重重分配至其它维度，输出留痕）
+chip 数据源（2026-11-10 接入，用户批准）:
+  - 经典衰减法自算筹码分布，完整复用 scripts/chip_distribution_study.py
+    的 chip_metrics（同参 400 档/turn 衰减/三角分布，禁第二套算法）
+  - 数据全本地: 数据湖/stock_data CSV 自带 turn 列，零网络成本
+  - 打分证据边界（analysis/research/chip_distribution_study.json，全池 h5 五分位 + 三年 Spearman）:
+      * cost_bias 三年 Spearman 全负(-0.056/-0.039/-0.025) → 追高惩罚有据（最一致）
+      * winner_pct 中段(40-70%) h5 超额最高、两端差 → 带状给分
+      * conc90 证据最弱(2026 Spearman 0.001) → 只展示不打分
 政权: regime_allocator 阈值法 → boost 乘数
 
 铁律:
@@ -35,12 +43,17 @@ STOCK_DIR = os.path.join(WORKSPACE, "data", "stock_data")
 L2_PATH = os.path.join(UNI_DIR, "universe_core.json")
 CAND_PATH = os.path.join(UNI_DIR, "candidates_daily.json")
 
-TOP_K = 15
-MIN_SCORE = 45.0
-HARD_GATES = {"bb_pos_low": 0.15, "bb_pos_high": 0.92}
+# 阈值 SSOT: universe_config.UniverseFilterConfig（data/universe_filter_config.json，
+# 缺文件回落 dataclass 默认）。此前硬编码与 dataclass 默认存在 fork
+# （HARD_GATES 0.15/0.92 vs 0.20/0.90），2026-11-10 以生产实跑值修正 dataclass 后改读 CFG。
+from analysis.universe_config import CFG as _UCFG
+
+TOP_K = int(_UCFG.l3.top_k)
+MIN_SCORE = float(_UCFG.l3.min_score)
+HARD_GATES = dict(_UCFG.l3.hard_gates)
 REGIME_BOOST = {"trend_up": 1.10, "sideways": 1.00, "trend_down": 0.85, "high_vol": 0.90}
 
-# 维度基础权重（chip 数据缺位时重分配）
+# 维度基础权重（valuation 数据缺位时重分配；chip 2026-11-10 起在场）
 BASE_WEIGHTS = {"trend": 0.30, "volume": 0.25, "chip": 0.20, "volatility": 0.15, "valuation": 0.10}
 
 
@@ -81,6 +94,37 @@ def load_price_data(symbols, max_days=300):
         except Exception:
             missing.append(sym)
     return data, missing
+
+
+def chip_snapshot(df):
+    """末端筹码指标（复用 chip_distribution_study.chip_metrics，经典衰减法 400 档）。
+
+    缺 turn 列 / 不足 60 行 / 计算异常 → 返回 None（chip 维缺席，权重重分配，
+    对齐「缺数据 ≠ 中性分」铁律）。异常必须可见，禁止静默吞噬。
+    """
+    if df is None or "turn" not in df.columns or len(df) < 60:
+        return None
+    try:
+        _scripts_dir = os.path.join(WORKSPACE, "scripts")
+        if _scripts_dir not in sys.path:
+            sys.path.insert(0, _scripts_dir)
+        from chip_distribution_study import chip_metrics
+        # load_price_data 把 date set_index 了，chip_metrics 需要普通列 → reset_index
+        d2 = df.reset_index().rename(columns={df.index.name or "index": "date"})
+        if "date" not in d2.columns:
+            return None
+        m = chip_metrics(d2)
+        if m is None or not len(m):
+            return None
+        last = m.iloc[-1]
+        out = {}
+        for k in ("winner_pct", "cost_bias", "conc90"):
+            v = last.get(k)
+            out[k] = float(v) if v is not None and pd.notna(v) else None
+        return out if any(v is not None for v in out.values()) else None
+    except Exception as e:
+        print(f"⚠️ chip 指标计算失败(该票 chip 维缺席): {type(e).__name__}: {e}")
+        return None
 
 
 def compute_factor_snapshot(data):
@@ -134,6 +178,9 @@ def compute_factor_snapshot(data):
             "close": float(close.iloc[-1]),
             "amount_20d": float((close * vol).tail(20).mean()),
         }
+        chip = chip_snapshot(df)
+        if chip:
+            snap.update(chip)
         out[sym] = snap
     return out
 
@@ -192,6 +239,31 @@ def score_stock(snap: dict) -> tuple:
         elif hv < 0.55:
             vo += 15
     dims["volatility"] = vo
+
+    # ── chip (0-100) 筹码结构健康度（2026-11-10 接入，证据边界见模块 docstring）──
+    ch = 0.0
+    wp = snap.get("winner_pct")   # 获利盘 0-1
+    cb = snap.get("cost_bias")    # close/avg_cost - 1
+    if wp is not None:
+        if 0.40 <= wp <= 0.70:    # 中段最优（h5 五分位 Q2 峰值）
+            ch += 50
+        elif 0.25 <= wp < 0.40 or 0.70 < wp <= 0.80:
+            ch += 30
+        else:                     # <25% 无人获利 / >80% 过热全获利
+            ch += 10
+    if cb is not None:
+        if 0.0 <= cb <= 0.10:     # 浅获利: 站稳成本上方未过热
+            ch += 50
+        elif -0.05 <= cb < 0.0:
+            ch += 35
+        elif 0.10 < cb <= 0.20:
+            ch += 20
+        elif cb < -0.05:          # 深套: 上方套牢盘抛压（trend 维另行压分）
+            ch += 15
+        else:                     # >+20% 深度获利（Spearman 全负，最差邻域）
+            ch += 5
+    if wp is not None or cb is not None:
+        dims["chip"] = ch
 
     # ── valuation: 数据源缺位（eps/bv 面板仅 33 只覆盖且滞后）→ 本版整体缺席 ──
     # ── chip: 筹码数据源缺位 → 整体缺席 ──
@@ -300,7 +372,7 @@ def main():
         "built_at": datetime.now().isoformat(), "as_of": today,
         "mode": mode,
         "regime": regime, "n_scored": len(scored),
-        "active_dims_note": "chip/valuation 数据源缺位，权重已重分配至 trend/volume/volatility",
+        "active_dims_note": "valuation 数据源缺位，权重重分配；chip 已接入（本地 turn 自算筹码）",
         "candidates": candidates,
         "all_scores": scored[:80],
     }
@@ -313,8 +385,13 @@ def main():
     print(f"✅ L3 候选: {len(candidates)} 只 (门槛后) / 全池 {len(scored)} → {CAND_PATH}")
     for c in candidates[:10]:
         d = c["dims"]
+        snap = snaps[c["symbol"]]
+        if snap.get("winner_pct") is not None:
+            chip_s = f" chip(wp={snap.get('winner_pct') or 0:.0%},cb={snap.get('cost_bias') or 0:+.1%})"
+        else:
+            chip_s = " chip(缺)"
         print(f"  {c['symbol']} {c['name'][:6]:8s} {c['total_score']:6.1f} "
-              f"(T{d.get('trend',0):.0f} V{d.get('volume',0):.0f} Vo{d.get('volatility',0):.0f})")
+              f"(T{d.get('trend',0):.0f} V{d.get('volume',0):.0f} Vo{d.get('volatility',0):.0f} C{d.get('chip','-')}){chip_s}")
 
     # 种子库每日进化
     try:
