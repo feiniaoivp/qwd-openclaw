@@ -35,11 +35,7 @@ Investigate `analysis/weekly_full_pipeline.py`; check for deadlocks/infinite loo
 - Source: cron
 - Reproducible: yes
 - Pattern-Key: ops.silent-orchestrator-misjudged-as-hang
-- Recurrence-Count: 3
-- First-Seen: 2026-09-26
-- Last-Seen: 2026-10-06
-- See Also: ERR-20261006-PM (same pattern), LEARNINGS cron.silent-noop-fake-ok (同主题：表面状态不可信)
-- Promoted: TOOLS.md「🔴 长跑 pipeline 卡死判定规则」(2026-10-07 提升；2026-10-09 维护复核确认生效，Source: .learnings/ERRORS.md#ERR-20260926-WBP)
+- Recurrence-Count: 3 [Promoted] (2026-10-07 → TOOLS.md「🔴 长跑 pipeline 卡死判定规则」)
 > **[2026-10-24 每周维护]** 共享计数主条目（本条 + ERR-20260926-WBP，RC=3 跨 3 任务）周度终态确认：TOOLS.md 规则在位，Last-Seen 维持 2026-10-06，无新复发，promoted 终态不变。
 
 > **[2026-10-19 每日维护 · 第2轮]** RC≥3 共享计数条目（跨 3 任务 30 天内）终态复核：TOOLS.md 规则在位（grep 确认「长跑 pipeline 卡死判定规则」章节存在），无新复发，RC 维持 3 不虚增，保持 promoted。
@@ -201,10 +197,7 @@ cron `daily-premarket-analysis-cmd` 运行 `analysis/premarket_pipeline.py`。�
 **Promoted**: TOOLS.md (2026-10-07)「🔴 长跑 pipeline 卡死判定规则」/ 2026-10-09 复核确认生效
 **Pattern-Key**: ops.silent-orchestrator-misjudged-as-hang
 - See Also: LEARNINGS 2026-09-29 cron.silent-noop-fake-ok (同主题：表面状态不可信,需看真实执行); ERR-20260926-WBP (same pattern)
-- Recurrence-Count: 3
-- First-Seen: 2026-09-26
-- Last-Seen: 2026-10-06
-- Promoted: TOOLS.md「🔴 长跑 pipeline 卡死判定规则」(Source: .learnings/ERRORS.md#ERR-20261006-PM)
+- Recurrence-Count: 3 [Promoted] (2026-10-07 → TOOLS.md「🔴 长跑 pipeline 卡死判定规则」)
 
 ## ERR-20261008-ModelGarbledOutput
 **Date**: 2026-10-08 18:18
@@ -476,7 +469,7 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Source: cron/manual-session（cluster_window_ab 回测任务）
 - Reproducible: yes
 - Pattern-Key: err.dist-io-no-timeout（2026-10-19 维护定 key；此前无 key 导致跨任务复发不可计数）
-- Recurrence-Count: 4
+- Recurrence-Count: 4 [Promoted] (2026-11-10 → TOOLS.md「🔴 网络调用超时铁律」)
 - First-Seen: 2026-09-17
 - Last-Seen: 2026-10-18
 - Status: promoted (2026-10-19 → TOOLS.md「🔴 网络调用超时铁律」)
@@ -1031,12 +1024,7 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - Source: cron（每日维护 06:00 巡检发现）
 - Reproducible: yes（长 run + 免费模型 + 唯一成果=最终回复即复现丢稿）
 - Pattern-Key: llm.final-response-failure.loses-context-only-work（家族键，本条为第 3 次实证）
-- Recurrence-Count: 3
-- Status: promoted (2026-11-03 → AGENTS.md「产出写盘纪律」)
-- Promoted: AGENTS.md「产出写盘纪律」 (2026-11-03, Source: .learnings/ERRORS.md#llm.final-response-failure.loses-context-only-work)
-- First-Seen: 2026-10-22
-- Last-Seen: 2026-10-27
-- Status: promoted (2026-10-28 → AGENTS.md「配套铁律 · 凡有价值的 run 产出，禁止只存在于最终回复/上下文」)
+- Recurrence-Count: 3 [Promoted] (2026-11-03 → AGENTS.md「产出写盘纪律」)
 - See Also: ERR-20261022-HeartbeatFinalTurnIdleTimeout（家族第 1 实证）、ERR-20261027-KbBackfillSubagentTimeoutLostWork（家族第 2 实证）、AGENTS.md「免费快速模型不许跑长任务」
 - Source: .learnings/ERRORS.md#llm.final-response-failure.loses-context-only-work
 - Maintenance (2026-10-29 每日维护): ①**缺口销账 ✅** —— 10-27 归纳缺口无需人工补扫：10-28 19:30 自然 run status=ok（382s，delivered），产物 `wiki/sources/investment-philosophy-2026-10-28.md`（19:36 落盘 2.2KB）按 48h 窗口已覆盖 10-27 区间（Vault 0 篇命中、无积压，会话核实）→「缺口补扫待用户决定」关闭，本条终态。②**观察项（不 bump RC）**：10-28 深夜~10-29 凌晨 dashboard webchat 会话（8eadc40c）出现 ≥6 次 `[assistant turn failed before producing content]`（amd-radeon 端点，用户多次「继续」恢复）——属最终轮失败簇，但已完成工作经会话续跑全部找回、**无确证丢稿**，按「无确证不虚增」纪律 RC 维持 3；若后续出现同簇真丢稿则 bump 至 4 并复核端点健康。
@@ -1130,7 +1118,7 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - First-Seen: 2026-11-04
 - Last-Seen: 2026-11-04
 
-## [ERR-20261104-DuplicateGuardName] 重名 Guard 脚本导致潜在双跑\n- **日期**: 2026-11-04\n- **Status**: promoted (2026-11-05 → AGENTS.md「立项前先盘点存量」)\n- **现象**: 新建 `scripts/guards/data_freshness_guard.py` 时未发现根目录下已有同名脚本，导致职责重叠。\n- **Metadata**: \n- Pattern-Key: plan.duplicate-detector-creation\n- Recurrence-Count: 3\n- First-Seen: 2026-10-06\n- Last-Seen: 2026-11-04\n- Promoted: AGENTS.md (2026-11-05)
+## [ERR-20261104-DuplicateGuardName] 重名 Guard 脚本导致潜在双跑\n- **日期**: 2026-11-04\n- **Status**: promoted [Promoted] (2026-11-05 → AGENTS.md「立项前先盘点存量」)\n- **现象**: 新建 `scripts/guards/data_freshness_guard.py` 时未发现根目录下已有同名脚本，导致职责重叠。\n- **Metadata**: \n- Pattern-Key: plan.duplicate-detector-creation\n- Recurrence-Count: 3\n- First-Seen: 2026-10-06\n- Last-Seen: 2026-11-04\n- Promoted: AGENTS.md (2026-11-05)
   同名不同职 → 若上线必致消费方混淆/双跑。
 - **拦截**: 晚间做治理清单盘点 manifest 时发现，git mv 改名 data_lake_freshness_guard + cron 改指向。
 - **规约**: 新建任何 *guard*/*checker*/*monitor* 脚本前，第一动作 `ls scripts/ | grep -i <关键词>`

@@ -456,10 +456,19 @@ rg -n 'breakpoint\(|pdb\.set_trace|debugpy\.' --type py   # 人工快速版
 - 本机 `127.0.0.1:7890` 有 HTTP 代理可用：`HTTP_PROXY=http://127.0.0.1:7890 HTTPS_PROXY=... python3 ...` 即恢复。
 - cron 脚本（send_telegram.py）✅ 2026-10-16 起已内置代理兜底：直连失败 → 自动探测并走 `127.0.0.1:7890`，脚本层自愈（10-15 前的「不带代理静默失败」已修复）。Gateway announce 层仍无代理（fallbackUsed 只是目标解析回退，非传输层），TLS 潮汐窗内 gateway 直接投递仍会 delivered=false（best-effort job 降级 diagnostic，不误标 error）。补推方法：用落盘的 `data/intraday_alert_output.json` 里 `brief` 直接调 `send_message`，不要重跑扫描/不要重复发送。
 - 🔴 **2026-11-08 定性+修复（用户批准）**：send_telegram「三级回退」实为**同一 Clash 隧道的三次尝试**（curl_cffi 与系统 curl 均默认信任 env 代理 7890；③ 的 `--resolve` 在代理模式下失效；en0 物理直连 TG 被 GFW 掐死 → 无绕行路径）→ 节点死时全层齐败是必然非 bug。修复分工：**小时级断流** = proxy-watchdog v2（判据=墙外站通 且 出口必要站 google/TG 通；选点测速 URL 同步换 google → 直连类节点出局；出口退化连续 2 轮才切）；**分钟级抖动** = send_message 分段失败 30s 延迟重试（只重试失败块，无重复风险）。TG 走向：「电报消息」组 → 「美国节点」URLTest 自动故障转移（FlClash 换 profile 后需重设；watchdog 全断切换时可能覆写该组选择）。
+- 🔴 **2026-11-09 节点区域口径（用户拍板）**：任何自主切换（proxy-watchdog 选点）**香港节点硬排除**、**新加坡/美国优先**（候选名 + now 链末端双归类；真实节点名以 🇭🇰/🇸🇬/🇺🇸 旗标 emoji 为主，「香港/新加坡/美国」文字与常见城市名为辅）；无 SG/US 存活候选回退其他非港节点；候选全为港 → 不切换只告警。实现：`scripts/proxy_watchdog.py::pick_node_by_region`（合成单测 8/8 + 真实订阅 768 节点分类核对通过；节点名核对走 `/providers/proxies`，`/proxies` 不含 provider 节点）。
 
 ---
 
-## 🔴 网络调用超时铁律（2026-10-19 由 err.dist-io-no-timeout 提升）
+## 🔴 网络调用超时铁律（2026-11-10 终态增强）
+
+**核心规则**：任何被回测、长循环调用或在关键风控链路上的网络请求/刷新逻辑，必须显式配置超时（Timeout），严禁依赖库默认的无限等待。
+
+**执行细则**：
+
+1. **主动安装超时守卫**：在请求体或刷新函数周围包一层 `network_timeout_guard(seconds)`。
+2. **超时后的行为**：必须定义降级路径（例如：使用旧缓存 → 记录可见告警 → 允许当前循环继续），禁止直接让进程挂死（sock_read）。
+3. **审计重点**：审计 `portfolio_core.RiskGuard.refresh()` 等关键刷新点，确保其链路中所有外部调用均有超时限制。
 
 > **为什么强制**：`analysis/net_guard.py` 全量接线（80 个文件）后仍复发——
 > 根因不是「没装护栏」，而是**护栏装不到的位置**：①第三方库内部建连早于

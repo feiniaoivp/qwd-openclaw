@@ -1629,3 +1629,53 @@ This file serves as your curated long-term memory, storing significant events, d
 *   **架构**：`analysis/auto_executor.py`（PENDING 意向队列+T+1 开盘消费，状态机 FILLED/BLOCKED/CANCELLED/EXPIRED/SUPERSEDED）+ portfolio_core 6 处接线；`AUTO_EXECUTOR=0` 一键回退 legacy。空仓卖不入队（修 P2#5 噪声源）。
 *   **关键修复**：portfolio_core WORKSPACE 硬编码 → getenv 模板化——凌晨 e2e 直写生产的机制根因：env 沙箱对硬编码路径失效。
 *   **纪律**：零污染 e2e 必须用 value-level（sha256）对照，size 比对对同长度值变更/同行替换失明；e2e 资产固化在 `analysis/test_auto_executor_e2e.py` 可重复跑。
+
+## 2026-11-09 蒸馏补充（memory-maintenance-check 周一 07:35 轮）—— 11-05~11-08 缺口
+
+> 源自 memory/2026-11-05.md / 2026-11-06.md / 2026-11-07-weekly-review.md / 2026-11-08.md / 2026-11-09.md 已落盘事实。10-31~11-04 已由「2026-11-05 蒸馏补充」区覆盖；今晨 06:40 审计轮误记「11-05~11-08 已并入 MEMORY.md」，实际蒸馏区止于 11-04，本区补齐。
+
+**管道化验收与执行链（11-05）**
+- **管道化首跑验收通过**：11-04 三条 PENDING 意向（巨化股份 @32.15 gap+1.23% / 福耀玻璃 @55.03 / 恒生电子 @21.46）全部 FILLED；前视退役硬证据 = fill 价 == 11-05 真实开盘价 ≠ 11-04 收盘；成交通知 3 条 TG 送达；failure_cases 台账自动捕获拦截信号 = error_attribution T3 链路首次真实运转。[来源: memory/2026-11-05.md, memory/2026-11-06.md]
+- **🔴 data/runtime 迁移分叉事故与回滚（codemod 家族 RC=5）**：字符串 sed 迁移被「多参 os.path.join + DATA_DIR 派生路径」两类盲区击穿 → 各 cron 双写分叉（8+ 文件）→ 回滚 rsync 合并 + data/runtime 改符号链接→data（新旧拼写同 inode，23 个已改脚本零回改）→ snapshot_guard 恢复 --include='data/'。教训已固化 .learnings/ERRORS.md#ERR-20261105-RuntimeMigrationSplitBrain：**目录迁移须冻结窗口+写点枚举，禁止字符串 sed 盲扫**。[来源: memory/2026-11-05.md]
+- **RC≥3 自动开票落地**：error_attribution 加 pattern_class，90 天滚动 RC≥3 自动生成结构性修复工单（data/failure_cases/structural_fix_tickets.json + 看板 analysis/audit/structural_fix_tickets.md），首日开 2 张真实工单：SFT-001 risk_override/macd RC=6、SFT-002 tier_gate/ema_obv RC=4；随 16:15 cron 自动刷新。[来源: memory/2026-11-05.md]
+- **Guard→Learning 闭环补全**：新建 scripts/guard_effectiveness_audit.py（被拦信号 T+1/T+3/T+5 后续收益减全池中位，按 guard 聚合拦对率；样本<20 仅观察不下结论），接入 16:15 归因 cron。首批真实结果（11-04 队列 T+1）：tier 守卫拦 4 笔卖出，**拦对率 75%、超额中位 +4.12%**（天齐/亿纬/通富拦对，仅中信金属拦错）——首份证据支持 tier 卖侧拦截是保护性的。[来源: memory/2026-11-05.md]
+- **SQLite 影子状态层落地**：analysis/state_db.py（WAL，表 positions/trade_intents/trades/equity_curve）+ PATHS 路径 SSOT；**JSON 仍是唯一活跃写路径，SQLite 为派生副本，观察期 ≥2 周零分叉才切读端**；cron state-db-sync-daily（762f0798，交易日 15:55，delivery=none 已复核）。首跑对账抓到真 bug：双权益 CSV schema+口径不同（mirror 含当日 FILLED 市值 278.6 万 vs 台账 270.1 万），改 (date, source) 双主键按源映射。[来源: memory/2026-11-05.md]
+- **宇宙扩展 Tier-0 首建**：scripts/build_universe.py（hs300+zz500=800 只，2021→今日，增量+失败率退出码）+ 三层漏斗蓝图（宇宙数据湖→因子候选池→影子关注池 ≥4 周→人工审批晋升；研究宇宙≠交易宇宙）；cron universe-build-daily（3aa85dcd，交易日 05:10）。🔴 **baostock 全局连接非线程安全**（4 线程 → zlib 流损坏+忙等挂死需 kill -9）→ 改串行；服务端潮汐定性（全新登录失败 error_code 10002007 = 服务端潮汐，非脚本问题）→ consec≥5 force_relogin 自愈 / consec≥60 熔断。[来源: memory/2026-11-05.md]
+- **台账幂等修复**：append 型台账必须带幂等键 (date, symbol, action, guards, timestamp)——同日 cron+测试双写致 5 案×3 份、RC 计数被重跑污染；清理 19→9 行，连跑两次 +0 行验证。[来源: memory/2026-11-05.md]
+
+**安全与配置（11-06）**
+- **🔴 exec 审批缺口坐实**：openclaw exec-policy show = security=full + ask=off（出厂默认 YOLO 态）——exec 审批层对任何命令不弹审批，AGENTS.md「必须请示」表在工具层零执法，100% 依赖模型自觉；收紧代价评估后维持现状+知情记录，兜底 = sensitive_file_tripwire + 周一审计。用户见过的 /approve 全部来自 elevated 门（sudo 类），与 exec approvals 是两套。[来源: memory/2026-11-06.md]
+- **multios 交互侧免疫落地**：~/.zshrc 追加 setopt no_multios（备份 backups/config/zshrc.bak.20261106-pre-no-multios）；交互 zsh 探针 HEREDOC_OK；no-rc zsh（=exec 封装环境）仍 on，exec 层继续靠「先落盘再 heredoc」规约。[来源: memory/2026-11-06.md]
+- **key 卫生三件套（用户批准）**：①~/.zshrc chmod 600（原 644 全机可读且含 XAI/PRISMFY key）②删 PRISMFY export 行（SSOT=~/.prismfy/.env 600）③XAI 双宿主注入 openclaw config skills.entries.x-search.env（CLI 热应用无需重启）——launchctl/gateway env 双实测均无 XAI_API_KEY，**agent 侧 x-search 此前必死**，注入后恢复。[来源: memory/2026-11-06.md]
+- **sensitive_file_tripwire 落地（三层防线第 3 层）**：scripts/sensitive_file_tripwire.py（纯 stdlib，sha256 棘轮基线，退出码 0/1/2，基线重建自带 .bak）；监视面 = shell rc + openclaw.json + crontab 快照 + launchd plist；已接入周一审计第 7 项。[来源: memory/2026-11-06.md]
+- **web_search 后端澄清（用户纠正）**：本机内置 web_search = tavily 驱动（TAVILY_API_KEY 经 gateway 凭证机制进进程 env），guide/TOOLS/AGENTS 三处已点名；Prismfy 上游 502 属先前已坏（nginx，直探 /v1/user/me 坐实）。[来源: memory/2026-11-06.md]
+
+**模拟盘与 e2e（11-06/11-07）**
+- **🔴 11-05 的 030 防御卖单被 dedup 静默吞**：三只刚买票 risk_override 触发防御卖出，但同日已有 FILLED 买入 → check_dedup D3 单日 1 笔 BLOCK（audit 留痕、意向状态机无条目）→ 11-06 开盘无意向可消费；防御未丢（030 每日重评），但「同日买+同日防御卖」存在一天延迟窗口，待观察是否需规则化。[来源: memory/2026-11-06.md]
+- **🔴 双 e2e 资产退化（修复 da488a6）**：11-05 改生产路径当天未重跑既有 e2e → 单元版/全流程版双双假失败（路径分裂 + 030 真实风控 override 测试买入）；修复 = 沙箱复刻符号链接 + stub 中性风控 + last_signal_date 管道化契约断言。**规约候选：改生产代码路径后，当天必须重跑全部既有 e2e 资产**。[来源: memory/2026-11-06.md]
+- **周六周复盘（11-02~06）**：270 万主盘 ¥2,700,397（周 -1,099 / -0.041%），成交 4 笔（中芯国际 11-02 + 巨化/福耀/恒生 11-05）；中联双盘 ≈20 万 0 笔；信号漏斗 6→3。[来源: memory/2026-11-07-weekly-review.md]
+
+**11-08 周日清账（用户批准五项全落地）**
+- **五项**：①kb_variant_merge 96 组同串 stub 合并（6950→6849 行，二跑 dry-run 0 残留）；②cron_truth 两个 Fake OK 溯源——824d1039 = guard 期望路径映射写错（data/param_exec_reconcile.json 从来不是产物路径，修 + {{month}} 模板支持）；c768b322 = prompt「先推送后落盘」结构缺陷 → 治本改先落盘再推送（11-06 历史缺口等 11-09 19:35 新产物自愈）；③astype_ratchet 19 处处置（7 处外部数据列 to_numeric 真整改 + 8 处内部计算/合成数据基线豁免，exit 1→0）；④两个风控契约测试修为「配置感知期望 + 超限对偶场景」（cluster_expo_cap 16/16、tier_suppression 9/9，零行为改动）。[来源: memory/2026-11-08.md]
+- **🔴 假 ok 第六变体**：`echo "$(basename $g): exit=$?"` 中命令替换先求值把 `$?` 重置为 0——实际 exit 1 却显示 0。**规约：退出码先落变量再拼输出（rc=$?; echo ...），或重定向到文件后单独读**。[来源: memory/2026-11-08.md]
+- **契约测试方法论**：期望从被测模块生效变量动态取（pc.CLUSTER_EXPO_CAP），并保留一个「超任何配置都拦」的对偶场景保证保护语义永远可证——否则风控参数一变（激进模式）契约测试集体假红。[来源: memory/2026-11-08.md]
+- **96 组同串重复根因闭环（两日两版，含自我修正）**：初判 seen_titles LRU 2000 滑出（后证伪——抓取侧早有 72h 新鲜度过滤，滑出是伪因素）；**真根因 = 简报生成「非增量」实现 bug**（new_items 不筛 is_new，全部过窗条目每天重写）+ 防重钩子 v1 只圈 • 行（个股新闻速览 dash 行零防护）。治本：news_monitor 防重钩子 v2 复用 kb_append_guard.strip_candidate 单一判定口径 + 简报三区块按 is_new 过滤（stdout JSON 改增量统一口径）+ kb_append_guard 补块内去重 + kb_variant_merge .bak 写前无条件刷新。**教训：①防重钩子按行前缀圈覆盖面前必须先枚举全部写入形态；②「增量状态+高频抓取源」必须有落盘侧第二道防重；③同表象第二次复发先问上次修的是哪一层**。[来源: memory/2026-11-08.md 09:2x/09:3x]
+- **166 遗留文件清零（git status 0，7 个主题提交）**：89c0794（37 个被跟踪运行态数据转 ignore + git rm --cached）/ e9e96db（24 个 runtime 路径补提交）/ 202ba22（管道化语义修正：last_signal_date 仅 legacy 预占 + Level4 本地 CSV 兜底 + gate_runner --generate-cron）/ 2161c34（0f3 baostock 并发压测 + manifest auto_schedule）/ f151d6b（文档）/ e4d0097（真源码补入库）/ b928f59（11-07 补账）；顺带修 .gitignore 顶层 audit/ 误伤 analysis/audit/ → 根锚定 /audit/。[来源: memory/2026-11-08.md 09:3x]
+
+**TG 断网与代理看门狗（11-08）**
+- **🔴 send_telegram 三级回退 = 伪冗余（实验矩阵实锤）**：curl_cffi 与系统 curl 均信任 env 代理（回退①③实际都走 7890）、--resolve 固定 IP 在代理模式下失效、--interface en0 物理直连被 GFW 拦截超时——**本机不存在绕开 Clash 的独立路径，三级回退是同一条隧道的三次尝试**；节点死则三连败必然。[来源: memory/2026-11-08.md 17:2x]
+- **proxy_watchdog 上线 + v2 加固（用户 09:23 开启 FlClash 外部控制后全链路验证）**：FlClash 0.9.0 事实——外部控制设置在 com.follow.clash.plist 的 flutter.config JSON blob（config.yaml 仅核心启动快照）；控制器 127.0.0.1:9090 仅绑回环；mihomo API 计算顶层组必须跳过 GLOBAL；501 节点 provider → 选点用 15min 健康历史优先。v2 加固：判据三级化（墙外站通 且 代理出口必要站 google 204/TG 根通；exit-degraded 连续 2 轮才切）识破「直连节点伪恢复」；选点测速 URL 换 google 204（直连类节点自然出局）；send_message 分段失败延迟重试（30s×1 轮）；Clash「电报消息」组改 URLTest 美国节点自动故障转移（PUT 204 生效，回滚点已记）。cron proxy-watchdog（8ec6ec3d）每 3 分钟 delivery=none 已复核。预期 11-06 型事故从「小时级+人工补推」→ 3-6 分钟自愈。[来源: memory/2026-11-08.md 09:1x/09:4x/18:4x]
+- **盘中预警 exit 1 定性**：退出码映射（读码确认）推送失败→1 是唯一来源；31 次运行 9 次失败全部落在已记录 TG 断网窗口，扫描层零失败（否则 exit 2）；脚本不改（exit 1 是正确可见信号），周一首轮成功 consecutiveErrors 自愈。[来源: memory/2026-11-08.md 17:1x]
+
+**长周期回测任务 3（11-08 子代理，验收 PASS）**
+- **产出**：36 只关注池全历史 CSV（2020-01-02~2026-11-06，baostock qfq，~1658 行/只）+ 首份实战级 α 报告三件套（analysis/alpha_reports/alpha_report_first_20261108_174400.json/.md + factor_panel parquet 16.5MB）+ 验收脚本。双口径透明判定：18 因子 |ICIR|>1 且 P<0.05（**全部反向=均值回归签名**：amplitude -5.05/HV_60 -4.07 等；严格正号仅 close_to_high +1.949 P=0.052 ❌）；5/6 策略净收益>0（kdj_rsi/ema_cross +20.2%、ema_obv +19.0%；adaptive_multi -12.6% 门控反向筛入高波动股）；DSR 6/6 有效（0.72~0.93）。[来源: memory/2026-11-08.md 17:5x]
+- **🔴 新发现（待办移交）**：**ADX_14 ≡ ATR_14**（factor_engine.py adx() 是简化版直接 return atr，实测 corr=1.0）→ 正交性 max_abs_corr=1.000 根因，真 ADX 需 +DM/-DM 实现，属 factor_engine 修复项；kdj_rsi 与 ema_cross 结果完全相同（门控实为 no-op）；正交性条件数 9e17 偏大（有效因子 16/31）。[来源: memory/2026-11-08.md]
+- **踩坑**：np.int64 非 JSON 可序列化（np.float64 是 float 子类能过，np.sum() 出来的整数必须 int() 强转）；**factor_engine 缓存仅按 (factor, symbol) 键控不含数据日期范围——换数据后必须 clear_cache()，否则旧窗口面板被静默 reindex 复用**；save_json 崩溃留下截断残缺 JSON（corrupt-partial 已改名隔离，验收脚本跳过不可解析文件）。[来源: memory/2026-11-08.md]
+
+**结转待办（源自日志）**
+- c768b322 治本效果验证：11-09（今日）19:35 运行后确认 2026-11-09_brief.md 先于推送落盘。
+- 周一审计：scripts/backfill_push_2026-11-07.py backup_guard 违规 2 点（L107/L108，一次性补推脚本），需入基线或补 .bak。
+- proxy-watchdog 真实断流首次实战验证（等自然发生，日志 logs/proxy_watchdog.log）；x-search agent 侧真实调用终验。
+- news_monitor 防重 v2 自然验证：下一交易日 cron 简报应显著变短且无重复条目；0ae 下周六 dry-run 应持续 0 组。
+- AGENTS.md 21,917 chars > 20,000 上限每轮截断（10-21 轮已提，仍未处理）。
+- 11-09 门禁审计（06:40 轮）7 项全绿：script_path / skill_supply / strategy_map(36 只) / lsof:18789 仅本地 / guard/* 23 个 tag / promotion_guard / sensitive_file_tripwire。[来源: memory/2026-11-09.md]

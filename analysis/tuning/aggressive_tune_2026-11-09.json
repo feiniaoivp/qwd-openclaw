@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-11-09T08:30:33.534207",
+  "mirror_stats": {
+    "days": 4,
+    "start_date": "2026-11-05",
+    "end_date": "2026-11-08",
+    "total_return_pct": 3.14,
+    "daily_vol_pct": 0.023,
+    "max_daily_swing_pct": 0.04,
+    "worst_day_pct": -0.04,
+    "max_drawdown_pct": -0.039
+  },
+  "audit_stats": {
+    "entries": 81,
+    "status_dist": {
+      "HOLD": 78,
+      "QUEUED": 3
+    },
+    "block_by_guard": {
+      "tier": 14,
+      "risk_override": 13,
+      "dedup": 3
+    },
+    "exec_rate": 0.0
+  },
+  "sample_guard": "样本不足 (4/5 交易日) → 仅观测，不出建议",
+  "recommendations": [],
+  "note": "建议仅供参考；任何系数变更必须走风控变更流程（用户 /approve 后人工落盘）"
+}
