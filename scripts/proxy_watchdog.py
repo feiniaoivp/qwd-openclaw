@@ -25,7 +25,10 @@ proxy_watchdog.py — FlClash 代理断流看门狗：健康巡检 + 自动切�
   依据：11-08 en0 对照实验 + 当天 10:26「切到直连后双探针照样 204」伪恢复事故。
 - 选点测速 URL 用出口站(google 204)：直连类节点测速超时自然出局，不会当选。
 - 切换目标：从「未被其他组引用的顶层组」沿 now 链下钻，取链上最深的 Selector 组；
-  对该组全体成员跑延迟测试，选延迟最低的存活节点，PUT /proxies/<组>。
+  对该组全体成员跑延迟测试，按区域口径选存活节点，PUT /proxies/<组>。
+- 区域口径（2026-11-09 用户拍板）：香港节点硬排除；新加坡/美国优先；
+  无 SG/US 存活候选 → 回退其他非香港节点；候选全部为香港 → 不切换只告警。
+  分类同时看候选名与 now 链末端实际节点名（子组候选按真实出口归类）。
 - 防误切：当前节点仍在延迟表里 → 节点活着，不切；候选为空 → 不切。
 - 本机 API 调用一律 trust_env=False，绝不吃代理 env（防 loopback 502 伪影，见 TOOLS.md）。
 - 状态文件写前先 .bak 备份（backup_guard 棘轮要求）；通知去重（同事件 30 分钟内不重发）。
@@ -34,6 +37,7 @@ proxy_watchdog.py — FlClash 代理断流看门狗：健康巡检 + 自动切�
 import os
 import sys
 import json
+import re
 import time
 import shutil
 import logging
@@ -79,6 +83,16 @@ API_TIMEOUT = 12
 GROUP_DELAY_TIMEOUT = 60   # 整组延迟测试的总超时（秒）
 HISTORY_FRESH_SECONDS = 900  # 节点健康历史新鲜度（15 分钟）：优先用历史选点，避免 500+ 节点整组探测
 EXCLUDE_NODES = {"COMPATIBLE", "DIRECT", "REJECT", "PASS"}  # mihomo 占位/特殊节点不作切换目标
+# 区域口径（2026-11-09 用户拍板）：自主切换香港硬排除，新加坡/美国优先。
+# 匹配候选名与 now 链末端名；\bhk\b/\bus\b/\bsg\b 带词边界防误伤（RUS/AUS/MSG 类不含独立 token）。
+HK_NODE_RE = re.compile(r"香港|🇭🇰|hong ?kong|hkg|\bhk\b", re.IGNORECASE)
+PREFERRED_NODE_RE = re.compile(
+    r"新加坡|狮城|🇸🇬|singapore|\bsg\b"
+    r"|美[国东西]|🇺🇸|usa|united ?states|\bus\b"
+    r"|洛杉矶|圣何塞|硅谷|西雅图|纽约|芝加哥|达拉斯"
+    r"|los ?angeles|san ?jose|seattle|new ?york|chicago|dallas|phoenix|silicon ?valley",
+    re.IGNORECASE,
+)
 NOTIFY_REPEAT_SECONDS = 1800
 LOG_MAX_BYTES = 2 * 1024 * 1024
 LOG_KEEP_BYTES = 256 * 1024
@@ -302,9 +316,52 @@ def get_graph(base, secret):
     return proxies_map, out
 
 
+def _resolve_leaf(proxies_map, name):
+    """沿 now 链解析到实际出口节点（组候选用）；解析不动则原样返回。"""
+    cur = name
+    seen = {cur}
+    for _ in range(10):
+        now = (proxies_map.get(cur) or {}).get("now")
+        if not now or now in seen:
+            break
+        seen.add(now)
+        cur = now
+    return cur
+
+
+def pick_node_by_region(proxies_map, candidates):
+    """按用户区域口径选点（2026-11-09 拍板）：香港硬排除；新加坡/美国优先；
+    无 SG/US 存活候选时回退其他非香港节点；候选全部为香港 → 不选（不切换只告警）。
+    分类同时看候选名与 now 链末端实际节点名，子组候选按真实出口归类。
+    返回 (name, ms, note)；无可选 → (None, None, note)。"""
+    def region_of(name):
+        leaf = _resolve_leaf(proxies_map, name)
+        if HK_NODE_RE.search(name) or HK_NODE_RE.search(leaf):
+            return "hk"
+        if PREFERRED_NODE_RE.search(name) or PREFERRED_NODE_RE.search(leaf):
+            return "pref"
+        return "other"
+
+    classes = {k: region_of(k) for k in candidates}
+    hk_n = sum(1 for c in classes.values() if c == "hk")
+    pool = {k: v for k, v in candidates.items() if classes[k] != "hk"}
+    if not pool:
+        return None, None, f"候选 {len(candidates)} 个全部为香港，按用户口径不切换"
+    preferred = {k: v for k, v in pool.items() if classes[k] == "pref"}
+    if preferred:
+        sel, note = preferred, f"SG/US优先 {len(preferred)}/{len(pool)}"
+    else:
+        sel, note = pool, f"无SG/US存活,回退非港 {len(pool)} 个"
+    if hk_n:
+        note += f"(排港{hk_n})"
+    name, ms = min(sel.items(), key=lambda kv: kv[1])
+    return name, ms, note
+
+
 def try_fix(base, secret, ch, dry_run, proxies_map, extra_exclude=frozenset()):
     """对一个链路做存活判定与切换。返回 (action, msg, info)。
-    选点策略：历史延迟优先（15 分钟内），历史不可用才整组测延迟。
+    选点策略：历史延迟优先（15 分钟内），历史不可用才整组测延迟；
+    最终选点再过区域口径（pick_node_by_region：香港硬排除、SG/US 优先）。
     历史说当前节点活着时，用单节点实测复核定夺（探测优先于旧历史）。"""
     target, current = ch["target"], ch["current"]
     exclude = set(extra_exclude) | EXCLUDE_NODES | {current}
@@ -356,9 +413,11 @@ def try_fix(base, secret, ch, dry_run, proxies_map, extra_exclude=frozenset()):
         }
     if not candidates:
         return "no-candidate", f"{target} 组内无存活候选节点（排除占位节点后）", {}
-    best_name, best_ms = min(candidates.items(), key=lambda kv: kv[1])
+    best_name, best_ms, region_note = pick_node_by_region(proxies_map, candidates)
+    if not best_name:
+        return "no-candidate", f"{target} {region_note}", {}
     if dry_run:
-        return "dry-run", f"{target}: 「{current}」已死 → 将切到「{best_name}」({int(best_ms)}ms)", {}
+        return "dry-run", f"{target}: 「{current}」已死 → 将切到「{best_name}」({int(best_ms)}ms) [{region_note}]", {}
     q = urllib.parse.quote(target, safe="")
     try:
         r2 = api(base, secret, "PUT", f"/proxies/{q}", json={"name": best_name})
@@ -367,7 +426,7 @@ def try_fix(base, secret, ch, dry_run, proxies_map, extra_exclude=frozenset()):
     if r2.status_code not in (200, 204):
         return "switch-failed", f"{target} PUT {best_name}: HTTP {r2.status_code} {r2.text[:120]}", {}
     return ("switched",
-            f"{target}: 「{current}」→「{best_name}」({int(best_ms)}ms)",
+            f"{target}: 「{current}」→「{best_name}」({int(best_ms)}ms) [{region_note}]",
             {"target": target, "node": best_name})
 
 
