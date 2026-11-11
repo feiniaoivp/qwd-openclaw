@@ -327,6 +327,43 @@ class StrategyComposer:
             "gate_details": gate_details,
         }, index=X.index)
 
+    def compute_target_weights(self, scores: pd.DataFrame, strategy: Strategy) -> pd.Series:
+        """纯权重层 SSOT：门控过滤 + min_score + sizing + 单股上限 + 归一化。
+
+        2026-11-11 抽取：此前 alpha_validator 与 run_full_backtest 各有一份内联等权循环
+        （不过滤 min_score、无视 sizing 语义）→ 同门策略收益必然完全同路
+        （ema_obv ≡ ema_cross 收益全同事故根因）。三处消费方统一走本函数。
+        返回：MultiIndex (symbol, date) → weight 的 Series（日内和=1）；空策略返回空 Series。
+        """
+        # 只保留未被拦截且分数达标的（warn/reduce 放行留痕，仅 block 拦截；
+        # 2026-11-10 修复：旧 == "pass" 条件把 warn 告警样本也当无效信号丢弃）
+        valid = (scores["gate_status"] != "block") & (scores["score"] >= strategy.min_score)
+        filtered = scores[valid]
+        if filtered.empty:
+            return pd.Series(dtype=float)
+
+        out = {}
+        for date, group in filtered.groupby(level="date"):
+            day_scores = group["score"]
+            n = len(day_scores)
+            if strategy.position_sizing in ("vol_target", "score_weighted"):
+                w = day_scores.clip(lower=0)
+                # vol_target 旧实现 day_scores/day_scores.sum() 未 clip 负分 → 长多组合出现
+                # 负权重（隐性做空，2026-11-11 修复）；全零分回退等权
+                weights = w / w.sum() if w.sum() > 0 else pd.Series(1.0 / n, index=day_scores.index)
+            else:
+                weights = pd.Series(1.0 / n, index=day_scores.index)
+
+            # 单股上限 + 重新归一化
+            weights = weights.clip(upper=strategy.max_position_pct)
+            weights = weights / weights.sum()
+            # 注：weights 的索引是 group 的 (symbol, date) MultiIndex 子集，items() 直接产出完整键
+            for idx_key, wv in weights.items():
+                out[idx_key] = float(wv)
+        s = pd.Series(out, name="weight")
+        s.index.names = ["symbol", "date"]
+        return s
+
     def compute_positions(
         self,
         scores: pd.DataFrame,
@@ -338,60 +375,35 @@ class StrategyComposer:
         根据评分计算目标仓位
         :return: DataFrame(symbol, date, target_weight, target_shares, stop_loss, take_profit)
         """
-        # 只保留未被拦截且分数达标的（warn/reduce 放行留痕，仅 block 拦截；
-        # 2026-11-10 修复：旧 == "pass" 条件把 warn 告警样本也当无效信号丢弃）
-        valid = (scores["gate_status"] != "block") & (scores["score"] >= strategy.min_score)
-        filtered = scores[valid].copy()
-
-        if filtered.empty:
+        weights = self.compute_target_weights(scores, strategy)
+        if weights.empty:
             return pd.DataFrame()
 
-        # 按日期分组，每日选股
         results = []
-        for date, group in filtered.groupby(level="date"):
-            symbols = group.index.get_level_values("symbol")
-            day_scores = group["score"]
-            
-            if strategy.position_sizing == "equal":
-                n = len(day_scores)
-                weights = pd.Series(1.0 / n, index=day_scores.index)
-            elif strategy.position_sizing == "vol_target":
-                # 简化：按评分加权
-                weights = day_scores / day_scores.sum()
-            elif strategy.position_sizing == "score_weighted":
-                weights = day_scores.clip(lower=0) / day_scores.clip(lower=0).sum()
-            else:
-                weights = pd.Series(1.0 / len(day_scores), index=day_scores.index)
+        for (sym, date), weight in weights.items():
+            # 宽表约定：index=date, columns=symbol（旧代码 (date, sym) in prices.index
+            # 对单层 DatetimeIndex 永远 False → 价格恒 NaN → 恒返回空仓，2026-11-10 修复）
+            if date not in prices.index or sym not in prices.columns:
+                continue
+            price = float(prices.loc[date, sym])
+            if np.isnan(price) or price <= 0:
+                continue
+            target_value = equity * weight
+            shares = int(target_value / price / 100) * 100  # 整手
+            if shares == 0:
+                continue
 
-            # 单股上限
-            weights = weights.clip(upper=strategy.max_position_pct)
-            weights = weights / weights.sum()  # 重新归一化
-
-            for sym in symbols:
-                # 宽表约定：index=date, columns=symbol（旧代码 (date, sym) in prices.index
-                # 对单层 DatetimeIndex 永远 False → 价格恒 NaN → 恒返回空仓，2026-11-10 修复）
-                if date not in prices.index or sym not in prices.columns:
-                    continue
-                price = float(prices.loc[date, sym])
-                if np.isnan(price) or price <= 0:
-                    continue
-                weight = weights.get((sym, date), 0)  # MultiIndex 必须用完整元组 key（部分索引会返回子 Series）
-                target_value = equity * weight
-                shares = int(target_value / price / 100) * 100  # 整手
-                if shares == 0:
-                    continue
-                
-                results.append({
-                    "date": date,
-                    "symbol": sym,
-                    "score": group.loc[(sym, date), "score"] if (sym, date) in scores.index else np.nan,
-                    "weight": weight,
-                    "target_shares": shares,
-                    "target_value": target_value,
-                    "stop_loss": price * (1 - strategy.stop_loss_pct),
-                    "take_profit": price * (1 + strategy.take_profit_pct),
-                    "price": price,
-                })
+            results.append({
+                "date": date,
+                "symbol": sym,
+                "score": scores.loc[(sym, date), "score"] if (sym, date) in scores.index else np.nan,
+                "weight": weight,
+                "target_shares": shares,
+                "target_value": target_value,
+                "stop_loss": price * (1 - strategy.stop_loss_pct),
+                "take_profit": price * (1 + strategy.take_profit_pct),
+                "price": price,
+            })
 
         return pd.DataFrame(results)
 

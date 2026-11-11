@@ -494,6 +494,8 @@ def run_alpha_validation(
     
     turnover_results = []
     dsr_results = []
+    seen_portfolios = {}   # sname → 权重签名（同路检出）
+    duplicate_pairs = []   # (sname, dup_of)
     
     for sname in strategy_names:
         if sname not in strategies:
@@ -506,38 +508,36 @@ def run_alpha_validation(
         # 计算评分
         scores = composer.compute_scores(factor_panel, strategy)
         
-        # 计算目标仓位（简化：每日等权）
-        # warn/reduce 放行留痕，仅 block 拦截（与 composer.compute_positions 同口径，2026-11-10）
-        valid_scores = scores[scores["gate_status"] != "block"]
-        if valid_scores.empty:
+        # 计算目标仓位：SSOT 走 composer.compute_target_weights（门控 + min_score + sizing + cap）。
+        # 2026-11-11 修复：旧内联循环每日等权 1/n 且不过滤 min_score —— 评分语义被整体丢弃，
+        # 同门策略（如 MACD 状态门）收益必然完全同路（ema_obv ≡ ema_cross 根因之一）。
+        weights = composer.compute_target_weights(scores, strategy)
+        if weights.empty:
             print(f"  无有效信号，跳过")
             continue
-        
-        # 构建目标权重面板
-        positions_dict = {}
-        for date in valid_scores.index.get_level_values("date").unique():
-            day_scores = valid_scores.xs(date, level="date")
-            symbols = day_scores.index.tolist()
-            n = len(symbols)
-            if n == 0:
-                continue
-            weight = 1.0 / n
-            for sym in symbols:
-                positions_dict[(sym, date)] = weight
-        
-        if not positions_dict:
-            continue
-        
-        positions_df = pd.Series(positions_dict).rename("weight")
+        positions_df = weights.rename("weight").to_frame()
         positions_df.index.names = ["symbol", "date"]
         
-        # 换手调整收益
-        ta = compute_turnover_adjusted(sname, positions_df.to_frame(), returns_panel, cost_per_turn)
+        # 同路检出：门控+权重逐日完全一致的策略对（诚实标注，不做静默去重）
+        sig = positions_df["weight"].round(8)
+        dup_of = None
+        for pname, psig in seen_portfolios.items():
+            if len(sig) == len(psig) and sig.index.equals(psig.index) and np.allclose(sig.values, psig.values):
+                dup_of = pname
+                break
+        if dup_of is None:
+            seen_portfolios[sname] = sig
+        
+        # 换手调整收益（positions_df 已是 DataFrame，weight 列）
+        ta = compute_turnover_adjusted(sname, positions_df, returns_panel, cost_per_turn)
         turnover_results.append(ta)
-        print(f"  毛收益: {ta.gross_annual_return:.2%}, 净收益: {ta.net_annual_return:.2%}, 换手: {ta.annual_turnover:.1%}")
+        dup_note = f" ⚠️ 与 {dup_of} 组合逐日完全同路" if dup_of else ""
+        print(f"  毛收益: {ta.gross_annual_return:.2%}, 净收益: {ta.net_annual_return:.2%}, 换手: {ta.annual_turnover:.1%}{dup_note}")
+        if dup_of:
+            duplicate_pairs.append((sname, dup_of))
         
         # DSR
-        daily_portfolio_ret = (positions_df.unstack("symbol").shift(1) * returns_panel.unstack("symbol")).sum(axis=1).dropna()
+        daily_portfolio_ret = (positions_df["weight"].unstack("symbol").shift(1) * returns_panel.unstack("symbol")).sum(axis=1).dropna()
         dsr = compute_dsr(sname, daily_portfolio_ret, n_trials=len(strategy_names))
         dsr_results.append(dsr)
         print(f"  夏普: {dsr.sharpe:.3f}, DSR: {dsr.dsr:.3f}, P(运气): {dsr.prob_sharpe_luck:.3f}")
@@ -550,6 +550,7 @@ def run_alpha_validation(
         "因子正交性": "良好" if ortho.max_abs_corr < 0.7 else "需关注",
         "有效因子数": f"{ortho.n_factors_eff:.0f}/{len(factor_names)}",
         "建议": "关注 ICIR>1 且 DSR>0 的因子/策略组合" if any(x.icir > 1 for x in ic_stats) else "因子预测力不足，需增强或替换",
+        "同路策略对": "、".join(f"{a} ≡ {b}" for a, b in duplicate_pairs) if duplicate_pairs else "无",
     }
     
     report = AlphaValidationReport(

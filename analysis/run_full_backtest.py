@@ -39,9 +39,8 @@ def load_stock_data(symbols: List[str], start_date: str = "2023-01-01") -> Dict[
     if os.path.exists(fund_path):
         fund_panel = pd.read_parquet(fund_path)
         fund_panel["symbol"] = fund_panel["symbol"].astype(str).str.zfill(6)
-    fund_cols = [c for c in ["eps_basic", "book_value_per_share", "operating_cash_flow_per_share",
-                             "revenue_yoy", "ROE_TTM", "net_profit_margin", "revenue_per_share"]
-                 if fund_panel is not None and c in fund_panel.columns]
+    fund_cols = ([c for c in fund_panel.columns if c not in ("symbol", "report_date")]
+                 if fund_panel is not None else [])  # 全指标列 join（白名单遗漏 current/quick/D2E/yoy 曾致 5 因子面板恒 NaN）
     
     for sym in symbols:
         csv_path = os.path.join(data_dir, f"{sym}.csv")
@@ -170,27 +169,14 @@ def run_full_backtest(
             scores = composer.compute_scores(factor_panel, strategy)
             all_scores[sname] = scores
             
-            # 生成目标仓位（简化：每日等权，通过门控+分数阈值）
-            valid = (scores["gate_status"] == "pass") & (scores["score"] >= strategy.min_score)
-            filtered = scores[valid]
-            
-            if not filtered.empty:
-                positions_dict = {}
-                for date in filtered.index.get_level_values("date").unique():
-                    day_scores = filtered.xs(date, level="date")
-                    symbols = day_scores.index.tolist()
-                    n = len(symbols)
-                    if n == 0:
-                        continue
-                    weight = strategy.max_position_pct / n if strategy.position_sizing == "equal" else 1.0 / n
-                    for sym in symbols:
-                        positions_dict[(sym, date)] = min(weight, strategy.max_position_pct)
-                
-                if positions_dict:
-                    pos_df = pd.Series(positions_dict, name="weight")
-                    pos_df.index.names = ["symbol", "date"]
-                    all_positions[sname] = pos_df.to_frame()
-                    print(f"     生成仓位记录: {len(positions_dict)} 条")
+            # 生成目标仓位：SSOT 走 composer.compute_target_weights（门控+min_score+sizing+cap）
+            # 2026-11-11：旧内联块无视 sizing 语义（equal 恒 max_position_pct/n 且无 cap 归一）
+            weights = composer.compute_target_weights(scores, strategy)
+            if not weights.empty:
+                weights = weights.rename("weight")
+                weights.index.names = ["symbol", "date"]
+                all_positions[sname] = weights.to_frame()
+                print(f"     生成仓位记录: {len(weights)} 条")
             else:
                 print(f"     无有效信号")
                 

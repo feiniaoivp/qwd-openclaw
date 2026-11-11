@@ -693,6 +693,12 @@ class FactorEngine:
             "first_close": float(df.iloc[0].get("close", 0)) if len(df) > 0 else 0,
             "last_close": float(df.iloc[-1].get("close", 0)) if len(df) > 0 else 0,
         }
+        # 基本面/扩展列尾值纳入指纹（2026-11-11）：OHLCV 不变但基本面列 refetch 变值时，
+        # 旧指纹不变 → 全 NaN 旧缓存静默服役（11 个 pass_through 因子 0% 覆盖事故的一环）
+        _ohlcv = ("open", "high", "low", "close", "volume", "amount", "turn")
+        for c in [c for c in df.columns if c not in _ohlcv][:16]:
+            col = pd.to_numeric(df[c], errors="coerce").dropna()
+            info[f"fv_{c}"] = float(col.iloc[-1]) if len(col) else None
         return hashlib.md5(json.dumps(info, sort_keys=True).encode()).hexdigest()[:12]
 
     def _cache_path(self, factor_name: str) -> str:
@@ -705,7 +711,12 @@ class FactorEngine:
         if fn is None:
             raise ValueError(f"未找到计算函数: {factor.compute_fn}")
         try:
-            result = fn(df, **factor.params)
+            params = dict(factor.params)
+            if factor.compute_fn == "pass_through":
+                # 2026-11-11 修复：registry 11 个基本面因子 params={} → column 空 → 恒 NaN
+                # （数据已在 df 中，PE/PB/PCF/PS 可证）。pass_through 约定同名透传，列名缺省 = 因子名。
+                params.setdefault("column", factor.name)
+            result = fn(df, **params)
             result.name = factor.name
             return result
         except Exception as e:

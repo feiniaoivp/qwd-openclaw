@@ -193,6 +193,66 @@ def _cum_to_quarterly(cum: pd.Series) -> pd.Series:
     return out
 
 
+def _ttm_from_cum(cum: pd.Series) -> pd.Series:
+    """累计值 → 单季差分 → TTM（严格 4 期滚动和，缺季 NaN）"""
+    quarterly = _cum_to_quarterly(cum)
+    return quarterly.rolling(4, min_periods=4).sum()
+
+
+def build_fundamental_derived(combined: pd.DataFrame) -> pd.DataFrame:
+    """从新浪三大报表原始量派生质量/杠杆/成长指标（TTM 纪律，与 rps 同款）。
+
+    派生: net_profit_margin / revenue_yoy / net_profit_yoy / debt_to_equity / ROE_TTM
+    背景: 同花顺摘要这几列历史期近乎全空（样例恒 0.0，覆盖 0.1%~12%），11 个 pass_through
+    因子面板 0% 覆盖事故的数据层根因；新浪报表数值型全历史可靠（11-10 已验证）。
+    口径: 归母净利/归母权益；debt_to_equity = 负债合计/归母权益（因子名忠实口径，
+    与同花顺「资产负债率=负债/资产」单调等价，IC 方向不受影响）；ROE_DILUTED 与
+    ROE_TTM 近重复不派生（正交性门会踢，有意留白）。
+    """
+    sym = combined["symbol"].iloc[0]
+
+    def _series(metric: str) -> pd.Series:
+        s = (combined[combined["metric"] == metric]
+             .drop_duplicates("report_date").set_index("report_date")["value"].sort_index())
+        return pd.to_numeric(s, errors="coerce")
+
+    ttm_rev = _ttm_from_cum(_series("total_revenue"))
+    ttm_np = _ttm_from_cum(_series("net_profit"))
+    eq = _series("total_equity")
+    liab = _series("total_liabilities")
+
+    derived = {}
+    if ttm_rev.notna().any() and ttm_np.notna().any():
+        m = pd.DataFrame({"ttm_rev": ttm_rev, "ttm_np": ttm_np})
+        derived["net_profit_margin"] = m["ttm_np"] / m["ttm_rev"].replace(0, np.nan)
+        derived["revenue_yoy"] = m["ttm_rev"] / m["ttm_rev"].shift(4) - 1
+        derived["net_profit_yoy"] = m["ttm_np"] / m["ttm_np"].shift(4) - 1
+    if eq.notna().any():
+        if liab.notna().any():
+            derived["debt_to_equity"] = liab / eq.replace(0, np.nan)
+        if ttm_np.notna().any():
+            derived["ROE_TTM"] = ttm_np / eq.replace(0, np.nan)
+    if not derived:
+        return pd.DataFrame()
+
+    frames = []
+    for metric, s in derived.items():
+        s = s.replace([np.inf, -np.inf], np.nan).dropna()
+        if s.empty:
+            continue
+        frames.append(pd.DataFrame({
+            "symbol": sym,
+            "report_date": s.index,
+            "report_type": "derived",
+            "metric": metric,
+            "value": s.values,
+            "fetched_at": datetime.now().isoformat(),
+        }))
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames, ignore_index=True)
+
+
 def build_revenue_per_share(combined: pd.DataFrame) -> pd.DataFrame:
     """从 total_revenue(累计) + total_shares 合成 TTM 口径 revenue_per_share
 
@@ -268,7 +328,8 @@ def fetch_all_symbols(symbols: List[str] = None, delay: float = 0.5) -> Dict[str
     
     for i, sym in enumerate(symbols, 1):
         print(f"\n[{i}/{total}] 处理 {sym} ({WATCHLIST.get(sym, '')})")
-        # 三源：同花顺摘要（现有 10 指标）+ 新浪利润表（total_revenue）+ 新浪负债表（total_shares）
+        # 五源：同花顺摘要（现有 10 指标）+ 新浪利润表（total_revenue/net_profit）
+        #      + 新浪负债表（total_shares/total_equity/total_liabilities）→ 派生 6 指标（2026-11-11）
         parts = []
         df_ths = fetch_single_symbol(sym)
         if df_ths is not None and not df_ths.empty:
@@ -276,9 +337,21 @@ def fetch_all_symbols(symbols: List[str] = None, delay: float = 0.5) -> Dict[str
         df_rev = _fetch_sina_report(sym, "利润表", "营业收入", "total_revenue")
         if df_rev is not None:
             parts.append(df_rev)
+        df_np = _fetch_sina_report(sym, "利润表", ["归属于母公司的净利润", "净利润"], "net_profit")
+        if df_np is not None:
+            parts.append(df_np)
         df_sh = _fetch_sina_report(sym, "资产负债表", ["实收资本净额", "实收资本(或股本)", "股本"], "total_shares")
         if df_sh is not None:
             parts.append(df_sh)
+        df_eq = _fetch_sina_report(sym, "资产负债表",
+                                   ["归属于母公司的股东权益合计", "归属于母公司股东权益合计",
+                                    "归属于母公司股东的权益", "股东权益", "所有者权益(或股东权益)合计"],
+                                   "total_equity")
+        if df_eq is not None:
+            parts.append(df_eq)
+        df_liab = _fetch_sina_report(sym, "资产负债表", ["负债合计"], "total_liabilities")
+        if df_liab is not None:
+            parts.append(df_liab)
 
         if parts:
             combined = pd.concat(parts, ignore_index=True)
@@ -288,6 +361,12 @@ def fetch_all_symbols(symbols: List[str] = None, delay: float = 0.5) -> Dict[str
                 print(f"  ✅ {sym} revenue_per_share(TTM): {len(rps)} 期")
             else:
                 print(f"  ⚠️ {sym}: revenue_per_share 无法合成（缺营收或股本）")
+            derived = build_fundamental_derived(combined)
+            if not derived.empty:
+                combined = pd.concat([combined, derived], ignore_index=True)
+                print(f"  ✅ {sym} 派生指标: {derived['metric'].nunique()} 个 / {len(derived)} 期")
+            else:
+                print(f"  ⚠️ {sym}: 派生指标无法合成（缺净利/权益/负债）")
             save_fundamental_data(sym, combined)
             results[sym] = len(combined)
         else:
@@ -336,6 +415,15 @@ def build_fundamental_panel(symbols: List[str] = None) -> pd.DataFrame:
     return panel
 
 
+def _save_panel_with_backup(panel: pd.DataFrame, out_path: str):
+    """面板落盘（写前 .bak，备份纪律）"""
+    import shutil
+    if os.path.exists(out_path):
+        shutil.copy2(out_path, out_path + ".bak")
+    panel.to_parquet(out_path, compression="snappy")
+    print(f"✅ 面板已保存: {out_path} ({panel.shape})")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--symbols", nargs="+", help="指定股票代码列表")
@@ -349,8 +437,7 @@ def main():
         panel = build_fundamental_panel(symbols)
         if not panel.empty:
             out_path = os.path.join(FUNDAMENTAL_DIR, "fundamental_panel.parquet")
-            panel.to_parquet(out_path, compression="snappy")
-            print(f"✅ 面板已保存: {out_path} ({panel.shape})")
+            _save_panel_with_backup(panel, out_path)
         else:
             print("⚠️ 无数据可构建面板")
         return
