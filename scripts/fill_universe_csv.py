@@ -63,55 +63,85 @@ def main():
     progress = json.load(open(PROGRESS_PATH, encoding="utf-8")) if os.path.exists(PROGRESS_PATH) else {"done": {}, "failed": {}}
     done, failed = progress.get("done", {}), progress.get("failed", {})
 
-    todo = []
+    # 2026-11-11 修复：过期既有文件改「增量追加」而非整档重建。
+    # 事故背景：11-09 21:2x 本脚本把 1763 只 CSV（含 36 关注池 2020+ 全历史）整档截成 400 天窗口，
+    # 且 os.replace 轮换会覆盖 .pre-universe.bak（唯一全历史副本）→ 备份只增不毁。
+    todo = []  # (sym, mode): rebuild=新建/存根重建 | append=既有文件增量追加
     for sym in symbols:
         fp = os.path.join(STOCK_DIR, f"{sym}.csv")
+        mode = "rebuild"
         if os.path.exists(fp):
             try:
                 df = pd.read_csv(fp)
                 last = str(df["date"].iloc[-1])[:10] if "date" in df.columns and len(df) else ""
                 if last >= as_of and len(df) > 100:
                     continue
+                if last and len(df) > 100:
+                    mode = "append"
             except Exception:
                 pass
-        todo.append(sym)
-    print(f"待补拉: {len(todo)}/{len(symbols)} 只 (as_of={as_of})")
+        todo.append((sym, mode))
+    n_app = sum(1 for _, m in todo if m == "append")
+    print(f"待补拉: {len(todo)}/{len(symbols)} 只 (as_of={as_of}；追加 {n_app} / 重建 {len(todo) - n_app})")
 
     _bs_login_with_retry()
     os.makedirs(STOCK_DIR, exist_ok=True)
     t0 = time.time()
     n_since_login = 0
 
-    def _pull(sym, bs):
+    def _pull(sym, bs, start):
         bs_code = ("sh." if sym.startswith("6") else "sz.") + sym
         rs = bs.query_history_k_data_plus(
             bs_code, "date,open,high,low,close,volume,amount,turn",
-            start_date=START, end_date=as_of, frequency="d", adjustflag="2")
+            start_date=start, end_date=as_of, frequency="d", adjustflag="2")
         rows = []
         while rs.error_code == "0" and rs.next():
             rows.append(rs.get_row_data())
         return rows
 
     try:
-        for i, sym in enumerate(todo):
+        for i, (sym, mode) in enumerate(todo):
             try:
-                rows = _pull(sym, bs)
-                if len(rows) < 100:  # 疑似限流: 等 2s 重试一次
+                fp = os.path.join(STOCK_DIR, f"{sym}.csv")
+                exist_df = None
+                if mode == "append":
+                    exist_df = pd.read_csv(fp)
+                    exist_df.columns = [str(c).lower().strip() for c in exist_df.columns]
+                    _last = str(exist_df["date"].iloc[-1])[:10]
+                    start = (pd.Timestamp(_last) + pd.Timedelta(days=1)).strftime("%Y-%m-%d")
+                else:
+                    start = START
+                rows = _pull(sym, bs, start)
+                if mode == "rebuild" and len(rows) < 100:  # 疑似限流: 等 2s 重试一次（仅重建模式；追加模式预期行数少）
                     time.sleep(2)
-                    rows = _pull(sym, bs)
-                if len(rows) < 100:
+                    rows = _pull(sym, bs, start)
+                if mode == "rebuild" and len(rows) < 100:
                     failed[sym] = f"rows={len(rows)}"
                 else:
                     df = pd.DataFrame(rows, columns=["date", "open", "high", "low", "close", "volume", "amount", "turn"])
                     for c in df.columns[1:]:
                         df[c] = pd.to_numeric(df[c], errors="coerce")
                     df = df.dropna(subset=["close"])
-                    if len(df) >= 100:
-                        fp = os.path.join(STOCK_DIR, f"{sym}.csv")
+                    if mode == "append":
+                        if df.empty:  # 区间无新行情（停牌等）：零写入记成功
+                            done[sym] = {"rows": 0, "mode": "append-noop", "at": datetime.now().isoformat()}
+                            failed.pop(sym, None)
+                        else:
+                            df = df[[c for c in exist_df.columns if c in df.columns]]  # 列对齐既有文件 schema（6/8/9 列互不污染）
+                            merged = pd.concat([exist_df, df], ignore_index=True)
+                            merged = merged.drop_duplicates(subset=["date"], keep="last").sort_values("date")
+                            tmp = fp + ".tmp"
+                            merged.to_csv(tmp, index=False)
+                            os.replace(tmp, fp)
+                            done[sym] = {"rows": len(df), "mode": "append", "total": len(merged), "at": datetime.now().isoformat()}
+                            failed.pop(sym, None)
+                    elif len(df) >= 100:
                         if os.path.exists(fp):
-                            os.replace(fp, fp + ".pre-universe.bak")
+                            bak = fp + ".pre-universe.bak"
+                            if not os.path.exists(bak):  # 备份只增不毁：绝不覆盖既有全历史备份
+                                os.replace(fp, bak)
                         df.to_csv(fp, index=False)
-                        done[sym] = {"rows": len(df), "at": datetime.now().isoformat()}
+                        done[sym] = {"rows": len(df), "mode": "rebuild", "at": datetime.now().isoformat()}
                         failed.pop(sym, None)
                     else:
                         failed[sym] = f"有效行不足 {len(df)}"
