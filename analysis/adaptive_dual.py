@@ -628,10 +628,12 @@ def signal_ema_obv(df, params=None):
     obv_cross_down = float(obv.iloc[-2]) >= float(obv_ema20.iloc[-2]) and obv_now < obv_ema
     if price > e20 and obv_cross_up:
         action = "🟢买入"; reason = f"EMA20上方(¥{e20:.2f}) + OBV上穿 止损¥{_compute_atr_stop(price, atr_val):.2f}"
-    elif price < e20 or obv_cross_down:
+    elif (price < e20 and obv_now <= obv_ema) or obv_cross_down:
+        # 2026-11-11 折中修正：跌破EMA20 且 OBV 不强(≤EMA)，或 OBV 明确下穿
+        # 原 OR 逻辑过激进(单边跌破即卖)，导致误杀；现与买入对称性更强
         reasons = []
-        if price < e20:
-            reasons.append(f"跌破EMA20(¥{e20:.2f})")
+        if price < e20 and obv_now <= obv_ema:
+            reasons.append(f"跌破EMA20(¥{e20:.2f})且OBV不强")
         if obv_cross_down:
             reasons.append("OBV下穿")
         action = "🔴卖出"; reason = " | ".join(reasons)
@@ -779,6 +781,40 @@ def signal_ema_adaptive_vol(df, params=None):
             "fib_tp": {"targets": compute_fib_targets(df)}}
 
 
+# ── wrappers for new strategies (turtle, ml_rf) ──
+def signal_turtle_donchian(df, params=None):
+    """Wrapper: 复用 turtle_strategy.strategy_turtle_donchian，转为 signal 格式"""
+    try:
+        from analysis.turtle_strategy import strategy_turtle_donchian
+        n_entry = int(params.get("n_entry", 20)) if params else 20
+        n_exit = int(params.get("n_exit", 10)) if params else 10
+        acts = strategy_turtle_donchian(df, n_entry=n_entry, n_exit=n_exit)
+        if not acts:
+            return {"action": "持有", "reason": "海龟: 无信号", "price": float(df.iloc[-1]["close"])}
+        last = acts[-1]
+        action = "🟢买入" if last["type"] == "BUY" else "🔴卖出"
+        return {"action": action, "reason": last["reason"], "price": last["price"],
+                "indicators": f"唐奇安{n_entry}/{n_exit}",
+                "atr": None, "atr_stop": None, "fib_tp": {"targets": {}}}
+    except Exception as e:
+        return {"action": "持有", "reason": f"海龟信号异常: {e}", "price": float(df.iloc[-1]["close"])}
+
+
+def signal_ml_rf(df, params=None):
+    """Wrapper: 复用 ml_strategy.strategy_ml_rf，转为 signal 格式"""
+    try:
+        from analysis.ml_strategy import strategy_ml_rf
+        acts = strategy_ml_rf(df, feature_set=params.get("feature_set") if params else None)
+        if not acts:
+            return {"action": "持有", "reason": "ML-RF: 无信号", "price": float(df.iloc[-1]["close"])}
+        last = acts[-1]
+        action = "🟢买入" if last["type"] == "BUY" else "🔴卖出"
+        return {"action": action, "reason": last["reason"], "price": last["price"],
+                "indicators": f"ML-RF prob", "atr": None, "atr_stop": None, "fib_tp": {"targets": {}}}
+    except Exception as e:
+        return {"action": "持有", "reason": f"ML-RF信号异常: {e}", "price": float(df.iloc[-1]["close"])}
+
+
 SIGNAL_FUNCS = {
     "bollinger": signal_bollinger_atr,
     "kdj_cci": signal_kdj_cci,
@@ -786,6 +822,8 @@ SIGNAL_FUNCS = {
     "ema_cross": signal_ema_cross,
     "macd": signal_macd,
     "ema_adaptive_vol": signal_ema_adaptive_vol,
+    "turtle": signal_turtle_donchian,
+    "ml_rf": signal_ml_rf,
 }
 
 

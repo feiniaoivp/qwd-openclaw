@@ -195,17 +195,16 @@ _DC_HEADERS = {
 _DC_TTL = 600.0  # 当日快照，10 分钟进程内缓存
 _dc_cache: Dict[str, Any] = {"ts": 0.0, "rows": {}}
 
-# 🔴 push2 熔断器（2026-10-09）：fflow 双路每票要等满 _MAX_TOTAL_TIME 才失败，
+# 🔴 push2 熔断器（2026-10-09，2026-11-11 优化）：fflow 双路每票要等满 _MAX_TOTAL_TIME 才失败，
 #   35 只全池串行 ≈ 35 分钟，会直接撑爆 cron（close_scan 720s / 收盘推送 900s）。
 #   故：连续 _FF_CIRCUIT_TRIP 次双路全挂后，在 _FF_CIRCUIT_COOLDOWN 秒内**跳过
 #   push2 直接走 datacenter 兜底**；冷却结束后放行一只探测（半开），成功即复位。
 #   注意：熔断只是"不打死磕一个已被掐断的端点"，不是把它当健康——探测照做，
 #   且降级来源在返回里显式标注（_degraded / _source），禁止伪装成主源。
-#   trip=2：单次双路全挂耗时 ≈ 2×_MAX_TOTAL_TIME(15s)=30s+，第 3 次继续死磕会
-#   白烧 30s；收盘推送 job 预算 900s，把浪费压在 ~60s 内才可能长期挂在流水线里。
-#   cooldown=900s：覆盖一整轮收盘扫描；到期放行一只真实探测（半开）判恢复。
-_FF_CIRCUIT_TRIP = 2
-_FF_CIRCUIT_COOLDOWN = 900.0
+#   2026-11-11 优化：trip=2→5（防单次抖动误触发），cooldown=900s→300s（5分钟，允许更快自愈）。
+#   原 trip=2 导致仅 2 只连续失败即熔断 15 分钟，实际 push2 往往只是暂时抖动。
+_FF_CIRCUIT_TRIP = 5
+_FF_CIRCUIT_COOLDOWN = 300.0
 _ff_circuit: Dict[str, Any] = {"fails": 0, "open_until": 0.0}
 
 

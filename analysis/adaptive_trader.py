@@ -129,6 +129,8 @@ STRATEGY_LABELS = {
     "macd": "📉 纯MACD",
     "bull_trend": "🐂 牛市趋势跟踪",
     "ema_adaptive_vol": "⚡ EMA自适应量价",
+    "turtle": "🐢 海龟突破(唐奇安20/10)",
+    "ml_rf": "🤖 ML-RF方向分类",
 }
 
 DEFAULT_STRATEGY = "ema_cross"

@@ -300,11 +300,14 @@ def main(stocks=None, write_map=False, arbitrate=False, pending_out=None):
         # 排序选最优稳定策略
         scored.sort(key=lambda x: x["score"], reverse=True)
         best = scored[0]
-        # 策略名转映射key
+        # 策略名转映射key（2026-11-11 补全新策略映射）
         key_map = {
             "布林带+ATR": "bollinger", "KDJ+CCI": "kdj_cci", "EMA+OBV": "ema_obv",
             "EMA12/26金叉(基准C)": "ema_cross", "纯MACD(基准B)": "macd",
             "牛市趋势跟踪": "bull_trend",
+            "波动自适应EMA": "ema_adaptive_vol",
+            "海龟突破(唐奇安20/10)": "turtle",
+            "ML-RF方向分类": "ml_rf",
         }
         # 安全断言：最优策略必须能映射到真实 key。
         # 否则静默 fallback 会把"从未被选中的策略"写进 map（2026-09-19 修复）。

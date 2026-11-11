@@ -54,7 +54,10 @@
       "high_vol": 5
     },
     "regime_top1_floor": {
-      "sideways": 90.0
+      "sideways": {
+        "top1": 90.0,
+        "top5_mean": 80.0
+      }
     },
     "regime_dim_weights": {
       "trend_up": {},

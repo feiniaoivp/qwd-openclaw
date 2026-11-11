@@ -15,7 +15,7 @@ import os
 import sys
 import json
 from dataclasses import dataclass, field, asdict
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
 
 WORKSPACE = os.getenv("WORKSPACE", "/Users/duguke/.openclaw/workspace")
 CONFIG_PATH = os.path.join(WORKSPACE, "data", "universe_filter_config.json")
@@ -102,8 +102,10 @@ class L3RegimeOverrideConfig:
     # advice1_sideways_floor.json: sideways 段 Top-1≥90 日 top15 超额 +0.1bp
     # vs 80-90 带 -21.0bp CI[-41.6,-0.5]）。Top-1 < 阈值 → 当日候选归零
     # （震荡市仅个别票走出独立趋势时才出手）。0 = 不启用。
-    regime_top1_floor: Dict[str, float] = field(default_factory=lambda: {
-        "sideways": 90.0,
+    # 2026-11-11 升级：支持 dict 格式 {top1: float, top5_mean: float} 双条件地板，
+    # 防「孤胆英雄」误导；兼容旧标量写法（float）。
+    regime_top1_floor: Dict[str, Any] = field(default_factory=lambda: {
+        "sideways": {"top1": 90.0, "top5_mean": 80.0},
     })
     # regime → 维度权重覆盖（空 dict = 用全局 dim_weights；改变排序）
     regime_dim_weights: Dict[str, Dict[str, float]] = field(default_factory=lambda: {

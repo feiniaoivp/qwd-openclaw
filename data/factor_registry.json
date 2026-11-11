@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated_at": "2026-11-08T20:53:22.285111",
+  "updated_at": "2026-11-09T05:45:56.639661",
   "factors": [
     {
       "name": "EMA_12",
@@ -627,13 +627,14 @@
     },
     {
       "name": "PE_TTM",
-      "category": "fundamental",
+      "category": "valuation",
       "data_deps": [
-        "pe_ttm"
+        "close",
+        "eps_basic"
       ],
       "lookback": 1,
       "freq": "D",
-      "compute_fn": "pass_through",
+      "compute_fn": "valuation_pe_ttm",
       "params": {},
       "version": "1.0.0",
       "description": "滚动市盈率（TTM）",
@@ -643,18 +644,19 @@
       ],
       "neutralize": false,
       "universe": "all",
-      "created_at": "2026-11-08T19:25:16.304276",
-      "updated_at": "2026-11-08T19:25:16.304278"
+      "created_at": "2026-11-09T05:45:56.633188",
+      "updated_at": "2026-11-09T05:45:56.633198"
     },
     {
       "name": "PB_MRQ",
-      "category": "fundamental",
+      "category": "valuation",
       "data_deps": [
-        "pb_mrq"
+        "close",
+        "book_value_per_share"
       ],
       "lookback": 1,
       "freq": "D",
-      "compute_fn": "pass_through",
+      "compute_fn": "valuation_pb_mrq",
       "params": {},
       "version": "1.0.0",
       "description": "最新市净率",
@@ -664,8 +666,8 @@
       ],
       "neutralize": false,
       "universe": "all",
-      "created_at": "2026-11-08T19:25:16.304280",
-      "updated_at": "2026-11-08T19:25:16.304281"
+      "created_at": "2026-11-09T05:45:56.639598",
+      "updated_at": "2026-11-09T05:45:56.639613"
     },
     {
       "name": "ROE_TTM",
