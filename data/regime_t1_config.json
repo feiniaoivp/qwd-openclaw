@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-11",
+  "regime": "sideways",
+  "regime_probability": 0.4252577319587629,
+  "regime_duration": 1,
+  "factor_weights": {
+    "BB_pos_20": 0.3,
+    "RSI_14": -0.25,
+    "KDJ_K": 0.2,
+    "CCI_20": 0.15,
+    "volume_ratio_5_20": 0.1,
+    "MACD_hist": 0.0
+  },
+  "max_position_pct": 0.08,
+  "position_sizing": "vol_target",
+  "stop_loss_pct": 0.03,
+  "take_profit_pct": 0.08,
+  "rebalance_freq": "D",
+  "gate_adjustments": {
+    "bb_squeeze": {
+      "threshold": 0.1,
+      "action": "warn"
+    },
+    "rsi_range": {
+      "low": 30.0,
+      "high": 70.0,
+      "action": "pass"
+    }
+  },
+  "regime_history": {
+    "2026-10-15 00:00:00": "trend_down",
+    "2026-10-16 00:00:00": "trend_down",
+    "2026-10-19 00:00:00": "trend_down",
+    "2026-10-20 00:00:00": "trend_down",
+    "2026-10-21 00:00:00": "trend_down",
+    "2026-10-22 00:00:00": "trend_down",
+    "2026-10-23 00:00:00": "trend_down",
+    "2026-10-26 00:00:00": "trend_down",
+    "2026-10-27 00:00:00": "trend_down",
+    "2026-10-28 00:00:00": "trend_down",
+    "2026-10-29 00:00:00": "trend_down",
+    "2026-10-30 00:00:00": "trend_down",
+    "2026-11-02 00:00:00": "trend_down",
+    "2026-11-03 00:00:00": "trend_down",
+    "2026-11-04 00:00:00": "trend_down",
+    "2026-11-05 00:00:00": "trend_down",
+    "2026-11-06 00:00:00": "sideways",
+    "2026-11-09 00:00:00": "sideways",
+    "2026-11-10 00:00:00": "sideways",
+    "2026-11-11 00:00:00": "sideways"
+  },
+  "signal_date": "2026-11-11",
+  "generated_at": "2026-11-11T15:40:49.603625",
+  "n_symbols": 27
+}
