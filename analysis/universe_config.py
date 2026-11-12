@@ -115,6 +115,17 @@ class L3RegimeOverrideConfig:
     # 2026-11-10 归因: chip 边际全负/零（trend_up -0.2 / sideways -4.4 / trend_down -2.9
     # / high_vol +2.2 但仅 31 日）→ 按证据全部移出打分，筹码数据保留在 L4 推送/快照展示。
     chip_enabled_regimes: List[str] = field(default_factory=list)
+    # K30 尾部衰减观测（2026-11-12 分布审计立项，阈值来源
+    # analysis/distribution_audit_report.md: trend_up 349 日 ΔS=Top1-Top30 分带显示
+    # P75 以上尾部 median ex5 掉头 -0.0067 vs P75 以下 -0.0037，P90 恶化至 -0.0095）。
+    # 当前仅观测记录（tail_decay_watch=True 时在 candidates_daily.json 留 WARNING），
+    # 不改 TOP_K 行为——待实盘 2 周与审计一致后再启用 contract_k15。
+    tail_decay: Dict[str, Any] = field(default_factory=lambda: {
+        "enabled": True,
+        "threshold": 12.78,       # ΔS = Top1_score - Top30_score，P75 分位
+        "contract_k": 15,         # 触发时建议收缩到的 K（观测期不生效）
+        "observe_only": True,     # True=只记录告警不改行为；False=联动收缩 TOP_K
+    })
 
 
 @dataclass

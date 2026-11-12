@@ -351,7 +351,7 @@ def score_distribution_stats(scored: list) -> dict:
         return {}
     a = np.asarray(scores, dtype=float)
     p10, p25, p50, p75, p90 = np.percentile(a, [10, 25, 50, 75, 90])
-    return {
+    out = {
         "count": int(a.size),
         "min": float(a.min()), "max": float(a.max()),
         "p10": float(p10), "p25": float(p25), "p50": float(p50),
@@ -359,6 +359,12 @@ def score_distribution_stats(scored: list) -> dict:
         "top1_score": float(a[0]),
         "top5_mean": float(np.mean(a[:5])),
     }
+    # ΔS = Top1 - Top30 分值差（2026-11-12 分布审计立项）:
+    # analysis/distribution_audit_report.md 实证 trend_up 段 ΔS>12.78（P75）时
+    # K16~30 尾部 median ex5 掉头恶化（-0.0067 vs -0.0037）。纯观测字段。
+    if a.size >= 30:
+        out["top1_top30_gap"] = float(a[0] - a[29])
+    return out
 
 
 def main():
@@ -486,12 +492,29 @@ def main():
             break
 
     today = datetime.now().strftime("%Y-%m-%d")
+
+    # K30 尾部衰减观测（2026-11-12，阈值 SSOT: l3_regime.tail_decay）:
+    # observe_only=True 时仅记录告警不改行为——待实盘 2 周验证与审计一致后再启用收缩。
+    tail_decay_note = None
+    _td = getattr(_ov, "tail_decay", None) or {}
+    if _td.get("enabled") and _rname == "trend_up":
+        _gap = (score_distribution_stats(scored) or {}).get("top1_top30_gap")
+        if _gap is not None and _gap > float(_td.get("threshold", 12.78)):
+            tail_decay_note = (f"WARNING: Tail_Decay ΔS={_gap:.2f} > {_td.get('threshold')} "
+                               f"（分布陡峭，K16~30 尾部 median ex5 审计为负）")
+            if _td.get("observe_only"):
+                tail_decay_note += " [observe_only: 仅记录不改行为]"
+            else:
+                tail_decay_note += f" → 建议收缩 TOP_K→{_td.get('contract_k', 15)}（未实装）"
+            print(f"⚠️ {tail_decay_note}")
+
     out = {
         "built_at": datetime.now().isoformat(), "as_of": today,
         "mode": mode,
         "regime": regime, "n_scored": len(scored),
         "score_distribution": score_distribution_stats(scored),
         "floor_gate": scored_gate_note,
+        "tail_decay": tail_decay_note,
         "active_dims_note": "valuation 缺席重分配；chip 数据已接入但按归因证据不参与打分（chip边际全负），筹码指标在 chip_display 字段/L4 推送展示；REGIME_BOOST 乘法缩放已移除（死配置）",
         "candidates": candidates,
         "all_scores": scored[:80],

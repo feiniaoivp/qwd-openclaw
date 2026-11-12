@@ -65,7 +65,13 @@
       "trend_down": {},
       "high_vol": {}
     },
-    "chip_enabled_regimes": []
+    "chip_enabled_regimes": [],
+    "tail_decay": {
+      "enabled": true,
+      "threshold": 12.78,
+      "contract_k": 15,
+      "observe_only": true
+    }
   },
   "seed": {
     "core_protected": true,
@@ -78,5 +84,5 @@
     "history_window": 20
   },
   "version": "1.0.0",
-  "updated_at": "2026-11-10b"
+  "updated_at": "2026-11-12T12:20:00+08:00"
 }
