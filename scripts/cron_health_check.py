@@ -78,8 +78,10 @@ PRODUCT_ARTIFACT_CHECKS = [
     # (显示名, 相对 WORKSPACE 路径模板, 生效门时 HH:MM) — 路径带 {today} 日期戳
     ("盘前深度分析报告", "analysis/daily/{today}_premarket_report.md", "06:45"),
     ("收盘双策略日报", "analysis/daily/{today}_dual.md", "19:00"),
-    ("竞价快照", "data/runtime/auction/{today}_9_25.json", "09:30"),
-    ("竞价裁决", "data/runtime/auction/decision_{today}.json", "09:35"),
+    # 2026-11-12 修正：auction_feed/auction_analyze/auction_signal_push 实际写 data/auction/，
+    # 原写作 data/runtime/auction/ 导致每日必报「产物缺失」两连假告警。
+    ("竞价快照", "data/auction/{today}_9_25.json", "09:30"),
+    ("竞价裁决", "data/auction/decision_{today}.json", "09:35"),
     ("量化日报", "analysis/backtest/{today}.md", "21:30"),
 ]
 

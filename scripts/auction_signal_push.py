@@ -24,7 +24,7 @@ for _p in (WORKSPACE, os.path.join(WORKSPACE, "analysis")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-AUCTION_DIR = os.path.join(WORKSPACE, "data", "auction")
+AUCTION_DIR = os.path.join(WORKSPACE, "data", "runtime", "auction")
 SCAN_DIR = os.path.join(WORKSPACE, "analysis", "daily")
 
 

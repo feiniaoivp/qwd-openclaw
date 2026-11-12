@@ -26,7 +26,8 @@ except ImportError:
     MOAT_AVAILABLE = False
 
 # ==================== 配置常量 ====================
-AUCTION_DIR = WORKSPACE / "data" / "auction"
+# 2026-11-12：与 auction_feed 实际落盘目录对齐（e9e96db 只改了注释未改路径）
+AUCTION_DIR = WORKSPACE / "data" / "runtime" / "auction"
 CONTEXT_DIR = WORKSPACE / "data" / "context"
 WATCHLIST_FILE = WORKSPACE / "memory" / "watchlist.md"
 ADAPTIVE_MAP_FILE = WORKSPACE / "data" / "adaptive_strategy_map.json"
@@ -569,6 +570,8 @@ def _bak(path):
 
 
 def main() -> int:
+    AUCTION_DIR.mkdir(parents=True, exist_ok=True)
+
     # 1. 加载竞价快照
     snapshot = load_latest_auction_snapshot()
     if not snapshot:

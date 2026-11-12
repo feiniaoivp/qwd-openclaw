@@ -364,8 +364,19 @@ def run_auction_capture() -> Optional[Path]:
         print(f"[ERROR] 当前时间 {now.strftime('%H:%M')} 已过竞价窗口，拒绝运行", file=sys.stderr)
         return None
 
-    output_dir = WORKSPACE / "data" / "auction"
+    output_dir = WORKSPACE / "data" / "runtime" / "auction"
     output_dir.mkdir(parents=True, exist_ok=True)
+    # 2026-11-12：e9e96db 只改了文档字符串、未改实际路径，11-10~11-12 竞价产物因此落错目录。
+    # 迁移旧目录 data/auction/ 的存量文件（不覆盖已有文件），保持历史可读。
+    _legacy_dir = WORKSPACE / "data" / "auction"
+    if _legacy_dir.is_dir():
+        for _f in _legacy_dir.iterdir():
+            _dst = output_dir / _f.name
+            if _f.is_file() and not _dst.exists():
+                try:
+                    shutil.copy2(_f, _dst)
+                except Exception as _e:
+                    print(f"[WARN] 迁移旧竞价产物失败 {_f.name}: {_e}")
 
     symbols = [s for s, _ in WATCHLIST]
     name_map = dict(WATCHLIST)
