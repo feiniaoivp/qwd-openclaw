@@ -1203,3 +1203,18 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - **Fix**: commit b28af5b——news_monitor 钩子 v2 复用 kb_append_guard.strip_candidate 全块处理（单一口径，覆盖全部标题形态+空组头清理+块内去重）；variant_merge .bak 改写前无条件刷新（陈旧快照 bug 连带修复）。
 - **规约**: ①防重/过滤钩子按行前缀圈覆盖面时，必须先枚举全部写入形态（枚举表进钩子注释）；②「增量状态(LRU)+高频抓取源」组合必须有落盘侧第二道防重，不能只信抓取侧状态；③防线工具（守卫）建好后必须绑定到**全部**写入路径，只绑手工路径 = cron 自动路径裸奔。
 - **Status**: resolved (2026-11-08, source+pipeline 双执法；下交易日 cron 自然验证 + 周六 0ae 存量复核)
+
+## ERR-20261112-GatewayThinkingFieldFamilyContract
+- **日期**: 2026-11-12 | **RC**: 2（04:00-08:35 跨 6+ runs；同日 openrouter 清理共用根因排查链）| **状态**: resolved
+- **签名**: LLM request rejected: "thinking" is not supported on /v1/chat/completions... Use "reasoning_effort"（unsupported_parameter），仅 cron/automation 派发路径触发，交互轮（会话级 reasoning=off 钉扎）不触发。
+- **根因**: OpenClaw 2026.11.3 对 DeepSeek-V4/MiMo 族模型在 openai-completions 自定义路由上强制注入 `thinking:{type:"disabled"}`（off 也不例外，Z.AI 系原生合同）；amd-radeon 上游拒收该字段。两层：①thinkingDefault=off 启动期加载（/restart 解决）②字段发射层按模型族合同（compat.thinkingFormat 豁免）。
+- **修法**: model defs compat 追加 `"thinkingFormat": "openrouter"`（注入器跳过 + sanitizer 删字段）。**热加载生效，无需重启。**
+- **教训**: ①「配置加载了 ≠ 参数不发了」——排查注入类问题必须分清「解析层」（何时决定值）与「发射层」（按 provider/model 合同决定发什么字段），dist 源码 grep 载荷赋值点（`payload.thinking =`）是最短路径；②cron/automation 派发不带会话模型钉扎（session-events 走 config 默认解析），交互轮正常 ≠ 定时任务正常，升级后验收必须含一次 force-run；③auth profile 冷却状态跨重启持久化，链上候选跳过原因要看 `candidate_failed` 而非只看 provider-error。
+
+## [ERROR] 竞价产物路径双源分裂（2026-11-12 发现）
+- **现象**: cron_health_check 每日报「竞价快照/竞价裁决 缺失」两连 critical；下游 emotion_reversal 报 `auction_file_missing: true`（11-10/11/12）。
+- **根因1**: commit e9e96db（11-08，data/runtime 迁移）只改了 auction_feed/auction_analyze/auction_signal_push 的文档字符串，实际 `output_dir`/`AUCTION_DIR` 仍写 `data/auction` —— 迁移"改了注释没改代码"。
+- **根因2**: cron_health_check 的 PRODUCT_ARTIFACT_CHECKS 却按 `data/runtime/auction/` 检查 → 每日必报假告警，且真缺失被噪声掩盖。
+- **根因3**: auction-feed-0915 cron 状态 error，诊断 `[ERROR] 当前时间 09:30 已过竞价窗口，拒绝运行` —— 任务实际 09:30 才启动（应为 09:15），feed 的硬截止门直接自杀，快照根本没落盘。
+- **修复**: 三脚本路径改回 data/runtime/auction（+ feed 内置旧目录一次性迁移，不覆盖）；health check 检查路径同步；本日存量 101 个文件已迁入。
+- **教训**: 路径类批量迁移必须 grep **赋值的常量**（`X = ...`），不能只信文件头 docstring；迁移后跑一次产物存在性校验。cron 启动延迟 > 采集窗口属结构性缺陷，需 `lastRunAtMs - scheduledTime` 监控，而非只看 status。
