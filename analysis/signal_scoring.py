@@ -42,7 +42,8 @@ UNI_DIR = os.path.join(WORKSPACE, "data", "universe")
 STOCK_DIR = os.path.join(WORKSPACE, "data", "stock_data")
 L2_PATH = os.path.join(UNI_DIR, "universe_core.json")
 CAND_PATH = os.path.join(UNI_DIR, "candidates_daily.json")
-HIST_PATH = UNI_DIR / "score_dist_history.jsonl"  # 多日轨迹 append-only（2026-11-14）
+HIST_PATH = os.path.join(UNI_DIR, "score_dist_history.jsonl")  # 多日轨迹 append-only（2026-11-14）
+FLOOR_SHADOW_PATH = os.path.join(UNI_DIR, "floor_shadow_ledger.json")  # 地板影子台账（2026-11-14 用户批准「继续深究」）
 
 # 阈值 SSOT: universe_config.UniverseFilterConfig（data/universe_filter_config.json，
 # 缺文件回落 dataclass 默认）。此前硬编码与 dataclass 默认存在 fork
@@ -368,6 +369,109 @@ def score_distribution_stats(scored: list) -> dict:
     return out
 
 
+def floor_shadow_update(scored, snaps, regime_name, eff_top_k, floor_note, data, today,
+                        ledger_path=FLOOR_SHADOW_PATH, min_pool=50):
+    """地板影子台账（2026-11-14 用户批准「继续深究」；机制对齐 lowopen_shadow_ledger）。
+
+    floor 归零日把「若放行本会入选」的候选（硬门槛 bb_pos/MIN_SCORE 照常执行，仅绕过地板）
+    写入影子台账；T+5 交易日自动结算 ex5 = ret5 − median(池ret5)（与 score_rows 工厂同口径），
+    持续实证地板砍掉的票的真实质量；观察期结束与审计结论对表。
+    同日重跑按 entry_date 去重；台账保留最近 120 条。
+    """
+    ledger = {"meta": {"metric": "ex5 = ret5(T→T+5交易日) − median(池ret5), bp",
+                       "note": "floor 触发日的 would-be 候选；approx_no_hard_gate=True 为无 bb_pos 快照的历史回填"},
+              "entries": []}
+    if os.path.exists(ledger_path):
+        try:
+            with open(ledger_path, "r", encoding="utf-8") as f:
+                ledger = json.load(f)
+        except Exception as e:
+            print(f"⚠️ 影子台账读取失败，重建空台账: {e}", file=sys.stderr)
+    entries = ledger.setdefault("entries", [])
+
+    # 交易日轴 + 收盘宽表（池中位数结算用）
+    close_pivot = pd.DataFrame({s: d["close"] for s, d in data.items()}).sort_index()
+    tdates = [str(x) for x in close_pivot.index]
+    pos0 = None
+    for i, dt in enumerate(tdates):
+        if dt <= today:
+            pos0 = i
+        else:
+            break
+    if pos0 is None or pos0 >= len(tdates):
+        return {"new_entry": False, "settled_n": 0, "pending": 0}
+    entry_date = tdates[pos0]
+
+    # 新条目：仅 floor 触发日（would-be = 硬门槛照常 + 绕过地板）
+    new_entry = False
+    if floor_note:
+        _sd = score_distribution_stats(scored) or {}
+        would_be = []
+        for rec in scored:
+            sym = rec.get("symbol")
+            snap = snaps.get(sym) or {}
+            bb = snap.get("bb_pos")
+            if bb is not None and not (HARD_GATES["bb_pos_low"] <= bb <= HARD_GATES["bb_pos_high"]):
+                continue
+            if rec.get("total_score", 0) < MIN_SCORE:
+                continue
+            would_be.append({"symbol": sym, "name": rec.get("name", ""),
+                             "score": rec.get("total_score"), "close": snap.get("close"),
+                             "bb_pos": bb})
+            if len(would_be) >= eff_top_k:
+                break
+        entry = {"date": entry_date, "regime": regime_name, "k": eff_top_k,
+                 "top1": _sd.get("top1_score"), "top5_mean": _sd.get("top5_mean"),
+                 "floor": floor_note, "settled": False, "candidates": would_be}
+        entries = [e for e in entries if e.get("date") != entry_date]
+        entries.append(entry)
+        new_entry = True
+
+    # 结算：T+5 交易日可用即结算（对全部未结算条目）
+    settled_n = 0
+    for e in entries:
+        if e.get("settled"):
+            continue
+        d0 = e.get("date")
+        if d0 not in close_pivot.index:
+            continue
+        i0 = tdates.index(d0)
+        if len(tdates) - i0 - 1 < 5:
+            continue
+        settle_date = tdates[i0 + 5]
+        p0, p5 = close_pivot.loc[d0], close_pivot.loc[settle_date]
+        valid = p5.notna() & p0.notna() & (p0 > 0)
+        if int(valid.sum()) < min_pool:
+            continue
+        ret5 = (p5[valid] / p0[valid] - 1.0)
+        pool_med = float(ret5.median())
+        ex5s = []
+        for cand in e.get("candidates") or []:
+            sym = cand.get("symbol")
+            if sym in ret5.index and pd.notna(ret5[sym]):
+                cand["ret5"] = float(ret5[sym])  # 全精度存储（下游可能复算统计）
+                ex5s.append(float(ret5[sym] - pool_med))
+        e["settled"] = True
+        e["settle_date"] = settle_date
+        e["pool_median_ret5"] = pool_med
+        e["median_ex5_bp"] = round(float(np.median(ex5s)) * 1e4, 1) if ex5s else None
+        e["mean_ex5_bp"] = round(float(np.mean(ex5s)) * 1e4, 1) if ex5s else None
+        e["n_settled"] = len(ex5s)
+        settled_n += 1
+
+    entries = entries[-120:]
+    ledger["entries"] = entries  # filter/rebind 后必须写回，否则 dump 的是旧引用（同名重绑定断链）
+    _bak(ledger_path)
+    tmp = str(ledger_path) + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(ledger, f, ensure_ascii=False, indent=1)
+    os.replace(tmp, ledger_path)
+    pending = sum(1 for e in entries if not e.get("settled"))
+    return {"new_entry": new_entry, "entry_date": entry_date,
+            "would_be_n": len(entry.get("candidates") or []) if new_entry else 0,
+            "settled_n": settled_n, "pending": pending}
+
+
 def main():
     l2 = json.load(open(L2_PATH, encoding="utf-8")) if os.path.exists(L2_PATH) else None
     # 🔴 数据源优先级（2026-11-09 与 11-05 存量数据湖对齐后定案）:
@@ -541,7 +645,7 @@ def main():
             "candidates_n": len(candidates),
         }
         _last_asof = None
-        if HIST_PATH.exists():
+        if os.path.exists(HIST_PATH):
             with open(HIST_PATH, "r", encoding="utf-8") as f:
                 for _ln in f:
                     _ln = _ln.strip()
@@ -555,6 +659,17 @@ def main():
                 f.write(json.dumps(hist_rec, ensure_ascii=False) + "\n")
     except Exception as _e:
         print(f"⚠️ 分数轨迹落盘失败(不阻断): {_e}", file=sys.stderr)
+
+    # 地板影子台账（2026-11-14 用户批准）：floor 归零日 would-be 候选 + T+5 自动结算
+    try:
+        _fs = floor_shadow_update(scored, snaps, (regime or {}).get("regime"), eff_top_k,
+                                  scored_gate_note, data, today)
+        if _fs.get("new_entry"):
+            print(f"👻 影子台账: {_fs['entry_date']} floor 归零日记录 would-be {_fs['would_be_n']} 只（T+5 自动结算）")
+        if _fs.get("settled_n"):
+            print(f"👻 影子台账: 结算 {_fs['settled_n']} 条")
+    except Exception as _e:
+        print(f"⚠️ 影子台账失败(不阻断): {_e}", file=sys.stderr)
 
     print(f"✅ L3 候选: {len(candidates)} 只 (门槛后) / 全池 {len(scored)} → {CAND_PATH}")
     for c in candidates[:10]:
