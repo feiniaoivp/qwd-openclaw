@@ -42,6 +42,7 @@ UNI_DIR = os.path.join(WORKSPACE, "data", "universe")
 STOCK_DIR = os.path.join(WORKSPACE, "data", "stock_data")
 L2_PATH = os.path.join(UNI_DIR, "universe_core.json")
 CAND_PATH = os.path.join(UNI_DIR, "candidates_daily.json")
+HIST_PATH = UNI_DIR / "score_dist_history.jsonl"  # 多日轨迹 append-only（2026-11-14）
 
 # 阈值 SSOT: universe_config.UniverseFilterConfig（data/universe_filter_config.json，
 # 缺文件回落 dataclass 默认）。此前硬编码与 dataclass 默认存在 fork
@@ -524,6 +525,35 @@ def main():
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
     os.replace(tmp, CAND_PATH)
+
+    # 多日轨迹累积（2026-11-14 补充完善：外部评审「攒轨迹再微调地板」的载体。
+    # candidates_daily.json 只保留当日+1 份 .bak，跨日监控无法执行）
+    # 纯 append-open('a')，非重写型：按 as_of 去重（同日重跑不重复追加）。
+    try:
+        _sd = out.get("score_distribution") or {}
+        hist_rec = {
+            "as_of": today,
+            "regime": (regime or {}).get("regime"),
+            "top1": _sd.get("top1_score"), "top5_mean": _sd.get("top5_mean"),
+            "p50": _sd.get("p50"), "p90": _sd.get("p90"), "count": _sd.get("count"),
+            "floor_gate": out.get("floor_gate"), "tail_decay": out.get("tail_decay"),
+            "candidates_n": len(candidates),
+        }
+        _last_asof = None
+        if HIST_PATH.exists():
+            with open(HIST_PATH, "r", encoding="utf-8") as f:
+                for _ln in f:
+                    _ln = _ln.strip()
+                    if _ln:
+                        try:
+                            _last_asof = json.loads(_ln).get("as_of")
+                        except Exception:
+                            pass
+        if _last_asof != today:
+            with open(HIST_PATH, "a", encoding="utf-8") as f:
+                f.write(json.dumps(hist_rec, ensure_ascii=False) + "\n")
+    except Exception as _e:
+        print(f"⚠️ 分数轨迹落盘失败(不阻断): {_e}", file=sys.stderr)
 
     print(f"✅ L3 候选: {len(candidates)} 只 (门槛后) / 全池 {len(scored)} → {CAND_PATH}")
     for c in candidates[:10]:
