@@ -536,6 +536,7 @@ def main():
             "regime": (regime or {}).get("regime"),
             "top1": _sd.get("top1_score"), "top5_mean": _sd.get("top5_mean"),
             "p50": _sd.get("p50"), "p90": _sd.get("p90"), "count": _sd.get("count"),
+            "top1_top30_gap": _sd.get("top1_top30_gap"),
             "floor_gate": out.get("floor_gate"), "tail_decay": out.get("tail_decay"),
             "candidates_n": len(candidates),
         }
