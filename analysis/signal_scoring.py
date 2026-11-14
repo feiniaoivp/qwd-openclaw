@@ -445,11 +445,25 @@ def floor_shadow_update(scored, snaps, regime_name, eff_top_k, floor_note, data,
             continue
         ret5 = (p5[valid] / p0[valid] - 1.0)
         pool_med = float(ret5.median())
+        # 2026-11-15 判决协议 v1.1：MaxDD 观察字段（收盘口径，close_pivot 无 low；
+        # 仅报告不参与判决变量——剔除深回撤样本会反向美化剩余质量，见 DECISION_CALENDAR 修订1）
+        try:
+            win_min = close_pivot.loc[d0:settle_date].min()
+        except Exception:
+            win_min = None
         ex5s = []
         for cand in e.get("candidates") or []:
             sym = cand.get("symbol")
             if sym in ret5.index and pd.notna(ret5[sym]):
                 cand["ret5"] = float(ret5[sym])  # 全精度存储（下游可能复算统计）
+                try:
+                    if (win_min is not None and sym in win_min.index
+                            and pd.notna(win_min[sym]) and pd.notna(p0[sym]) and float(p0[sym]) > 0):
+                        cand["maxdd5"] = round(float(win_min[sym] / p0[sym] - 1.0), 6)
+                    else:
+                        cand["maxdd5"] = None
+                except Exception:
+                    cand["maxdd5"] = None
                 ex5s.append(float(ret5[sym] - pool_med))
         e["settled"] = True
         e["settle_date"] = settle_date

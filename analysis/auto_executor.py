@@ -9,7 +9,7 @@
 - 同 bar 收盘前视成交退役；回退开关：环境变量 AUTO_EXECUTOR=0 走 legacy 原路径
 - 影子双轨不受影响：lowopen-shadow-capture(18:45) 与 19:41 执行审计照常独立运行
 
-意向状态机（data/trade_intents/{信号日}_intents.json）：
+意向状态机（data/runtime/trade_intents/{信号日}_intents.json）：
   PENDING → FILLED（已按执行日开盘价成交，记录 gap）
            → BLOCKED（执行日门控/dedup 拦截，留 reason）
            → CANCELLED（执行日仓位已不存在，空仓卖噪声）
