@@ -1,0 +1,78 @@
+{
+ "built_at": "2026-11-14",
+ "source": "floor_shadow_ledger None (宇宙筛选Top10)",
+ "level_step_pct": 2.0,
+ "limit_warn_pct": 9.0,
+ "stocks": [
+  {
+   "code": "300413",
+   "name": "芒果超媒",
+   "sina": "sz300413",
+   "score": 85.71,
+   "prev_close": 33.1
+  },
+  {
+   "code": "302132",
+   "name": "中航成飞",
+   "sina": "sz302132",
+   "score": 83.57,
+   "prev_close": 68.18
+  },
+  {
+   "code": "600977",
+   "name": "中国电影",
+   "sina": "sh600977",
+   "score": 83.57,
+   "prev_close": 15.5
+  },
+  {
+   "code": "603379",
+   "name": "三美股份",
+   "sina": "sh603379",
+   "score": 83.57,
+   "prev_close": 47.82
+  },
+  {
+   "code": "000423",
+   "name": "东阿阿胶",
+   "sina": "sz000423",
+   "score": 81.43,
+   "prev_close": 49.39
+  },
+  {
+   "code": "300007",
+   "name": "汉威科技",
+   "sina": "sz300007",
+   "score": 80.36,
+   "prev_close": 39.6
+  },
+  {
+   "code": "300133",
+   "name": "华策影视",
+   "sina": "sz300133",
+   "score": 80.36,
+   "prev_close": 9.7
+  },
+  {
+   "code": "301551",
+   "name": "无线传媒",
+   "sina": "sz301551",
+   "score": 80.36,
+   "prev_close": 25.41
+  },
+  {
+   "code": "603596",
+   "name": "伯特利",
+   "sina": "sh603596",
+   "score": 80.36,
+   "prev_close": 19.4
+  },
+  {
+   "code": "605333",
+   "name": "沪光股份",
+   "sina": "sh605333",
+   "score": 80.36,
+   "prev_close": 19.79
+  }
+ ]
+}
