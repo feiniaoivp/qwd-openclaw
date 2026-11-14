@@ -21,7 +21,10 @@ from analysis.fib_extension_scan import WATCHLIST
 
 # 配置项
 DATA_DIR = os.path.join(WORKSPACE, "data", "stock_data")
-STATE_FILE = os.path.join(WORKSPACE, "data", "sim_state.json")
+# 2026-11-14 修正：原监控 data/sim_state.json 是 08-02 旧全组合模拟盘遗留孤儿文件
+# （全仓无写入方，停 11-04 误报滞后10d）；生产模拟盘 state = portfolio_sim_state.json
+# （portfolio_core.STATE_FILE，每日 15:40 cron 写）。与 data_source_sentry 对齐。
+STATE_FILE = os.path.join(WORKSPACE, "data", "portfolio_sim_state.json")
 ALERT_THRESHOLD_HOURS = 24  # 超过24小时未更新则告警
 
 def check_csv_freshness():
@@ -64,7 +67,7 @@ def check_csv_freshness():
 def check_state_freshness():
     """检查模拟盘状态文件更新时间"""
     if not os.path.exists(STATE_FILE):
-        return ["模拟盘状态文件 (sim_state.json) 缺失"]
+        return ["模拟盘状态文件 (portfolio_sim_state.json) 缺失"]
     
     mtime = datetime.fromtimestamp(os.path.getmtime(STATE_FILE))
     diff = datetime.now() - mtime
