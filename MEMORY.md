@@ -222,7 +222,7 @@ This file serves as your curated long-term memory, storing significant events, d
     - `blogwatcher-daily-scan` (每日 06:30) 完整扫描+摘要+推送
     - `rsshub-health-check` (每 30 分钟) 7 条核心路由健康检查
     - `blogwatcher-health-check` (每小时) 扫描异常检查
-*   **关键脚本**：`scripts/blogwatcher_daily_scan.py` (每日扫描+去重+噪声清理+关注池/宏观摘要+Telegram推送)、`scripts/rsshub_health_check.py` (30分钟健康检查)、`scripts/send_telegram.py` (推送含代理兜底)
+*   **关键脚本**：`scripts/blogwatcher_daily_scan.py` (每日扫描+去重+噪声清理+关注池/宏观摘要+Telegram推送)、`scripts/rsshub_health_check.py` (30分钟健康检查)、`send_telegram.py`（仓库根，非 scripts/；推送含代理兜底，被各 push 脚本 `from send_telegram import` 引用）
 *   **关注池命中逻辑**：从 `analysis/fib_extension_scan.py` 导入 WATCHLIST (36 只) 作为 SSOT
 *   **宏观关键词 (15+)**：央行/证监会/降准/降息/IPO/回购/换锚/逆回购/MLF/LPR/存款准备金/回购贷款/立案/财务造假/三季报/分红/增持/注销式回购
 *   **噪声清理规则**：空标题/导航页/栏目页/早报/晚报/快讯/直播/FT中文网导航标题
