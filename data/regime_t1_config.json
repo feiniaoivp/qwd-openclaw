@@ -1,7 +1,7 @@
 {
-  "date": "2026-11-11",
+  "date": "2026-11-13",
   "regime": "sideways",
-  "regime_probability": 0.4252577319587629,
+  "regime_probability": 0.4282051282051282,
   "regime_duration": 1,
   "factor_weights": {
     "BB_pos_20": 0.3,
@@ -28,8 +28,6 @@
     }
   },
   "regime_history": {
-    "2026-10-15 00:00:00": "trend_down",
-    "2026-10-16 00:00:00": "trend_down",
     "2026-10-19 00:00:00": "trend_down",
     "2026-10-20 00:00:00": "trend_down",
     "2026-10-21 00:00:00": "trend_down",
@@ -47,9 +45,11 @@
     "2026-11-06 00:00:00": "sideways",
     "2026-11-09 00:00:00": "sideways",
     "2026-11-10 00:00:00": "sideways",
-    "2026-11-11 00:00:00": "sideways"
+    "2026-11-11 00:00:00": "sideways",
+    "2026-11-12 00:00:00": "sideways",
+    "2026-11-13 00:00:00": "sideways"
   },
-  "signal_date": "2026-11-11",
-  "generated_at": "2026-11-11T15:40:49.603625",
+  "signal_date": "2026-11-13",
+  "generated_at": "2026-11-13T15:40:36.222382",
   "n_symbols": 27
 }

@@ -1,19 +1,10 @@
-# 🎫 结构性修复工单看板
+# 结构性修复工单看板
 
-_更新: 2026-11-11 16:15 | 规则: 滚动 90d 内同签名 RC≥3 自动开票（仅 blocked_signal）_
-_OPEN 2 / 总 2_
-
-## SFT-20261111-001 — tier_gate / ema_obv / tier
-- RC(90d): **16** | 最近: 2026-11-11T15:41 | 创建: 2026-11-11
-- 交付物: gate_script, pipeline_hook, root_cause_note
-  - 证据: 2026-11-05 通富微电(002156) 卖出→拦 tier
-  - 证据: 2026-11-05 中信金属(601061) 卖出→拦 tier
-  - 证据: 2026-11-04 通富微电(002156) 卖出→拦 tier
-
-## SFT-20261111-002 — risk_override / macd / risk_override
-- RC(90d): **3** | 最近: 2026-11-05T15:40 | 创建: 2026-11-11
-- 交付物: gate_script, pipeline_hook, root_cause_note
-  - 证据: 2026-11-05 长电科技(600584) 买入→拦 risk_override
-  - 证据: 2026-11-05 国瓷材料(300285) 买入→拦 risk_override
-  - 证据: 2026-11-05 科华数据(002335) 买入→拦 risk_override
-
+| ID | 触发日期 | RC签名 | 次数 | 涉及任务 | 状态 | 门禁脚本 | 流水线步骤 | 目标关闭 |
+|----|----------|--------|------|----------|------|----------|------------|----------|
+| AUDIT-20261114-ops-silent-orchestrator-misjudged-as-hang | 2026-11-14 | ops.silent-orchestrator-misjudged-as-hang | 3 | RiskGuard.refresh<br>analysis/chip_freshness.py<br>analysis/premarket_pipeline.py<br>...+34更多 | OPEN |  |  | 2026-11-21 |
+| AUDIT-20261114-exec-timeout-orphan-child-cron-longrunning | 2026-11-14 | exec.timeout-orphan-child.cron-longrunning | 3 | backtest_strategies<br>backtest_strategies.py<br>baostock<br>...+3更多 | OPEN |  |  | 2026-11-21 |
+| AUDIT-20261114-err-dist-io-no-timeout | 2026-11-14 | err.dist-io-no-timeout | 4 | RiskGuard.refresh<br>analysis/portfolio_core.py<br>baostock<br>...+3更多 | OPEN |  |  | 2026-11-21 |
+| AUDIT-20261114-data-none-valued-key-attr-crash | 2026-11-14 | data.none-valued-key-attr-crash | 3 | auction_signal_push<br>baostock<br>close_scan<br>...+5更多 | OPEN |  |  | 2026-11-21 |
+| AUDIT-20261114-llm-final-response-failure-loses-context-only-work | 2026-11-14 | llm.final-response-failure.loses-context-only-work | 3 | baostock<br>next_day_simulator.py<br>scripts/cluster_flag_watch.py<br>...+2更多 | OPEN |  |  | 2026-11-21 |
+| AUDIT-20261114-plan-duplicate-detector-creation | 2026-11-14 | plan.duplicate-detector-creation | 3 | data_freshness_guard<br>gate_runner<br>is_trading_day<br>...+3更多 | OPEN |  |  | 2026-11-21 |

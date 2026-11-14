@@ -161,3 +161,4 @@ data/adaptive_strategy_map.json.bak
 
 # 2026-11-09: 全栈回测运行日志出库
 logs/full_backtest_run*.log
+data/secrets/

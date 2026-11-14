@@ -1218,3 +1218,17 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - **根因3**: auction-feed-0915 cron 状态 error，诊断 `[ERROR] 当前时间 09:30 已过竞价窗口，拒绝运行` —— 任务实际 09:30 才启动（应为 09:15），feed 的硬截止门直接自杀，快照根本没落盘。
 - **修复**: 三脚本路径改回 data/runtime/auction（+ feed 内置旧目录一次性迁移，不覆盖）；health check 检查路径同步；本日存量 101 个文件已迁入。
 - **教训**: 路径类批量迁移必须 grep **赋值的常量**（`X = ...`），不能只信文件头 docstring；迁移后跑一次产物存在性校验。cron 启动延迟 > 采集窗口属结构性缺陷，需 `lastRunAtMs - scheduledTime` 监控，而非只看 status。
+
+## ERR-20261113-StopGatewayScriptSelfKill
+- 模式: ops.stop-gateway-script-killed-with-gateway
+- 2026-11-13 两连发: secrets apply 脚本经 Gateway 后台 exec 运行，bootout Gateway 时脚本被同进程组 SIGKILL（nohup 无效，日志戛然而止于排空循环）；换 launchd 一次性任务后第二轮踩 launchd 无用户 PATH（env: node: No such file or directory, rc=127）
+- 规约: ①凡需 stop/restart Gateway 的运维脚本，必须以 launchd 一次性任务（RunAtLoad=true）运行，禁止经 exec/nohup 后台跑；②launchd 任务脚本头部必须显式 export PATH（/usr/local/bin + node bin）；③停服后用 pgrep+lsof 双判据轮询排空 state 库锁（孤儿子进程 ~20s 释放）
+- RC=2 (v1 自杀 + v3 PATH)，若复发升 RC=3 固化门禁
+
+## ERR-20261114-ModuleLevelPathOperatorImportCrash
+- 模式: llm.py-compile-pass-but-semantics-wrong（第 5 变体：模块级语句 import 才执行）
+- 现象: commit b1828fd（11-14 多日轨迹）写 `HIST_PATH = UNI_DIR / "score_dist_history.jsonl"`，但 UNI_DIR 是 str（os.path.join）→ 模块级 TypeError。py_compile 静默通过；若非合成单测里 import 触发，周一 15:35 的 L3 cron 将整模块崩溃（打分+种子库全下线）。
+- 根因: py_compile 只编译不执行——模块级语句（路径拼接/常量运算）只有 import 时才跑。10-31 家族（f-string 内插 helper/语法止但语义错）的新成员：这次是「语法完全正确、执行必炸」。
+- 修复: os.path.join 改写 + import 冒烟测试（python -c "import analysis.signal_scoring"）纳入变更自检。
+- 规约: 凡新增/修改**模块级常量与语句**，自检必须跑一次真实 import（py_compile 不够）；与 09-16「逐文件 import 冒烟测试」教训合并执行。
+- RC=1（生产未炸，单测拦截），与 10-31 家族合并计数
