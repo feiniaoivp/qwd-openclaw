@@ -101,10 +101,25 @@ def consume_pending_for_symbol(ctx: dict, sym: str, name: str, pos: dict,
         return None, None
 
     # 数据新鲜度：必须拿到「今日」K 线才允许以今日开盘价成交（预跑/滞后数据 → 留待正式扫描）
-    try:
-        data_date = df.index[-1].strftime("%Y-%m-%d")
-    except Exception as e:
-        print(f"⚠️ [auto-exec] {name}({sym}) data_date 解析失败: {e}")
+    # 🔴 2026-11-15 修复：生产 df = 整数索引 + date 列（baostock 原始格式），旧实现
+    # df.index[-1].strftime 对 int 索引必抛 AttributeError → 静默早退 → 消费腿全断
+    # （11-06 起意向永远 PENDING、6 个交易日零成交；探针实锤 "'int' object has no
+    # attribute 'strftime'"）。改为与 portfolio_core:1748 同款「date 列优先、
+    # DatetimeIndex 兜底」提取；判定失败 fail-closed（不成交，留待后续或过期）。
+    data_date = None
+    if "date" in getattr(df, "columns", []):
+        try:
+            data_date = str(df["date"].iloc[-1])[:10]
+        except Exception:
+            data_date = None
+    if data_date is None:
+        try:
+            idx_last = df.index[-1]
+            data_date = idx_last.strftime("%Y-%m-%d") if hasattr(idx_last, "strftime") else None
+        except Exception:
+            data_date = None
+    if not data_date:
+        print(f"⚠️ [auto-exec] {name}({sym}) data_date 解析失败（date 列与索引均不可用），跳过消费")
         return None, None
     if str(data_date) < today_str:
         return None, None
