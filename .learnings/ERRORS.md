@@ -1232,3 +1232,10 @@ Triage this entry: if the error was real and non-obvious, keep it and fill in th
 - 修复: os.path.join 改写 + import 冒烟测试（python -c "import analysis.signal_scoring"）纳入变更自检。
 - 规约: 凡新增/修改**模块级常量与语句**，自检必须跑一次真实 import（py_compile 不够）；与 09-16「逐文件 import 冒烟测试」教训合并执行。
 - RC=1（生产未炸，单测拦截），与 10-31 家族合并计数
+
+## ERR-20261115-AutoExecutorConsumeLegSilentDead
+- **日期**: 2026-11-15 | **RC**: 1（首发即修复，但「0/2 纪律未执行」告警被当噪声连看 6 个交易日）| **状态**: resolved
+- **签名**: trade_intents 意向永远 PENDING、6 个交易日零成交、卖出止损未执行；trades_audit.jsonl 全部条目 guards.auto_exec=None。
+- **根因**: consume_pending_for_symbol 的数据新鲜度闸 `df.index[-1].strftime("%Y-%m-%d")` 对生产 df（整数索引+date 列，baostock 原始格式）必抛 AttributeError → 静默早退（print 只进 cron stdout 无人消费）。e2e 用合成 DatetimeIndex df 掩盖契约错配。
+- **修法**: 镜像 portfolio_core:1748「date 列优先、DatetimeIndex 兜底」，fail-closed；commit 8ac008b。
+- **教训**: ①executor 类 e2e 必须加「真实 fetch_data + BACKTEST_MODE + 三文件隔离」探针层——合成数据测逻辑，真实数据测契约（09-15「回测复刻≠生产」同族第 2 犯，本次变体=e2e 合成输入掩盖生产数据契约）；②「打印到 stdout 的失败」在 command 型 cron 里等于静默——关键失败路径要么写审计字段（guards.auto_exec）要么落日志文件；③执行审计雏形连日报警 6 天无人处置 = 观察层有洞，周一审计挂钩判决日历后此类告警应有开庭出口。
